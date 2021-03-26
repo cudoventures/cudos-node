@@ -1,0 +1,12 @@
+syntax = "proto3";
+package rdpnd.pocbasecosmos.pocbasecosmos;
+
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/rdpnd/poc-base-cosmos/x/pocbasecosmos/types";
+
+// GenesisState defines the capability module's genesis state.
+message GenesisState {
+    // this line is used by starport scaffolding # genesis/proto/state
+}
+
