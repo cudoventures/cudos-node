@@ -1,19 +1,9 @@
+version: 1
 accounts:
-  - name: alice
-    coins: ["1000token", "10000000000stake"]
-  - name: bob
+  - name: user1
+    coins: ["1000token", "100000000stake"]
+  - name: user2
     coins: ["500token"]
 validator:
-  name: alice
+  name: user1
   staked: "100000000stake"
-client:
-  vuex:
-    path: "vue/src/store"
-faucet:
-  name: bob 
-  coins: ["5token"]
-genesis:
-  app_state:
-    gov:
-      voting_params:
-        voting_period: 30s

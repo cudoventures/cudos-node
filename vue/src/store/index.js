@@ -1,12 +1,9 @@
-import { createStore } from 'vuex'
-import init from './config'
+import Vue from "vue";
+import Vuex from "vuex";
+import cosmos from "@tendermint/vue/src/store/cosmos.js";
 
-const store = createStore({
-	state() {
-		return {}
-	},
-	mutations: {},
-	actions: {},
-})
-init(store)
-export default store
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  modules: { cosmos },
+});
