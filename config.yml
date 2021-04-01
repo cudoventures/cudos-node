@@ -1,6 +1,6 @@
 accounts:
   - name: alice
-    coins: ["1000token", "100000000stake"]
+    coins: ["1000token", "10000000000stake"]
   - name: bob
     coins: ["500token"]
 validator:
@@ -12,3 +12,8 @@ client:
 faucet:
   name: bob 
   coins: ["5token"]
+genesis:
+  app_state:
+    gov:
+      voting_params:
+        voting_period: 30s
