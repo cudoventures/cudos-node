@@ -1,0 +1,23 @@
+version: '3.1'
+
+networks:
+  cudos-blockchain-network:
+    external:
+      name: shared-cudos-blockchain-network
+
+services:
+  cudos-network-full-node:
+    image: cudos-network-full-node
+    container_name: cudos-network-full-node
+    build:
+      dockerfile: docker/full-node.dockerfile
+      context: ../
+      args:
+        - PERSISTENT_NODE_ID=de14a2005d220171c7133efb31b3f3e1d7ba776a@cudos-network-persistent-node:26656
+    restart: unless-stopped
+    ports:
+      - "26666-26667:26656-26657"
+      - "1318:1317"
+      - "9091:9090"
+    networks:
+      - cudos-blockchain-network
