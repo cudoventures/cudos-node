@@ -72,4 +72,4 @@ cudos-poc-01d query bank balances $RECIPIENT --chain-id=cudos-poc-01-network --h
 
 # Add vesting account (only during genesis)
 cudos-poc-01d keys add user-vesting --keyring-backend test --home=./HOME
-cudos-poc-01d add-genesis-account $VESTING_ACCOUNT 1000stake --vesting-amount 500stake --vesting-end-time 1617613800 --home=./HOME
+cudos-poc-01d add-genesis-account $VESTING_ACCOUNT 1000stake --vesting-amount 500stake --vesting-end-time 1617615300 --home=./HOME
