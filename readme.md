@@ -1,8 +1,27 @@
-# project
-This project uses the default blog project from starport
+# POC 1 - Create Cosmos Chain with BFT, Wallets and preconfigured accounts
+This project uses the default blog project from starport. It's purpose is to prove POC 1 requirements, such as:
+ - Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment. 
+ - Ability of the network to support Tendermint BFT with Ethereum type of wallets. 
+ - The network should start with ~20 accounts/validators that have pre-configured vested balance in the genesis block.
+
+## Links:
+ - https://docs.cosmos.network/master/modules/auth/
+ - https://docs.cosmos.network/master/basics/accounts.html
+ - https://docs.cosmos.network/master/modules/auth/05_vesting.html
 
 
-# local build
+## Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment.
+Launching a vanilla Cosmos blockchain is possible using Cosmos tools like Tendermint or Starport.
+  
+## Ability of the network to support Tendermint BFT with Ethereum type of wallets
+The network supports Tendermint BFT by default. The wallets private keys are generated using secp256k1 also by default.
+
+## Creating accounts/validators with preconfigured vested balance in the genesis block
+Accounts can be created in the config.yml by specifying a name and the coins held. This would automatically add them to the genesis block upon launching the network. Another way to do this is by manually writing the genesis json, from which the genesis block is built.
+
+
+
+# Local build of this project
 
 --home param on each commad indicates the blockchain storage directory.
 
