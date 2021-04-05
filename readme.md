@@ -22,7 +22,6 @@ Accounts can be created in the config.yml by specifying a name and the coins hel
 
 
 # Local build of this project
-
 --home param on each commad indicates the blockchain storage directory.
 
 ## make
@@ -50,7 +49,6 @@ cudos-poc-01d collect-gentxs --home=./HOME
 cudos-poc-01d start --home=./HOME
 
 # docker
-
 1. Build persistent-node
 cd ./docker
 docker-compose -f .\persistent-node.yml -p cudos-network-persistent-node up --build
@@ -63,3 +61,15 @@ P2P Node ID ID=de14a2005d220171c7133efb31b3f3e1d7ba776a file=/root/.blog/config/
 cd ./docker
 docker-compose -f .\full-node.yml -p cudos-network-full-node up --build
 
+# Add local account
+cudos-poc-01d keys add user01 --keyring-backend test --home=./HOME
+
+# Send currency
+cudos-poc-01d tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-poc-01-network --keyring-backend test --home=./HOME
+
+# Check that the recipient account did receive the tokens.
+cudos-poc-01d query bank balances $RECIPIENT --chain-id=cudos-poc-01-network --home=./HOME
+
+# Add vesting account (only during genesis)
+cudos-poc-01d keys add user-vesting --keyring-backend test --home=./HOME
+cudos-poc-01d add-genesis-account $VESTING_ACCOUNT 1000stake --vesting-amount 500stake --vesting-end-time 1617613800 --home=./HOME
