@@ -1,4 +1,12 @@
 # POC 1 - Create Cosmos Chain with BFT, Wallets and preconfigured accounts
+
+## Prerequirements
+Starport: https://github.com/tendermint/starport/releases (linux only)<br />
+or<br />
+make (different ways to install it depending on OS) 
+
+
+## Requirements
 This project uses the default blog project from starport. It's purpose is to prove POC 1 requirements, such as:
  - Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment. 
  - Ability of the network to support Tendermint BFT with Ethereum type of wallets. 
@@ -11,44 +19,61 @@ This project uses the default blog project from starport. It's purpose is to pro
 
 
 ## Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment.
-Launching a vanilla Cosmos blockchain is possible using Cosmos tools like Tendermint or Starport.
+Launching a vanilla Cosmos blockchain is possible by starting this project using methods below.
   
 ## Ability of the network to support Tendermint BFT with Ethereum type of wallets
-The network supports Tendermint BFT by default. The wallets private keys are generated using secp256k1 also by default.
+The network supports Tendermint BFT by default. The wallets private keys are generated using secp256k1 also by default. The retionale of using Ethereum type of wallets is to ensure that the users will be able to import their ethereum wallets into cudos blockchain using theirs seed phase. After the import the users will expect to see that their balance from ethereum blockchain is transferred to cudos. Although the cryptography is the same it is used in a slightly different manner so a converted is developed. Its usage is described below. It can convert ethereum public key to cudos wallet address. Using cudos wallet address a wallet can be pre-funded with required tokes so when a user import his wallet, using his seed, the balance will be correct.
 
 ## Creating accounts/validators with preconfigured vested balance in the genesis block
-Accounts can be created in the config.yml by specifying a name and the coins held. This would automatically add them to the genesis block upon launching the network. Another way to do this is by manually writing the genesis json, from which the genesis block is built.
+There are three ways to add preconfigured accounts with/without vested balance in the genesis block.
+1. Modifying genesis.json after the blockchian is initialized, but before it is first started. This is not recommented method.
+2. Using config.yml. This method works if the blockchain is initialized with starport utility.
+3. Using commands from the binary itself. This method works if the blockchain is manually initialized without startport utility.
 
+<br />
+<br />
+<br />
 
+# Manual build
+Build the blockchian binary into $GOPATH directory using "cudos-poc-01d" name. 
 
-# Local build of this project
---home param on each commad indicates the blockchain storage directory.
+    make
 
-## make
-make
+Initialize the blockchain.
 
-## init
-cudos-poc-01d init cudos-poc-01-network --chain-id=cudos-poc-01-network --home=./HOME
+    cudos-poc-01d init cudos-poc-01-network --chain-id=cudos-poc-01-network
 
-## create staking account
-cudos-poc-01d keys add validator01 --keyring-backend test --home=./HOME
+Creating accounts. Each account can have vesting balance as well.
 
-## get validator's address
-cudos-poc-01d keys show validator01 -a --keyring-backend test --home=./HOME
+    cudos-poc-01d keys add validator01 --keyring-backend test --vesting-amount 500stake --vesting-end-time 1617615300
 
-## add stacking account
-cudos-poc-01d add-genesis-account $MY_VALIDATOR_ADDRESS 100000000000stake --home=./HOME
+Add balance in the genesis block to an account.
 
-## create gen tx
-cudos-poc-01d gentx validator01 100000000stake --chain-id cudos-poc-01-network --keyring-backend test --home=./HOME
+    cudos-poc-01d add-genesis-account $MY_VALIDATOR_ADDRESS 100000000000stake
 
-## add tx to genesis
-cudos-poc-01d collect-gentxs --home=./HOME
+Add validator 
 
-## start
-cudos-poc-01d start --home=./HOME
+    cudos-poc-01d gentx validator01 100000000stake --chain-id cudos-poc-01-network --keyring-backend test
 
-# docker
+Collect genesis transaction and start the blockchain
+
+    cudos-poc-01d collect-gentxs
+    cudos-poc-01d start
+
+<br />
+<br />
+<br />
+
+# Starport build
+Configure accounts and validators in config.yml after that just start the blockchain
+
+    starport serve
+
+<br />
+<br />
+<br />
+
+# Docker build
 1. Build persistent-node
 cd ./docker
 docker-compose -f .\persistent-node.yml -p cudos-network-persistent-node up --build
@@ -61,15 +86,36 @@ P2P Node ID ID=de14a2005d220171c7133efb31b3f3e1d7ba776a file=/root/.blog/config/
 cd ./docker
 docker-compose -f .\full-node.yml -p cudos-network-full-node up --build
 
-# Add local account
-cudos-poc-01d keys add user01 --keyring-backend test --home=./HOME
+<br />
+<br />
+<br />
 
-# Send currency
-cudos-poc-01d tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-poc-01-network --keyring-backend test --home=./HOME
+# Converting ethereum public keys to cosmos wallet address
+Run the converter and pass a ethereum public key as argument.
 
-# Check that the recipient account did receive the tokens.
-cudos-poc-01d query bank balances $RECIPIENT --chain-id=cudos-poc-01-network --home=./HOME
+    go run ./converter 0x03139bb3b92e99d034ee38674a0e29c4aad83dd09b3fa465a265da310f9948fbe6
 
-# Add vesting account (only during genesis)
-cudos-poc-01d keys add user-vesting --keyring-backend test --home=./HOME
-cudos-poc-01d add-genesis-account $VESTING_ACCOUNT 1000stake --vesting-amount 500stake --vesting-end-time 1617615300 --home=./HOME
+<b>Example ethereum mnemonic:</b> battle erosion opinion city birth modify scale hood caught menu risk rather<br >
+<b>Example ethereum public key (32 bytes, compressed form):</b> 0x03139bb3b92e99d034ee38674a0e29c4aad83dd09b3fa465a265da310f9948fbe6
+
+This mnemonic could be imported into cudos blockchain in order to verify that resulting account access will be the same as generated from the converter.
+
+    cudos-poc-01d keys add ruser02 --recover --hd-path="m/44'/60'/0'/0/0"
+
+<br />
+<br />
+<br />
+
+# Usefull commands
+## Send currency
+    cudos-poc-01d tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-poc-01-network --keyring-backend test
+
+## Check balances
+    cudos-poc-01d query bank balances $RECIPIENT --chain-id=cudos-poc-01-network
+
+<br />
+<br />
+<br />
+
+# Reset the blockchain
+All data of the blockchain is store at ~/.blog folder. By deleting it the entire blockchain is completely reset and it must be initialized again.
