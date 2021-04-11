@@ -13,7 +13,7 @@ services:
       dockerfile: docker/full-node.dockerfile
       context: ../
       args:
-        - PERSISTENT_NODE_ID=0efaaefe5a2fe448fec4390910d407ccdd941dde@cudos-network-persistent-node:26656
+        - PERSISTENT_NODE_ID=6a983e1f2a46cef4339d8e423ae996db0b53ad9f@cudos-network-persistent-node:26656
     restart: unless-stopped
     ports:
       - "26666-26667:26656-26657"
