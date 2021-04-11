@@ -321,6 +321,7 @@ func New(
 
 	app.pocbasecosmosKeeper = *pocbasecosmoskeeper.NewKeeper(
 		appCodec, keys[pocbasecosmostypes.StoreKey], keys[pocbasecosmostypes.MemStoreKey],
+		app.DistrKeeper, app.BankKeeper,
 	)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
