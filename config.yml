@@ -17,3 +17,8 @@ genesis:
     gov:
       voting_params:
         voting_period: 30s
+    bank:
+      params:
+        send_enabled:
+          - denom: cudosAdmin
+            enabled: false
