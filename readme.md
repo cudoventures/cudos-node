@@ -53,9 +53,14 @@ This is a blockchain built using Cosmos SDK and Tendermint and created with [Sta
  ```
 5. [Upgrade Stage] If the tally results in a positive vote, a new plan is created in the upgrade module and executed as explained. Important: We need to be inline with the IBC integration requirements, such as that only upgrade height can be used as well as no ad-hoc upgrades should be performed.
    ! In the gov documentation there is a section about signalling and switching during the `SoftwareUpgradeProposal`. I cannot seem to find any evidence of such mechanisms. Upgrades should be handled by the upgrade module and done on the beggining of a deterministic block.
-   
- * Migration - There is a separate migration procedure as described in the [cosmos documentation](https://docs.cosmos.network/v0.42/migrations/chain-upgrade-guide-040.html). We should consider if we want to incorporate it in our upgrade design
 
+* Migration - There is a separate migration procedure as described in the [cosmos documentation](https://docs.cosmos.network/v0.42/migrations/chain-upgrade-guide-040.html) and [cosmos upgrade migrations plans](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-3.md#upgrade-procedure). It is different from what is described here. While there is a proposal, the proposal is in text form and it is self imposed by modyfing the app.toml config, e.g:
+ ```
+ Make sure your chain halts at the right time and date: February 18, 2021 at 06:00 UTC is in UNIX seconds: 1613628000
+
+perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaia/config/app.toml
+```
+This type of upgrate also allows for backwards incompatible changes. However, because one has to export the whole chain, it will take some time (30+ mins for Cosmos hub mainnet is reported).
 
 ## Upgrade example
 
