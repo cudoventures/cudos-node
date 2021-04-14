@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"cudos.org/cudos-poc-01/x/blog/types"
+	"cudos.org/cudos-node/x/blog/types"
 	"github.com/spf13/cobra"
 )
 

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	"cudos.org/cudos-poc-01/app/params"
+	"cudos.org/cudos-node/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing

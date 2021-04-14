@@ -14,6 +14,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	appparams "cudos.org/cudos-node/app/params"
+	"cudos.org/cudos-node/x/blog"
+	blogkeeper "cudos.org/cudos-node/x/blog/keeper"
+	blogtypes "cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -78,16 +82,12 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	appparams "cudos.org/cudos-poc-01/app/params"
-	"cudos.org/cudos-poc-01/x/blog"
-	blogkeeper "cudos.org/cudos-poc-01/x/blog/keeper"
-	blogtypes "cudos.org/cudos-poc-01/x/blog/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
-const Name = "blog"
+const Name = "cudos-node"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -142,12 +142,17 @@ var (
 )
 
 func init() {
-	userHomeDir, err := os.UserHomeDir()
+	// userHomeDir, err := os.UserHomeDir()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	userHomeDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+	DefaultNodeHome = filepath.Join(userHomeDir, "data", "."+Name)
 }
 
 // App extends an ABCI application, but with most of its parameters exported.

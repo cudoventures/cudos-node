@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"cudos.org/cudos-poc-01/x/blog/types"
+	"cudos.org/cudos-node/x/blog/types"
 )
 
 // GetPostCount get the total number of post

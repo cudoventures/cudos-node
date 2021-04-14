@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "blog/comment.proto";
 import "blog/post.proto";
 
-option go_package = "cudos.org/cudos-poc-01/x/blog/types";
+option go_package = "cudos.org/cudos-node/x/blog/types";
 
 // Query defines the gRPC querier service.
 service Query {

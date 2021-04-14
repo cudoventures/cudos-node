@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"cudos.org/cudos-poc-01/x/blog/keeper"
-	"cudos.org/cudos-poc-01/x/blog/types"
+	"cudos.org/cudos-node/x/blog/keeper"
+	"cudos.org/cudos-node/x/blog/types"
 )
 
 // NewHandler ...

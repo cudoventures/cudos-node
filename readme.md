@@ -35,30 +35,30 @@ There are three ways to add preconfigured accounts with/without vested balance i
 <br />
 
 # Manual build
-Build the blockchian binary into $GOPATH directory using "cudos-poc-01d" name. 
+Build the blockchian binary into $GOPATH directory using "cudos-noded" name. 
 
     make
 
 Initialize the blockchain.
 
-    cudos-poc-01d init cudos-poc-01-network --chain-id=cudos-poc-01-network
+    cudos-noded init cudos-node --chain-id=cudos-node
 
 Creating accounts. Each account can have vesting balance as well.
 
-    cudos-poc-01d keys add validator01 --keyring-backend test --vesting-amount 500stake --vesting-end-time 1617615300
+    cudos-noded keys add validator01 --keyring-backend test --vesting-amount 500stake --vesting-end-time 1617615300
 
 Add balance in the genesis block to an account.
 
-    cudos-poc-01d add-genesis-account $MY_VALIDATOR_ADDRESS 100000000000stake
+    cudos-noded add-genesis-account $MY_VALIDATOR_ADDRESS 100000000000stake
 
 Add validator 
 
-    cudos-poc-01d gentx validator01 100000000stake --chain-id cudos-poc-01-network --keyring-backend test
+    cudos-noded gentx validator01 100000000stake --chain-id cudos-node --keyring-backend test
 
 Collect genesis transaction and start the blockchain
 
-    cudos-poc-01d collect-gentxs
-    cudos-poc-01d start
+    cudos-noded collect-gentxs
+    cudos-noded start
 
 <br />
 <br />
@@ -100,7 +100,7 @@ Run the converter and pass a ethereum public key as argument.
 
 This mnemonic could be imported into cudos blockchain in order to verify that resulting account access will be the same as generated from the converter.
 
-    cudos-poc-01d keys add ruser02 --recover --hd-path="m/44'/60'/0'/0/0"
+    cudos-noded keys add ruser02 --recover --hd-path="m/44'/60'/0'/0/0"
 
 <br />
 <br />
@@ -108,10 +108,10 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
 
 # Usefull commands
 ## Send currency
-    cudos-poc-01d tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-poc-01-network --keyring-backend test
+    cudos-noded tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-node --keyring-backend test
 
 ## Check balances
-    cudos-poc-01d query bank balances $RECIPIENT --chain-id=cudos-poc-01-network
+    cudos-noded query bank balances $RECIPIENT --chain-id=cudos-node
 
 <br />
 <br />

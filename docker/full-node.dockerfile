@@ -13,7 +13,7 @@ COPY ./ ./
 
 RUN make
 
-RUN cudos-poc-01d init cudos-poc-01-network --chain-id=cudos-poc-01-network
+RUN cudos-noded init cudos-node-network --chain-id=cudos-node-network
 
 RUN rm ~/.blog/config/genesis.json
 
@@ -23,4 +23,4 @@ RUN sed "s/persistent_peers = \"\"/persistent_peers = \"$PERSISTENT_NODE_ID\"/g"
 
 COPY --from=cudos-network-persistent-node /root/.blog/config/genesis.json /root/.blog/config/genesis.json
 
-CMD ["cudos-poc-01d", "start"]
+CMD ["cudos-noded", "start"]

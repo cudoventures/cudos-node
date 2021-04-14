@@ -2,8 +2,8 @@ package blog
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"cudos.org/cudos-poc-01/x/blog/keeper"
-	"cudos.org/cudos-poc-01/x/blog/types"
+	"cudos.org/cudos-node/x/blog/keeper"
+	"cudos.org/cudos-node/x/blog/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

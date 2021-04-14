@@ -1,7 +1,7 @@
 syntax = "proto3";
 package example.blog.blog;
 
-option go_package = "cudos.org/cudos-poc-01/x/blog/types";
+option go_package = "cudos.org/cudos-node/x/blog/types";
 
 // GenesisState defines the capability module's genesis state.
 message GenesisState {

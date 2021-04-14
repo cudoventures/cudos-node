@@ -1,4 +1,4 @@
-module cudos.org/cudos-poc-01
+module cudos.org/cudos-node
 
 go 1.15
 
