@@ -35,7 +35,7 @@ There are three ways to add preconfigured accounts with/without vested balance i
 <br />
 
 # Manual build
-Build the blockchian binary into $GOPATH directory using "cudos-noded" name. 
+Build the blockchian binary into $GOPATH directory using "cudos-noded" name. All these steps are combined into init.sh/init.cmd 
 
     make
 
