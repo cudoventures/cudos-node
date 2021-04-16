@@ -1,0 +1,56 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Build root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Build & Init root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Destroy root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root down",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Start network in docker",
+            "command": "cd ./docker&& docker-compose -f ./network-run.yml -p cudos-network up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Build & Init network in docker",
+            "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Destroy network in docker",
+            "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network down",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Start explorer in docker",
+            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer up",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Build explorer in docker",
+            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer up --build",
+            "type": "shell",
+            "group": "build",
+        }, {
+            "label": "Destroy explorer in docker",
+            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer down",
+            "type": "shell",
+            "group": "build",
+        }
+    ]
+}

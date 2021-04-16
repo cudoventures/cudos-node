@@ -76,7 +76,7 @@ Configure accounts and validators in config.yml after that just start the blockc
 # Docker build
 1. Build persistent-node
 cd ./docker
-docker-compose -f .\persistent-node.yml -p cudos-network-persistent-node up --build
+docker-compose -f ./persistent-node.yml -p cudos-network-persistent-node up --build
 
 2. After node starts copy its it and paste it into full-node.yml
 Peer node looks like:
@@ -84,7 +84,7 @@ P2P Node ID ID=de14a2005d220171c7133efb31b3f3e1d7ba776a file=/root/.blog/config/
 
 3. Run full-node
 cd ./docker
-docker-compose -f .\full-node.yml -p cudos-network-full-node up --build
+docker-compose -f ./full-node.yml -p cudos-network-full-node up --build
 
 <br />
 <br />

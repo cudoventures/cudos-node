@@ -1,29 +1,25 @@
 {
     "public":{
         "chainName": "Cosmos",
-        "chainId": "{Chain ID}",
-        "gtm": "{Add your Google Tag Manager ID here}",
+        "chainId": "cudos-poc-01-network",
+        "gtm": "",
         "slashingWindow": 10000,
         "uptimeWindow": 250,
         "initialPageSize": 30,
-        "secp256k1": false,
+        "secp256k1": true,
         "bech32PrefixAccAddr": "cosmos",
         "bech32PrefixAccPub": "cosmospub",
         "bech32PrefixValAddr": "cosmosvaloper",
         "bech32PrefixValPub": "cosmosvaloperpub",
         "bech32PrefixConsAddr": "cosmosvalcons",
         "bech32PrefixConsPub": "cosmosvalconspub",
-        "bondDenom": "uatom",
+        "bondDenom": "stake",
         "powerReduction": 1000000,
+        "genesisTime": "2021-04-65T09:15:0.268797802Z",
         "coins": [
             {
-                "denom": "uatom",
-                "displayName": "ATOM",
-                "fraction": 1000000
-            }, 
-            {
-                "denom": "umuon",
-                "displayName": "MUON",
+                "denom": "stake",
+                "displayName": "STK",
                 "fraction": 1000000
             } 
         ],
@@ -38,13 +34,13 @@
             "supply": true,
             "minting": false,
             "gov": true,
-            "distribution": false
+            "distribution": true
         },
         "coingeckoId": "cosmos"
     },
     "remote":{
-        "rpc":"https://rpc.stargate.forbole.com:443",
-        "api":"https://api.stargate.forbole.com:443"
+        "rpc":"http://cudos-root-node:26657",
+        "api":"http://cudos-root-node:1317"
     },
     "debug": {
         "startTimer": true

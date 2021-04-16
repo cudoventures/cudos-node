@@ -1,0 +1,25 @@
+version: '3.1'
+
+networks:
+  shared-cudos-network:
+    external:
+      name: shared-cudos-network
+
+volumes:
+  explorer-data:
+    driver: local
+
+services:
+  cudos-explorer:
+    image: cudos-explorer
+    container_name: cudos-explorer
+    build:
+      dockerfile: docker/explorer.dockerfile
+      context: ../
+    restart: unless-stopped
+    volumes:
+      - 'explorer-data:/usr/explorer/.meteor/local'
+    ports:
+      - "3000:3000"
+    networks:
+      - shared-cudos-network
