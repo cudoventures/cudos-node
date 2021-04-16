@@ -8,6 +8,8 @@ networks:
 volumes:
   node-01-data:
     driver: local
+  node-02-data:
+    driver: local
   cudos-root_data:
     external: true
     name: cudos-root_data
@@ -33,5 +35,24 @@ services:
       - "26666-26667:26656-26657"
       - "1318:1317"
       - "9091:9090"
+    networks:
+      - shared-cudos-network
+
+  cudos-node-02:
+    image: cudos-node-02
+    container_name: cudos-node-02
+    environment:
+      - MONIKER=cudos-node-02
+    build:
+      dockerfile: docker/network-run.dockerfile
+      context: ../
+    restart: unless-stopped
+    volumes:
+      - 'cudos-root_data:/usr/cudos-root'
+      - 'node-02-data:/usr/cudos/data'
+    ports:
+      - "26676-26677:26656-26657"
+      - "1319:1317"
+      - "9092:9090"
     networks:
       - shared-cudos-network

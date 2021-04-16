@@ -108,10 +108,25 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
 
 # Usefull commands
 ## Send currency
-    cudos-noded tx bank send $MY_VALIDATOR_ADDRESS $RECIPIENT 10stake --chain-id=cudos-node --keyring-backend test
+    cudos-noded tx bank send $VALIDATOR_ADDRESS $RECIPIENT 51000000stake --chain-id=cudos-network --keyring-backend test
 
 ## Check balances
-    cudos-noded query bank balances $RECIPIENT --chain-id=cudos-node
+    cudos-noded query bank balances $RECIPIENT --chain-id=cudos-network
+
+## Create validator
+    cudos-noded tx staking create-validator --amount=1000stake \
+    --from=validator02 \
+    --pubkey=$(cudos-noded tendermint show-validator) \
+    --moniker=cudos-node-01 \
+    --chain-id=cudos-network \
+    --commission-rate="0.10" \
+    --commission-max-rate="0.20" \
+    --commission-max-change-rate="0.01" \
+    --min-self-delegation="1" \
+    --gas="auto" \
+    --gas-prices="0.025stake" \
+    --gas-adjustment="1.80" \
+    --keyring-backend test
 
 <br />
 <br />
