@@ -6,7 +6,9 @@ networks:
       name: shared-cudos-network
 
 volumes:
-  explorer-data:
+  # explorer-data:
+  #   driver: local
+  explorer-mongodbdata:
     driver: local
 
 services:
@@ -17,9 +19,26 @@ services:
       dockerfile: docker/explorer.dockerfile
       context: ../
     restart: unless-stopped
-    volumes:
-      - 'explorer-data:/usr/explorer/.meteor/local'
+    env_file:
+      ./config/explorer.env
+    # volumes:
+    #   - 'explorer-data:/usr/explorer/.meteor/local'
     ports:
       - "3000:3000"
+    networks:
+      - shared-cudos-network
+
+  cudos-explorer-mongodb:
+    image: 'mongo:latest'
+    container_name: cudos-explorer-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: cudos-root-db-pass
+    volumes:
+      - 'explorer-mongodbdata:/data/db'
+      - './config/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro'
     networks:
       - shared-cudos-network
