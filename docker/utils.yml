@@ -14,7 +14,7 @@ services:
     image: cudos-explorer
     container_name: cudos-explorer
     build:
-      dockerfile: docker/utils.dockerfile
+      dockerfile: docker/utils-explorer.dockerfile
       context: ../
     restart: unless-stopped
     env_file:
@@ -36,5 +36,15 @@ services:
     volumes:
       - 'explorer-mongodbdata:/data/db'
       - './config/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro'
+    networks:
+      - shared-cudos-network
+
+  cudos-faucet-cli:
+    image: cudos-faucet-cli
+    container_name: cudos-faucet-cli
+    build:
+      dockerfile: docker/utils-faucet-cli.dockerfile
+      context: ../
+    restart: unless-stopped
     networks:
       - shared-cudos-network

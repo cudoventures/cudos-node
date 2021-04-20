@@ -1,8 +1,10 @@
-FROM golang:1.15
+FROM golang:alpine
+
+RUN apk add --no-cache make bash
 
 WORKDIR /usr/cudos
 
-COPY ./project-cosmos ./
+COPY ./project-node ./
 
 RUN make
 
