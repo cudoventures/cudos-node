@@ -6,4 +6,6 @@ COPY ./ ./
 
 RUN make
 
+RUN chmod +x ./init-root.sh
+
 CMD ["/bin/sh", "-c", "./init-network.sh&& cudos-noded start"] 
