@@ -4,7 +4,7 @@ RUN curl https://install.meteor.com/ | sh
 
 WORKDIR /usr/explorer
 
-COPY ./project-big-dipper ./source
+COPY ./project-explorer ./source
 
 RUN cd ./source && npm i
 

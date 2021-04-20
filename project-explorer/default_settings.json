@@ -1,25 +1,25 @@
 {
     "public":{
-        "chainName": "Cosmos",
-        "chainId": "cudos-poc-01-network",
+        "chainName": "CudosNetwork",
+        "chainId": "cudos-network",
         "gtm": "",
         "slashingWindow": 10000,
         "uptimeWindow": 250,
         "initialPageSize": 30,
         "secp256k1": true,
-        "bech32PrefixAccAddr": "cosmos",
-        "bech32PrefixAccPub": "cosmospub",
-        "bech32PrefixValAddr": "cosmosvaloper",
-        "bech32PrefixValPub": "cosmosvaloperpub",
-        "bech32PrefixConsAddr": "cosmosvalcons",
-        "bech32PrefixConsPub": "cosmosvalconspub",
-        "bondDenom": "stake",
+        "bech32PrefixAccAddr": "cudo",
+        "bech32PrefixAccPub": "cudopub",
+        "bech32PrefixValAddr": "cudovaloper",
+        "bech32PrefixValPub": "cudovaloperpub",
+        "bech32PrefixConsAddr": "cudovalcons",
+        "bech32PrefixConsPub": "cudovalconspub",
+        "bondDenom": "cudo",
         "powerReduction": 1000000,
         "genesisTime": "2021-04-65T09:15:0.268797802Z",
         "coins": [
             {
-                "denom": "stake",
-                "displayName": "STK",
+                "denom": "cudo",
+                "displayName": "CD",
                 "fraction": 1000000
             } 
         ],
@@ -32,7 +32,7 @@
         "modules": {
             "bank": true,
             "supply": true,
-            "minting": false,
+            "minting": true,
             "gov": true,
             "distribution": true
         },
