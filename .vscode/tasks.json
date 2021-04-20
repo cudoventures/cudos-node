@@ -2,11 +2,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start root node in docker",
-            "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
-            "type": "shell",
-            "group": "build",
-        }, {
             "label": "Build root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
             "type": "shell",
@@ -37,18 +32,18 @@
             "type": "shell",
             "group": "build",
         }, {
-            "label": "Start explorer in docker",
-            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer up",
+            "label": "Start utils in docker",
+            "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils up",
             "type": "shell",
             "group": "build",
         }, {
-            "label": "Build explorer in docker",
-            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer up --build",
+            "label": "Build utils in docker",
+            "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils up --build",
             "type": "shell",
             "group": "build",
         }, {
-            "label": "Destroy explorer in docker",
-            "command": "cd ./docker&& docker-compose -f ./explorer.yml -p cudos-explorer down",
+            "label": "Destroy utils in docker",
+            "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils down",
             "type": "shell",
             "group": "build",
         }

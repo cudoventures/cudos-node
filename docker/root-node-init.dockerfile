@@ -6,7 +6,7 @@ RUN curl -o /usr/local/bin/jq http://stedolan.github.io/jq/download/linux64/jq &
 
 WORKDIR /usr/cudos
 
-COPY ./ ./
+COPY ./project-cosmos ./
 
 RUN make
 

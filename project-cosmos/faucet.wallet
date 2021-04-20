@@ -1,0 +1,14 @@
+override the existing name faucet [y/N]: 
+- name: faucet
+  type: local
+  address: cosmos1vdd5xl87er67tk6sfu8p2da0c662fq8htgcd7j
+  pubkey: cosmospub1addwnpepqgaaagmf6jtckt3n2hp0msqdufkf82ypntnetwjl6pg4pqn6khkgx6aapla
+  mnemonic: ""
+  threshold: 0
+  pubkeys: []
+
+
+**Important** write this mnemonic phrase in a safe place.
+It is the only way to recover your account if you ever forget your password.
+
+learn eyebrow awkward shoulder disease clay drink tuna amused patient throw bamboo media innocent decide height output apology hard odor acquire tower wisdom predict

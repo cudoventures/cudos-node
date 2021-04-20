@@ -6,8 +6,6 @@ networks:
       name: shared-cudos-network
 
 volumes:
-  # explorer-data:
-  #   driver: local
   explorer-mongodbdata:
     driver: local
 
@@ -16,13 +14,11 @@ services:
     image: cudos-explorer
     container_name: cudos-explorer
     build:
-      dockerfile: docker/explorer.dockerfile
+      dockerfile: docker/utils.dockerfile
       context: ../
     restart: unless-stopped
     env_file:
       ./config/explorer.env
-    # volumes:
-    #   - 'explorer-data:/usr/explorer/.meteor/local'
     ports:
       - "3000:3000"
     networks:

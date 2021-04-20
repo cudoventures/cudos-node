@@ -2,7 +2,7 @@ FROM golang:1.15
 
 WORKDIR /usr/cudos
 
-COPY ./ ./
+COPY ./project-cosmos ./
 
 RUN make
 
