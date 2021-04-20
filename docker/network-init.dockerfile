@@ -8,6 +8,7 @@ COPY ./project-node ./
 
 RUN make
 
-RUN chmod +x ./init-root.sh
+RUN chmod +x ./init-network.sh
 
 CMD ["/bin/sh", "-c", "./init-network.sh&& cudos-noded start"] 
+# CMD ["sleep","infinity"]
