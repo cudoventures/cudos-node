@@ -81,11 +81,11 @@ cat /usr/cudos/data/.cudos-node/config/genesis.json | jq --arg DENOM_METADATA_DE
 
 cudos-noded keys add root-validator --keyring-backend test
 VALIDATOR_ADDRESS=$(cudos-noded keys show root-validator -a)
-cudos-noded add-genesis-account $VALIDATOR_ADDRESS 100000000stake
-cudos-noded gentx root-validator 100000000stake --chain-id $CHAIN_ID --keyring-backend test
+cudos-noded add-genesis-account $VALIDATOR_ADDRESS "100000000${BOND_DENOM}"
+cudos-noded gentx root-validator "100000000${BOND_DENOM}" --chain-id $CHAIN_ID --keyring-backend test
 
 cudos-noded keys add faucet --keyring-backend test |& tee ./data/faucet.wallet
 FAUCET_ADDRESS=$(cudos-noded keys show faucet -a)
-cudos-noded add-genesis-account $FAUCET_ADDRESS 100000000000000000000000stake
+cudos-noded add-genesis-account $FAUCET_ADDRESS "100000000000000000000000${BOND_DENOM}"
 
 cudos-noded collect-gentxs
