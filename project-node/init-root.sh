@@ -1,5 +1,5 @@
-rm -R ./data/*
-rm -R ./data/.*
+rm -R ./cudos-data
+# rm -R ./data/.*
 
 # chain parameters
 MONIKER="cudos-root-node"
@@ -43,40 +43,40 @@ BASE="ucudo"
 DISPLAY="cudo"
 
 cudos-noded init $MONIKER --chain-id=$CHAIN_ID
-sed -i "104s/enable = false/enable = true/" ./data/.cudos-node/config/app.toml
-sed -i "s/laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" ./data/.cudos-node/config/config.toml
+sed -i "104s/enable = false/enable = true/" ./cudos-data/config/app.toml
+sed -i "s/laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" ./cudos-data/config/config.toml
 
 # setting time after commit before proposing a new block
-sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" ./data/.cudos-node/config/config.toml
+sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" ./cudos-data/config/config.toml
 
 # setting slashing time
-cat ./data/.cudos-node/config/genesis.json | jq --arg JAIL_DURATION "$JAIL_DURATION" '.app_state.slashing.params.downtime_jail_duration = $JAIL_DURATION' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg JAIL_DURATION "$JAIL_DURATION" '.app_state.slashing.params.downtime_jail_duration = $JAIL_DURATION' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
 
 # setting staking params
-cat ./data/.cudos-node/config/genesis.json | jq --arg UNBONDING_TIME "$UNBONDING_TIME" '.app_state.staking.params.unbonding_time = $UNBONDING_TIME' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg BOND_DENOM "$BOND_DENOM" '.app_state.staking.params.bond_denom = $BOND_DENOM' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MAX_VALIDATORS "$MAX_VALIDATORS" '.app_state.staking.params.max_validators = $MAX_VALIDATORS' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg UNBONDING_TIME "$UNBONDING_TIME" '.app_state.staking.params.unbonding_time = $UNBONDING_TIME' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg BOND_DENOM "$BOND_DENOM" '.app_state.staking.params.bond_denom = $BOND_DENOM' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MAX_VALIDATORS "$MAX_VALIDATORS" '.app_state.staking.params.max_validators = $MAX_VALIDATORS' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
 
 # setting government proposal params
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_PROPOSAL_MIN_DEPOSIT_DENOM "$GOV_PROPOSAL_MIN_DEPOSIT_DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom = $GOV_PROPOSAL_MIN_DEPOSIT_DENOM' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT "$GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT" '.app_state.gov.deposit_params.min_deposit[0].amount = $GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_PROPOSAL_MAX_DEPOSIT_PERIOD "$GOV_PROPOSAL_MAX_DEPOSIT_PERIOD" '.app_state.gov.deposit_params.max_deposit_period = $GOV_PROPOSAL_MAX_DEPOSIT_PERIOD' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_PROPOSAL_VOTING_PERIOD "$GOV_PROPOSAL_VOTING_PERIOD" '.app_state.gov.voting_params.voting_period = $GOV_PROPOSAL_VOTING_PERIOD' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_QUORUM "$GOV_QUORUM" '.app_state.gov.tally_params.quorum = $GOV_QUORUM' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_THRESHOLD "$GOV_THRESHOLD" '.app_state.gov.tally_params.threshold = $GOV_THRESHOLD' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg GOV_VETO_THRESHOLD "$GOV_VETO_THRESHOLD" '.app_state.gov.tally_params.veto_threshold = $GOV_VETO_THRESHOLD' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_PROPOSAL_MIN_DEPOSIT_DENOM "$GOV_PROPOSAL_MIN_DEPOSIT_DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom = $GOV_PROPOSAL_MIN_DEPOSIT_DENOM' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT "$GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT" '.app_state.gov.deposit_params.min_deposit[0].amount = $GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_PROPOSAL_MAX_DEPOSIT_PERIOD "$GOV_PROPOSAL_MAX_DEPOSIT_PERIOD" '.app_state.gov.deposit_params.max_deposit_period = $GOV_PROPOSAL_MAX_DEPOSIT_PERIOD' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_PROPOSAL_VOTING_PERIOD "$GOV_PROPOSAL_VOTING_PERIOD" '.app_state.gov.voting_params.voting_period = $GOV_PROPOSAL_VOTING_PERIOD' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_QUORUM "$GOV_QUORUM" '.app_state.gov.tally_params.quorum = $GOV_QUORUM' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_THRESHOLD "$GOV_THRESHOLD" '.app_state.gov.tally_params.threshold = $GOV_THRESHOLD' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg GOV_VETO_THRESHOLD "$GOV_VETO_THRESHOLD" '.app_state.gov.tally_params.veto_threshold = $GOV_VETO_THRESHOLD' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
 
 # setting mint params
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_DENOM "$MINT_DENOM" '.app_state.mint.params.mint_denom = $MINT_DENOM' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_INFLATION "$MINT_INFLATION" '.app_state.mint.minter.inflation = $MINT_INFLATION' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_INFLATION_RATE_CHANGE "$MINT_INFLATION_RATE_CHANGE" '.app_state.mint.params.inflation_rate_change = $MINT_INFLATION_RATE_CHANGE' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_INFLATION_MAX "$MINT_INFLATION_MAX" '.app_state.mint.params.inflation_max = $MINT_INFLATION_MAX' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_INFLATION_MIN "$MINT_INFLATION_MIN" '.app_state.mint.params.inflation_min = $MINT_INFLATION_MIN' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg MINT_GOAL_BONDED "$MINT_GOAL_BONDED" '.app_state.mint.params.goal_bonded = $MINT_GOAL_BONDED' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
-cat ./data/.cudos-node/config/genesis.json | jq --arg BLOCKS_PER_YEAR "$BLOCKS_PER_YEAR" '.app_state.mint.params.blocks_per_year = $BLOCKS_PER_YEAR' > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_DENOM "$MINT_DENOM" '.app_state.mint.params.mint_denom = $MINT_DENOM' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_INFLATION "$MINT_INFLATION" '.app_state.mint.minter.inflation = $MINT_INFLATION' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_INFLATION_RATE_CHANGE "$MINT_INFLATION_RATE_CHANGE" '.app_state.mint.params.inflation_rate_change = $MINT_INFLATION_RATE_CHANGE' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_INFLATION_MAX "$MINT_INFLATION_MAX" '.app_state.mint.params.inflation_max = $MINT_INFLATION_MAX' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_INFLATION_MIN "$MINT_INFLATION_MIN" '.app_state.mint.params.inflation_min = $MINT_INFLATION_MIN' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg MINT_GOAL_BONDED "$MINT_GOAL_BONDED" '.app_state.mint.params.goal_bonded = $MINT_GOAL_BONDED' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg BLOCKS_PER_YEAR "$BLOCKS_PER_YEAR" '.app_state.mint.params.blocks_per_year = $BLOCKS_PER_YEAR' > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
 
 # setting fractions metadata
-cat ./data/.cudos-node/config/genesis.json | jq --arg DENOM_METADATA_DESC "$DENOM_METADATA_DESC" --arg DENOM1 "$DENOM1" --arg EXP1 "$EXP1" --arg ALIAS1 "$ALIAS1" --arg DENOM2 "$DENOM2" --arg EXP2 "$EXP2" --arg ALIAS2 "$ALIAS2" --arg DENOM3 "$DENOM3" --arg EXP3 "$EXP3" --arg BASE "$BASE" --arg DISPLAY "$DISPLAY" '.app_state.bank.denom_metadata[0].description=$DENOM_METADATA_DESC | .app_state.bank.denom_metadata[0].denom_units[0].denom=$DENOM1 | .app_state.bank.denom_metadata[0].denom_units[0].exponent=$EXP1 | .app_state.bank.denom_metadata[0].denom_units[0].aliases[0]=$ALIAS1 | .app_state.bank.denom_metadata[0].denom_units[1].denom=$DENOM2 | .app_state.bank.denom_metadata[0].denom_units[1].exponent=$EXP2 | .app_state.bank.denom_metadata[0].denom_units[1].aliases[0]=$ALIAS2 | .app_state.bank.denom_metadata[0].denom_units[2].denom=$DENOM3 | .app_state.bank.denom_metadata[0].denom_units[2].exponent=$EXP3 | .app_state.bank.denom_metadata[0].base=$BASE | .app_state.bank.denom_metadata[0].display=$DISPLAY'  > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
+cat ./cudos-data/config/genesis.json | jq --arg DENOM_METADATA_DESC "$DENOM_METADATA_DESC" --arg DENOM1 "$DENOM1" --arg EXP1 "$EXP1" --arg ALIAS1 "$ALIAS1" --arg DENOM2 "$DENOM2" --arg EXP2 "$EXP2" --arg ALIAS2 "$ALIAS2" --arg DENOM3 "$DENOM3" --arg EXP3 "$EXP3" --arg BASE "$BASE" --arg DISPLAY "$DISPLAY" '.app_state.bank.denom_metadata[0].description=$DENOM_METADATA_DESC | .app_state.bank.denom_metadata[0].denom_units[0].denom=$DENOM1 | .app_state.bank.denom_metadata[0].denom_units[0].exponent=$EXP1 | .app_state.bank.denom_metadata[0].denom_units[0].aliases[0]=$ALIAS1 | .app_state.bank.denom_metadata[0].denom_units[1].denom=$DENOM2 | .app_state.bank.denom_metadata[0].denom_units[1].exponent=$EXP2 | .app_state.bank.denom_metadata[0].denom_units[1].aliases[0]=$ALIAS2 | .app_state.bank.denom_metadata[0].denom_units[2].denom=$DENOM3 | .app_state.bank.denom_metadata[0].denom_units[2].exponent=$EXP3 | .app_state.bank.denom_metadata[0].base=$BASE | .app_state.bank.denom_metadata[0].display=$DISPLAY'  > ./cudos-data/config/tmp_genesis.json && mv ./cudos-data/config/tmp_genesis.json ./cudos-data/config/genesis.json
 
 
 cudos-noded keys add root-validator --keyring-backend test

@@ -2,33 +2,33 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build root node in docker",
-            "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
+            "label": "Start root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node.yml -p cudos-root up",
             "type": "shell",
             "group": "build",
         }, {
-            "label": "Build & Init root node in docker",
-            "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root up --build",
+            "label": "Build root node in docker",
+            "command": "cd ./docker&& docker-compose -f ./root-node.yml -p cudos-root up --build",
             "type": "shell",
             "group": "build",
         }, {
             "label": "Destroy root node in docker",
-            "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root down",
+            "command": "cd ./docker&& docker-compose -f ./root-node.yml -p cudos-root down",
             "type": "shell",
             "group": "build",
         }, {
             "label": "Start network in docker",
-            "command": "cd ./docker&& docker-compose -f ./network-run.yml -p cudos-network up --build",
+            "command": "cd ./docker&& docker-compose -f ./network.yml -p cudos-network up",
             "type": "shell",
             "group": "build",
         }, {
-            "label": "Build & Init network in docker",
-            "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network up --build",
+            "label": "Build network in docker",
+            "command": "cd ./docker&& docker-compose -f ./network.yml -p cudos-network up --build",
             "type": "shell",
             "group": "build",
         }, {
             "label": "Destroy network in docker",
-            "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network down",
+            "command": "cd ./docker&& docker-compose -f ./network.yml -p cudos-network down",
             "type": "shell",
             "group": "build",
         }, {
