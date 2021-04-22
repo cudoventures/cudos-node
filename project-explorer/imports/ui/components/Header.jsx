@@ -27,6 +27,15 @@ import SearchBar from './SearchBar.jsx';
 import i18n from 'meteor/universe:i18n';
 import LedgerModal from '../ledger/LedgerModal.jsx';
 import Account from './Account.jsx';
+import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
+import { assertIsBroadcastTxSuccess, SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { MsgDelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
+
+const chainId = "cudos-network";
+const shainName = "cudos-network";
+const rpc = "http://localhost:26657";
+const rest = "http://localhost:1317";
+const coinDenom = "cudo";
 
 const T = i18n.createComponent();
 
@@ -166,6 +175,111 @@ export default class Header extends Component {
         this.props.history.push(redirectUrl + query)
     }
 
+    connectKeplr = async () => {
+        if (!window.getOfflineSigner || !window.keplr) {
+            alert("Please install keplr extension");
+        } else {
+            if (window.keplr.experimentalSuggestChain) {
+                try {
+                    await window.keplr.experimentalSuggestChain({
+                        // Chain-id of the Cosmos SDK chain.
+                        chainId: chainId,
+                        // The name of the chain to be displayed to the user.
+                        chainName: "cudos-poc-01-network",
+                        // RPC endpoint of the chain.
+                        rpc: rpc,
+                        // REST endpoint of the chain.
+                        rest: rest,
+                        // Staking coin information
+                        stakeCurrency: {
+                            // Coin denomination to be displayed to the user.
+                            coinDenom: coinDenom,
+                            // Actual denom (i.e. uatom, uscrt) used by the blockchain.
+                            coinMinimalDenom: coinDenom,
+                            // # of decimal points to convert minimal denomination to user-facing denomination.
+                            coinDecimals: 0,
+                            // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
+                            // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
+                            // coinGeckoId: ""
+                        },
+                        // (Optional) If you have a wallet webpage used to stake the coin then provide the url to the website in `walletUrlForStaking`.
+                        // The 'stake' button in Keplr extension will link to the webpage.
+                        walletUrlForStaking: "http://localhost:26657",
+                        // The BIP44 path.
+                        bip44: {
+                            // You can only set the coin type of BIP44.
+                            // 'Purpose' is fixed to 44.
+                            coinType: 118,
+                        },
+                        bech32Config: {
+                            bech32PrefixAccAddr: "cudo",
+                            bech32PrefixAccPub: "cudopub",
+                            bech32PrefixValAddr: "cudovaloper",
+                            bech32PrefixValPub: "cudovaloperpub",
+                            bech32PrefixConsAddr: "cudovalcons",
+                            bech32PrefixConsPub: "cudovalconspub"
+                        },
+                        // List of all coin/tokens used in this chain.
+                        currencies: [{
+                            // Coin denomination to be displayed to the user.
+                            coinDenom: coinDenom,
+                            // Actual denom (i.e. uatom, uscrt) used by the blockchain.
+                            coinMinimalDenom: coinDenom,
+                            // # of decimal points to convert minimal denomination to user-facing denomination.
+                            coinDecimals: 0,
+                            // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
+                            // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
+                            // coinGeckoId: ""
+                        }],
+                        // List of coin/tokens used as a fee token in this chain.
+                        feeCurrencies: [{
+                            // Coin denomination to be displayed to the user.
+                            coinDenom: coinDenom,
+                            // Actual denom (i.e. uatom, uscrt) used by the blockchain.
+                            coinMinimalDenom: coinDenom,
+                            // # of decimal points to convert minimal denomination to user-facing denomination.
+                            coinDecimals: 0,
+                            // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
+                            // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
+                            // coinGeckoId: ""
+                        }],
+                        // (Optional) The number of the coin type.
+                        // This field is only used to fetch the address from ENS.
+                        // Ideally, it is recommended to be the same with BIP44 path's coin type.
+                        // However, some early chains may choose to use the Cosmos Hub BIP44 path of '118'.
+                        // So, this is separated to support such chains.
+                        coinType: 118,
+                        // (Optional) This is used to set the fee of the transaction.
+                        // If this field is not provided, Keplr extension will set the default gas price as (low: 0.01, average: 0.025, high: 0.04).
+                        // Currently, Keplr doesn't support dynamic calculation of the gas prices based on on-chain data.
+                        // Make sure that the gas prices are higher than the minimum gas prices accepted by chain validators and RPC/REST endpoint.
+                        gasPriceStep: {
+                            low: 0.01,
+                            average: 0.025,
+                            high: 0.04
+                        }
+                    });
+                } catch {
+                    alert("Failed to suggest the chain");
+                }
+            } else {
+                alert("Please use the recent version of keplr extension");
+            }
+        }
+        // You should request Keplr to enable the wallet.
+        // This method will ask the user whether or not to allow access if they haven't visited this website.
+        // Also, it will request user to unlock the wallet if the wallet is locked.
+        // If you don't request enabling before usage, there is no guarantee that other methods will work.
+        await window.keplr.enable(chainId);
+
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const account = (await offlineSigner.getAccounts())[0];
+    
+        localStorage.setItem(CURRENTUSERADDR, account.address);
+        localStorage.setItem(CURRENTUSERPUBKEY, account.pubkey);
+        this.props.refreshApp();
+    }
+
     render() {
         let signedInAddress = getUser();
         return (
@@ -195,7 +309,7 @@ export default class Header extends Component {
                             <NavLink tag={Link} to="/voting-power-distribution"><T>navbar.votingPower</T></NavLink>
                         </NavItem>
                         <NavItem id="user-acconut-icon">
-                            {!signedInAddress?<Button className="sign-in-btn" color="link" size="lg" onClick={() => {this.setState({isSignInOpen: true})}}><i className="material-icons">vpn_key</i></Button>:
+                            {!signedInAddress?<Button className="sign-in-btn" color="link" size="lg" onClick={() => this.connectKeplr()}><i className="material-icons">vpn_key</i></Button>:
                                 <span>
                                     <span className="d-lg-none">
                                         <i className="material-icons large d-inline">account_circle</i>

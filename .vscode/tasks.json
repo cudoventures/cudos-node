@@ -5,47 +5,62 @@
             "label": "Build root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node-run.yml -p cudos-root up --build",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Build & Init root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root up --build",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Destroy root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root down",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Start network in docker",
             "command": "cd ./docker&& docker-compose -f ./network-run.yml -p cudos-network up --build",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Build & Init network in docker",
             "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network up --build",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Destroy network in docker",
             "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network down",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
+            "label": "Start big dipper locally",
+            "command": "cd ./project-explorer && meteor --settings default_settings.json",
+            "type": "shell",
+            "group": "build"
+        },
+        {
             "label": "Start utils in docker",
             "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils up",
             "type": "shell",
-            "group": "build",
-        }, {
+            "group": "build"
+        },
+        {
             "label": "Build utils in docker",
             "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils up --build",
             "type": "shell",
             "group": "build",
-        }, {
+            "problemMatcher": []
+        },
+        {
             "label": "Destroy utils in docker",
             "command": "cd ./docker&& docker-compose -f ./utils.yml -p cudos-utils down",
             "type": "shell",
-            "group": "build",
+            "group": "build"
         }
     ]
 }

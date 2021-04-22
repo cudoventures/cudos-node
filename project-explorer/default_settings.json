@@ -39,8 +39,8 @@
         "coingeckoId": "cudo"
     },
     "remote":{
-        "rpc":"http://cudos-root-node:26657",
-        "api":"http://cudos-root-node:1317"
+        "rpc":"http://localhost:26657",
+        "api":"http://localhost:1317"
     },
     "debug": {
         "startTimer": true
