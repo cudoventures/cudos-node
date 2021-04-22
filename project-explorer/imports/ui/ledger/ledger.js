@@ -14,7 +14,7 @@ import CryptoJS from "crypto-js"
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000
 const REQUIRED_COSMOS_APP_VERSION = Meteor.settings.public.ledger.ledgerAppVersion || "2.16.0";
-const DEFAULT_DENOM = Meteor.settings.public.bondDenom || 'uatom';
+const DEFAULT_DENOM = Meteor.settings.public.bondDenom || 'cudo';
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
 export const DEFAULT_MEMO = 'Sent via Big Dipper'
 

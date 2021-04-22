@@ -43,8 +43,14 @@ BASE="ucudo"
 DISPLAY="cudo"
 
 cudos-noded init $MONIKER --chain-id=$CHAIN_ID
+
+# enable rpc server
 sed -i "104s/enable = false/enable = true/" ./data/.cudos-node/config/app.toml
 sed -i "s/laddr = \"tcp:\/\/127.0.0.1:26657\"/laddr = \"tcp:\/\/0.0.0.0:26657\"/" ./data/.cudos-node/config/config.toml
+
+# enable cors origin for local testing
+sed -i "s/enabled-unsafe-cors = false/enabled-unsafe-cors = true/" ./data/.cudos-node/config/app.toml
+sed -i "s/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"\*\"\]/" ./data/.cudos-node/config/config.toml
 
 # setting time after commit before proposing a new block
 sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" ./data/.cudos-node/config/config.toml
@@ -78,12 +84,15 @@ cat ./data/.cudos-node/config/genesis.json | jq --arg BLOCKS_PER_YEAR "$BLOCKS_P
 # setting fractions metadata
 cat ./data/.cudos-node/config/genesis.json | jq --arg DENOM_METADATA_DESC "$DENOM_METADATA_DESC" --arg DENOM1 "$DENOM1" --arg EXP1 "$EXP1" --arg ALIAS1 "$ALIAS1" --arg DENOM2 "$DENOM2" --arg EXP2 "$EXP2" --arg ALIAS2 "$ALIAS2" --arg DENOM3 "$DENOM3" --arg EXP3 "$EXP3" --arg BASE "$BASE" --arg DISPLAY "$DISPLAY" '.app_state.bank.denom_metadata[0].description=$DENOM_METADATA_DESC | .app_state.bank.denom_metadata[0].denom_units[0].denom=$DENOM1 | .app_state.bank.denom_metadata[0].denom_units[0].exponent=$EXP1 | .app_state.bank.denom_metadata[0].denom_units[0].aliases[0]=$ALIAS1 | .app_state.bank.denom_metadata[0].denom_units[1].denom=$DENOM2 | .app_state.bank.denom_metadata[0].denom_units[1].exponent=$EXP2 | .app_state.bank.denom_metadata[0].denom_units[1].aliases[0]=$ALIAS2 | .app_state.bank.denom_metadata[0].denom_units[2].denom=$DENOM3 | .app_state.bank.denom_metadata[0].denom_units[2].exponent=$EXP3 | .app_state.bank.denom_metadata[0].base=$BASE | .app_state.bank.denom_metadata[0].display=$DISPLAY'  > ./data/.cudos-node/config/tmp_genesis.json && mv ./data/.cudos-node/config/tmp_genesis.json ./data/.cudos-node/config/genesis.json
 
-
+# add a new key entry from which to make validator
 cudos-noded keys add root-validator --keyring-backend test
 VALIDATOR_ADDRESS=$(cudos-noded keys show root-validator -a)
+
+# create validators
 cudos-noded add-genesis-account $VALIDATOR_ADDRESS "100000000${BOND_DENOM}"
 cudos-noded gentx root-validator "100000000${BOND_DENOM}" --chain-id $CHAIN_ID --keyring-backend test
 
+#create faucet acccount
 cudos-noded keys add faucet --keyring-backend test |& tee ./data/faucet.wallet
 FAUCET_ADDRESS=$(cudos-noded keys show faucet -a)
 cudos-noded add-genesis-account $FAUCET_ADDRESS "100000000000000000000000${BOND_DENOM}"
