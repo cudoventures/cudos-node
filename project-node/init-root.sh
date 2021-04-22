@@ -88,7 +88,7 @@ VALIDATOR_ADDRESS=$(cudos-noded keys show root-validator -a)
 cudos-noded add-genesis-account $VALIDATOR_ADDRESS "100000000${BOND_DENOM}"
 cudos-noded gentx root-validator "100000000${BOND_DENOM}" --chain-id $CHAIN_ID --keyring-backend test
 
-cudos-noded keys add faucet --keyring-backend test |& tee ./data/faucet.wallet
+cudos-noded keys add faucet --keyring-backend test |& tee "${CUDOS_HOME}/faucet.wallet"
 FAUCET_ADDRESS=$(cudos-noded keys show faucet -a)
 cudos-noded add-genesis-account $FAUCET_ADDRESS "100000000000000000000000${BOND_DENOM}"
 
