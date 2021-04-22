@@ -146,13 +146,18 @@ func init() {
 	// if err != nil {
 	// 	panic(err)
 	// }
+	cudosHome, present := os.LookupEnv("CUDOS_HOME")
+	if !present {
+		userHomeDir, err := os.Getwd()
+		if err != nil {
+			panic(err)
+		}
 
-	userHomeDir, err := os.Getwd()
-	if err != nil {
-		panic(err)
+		// DefaultNodeHome = filepath.Join(userHomeDir, "data", "."+Name)
+		DefaultNodeHome = filepath.Join(userHomeDir, "cudos-data")
+	} else {
+		DefaultNodeHome = cudosHome
 	}
-
-	DefaultNodeHome = filepath.Join(userHomeDir, "data", "."+Name)
 }
 
 // App extends an ABCI application, but with most of its parameters exported.

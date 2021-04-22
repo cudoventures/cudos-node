@@ -13,11 +13,11 @@ services:
     image: cudos-root-node
     container_name: cudos-root-node
     build:
-      dockerfile: docker/root-node-init.dockerfile
+      dockerfile: docker/root-node.dockerfile
       context: ../
     restart: unless-stopped
     volumes:
-      - 'data:/usr/cudos/data'
+      - 'data:/usr/cudos/cudos-data'
     ports:
       - "26656-26657:26656-26657"
       - "1317:1317"
