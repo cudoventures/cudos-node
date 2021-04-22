@@ -10,11 +10,13 @@ import bech32 from "bech32";
 import sha256 from "crypto-js/sha256"
 import ripemd160 from "crypto-js/ripemd160"
 import CryptoJS from "crypto-js"
+import { MsgDelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
+
 
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000
 const REQUIRED_COSMOS_APP_VERSION = Meteor.settings.public.ledger.ledgerAppVersion || "2.16.0";
-const DEFAULT_DENOM = Meteor.settings.public.bondDenom || 'uatom';
+const DEFAULT_DENOM = Meteor.settings.public.bondDenom || 'cudo';
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
 export const DEFAULT_MEMO = 'Sent via Big Dipper'
 
@@ -28,6 +30,11 @@ const COINTYPE = Meteor.settings.public.ledger.coinType || 118;
 const HDPATH = [44, COINTYPE, 0, 0, 0]
 const BECH32PREFIX = Meteor.settings.public.bech32PrefixAccAddr
 
+const chainId = "cudos-network";
+
+let offlineSigner = null;
+let account = null;
+
 function bech32ify(address, prefix) {
     const words = bech32.toWords(address)
     return bech32.encode(prefix, words)
@@ -38,11 +45,15 @@ export const toPubKey = (address) => {
 }
 
 function createCosmosAddress(publicKey) {
+    try{
     const message = CryptoJS.enc.Hex.parse(publicKey.toString(`hex`))
     const hash = ripemd160(sha256(message)).toString()
     const address = Buffer.from(hash, `hex`)
     const cosmosAddress = bech32ify(address, Meteor.settings.public.bech32PrefixAccAddr)
     return cosmosAddress
+    } catch(e){
+        console.log(e);
+    }
 }
 
 export class Ledger {
@@ -53,96 +64,103 @@ export class Ledger {
     // test connection and compatibility
     async testDevice() {
         // poll device with low timeout to check if the device is connected
-        const secondsTimeout = 3 // a lower value always timeouts
-        await this.connect(secondsTimeout)
+        // const secondsTimeout = 3 // a lower value always timeouts
+        // await this.connect(secondsTimeout)
     }
     async isSendingData() {
         // check if the device is connected or on screensaver mode
-        const response = await this.cosmosApp.publicKey(HDPATH)
-        this.checkLedgerErrors(response, {
-            timeoutMessag: "Could not find a connected and unlocked Ledger device"
-        })
+        // const response = await this.cosmosApp.publicKey(HDPATH)
+        // this.checkLedgerErrors(response, {
+        //     timeoutMessag: "Could not find a connected and unlocked Ledger device"
+        // })
     }
     async isReady() {
     // check if the version is supported
-        const version = await this.getCosmosAppVersion()
+        // const version = await this.getCosmosAppVersion()
 
-        if (!semver.gte(version, REQUIRED_COSMOS_APP_VERSION)) {
-            const msg = `Outdated version: Please update Ledger Cosmos App to the latest version.`
-            throw new Error(msg)
-        }
+        // if (!semver.gte(version, REQUIRED_COSMOS_APP_VERSION)) {
+        //     const msg = `Outdated version: Please update Ledger Cosmos App to the latest version.`
+        //     throw new Error(msg)
+        // }
 
-        // throws if not open
-        await this.isCosmosAppOpen()
+        // // throws if not open
+        // await this.isCosmosAppOpen()
     }
     // connects to the device and checks for compatibility
     async connect(timeout = INTERACTION_TIMEOUT) {
         // assume well connection if connected once
-        if (this.cosmosApp) return
+        // if (this.cosmosApp) return
 
-        const transport = await TransportWebUSB.create(timeout)
-        const cosmosLedgerApp = new CosmosApp(transport)
+        // const transport = await TransportWebUSB.create(timeout)
+        // const cosmosLedgerApp = new CosmosApp(transport)
 
-        this.cosmosApp = cosmosLedgerApp
+        // this.cosmosApp = cosmosLedgerApp
 
-        await this.isSendingData()
-        await this.isReady()
+        // await this.isSendingData()
+        // await this.isReady()
     }
+    
     async getCosmosAppVersion() {
-        await this.connect()
+        // await this.connect()
 
-        const response = await this.cosmosApp.getVersion()
-        this.checkLedgerErrors(response)
-        const { major, minor, patch, test_mode } = response
-        checkAppMode(this.testModeAllowed, test_mode)
-        const version = versionString({ major, minor, patch })
+        // const response = await this.cosmosApp.getVersion()
+        // this.checkLedgerErrors(response)
+        // const { major, minor, patch, test_mode } = response
+        // checkAppMode(this.testModeAllowed, test_mode)
+        // const version = versionString({ major, minor, patch })
 
+        const version = "1";
         return version
     }
+
     async isCosmosAppOpen() {
-        await this.connect()
+        // await this.connect()
 
-        const response = await this.cosmosApp.appInfo()
-        this.checkLedgerErrors(response)
-        const { appName } = response
+        // const response = await this.cosmosApp.appInfo()
+        // this.checkLedgerErrors(response)
+        // const { appName } = response
 
-        if (appName.toLowerCase() !== Meteor.settings.public.ledger.appName.toLowerCase()) {
-            throw new Error(`Close ${appName} and open the ${Meteor.settings.public.ledger.appName} app`)
-        }
+        // if (appName.toLowerCase() !== Meteor.settings.public.ledger.appName.toLowerCase()) {
+        //     throw new Error(`Close ${appName} and open the ${Meteor.settings.public.ledger.appName} app`)
+        // }
     }
-    async getPubKey() {
-        await this.connect()
 
-        const response = await this.cosmosApp.publicKey(HDPATH)
-        this.checkLedgerErrors(response)
-        return response.compressed_pk
+    async getAccount() {
+        // await this.connect()
+
+        // const response = await this.cosmosApp.publicKey(HDPATH)
+        // this.checkLedgerErrors(response)
+        // return response.compressed_pk
+        const offlineSigner = window.keplr.getOfflineSigner(chainId);
+        const account = (await offlineSigner.getAccounts())[0];
+        return account;
     }
+
     async getCosmosAddress() {
-        await this.connect()
-
-        const pubKey = await this.getPubKey(this.cosmosApp)
-        return {pubKey, address:createCosmosAddress(pubKey)}
+        const account = await this.getAccount();
+        return {pubKey: account.pubkey, address: account.address}
     }
+
     async confirmLedgerAddress() {
-        await this.connect()
-        const cosmosAppVersion = await this.getCosmosAppVersion()
+       // await this.connect()
+        // const cosmosAppVersion = await this.getCosmosAppVersion()
 
-        if (semver.lt(cosmosAppVersion, REQUIRED_COSMOS_APP_VERSION)) {
-            // we can't check the address on an old cosmos app
-            return
-        }
+        // if (semver.lt(cosmosAppVersion, REQUIRED_COSMOS_APP_VERSION)) {
+        //     // we can't check the address on an old cosmos app
+        //     return
+        // }
 
-        const response = await this.cosmosApp.getAddressAndPubKey(
-            HDPATH,
-            BECH32PREFIX,
-        )
-        this.checkLedgerErrors(response, {
-            rejectionMessage: "Displayed address was rejected"
-        })
+        // const response = await this.cosmosApp.getAddressAndPubKey(
+        //     HDPATH,
+        //     BECH32PREFIX,
+        // )
+        // this.checkLedgerErrors(response, {
+        //     rejectionMessage: "Displayed address was rejected"
+        // })
     }
 
     async sign(signMessage) {
-        await this.connect()
+        //await this.connect()
 
         const response = await this.cosmosApp.sign(HDPATH, signMessage)
         this.checkLedgerErrors(response)
@@ -309,19 +327,23 @@ export class Ledger {
         validatorBech32,
         uatomAmount
     ) {
-        const txMsg = {
-            type: 'cosmos-sdk/MsgDelegate',
-            value: {
+        const msgAny = {    
+            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            value: MsgDelegate.fromPartial({
+                delegatorAddress: txContext.bech32,
+                validatorAddress: validatorBech32,
                 amount: {
                     amount: uatomAmount.toString(),
                     denom: txContext.denom,
                 },
-                delegator_address: txContext.bech32,
-                validator_address: validatorBech32,
-            },
+              }),
+        };
+        const fee = {
+            amount: [{denom: "cudo",amount: "2000"}],
+            gas: "180000", // 180k
         };
 
-        return Ledger.createSkeleton(txContext, [txMsg]);
+        return {msgAny, fee};
     }
 
     // Creates a new undelegation tx based on the input parameters

@@ -1,5 +1,9 @@
 FROM node:buster as builder
 
+RUN apt update
+
+RUN apt install build-essential libudev-dev zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget python3 -y
+
 RUN curl https://install.meteor.com/ | sh
 
 WORKDIR /usr/explorer

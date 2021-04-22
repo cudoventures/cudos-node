@@ -11,6 +11,7 @@ import Coin from '/both/utils/coins.js';
 import numbro from 'numbro';
 import TimeStamp from '../components/TimeStamp.jsx';
 import { PropTypes } from 'prop-types';
+import { assertIsBroadcastTxSuccess, SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 
 const maxHeightModifier = {
     setMaxHeight: {
@@ -341,7 +342,8 @@ class LedgerButton extends Component {
     }
 
     createMessage = (callback) => {
-        let txMsg
+        let txMsg, fee;
+
         switch (this.state.actionType) {
         case Types.DELEGATE:
             txMsg = Ledger.createDelegate(
@@ -390,7 +392,29 @@ class LedgerButton extends Component {
 
 
         }
-        callback(txMsg, this.getSimulateBody(txMsg))
+
+        (async () => {
+            const chainId = "cudos-network";
+            await window.keplr.enable(chainId);
+    
+
+            const offlineSigner = window.getOfflineSigner(chainId);
+
+            const rpcEndpoint = "http://localhost:26657";
+            const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, offlineSigner);
+
+            const account = (await offlineSigner.getAccounts())[0];
+            const result = await client.signAndBroadcast(
+                account.address,
+                [txMsg.msgAny],
+                txMsg.fee
+            );
+
+
+            assertIsBroadcastTxSuccess(result);
+        })();
+
+        //callback(txMsg, this.getSimulateBody(txMsg))
     }
 
     getSimulateBody (txMsg) {
@@ -415,8 +439,9 @@ class LedgerButton extends Component {
 
     runSimulatation = (txMsg, simulateBody) => {
         let gasAdjustment = TypeMeta[this.state.actionType].gasAdjustment || DEFAULT_GAS_ADJUSTMENT;
-        Meteor.call('transaction.simulate', simulateBody, this.state.user, this.state.currentUser.accountNumber, this.state.currentUser.sequence, this.getPath(), gasAdjustment, (err, res) =>{
+        Meteor.call('transaction.simulate', txMsg, this.state.user, this.state.currentUser.accountNumber, this.state.currentUser.sequence, this.getPath(), gasAdjustment, (err, res) =>{
             if (res){
+                console.log(res);
                 Ledger.applyGas(txMsg, res, Meteor.settings.public.ledger.gasPrice, Coin.StakingCoin.denom);
                 this.setStateOnSuccess('simulating', {
                     gasEstimate: res,
@@ -425,6 +450,7 @@ class LedgerButton extends Component {
                 })
             }
             else {
+                console.log(err);
                 this.setStateOnError('simulating', 'something went wrong')
             }
         })
@@ -433,8 +459,10 @@ class LedgerButton extends Component {
     sign = () => {
         if (this.state.signing) return
         this.initStateOnLoad('signing')
+
         try {
             let txMsg = this.state.txMsg;
+            console.log(txMsg);
             const txContext = this.getTxContext();
             const bytesToSign = Ledger.getBytesToSign(txMsg, txContext);
             this.ledger.sign(bytesToSign).then((sig) => {
