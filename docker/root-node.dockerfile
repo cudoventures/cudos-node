@@ -10,6 +10,8 @@ RUN make
 
 RUN chmod +x ./init-root.sh
 
+RUN sed -i 's/\r$//' ./init-root.sh
+
 RUN /bin/bash ./init-root.sh
 
 FROM golang:alpine

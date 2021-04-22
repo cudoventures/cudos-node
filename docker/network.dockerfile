@@ -14,6 +14,8 @@ COPY --from=cudos-root-node /usr/cudos/cudos-data /usr/cudos-root-data
 
 RUN chmod +x ./init-network.sh
 
+RUN sed -i 's/\r$//' ./init-network.sh
+
 RUN /bin/bash ./init-network.sh
 
 FROM golang:alpine
