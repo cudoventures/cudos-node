@@ -17,8 +17,6 @@ services:
       dockerfile: docker/utils-explorer.dockerfile
       context: ../
     restart: unless-stopped
-    env_file:
-      ./config/explorer.env
     ports:
       - "3000:3000"
     networks:

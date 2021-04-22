@@ -20,5 +20,9 @@ WORKDIR /usr/explorer
 
 COPY --from=builder /usr/explorer/output/bundle ./
 
+COPY --from=builder /usr/explorer/source/run-docker.sh ./
+
+RUN chmod +x ./run-docker.sh
+
 # CMD ["sh", "-c", "meteor --settings default_settings.json --allow-superuser"] 
-CMD ["node", "main.js"]
+CMD ["sh", "./run-docker.sh"]
