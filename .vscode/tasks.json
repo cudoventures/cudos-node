@@ -5,18 +5,10 @@
             "label": "Start root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node.yml -p cudos-root up",
             "type": "shell",
-<<<<<<< HEAD
-            "group": "build"
-        },
-        {
-            "label": "Build & Init root node in docker",
-            "command": "cd ./docker&& docker-compose -f ./root-node-init.yml -p cudos-root up --build",
-=======
             "group": "build",
         }, {
             "label": "Build root node in docker",
             "command": "cd ./docker&& docker-compose -f ./root-node.yml -p cudos-root up --build",
->>>>>>> 570b679a0f238f96b499cdf29cbe4755c5506e02
             "type": "shell",
             "group": "build"
         },
@@ -30,18 +22,10 @@
             "label": "Start network in docker",
             "command": "cd ./docker&& docker-compose -f ./network.yml -p cudos-network up",
             "type": "shell",
-<<<<<<< HEAD
-            "group": "build"
-        },
-        {
-            "label": "Build & Init network in docker",
-            "command": "cd ./docker&& docker-compose -f ./network-init.yml -p cudos-network up --build",
-=======
             "group": "build",
         }, {
             "label": "Build network in docker",
             "command": "cd ./docker&& docker-compose -f ./network.yml -p cudos-network up --build",
->>>>>>> 570b679a0f238f96b499cdf29cbe4755c5506e02
             "type": "shell",
             "group": "build"
         },
