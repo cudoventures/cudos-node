@@ -16,6 +16,7 @@
         "bondDenom": "cudo",
         "powerReduction": 1000000,
         "genesisTime": "2021-04-65T09:15:0.268797802Z",
+        "faucetUrl": "http://localhost:5000",
         "coins": [
             {
                 "denom": "cudo",

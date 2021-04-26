@@ -308,6 +308,9 @@ export default class Header extends Component {
                         <NavItem>
                             <NavLink tag={Link} to="/voting-power-distribution"><T>navbar.votingPower</T></NavLink>
                         </NavItem>
+                        <NavItem>
+                            <NavLink tag={Link} to="/faucet"><T>navbar.faucet</T></NavLink>
+                        </NavItem>
                         <NavItem id="user-acconut-icon">
                             {!signedInAddress?<Button className="sign-in-btn" color="link" size="lg" onClick={() => this.connectKeplr()}><i className="material-icons">vpn_key</i></Button>:
                                 <span>
@@ -331,7 +334,7 @@ export default class Header extends Component {
                                 </span>}
                             <LedgerModal isOpen={this.state.isSignInOpen} toggle={this.toggleSignIn} refreshApp={this.props.refreshApp} handleLoginConfirmed={this.shouldLogin()?this.handleLoginConfirmed:null}/>
                         </NavItem>
-                        <NavItem>
+                        {/* <NavItem>
                             <UncontrolledDropdown inNavbar>
                                 <DropdownToggle nav caret>
                                     <T>navbar.lang</T>
@@ -339,14 +342,14 @@ export default class Header extends Component {
                                 <DropdownMenu right>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('en-US', e)}><T>navbar.english</T></DropdownItem>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('es-ES', e)}><T>navbar.spanish</T></DropdownItem>
-                                    {/* <DropdownItem onClick={(e) => this.handleLanguageSwitch('it-IT', e)}><T>navbar.italian</T></DropdownItem> */}
+                                    <DropdownItem onClick={(e) => this.handleLanguageSwitch('it-IT', e)}><T>navbar.italian</T></DropdownItem>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('pl-PL', e)}><T>navbar.polish</T></DropdownItem>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('ru-RU', e)}><T>navbar.russian</T></DropdownItem>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('zh-Hant', e)}><T>navbar.chinese</T></DropdownItem>
                                     <DropdownItem onClick={(e) => this.handleLanguageSwitch('zh-Hans', e)}><T>navbar.simChinese</T></DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>
-                        </NavItem>
+                        </NavItem> */}
                     </Nav>
                 </Collapse>
             </Navbar>

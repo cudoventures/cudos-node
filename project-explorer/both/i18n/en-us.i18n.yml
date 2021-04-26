@@ -32,6 +32,7 @@ navbar:
     transactions: 'Transactions'
     proposals: 'Proposals'
     votingPower: 'Voting Power'
+    faucet: 'Faucet'
     lang: "ENG"
     english: "English"
     spanish: "Español"
@@ -127,6 +128,15 @@ blocks:
     numOfTxs: 'No. of Txs'
     numOfTransactions: 'No. of Transactions'
     notFound: 'No such block found.'
+faucet:
+    title: 'Faucet'
+    placeHolderWalletAddress: 'Wallet address (cudo1...)'
+    placeHolderAmount: 'Amount (max: 1 cudo)'
+    send: 'Send me cudo!'
+    modalClose: 'Close'
+    modalMsgTransactionPending: 'Processing the transaction, please wait...'
+    modalMsgTransactionSuccess: 'Your cudos were sent. Please, check you wallet.'
+    modalMsgTransactionError: 'There was an error. Please check the address and amount.'
 transactions:
     transaction: 'Transaction'
     transactions: 'Transactions'

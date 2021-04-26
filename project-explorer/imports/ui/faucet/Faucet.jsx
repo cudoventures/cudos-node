@@ -1,0 +1,131 @@
+import React, { Component } from 'react';
+import { Input } from 'reactstrap';
+import { Helmet } from 'react-helmet';
+import i18n from 'meteor/universe:i18n';
+import FaucetModal from './FaucetModal';
+import { Meteor } from 'meteor/meteor';
+import { TRANSACTION_STATUS_DONE_ERROR, TRANSACTION_STATUS_DONE_OK, TRANSACTION_STATUS_PENDING } from './FaucetUtils';
+
+const T = i18n.createComponent();
+export default class Faucet extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            walletAddress: '',
+            amount: '',
+            valid: false,
+            modalOpen: false,
+            transactionStatus: TRANSACTION_STATUS_PENDING,
+        }
+    }
+
+    validate = () => {
+        this.setState({
+            valid: this.state.valid = this.state.amount !== '' && this.state.walletAddress.startsWith('cudo1'),
+        });
+    }
+
+    onChangeWalletAddress = (e) => {
+        this.setState({
+            walletAddress: e.target.value
+        }, this.validate);
+    }
+
+    onChangeAmount = (e) => {
+        if (e.target.value !== '' && Number.isNaN(parseFloat(e.target.value)) === true) {
+            return;
+        }
+
+        this.setState({
+            amount: e.target.value
+        }, this.validate);
+    }
+
+    onClickSend = () => {
+        if (this.state.valid !== true) {
+            return;
+        }
+
+        this.setState({
+            modalOpen: true,
+            transactionStatus: TRANSACTION_STATUS_PENDING,
+        });
+
+        const address = this.state.walletAddress;
+        const amount = parseInt(parseFloat(this.state.amount * 1000000))
+        const data = {
+            address: address,
+            coins: [`${amount}${Meteor.settings.public.bondDenom}`]
+        };
+
+        HTTP.post(Meteor.settings.public.faucetUrl, {
+            data
+        }, (err, result) => {
+            if (err !== null || result.statusCode !== 200) {
+                console.error(err, result);
+                this.setState({
+                    transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
+                });
+                return;
+            }
+
+            result = JSON.parse(result.content);
+            if (result.transfers[0].status !== 'ok') {
+                console.error(result);
+                this.setState({
+                    transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
+                });
+                return;
+            }
+
+            this.setState({
+                transactionStatus: TRANSACTION_STATUS_DONE_OK,
+            });
+        });
+    }
+
+    handleModalClose = () => {
+        if (this.state.transactionStatus === TRANSACTION_STATUS_DONE_OK) {
+            this.setState({
+                walletAddress: '',
+                amount: '',
+                valid: false,
+                modalOpen: false,
+                transactionStatus: TRANSACTION_STATUS_PENDING,
+            });
+        } else {
+            this.setState({
+                modalOpen: false,
+            });
+        }
+        
+    }
+
+    render() {
+        return (
+            <div>
+                <Helmet>
+                    <title>Faucet | Big Dipper</title>
+                    <meta name="description" content="Faucet for cudos testnet" />
+                </Helmet>
+                <div className="container-md">
+                    <h1 className="text-center mt-5"><T>faucet.title</T></h1>
+                    <Input value={this.state.walletAddress} onChange={this.onChangeWalletAddress} placeholder={i18n.__('faucet.placeHolderWalletAddress')}/>
+                    <br />
+                    <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount')}/>
+                    <br />
+                    <div className="d-flex justify-content-center mt-5">
+                        <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }><T>faucet.send</T></button>
+                    </div>
+                </div>
+                <FaucetModal
+                    isOpen={ this.state.modalOpen }
+                    transactionStatus={ this.state.transactionStatus }
+                    handleClose={ this.handleModalClose } />
+            </div>
+        )
+    }
+
+}

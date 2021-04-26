@@ -20,6 +20,7 @@ import SentryBoundary from '/imports/ui/components/SentryBoundary.jsx';
 import NotFound from '/imports/ui/pages/NotFound.jsx';
 
 import { ToastContainer, toast } from 'react-toastify';
+import Faucet from './faucet/Faucet';
 
 if (Meteor.isClient)
     import 'react-toastify/dist/ReactToastify.min.css';
@@ -91,6 +92,7 @@ class App extends Component {
                             <Route path="/voting-power-distribution" component={Distribution} />
                             <Route path="/(validator|validators)" component={ValidatorDetails} />
                             {Meteor.settings.public.modules.gov?<Route path="/proposals" component={Proposals} />:null}
+                            <Route path="/faucet" component={Faucet} />
                             <Route component={NotFound} />
                         </Switch>
                     </SentryBoundary>

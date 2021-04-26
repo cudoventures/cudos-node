@@ -1,4 +1,4 @@
-export DEMONS="stake"
+export DENOMS="cudo"
 export PORT="5000"
 export ACCOUNT_NAME="faucet"
 export CLI_NAME="cudos-noded"
