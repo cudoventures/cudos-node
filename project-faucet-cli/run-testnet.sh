@@ -6,6 +6,6 @@ export KEYRING_BACKEND="test"
 export CREDIT_AMOUNT="1000"
 export MAX_CREDIT="100000000"
 export NODE="http://10.128.0.2:26657"
-export MNEMONIC="topic upper large trim episode slide glue luggage poet drastic link waste snow arrest armed suggest swing never diary paper blouse history earth truly"
+export MNEMONIC="town poverty shoulder front piano cake token minute trap wash wink wealth note leaf foil crystal student depart toast meat luggage upgrade there still"
 
 faucet
