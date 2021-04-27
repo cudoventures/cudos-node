@@ -31,10 +31,10 @@ GOV_VETO_THRESHOLD="0.334000000000000000" # 0.334000000000000000 originally
 
 # mint parameters
 MINT_DENOM="ucudos" # stake originally
-MINT_INFLATION="0.130000000000000000" # 0.130000000000000000 originally
-MINT_INFLATION_RATE_CHANGE="0.130000000000000000" # 0.130000000000000000 originally
-MINT_INFLATION_MAX="0.200000000000000000" # 0.200000000000000000 originally
-MINT_INFLATION_MIN="0.070000000000000000" # 0.070000000000000000 originally
+MINT_INFLATION="0.0000000013" # 0.130000000000000000 originally
+MINT_INFLATION_RATE_CHANGE="0.0000000013" # 0.130000000000000000 originally
+MINT_INFLATION_MAX="0.0000000013" # 0.200000000000000000 originally
+MINT_INFLATION_MIN="0.0000000013" # 0.070000000000000000 originally
 MINT_GOAL_BONDED="0.670000000000000000" # 0.670000000000000000 originally
 BLOCKS_PER_YEAR="6311520" # 6311520 originally
 
@@ -64,6 +64,7 @@ cat "${CUDOS_HOME}/config/genesis.json" | jq --arg JAIL_DURATION "$JAIL_DURATION
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg UNBONDING_TIME "$UNBONDING_TIME" '.app_state.staking.params.unbonding_time = $UNBONDING_TIME' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg BOND_DENOM "$BOND_DENOM" '.app_state.staking.params.bond_denom = $BOND_DENOM' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg MAX_VALIDATORS "$MAX_VALIDATORS" '.app_state.staking.params.max_validators = $MAX_VALIDATORS' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
+cat "${CUDOS_HOME}/config/genesis.json" | jq --arg BOND_DENOM "$BOND_DENOM" '.app_state.crisis.constant_fee.denom = $BOND_DENOM' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
 
 # setting government proposal params
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg GOV_PROPOSAL_MIN_DEPOSIT_DENOM "$GOV_PROPOSAL_MIN_DEPOSIT_DENOM" '.app_state.gov.deposit_params.min_deposit[0].denom = $GOV_PROPOSAL_MIN_DEPOSIT_DENOM' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
