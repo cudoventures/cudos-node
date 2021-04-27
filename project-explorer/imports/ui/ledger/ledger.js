@@ -5,6 +5,7 @@ import 'babel-polyfill';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import CosmosApp from "ledger-cosmos-js"
 import { signatureImport } from "secp256k1"
+import { Validators } from '/imports/api/validators/validators.js';
 import semver from "semver"
 import bech32 from "bech32";
 import sha256 from "crypto-js/sha256"
@@ -12,7 +13,7 @@ import ripemd160 from "crypto-js/ripemd160"
 import CryptoJS from "crypto-js"
 import { MsgDelegate, MsgUndelegate, MsgBeginRedelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
 import { MsgSend } from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx"; 
-import { MsgWithdrawValidatorCommission } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/tx";
+import { MsgWithdrawDelegatorReward } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/tx";
 
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000
@@ -23,7 +24,7 @@ const TYPE_URLS = {
     msgUndelegate:"/cosmos.staking.v1beta1.MsgUndelegate",
     msgRedelegate: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
     msgSend: "/cosmos.bank.v1beta1.MsgSend",
-    msgWithdraw: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
+    msgWithdraw: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
 }
 
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
@@ -396,21 +397,18 @@ export class Ledger {
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
-    static createWithdraw(txContext, user){
-        Meteor.call('isValidator', user, (error, result) => {
-            console.log(error);
-            //if (result && result.address){
-                const msgAny = {    
-                    typeUrl: TYPE_URLS.msgWithdraw,
-                    value: MsgWithdrawValidatorCommission.fromPartial({
-                        validatorAddress: txContext.bech32,
-                      })
-                };
-        
-                console.log(msgAny);
-                return {msgAny, fee: Meteor.settings.public.fees.redelegate};
-           // }
-        })
+    static async createWithdraw(txContext){
+        fetch("http://localhost:1317/cosmos/base/tendermint/v1beta1/validatorsets/latest")
+            .then((res) => console.log(JSON.parse(res)))
+
+        const msgAny = {    
+            typeUrl: TYPE_URLS.msgWithdraw,
+            value: MsgWithdrawDelegatorReward.fromPartial({
+                delegatorAddress: txContext.bech32,
+                validatorAddress: ""
+                })
+        };
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
     // Creates a new transfer tx based on the input parameters

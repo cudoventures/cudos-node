@@ -343,7 +343,12 @@ class LedgerButton extends Component {
 
     createMessage = (callback) => {
         let txMsg;
+        let activeValidators = Validators.find(
+            {"jailed": false, "status": 'BOND_STATUS_BONDED'},
+            {"sort":{"description.moniker":1}}
+        );
 
+        activeValidators.map(a => console.log(a));
         switch (this.state.actionType) {
         case Types.DELEGATE:
             txMsg = Ledger.createDelegate(
@@ -366,8 +371,7 @@ class LedgerButton extends Component {
             break;
         case Types.WITHDRAW:
             txMsg = Ledger.createWithdraw(
-                this.getTxContext(),
-                this.state.user
+                this.getTxContext()
                 );
             break;
         case Types.SEND:
@@ -398,7 +402,6 @@ class LedgerButton extends Component {
 
 
         }
-        console.log(txMsg);
         //callback(txMsg, this.getSimulateBody(txMsg))        
         callback(txMsg)
     }
@@ -458,6 +461,7 @@ class LedgerButton extends Component {
             const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, offlineSigner);
 
             const account = (await offlineSigner.getAccounts())[0];
+
             const result = await client.signAndBroadcast(
                 account.address,
                 [txMsg.msgAny],
@@ -568,6 +572,9 @@ class LedgerButton extends Component {
             {"jailed": false, "status": 'BOND_STATUS_BONDED'},
             {"sort":{"description.moniker":1}}
         );
+
+        activeValidators.map(a => console.log(a));
+
         let redelegations = this.state.redelegations || {};
         let maxEntries = (this.props.stakingParams&&this.props.stakingParams.max_entries)?this.props.stakingParams.max_entries:7;
         return <UncontrolledDropdown direction='down' size='sm' className='redelegate-validators'>
