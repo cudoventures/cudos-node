@@ -11,12 +11,13 @@ import { Helmet } from 'react-helmet';
 import { WithdrawButton, TransferButton } from '../ledger/LedgerActions.jsx';
 import i18n from 'meteor/universe:i18n';
 import Coin from '/both/utils/coins.js'
+import { withTracker } from 'meteor/react-meteor-data';
 
 const T = i18n.createComponent();
 
 const cloneDeep = require('lodash/cloneDeep');
 
-export default class AccountDetails extends Component{
+class AccountDetails extends Component{
     constructor(props){
         super(props);
         const defaultCoin = Meteor.settings.public.coins.map(coin => {
@@ -377,3 +378,11 @@ export default class AccountDetails extends Component{
     }
 }
 
+export default AccountContainer = withTracker((props) => {
+    if (Meteor.isClient){
+        chainHandle = Meteor.subscribe('chain.status');
+        validatorsHandle = Meteor.subscribe('validators.all', props.match.params.address);
+        validatorHandle = Meteor.subscribe('validator.details', props.match.params.address);
+        loading = !validatorHandle.ready() && !validatorsHandle.ready() && !chainHandle.ready();
+    }
+})(AccountDetails);
