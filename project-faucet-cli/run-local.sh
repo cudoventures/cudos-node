@@ -6,6 +6,6 @@ export KEYRING_BACKEND="test"
 export CREDIT_AMOUNT="1000"
 export MAX_CREDIT="100000000"
 export NODE="http://localhost:26657"
-export MNEMONIC="tragic unknown bounce scissors journey fame victory dwarf heart stairs sing afford melt lecture field dog boss material tiny shine project eternal ticket humor"
+export MNEMONIC="forget dilemma drink old develop call achieve bundle unknown element pony original mention impulse salad sea iron give correct lend shove capable melt pool"
 
 faucet
