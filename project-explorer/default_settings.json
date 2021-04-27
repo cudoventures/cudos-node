@@ -7,27 +7,27 @@
         "uptimeWindow": 250,
         "initialPageSize": 30,
         "secp256k1": true,
-        "bech32PrefixAccAddr": "cudo",
-        "bech32PrefixAccPub": "cudopub",
-        "bech32PrefixValAddr": "cudovaloper",
-        "bech32PrefixValPub": "cudovaloperpub",
-        "bech32PrefixConsAddr": "cudovalcons",
-        "bech32PrefixConsPub": "cudovalconspub",
-        "bondDenom": "cudo",
+        "bech32PrefixAccAddr": "cudos",
+        "bech32PrefixAccPub": "cudospub",
+        "bech32PrefixValAddr": "cudosvaloper",
+        "bech32PrefixValPub": "cudosvaloperpub",
+        "bech32PrefixConsAddr": "cudosvalcons",
+        "bech32PrefixConsPub": "cudosvalconspub",
+        "bondDenom": "cudos",
         "powerReduction": 1000000,
         "genesisTime": "2021-04-65T09:15:0.268797802Z",
         "faucetUrl": "http://localhost:5000",
         "coins": [
             {
-                "denom": "cudo",
-                "displayName": "CD",
+                "denom": "cudos",
+                "displayName": "CUDOS",
                 "fraction": 1000000
             } 
         ],
         "ledger":{
             "coinType": 118,
-            "appName": "Cosmos",
-            "appVersion": "2.16.0",
+            "appName": "Cudos",
+            "appVersion": "0.0.1",
             "gasPrice": 0.02
         },
         "modules": {
@@ -37,7 +37,7 @@
             "gov": true,
             "distribution": true
         },
-        "coingeckoId": "cudo",
+        "coingeckoId": "cudos",
         "urls": {
             "rpc":"http://localhost:26657"
         },
@@ -54,7 +54,7 @@
                 "amount": [{"denom": "cudos", "amount": 100}],
                 "gas": "180000"
             }
-        }
+        },
     },
     "remote":{
         "rpc":"http://localhost:26657",

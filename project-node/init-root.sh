@@ -16,7 +16,7 @@ MIN_SELF_DELEGATION="1" # minimum tokens sto stake multiplyer by 1 000 000 for v
 JAIL_DURATION="600s" #600s originally
 
 # staking parameters
-BOND_DENOM="cudo" # stake originally
+BOND_DENOM="cudos" # stake originally
 UNBONDING_TIME="1814400s" #1814400s originally
 MAX_VALIDATORS="100" # 100 originally
 

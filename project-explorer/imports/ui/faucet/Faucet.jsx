@@ -112,9 +112,9 @@ export default class Faucet extends Component {
                 </Helmet>
                 <div className="container-md">
                     <h1 className="text-center mt-5"><T>faucet.title</T></h1>
-                    <Input value={this.state.walletAddress} onChange={this.onChangeWalletAddress} placeholder={i18n.__('faucet.placeHolderWalletAddress')}/>
+                    <Input value={this.state.walletAddress} onChange={this.onChangeWalletAddress} placeholder={i18n.__('faucet.placeHolderWalletAddress').replace('%s', Meteor.settings.public.bech32PrefixAccAddr)}/>
                     <br />
-                    <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount')}/>
+                    <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount').replace('%s', Meteor.settings.public.bondDenom)}/>
                     <br />
                     <div className="d-flex justify-content-center mt-5">
                         <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }><T>faucet.send</T></button>
