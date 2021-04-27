@@ -398,9 +398,6 @@ export class Ledger {
     }
 
     static async createWithdraw(txContext){
-        fetch("http://localhost:1317/cosmos/base/tendermint/v1beta1/validatorsets/latest")
-            .then((res) => console.log(JSON.parse(res)))
-
         const msgAny = {    
             typeUrl: TYPE_URLS.msgWithdraw,
             value: MsgWithdrawDelegatorReward.fromPartial({
