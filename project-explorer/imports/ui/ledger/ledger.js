@@ -5,13 +5,15 @@ import 'babel-polyfill';
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import CosmosApp from "ledger-cosmos-js"
 import { signatureImport } from "secp256k1"
+import { Validators } from '/imports/api/validators/validators.js';
 import semver from "semver"
 import bech32 from "bech32";
 import sha256 from "crypto-js/sha256"
 import ripemd160 from "crypto-js/ripemd160"
 import CryptoJS from "crypto-js"
 import { MsgDelegate, MsgUndelegate, MsgBeginRedelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
-
+import { MsgSend } from "@cosmjs/stargate/build/codec/cosmos/bank/v1beta1/tx"; 
+import { MsgWithdrawDelegatorReward } from "@cosmjs/stargate/build/codec/cosmos/distribution/v1beta1/tx";
 
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000
@@ -21,7 +23,8 @@ const TYPE_URLS = {
     msgDelegate: "/cosmos.staking.v1beta1.MsgDelegate",
     msgUndelegate:"/cosmos.staking.v1beta1.MsgUndelegate",
     msgRedelegate: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
-
+    msgSend: "/cosmos.bank.v1beta1.MsgSend",
+    msgWithdraw: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
 }
 
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
@@ -378,7 +381,7 @@ export class Ledger {
         uatomAmount
     ) {
         const msgAny = {    
-            typeUrl: TYPE_URLS.msgRendelegate,
+            typeUrl: TYPE_URLS.msgRedelegate,
             value: MsgBeginRedelegate.fromPartial({
                 delegatorAddress: txContext.bech32,
                 validatorSrcAddress: validatorSourceBech32,
@@ -394,6 +397,17 @@ export class Ledger {
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
+    static async createWithdraw(txContext){
+        const msgAny = {    
+            typeUrl: TYPE_URLS.msgWithdraw,
+            value: MsgWithdrawDelegatorReward.fromPartial({
+                delegatorAddress: txContext.bech32,
+                validatorAddress: ""
+                })
+        };
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
+    }
+
     // Creates a new transfer tx based on the input parameters
     // the function expects a complete txContext
     static createTransfer(
@@ -401,19 +415,20 @@ export class Ledger {
         toAddress,
         amount
     ) {
-        const txMsg = {
-            type: 'cosmos-sdk/MsgSend',
-            value: {
+        const msgAny = {    
+            typeUrl: TYPE_URLS.msgSend,
+            value: MsgSend.fromPartial({
+                fromAddress: txContext.bech32,
+                toAddress: toAddress,
                 amount: [{
                     amount: amount.toString(),
-                    denom: txContext.denom
+                    denom: txContext.denom,
                 }],
-                from_address: txContext.bech32,
-                to_address: toAddress
-            }
+              }),
+            memo: txContext.memo,
         };
 
-        return Ledger.createSkeleton(txContext, [txMsg]);
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
     static createSubmitProposal(

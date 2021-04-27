@@ -343,7 +343,12 @@ class LedgerButton extends Component {
 
     createMessage = (callback) => {
         let txMsg;
+        let activeValidators = Validators.find(
+            {"jailed": false, "status": 'BOND_STATUS_BONDED'},
+            {"sort":{"description.moniker":1}}
+        );
 
+        activeValidators.map(a => console.log(a));
         switch (this.state.actionType) {
         case Types.DELEGATE:
             txMsg = Ledger.createDelegate(
@@ -363,6 +368,11 @@ class LedgerButton extends Component {
                 this.getTxContext(),
                 this.props.validator.operator_address,
                 this.state.delegateAmount.amount);
+            break;
+        case Types.WITHDRAW:
+            txMsg = Ledger.createWithdraw(
+                this.getTxContext()
+                );
             break;
         case Types.SEND:
             txMsg = Ledger.createTransfer(
@@ -392,7 +402,6 @@ class LedgerButton extends Component {
 
 
         }
-
         //callback(txMsg, this.getSimulateBody(txMsg))        
         callback(txMsg)
     }
@@ -452,6 +461,7 @@ class LedgerButton extends Component {
             const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, offlineSigner);
 
             const account = (await offlineSigner.getAccounts())[0];
+
             const result = await client.signAndBroadcast(
                 account.address,
                 [txMsg.msgAny],
@@ -562,6 +572,9 @@ class LedgerButton extends Component {
             {"jailed": false, "status": 'BOND_STATUS_BONDED'},
             {"sort":{"description.moniker":1}}
         );
+
+        activeValidators.map(a => console.log(a));
+
         let redelegations = this.state.redelegations || {};
         let maxEntries = (this.props.stakingParams&&this.props.stakingParams.max_entries)?this.props.stakingParams.max_entries:7;
         return <UncontrolledDropdown direction='down' size='sm' className='redelegate-validators'>
@@ -790,28 +803,28 @@ class DelegationButtons extends LedgerButton {
 
 class WithdrawButton extends LedgerButton {
 
-    createMessage = (callback) => {
-        Meteor.call('transaction.execute', {from: this.state.user}, this.getPath(), (err, res) =>{
-            if (res){
-                Meteor.call('isValidator', this.state.user, (error, result) => {
-                    if (result && result.address){
-                        res.value.msg.push({
-                            type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
-                            value: { validator_address: result.address }
-                        })
-                    }
-                    callback(res, res)
-                })
-            }
-            else {
-                this.setState({
-                    loading: false,
-                    simulating: false,
-                    errorMessage: 'something went wrong'
-                })
-            }
-        })
-    }
+    // createMessage = (callback) => {
+    //     Meteor.call('transaction.execute', {from: this.state.user}, this.getPath(), (err, res) =>{
+    //         if (res){
+    //             Meteor.call('isValidator', this.state.user ,(error, result) => {
+    //                 if (result && result.address){
+    //                     res.value.msg.push({
+    //                         type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
+    //                         value: { validator_address: result.address }
+    //                     })
+    //                 }
+    //                 callback(res, res)
+    //             })
+    //         }
+    //         else {
+    //             this.setState({
+    //                 loading: false,
+    //                 simulating: false,
+    //                 errorMessage: 'something went wrong'
+    //             })
+    //         }
+    //     })
+    // }
 
     supportAction(action) {
         return action === Types.WITHDRAW;

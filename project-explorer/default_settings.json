@@ -54,6 +54,10 @@
             "undelegate": {
                 "amount": [{"denom": "ucudos", "amount": 100}],
                 "gas": "180000"
+            },
+            "withdraw": {
+                "amount": [{"denom": "cudos", "amount": 100}],
+                "gas": "180000"
             }
         }
     },
