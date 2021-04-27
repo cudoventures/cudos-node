@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "cudo"
+	AccountAddressPrefix = "cudos"
 )
 
 var (

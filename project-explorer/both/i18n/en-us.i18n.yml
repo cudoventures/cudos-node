@@ -130,8 +130,8 @@ blocks:
     notFound: 'No such block found.'
 faucet:
     title: 'Faucet'
-    placeHolderWalletAddress: 'Wallet address (cudo1...)'
-    placeHolderAmount: 'Amount (max: 1 cudo)'
+    placeHolderWalletAddress: 'Wallet address (cudos1...)'
+    placeHolderAmount: 'Amount (max 100 000 000 cudos)'
     send: 'Send me cudo!'
     modalClose: 'Close'
     modalMsgTransactionPending: 'Processing the transaction, please wait...'
