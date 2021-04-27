@@ -16,12 +16,12 @@ MIN_SELF_DELEGATION="1" # minimum tokens sto stake multiplyer by 1 000 000 for v
 JAIL_DURATION="600s" #600s originally
 
 # staking parameters
-BOND_DENOM="cudos" # stake originally
+BOND_DENOM="ucudos" # stake originally
 UNBONDING_TIME="1814400s" #1814400s originally
 MAX_VALIDATORS="100" # 100 originally
 
 # government parameters
-GOV_PROPOSAL_MIN_DEPOSIT_DENOM="cudo" # stake orginally
+GOV_PROPOSAL_MIN_DEPOSIT_DENOM="ucudos" # stake orginally
 GOV_PROPOSAL_MIN_DEPOSIT_AMOUNT="10000000" # 10000000 originally   
 GOV_PROPOSAL_MAX_DEPOSIT_PERIOD="172800s" # 172800s originally
 GOV_PROPOSAL_VOTING_PERIOD="172800s" # 172800s originally
@@ -30,7 +30,7 @@ GOV_THRESHOLD="0.500000000000000000" # 0.500000000000000000 originally
 GOV_VETO_THRESHOLD="0.334000000000000000" # 0.334000000000000000 originally
 
 # mint parameters
-MINT_DENOM="cudo" # stake originally
+MINT_DENOM="ucudos" # stake originally
 MINT_INFLATION="0.130000000000000000" # 0.130000000000000000 originally
 MINT_INFLATION_RATE_CHANGE="0.130000000000000000" # 0.130000000000000000 originally
 MINT_INFLATION_MAX="0.200000000000000000" # 0.200000000000000000 originally
@@ -40,11 +40,11 @@ BLOCKS_PER_YEAR="6311520" # 6311520 originally
 
 
 DENOM_METADATA_DESC="The native staking token of the Cudos Hub." 
-DENOM1="ucudo" EXP1="0" ALIAS1="microcudo"
-DENOM2="mcudo" EXP2="3" ALIAS2="millicudo"
-DENOM3="cudo" EXP3="6"
-BASE="ucudo"
-DISPLAY="cudo"
+DENOM1="ucudos" EXP1="0" ALIAS1="microcudos"
+DENOM2="mcudos" EXP2="3" ALIAS2="millicudos"
+DENOM3="cudos" EXP3="6"
+BASE="ucudos"
+DISPLAY="cudos"
 
 cudos-noded init $MONIKER --chain-id=$CHAIN_ID
 sed -i "104s/enable = false/enable = true/" "${CUDOS_HOME}/config/app.toml"
@@ -90,7 +90,7 @@ cat "${CUDOS_HOME}/config/genesis.json" | jq --arg DENOM_METADATA_DESC "$DENOM_M
 cudos-noded keys add root-validator --keyring-backend test
 VALIDATOR_ADDRESS=$(cudos-noded keys show root-validator -a)
 
-# create validators
+# # create validators
 cudos-noded add-genesis-account $VALIDATOR_ADDRESS "100000000${BOND_DENOM}"
 cudos-noded gentx root-validator "100000000${BOND_DENOM}" --chain-id $CHAIN_ID --keyring-backend test
 

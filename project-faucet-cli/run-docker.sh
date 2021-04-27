@@ -1,4 +1,4 @@
-export DENOMS="cudos"
+export DENOMS="ucudos"
 export PORT="5000"
 export ACCOUNT_NAME="faucet"
 export CLI_NAME="cudos-noded"

@@ -20,7 +20,7 @@ export default class FaucetModal extends Component {
                         <T>faucet.modalMsgTransactionPending</T>
                     ) }
                     { this.props.transactionStatus === TRANSACTION_STATUS_DONE_OK && (
-                        <span className="text-success">{i18n.__('faucet.modalMsgTransactionSuccess').replace('%s', Meteor.settings.public.bondDenom)}</span>
+                        <span className="text-success">{i18n.__('faucet.modalMsgTransactionSuccess').replace('%s', Meteor.settings.public.coins[0].displayName)}</span>
                     ) }
                     { this.props.transactionStatus === TRANSACTION_STATUS_DONE_ERROR && (
                         <span className="text-danger"><T>faucet.modalMsgTransactionError</T></span>
