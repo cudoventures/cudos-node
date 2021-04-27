@@ -13,20 +13,20 @@
         "bech32PrefixValPub": "cudosvaloperpub",
         "bech32PrefixConsAddr": "cudosvalcons",
         "bech32PrefixConsPub": "cudosvalconspub",
-        "bondDenom": "cudos",
+        "bondDenom": "ucudos",
         "powerReduction": 1000000,
         "genesisTime": "2021-04-65T09:15:0.268797802Z",
         "faucetUrl": "http://localhost:5000",
         "coins": [
             {
-                "denom": "cudos",
+                "denom": "ucudos",
                 "displayName": "CUDOS",
                 "fraction": 1000000
             } 
         ],
         "ledger":{
             "coinType": 118,
-            "appName": "Cudos",
+            "appName": "CudosNetwork",
             "appVersion": "0.0.1",
             "gasPrice": 0.02
         },
@@ -40,19 +40,19 @@
         "coingeckoId": "cudos",
         "urls": {
             "rpc":"http://localhost:26657",
-            "rest":"http://localhost:1317"
+            "api":"http://localhost:1317"
         },
         "fees": {
             "delegate": {
-                "amount": [{"denom": "cudos", "amount": 100}],
+                "amount": [{"denom": "ucudos", "amount": 100}],
                 "gas": "180000"
             },
             "redelegate": {
-                "amount": [{"denom": "cudos", "amount": 100}],
+                "amount": [{"denom": "ucudos", "amount": 100}],
                 "gas": "180000"
             },
             "undelegate": {
-                "amount": [{"denom": "cudos", "amount": 100}],
+                "amount": [{"denom": "ucudos", "amount": 100}],
                 "gas": "180000"
             },
             "withdraw": {

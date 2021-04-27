@@ -23,7 +23,7 @@ export default class Faucet extends Component {
 
     validate = () => {
         this.setState({
-            valid: this.state.valid = this.state.amount !== '' && this.state.walletAddress.startsWith('cudo1'),
+            valid: this.state.valid = this.state.amount !== '' && this.state.walletAddress.startsWith(Meteor.settings.public.bech32PrefixAccAddr),
         });
     }
 
@@ -54,7 +54,7 @@ export default class Faucet extends Component {
         });
 
         const address = this.state.walletAddress;
-        const amount = parseInt(parseFloat(this.state.amount * 1000000))
+        const amount = parseInt(parseFloat(this.state.amount * Meteor.settings.public.coins[0].fraction))
         const data = {
             address: address,
             coins: [`${amount}${Meteor.settings.public.bondDenom}`]
@@ -114,10 +114,10 @@ export default class Faucet extends Component {
                     <h1 className="text-center mt-5"><T>faucet.title</T></h1>
                     <Input value={this.state.walletAddress} onChange={this.onChangeWalletAddress} placeholder={i18n.__('faucet.placeHolderWalletAddress').replace('%s', Meteor.settings.public.bech32PrefixAccAddr)}/>
                     <br />
-                    <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount').replace('%s', Meteor.settings.public.bondDenom)}/>
+                    <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount').replace('%s', Meteor.settings.public.coins[0].displayName)}/>
                     <br />
                     <div className="d-flex justify-content-center mt-5">
-                        <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }><T>faucet.send</T></button>
+                        <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }>{i18n.__('faucet.send').replace('%s', Meteor.settings.public.coins[0].displayName)}</button>
                     </div>
                 </div>
                 <FaucetModal
