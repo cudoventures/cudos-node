@@ -31,11 +31,11 @@ import { DirectSecp256k1HdWallet, Registry } from "@cosmjs/proto-signing";
 import { assertIsBroadcastTxSuccess, SigningStargateClient, StargateClient } from "@cosmjs/stargate";
 import { MsgDelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
 
-const chainId = "cudos-network";
-const shainName = "cudos-network";
-const rpc = "http://localhost:26657";
-const rest = "http://localhost:1317";
-const coinDenom = "cudo";
+const chainId = Meteor.settings.public.chainId;
+const shainName = Meteor.settings.public.chainName;
+const rpc = Meteor.settings.public.urls.rpc;
+const rest = Meteor.settings.public.urls.rest;
+const coinDenom = Meteor.settings.public.coins[0].denom;
 
 const T = i18n.createComponent();
 
@@ -95,7 +95,7 @@ export default class Header extends Component {
                                         return <span key={i}>
                                             <DropdownItem header><img src={network.logo} /> {network.name}</DropdownItem>
                                             {network.links.map((link, k) => {
-                                                return <DropdownItem key={k} disabled={link.chain_id == Meteor.settings.public.chainId}>
+                                                return <DropdownItem key={k} disabled={link.chain_id == chainId}>
                                                     <a href={link.url} target="_blank">{link.chain_id} <Badge size="xs" color="secondary">{link.name}</Badge></a>
                                                 </DropdownItem>})}
                                             {(i < networks.length - 1)?<DropdownItem divider />:''}
@@ -185,7 +185,7 @@ export default class Header extends Component {
                         // Chain-id of the Cosmos SDK chain.
                         chainId: chainId,
                         // The name of the chain to be displayed to the user.
-                        chainName: "cudos-poc-01-network",
+                        chainName: shainName,
                         // RPC endpoint of the chain.
                         rpc: rpc,
                         // REST endpoint of the chain.
@@ -197,7 +197,7 @@ export default class Header extends Component {
                             // Actual denom (i.e. uatom, uscrt) used by the blockchain.
                             coinMinimalDenom: coinDenom,
                             // # of decimal points to convert minimal denomination to user-facing denomination.
-                            coinDecimals: 0,
+                            coinDecimals: 6,
                             // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
                             // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
                             // coinGeckoId: ""
@@ -212,12 +212,12 @@ export default class Header extends Component {
                             coinType: 118,
                         },
                         bech32Config: {
-                            bech32PrefixAccAddr: "cudo",
-                            bech32PrefixAccPub: "cudopub",
-                            bech32PrefixValAddr: "cudovaloper",
-                            bech32PrefixValPub: "cudovaloperpub",
-                            bech32PrefixConsAddr: "cudovalcons",
-                            bech32PrefixConsPub: "cudovalconspub"
+                            bech32PrefixAccAddr: Meteor.settings.public.bech32PrefixAccAddr,
+                            bech32PrefixAccPub: Meteor.settings.public.bech32PrefixAccPub,
+                            bech32PrefixValAddr: Meteor.settings.public.bech32PrefixValAddr,
+                            bech32PrefixValPub: Meteor.settings.public.bech32PrefixValPub,
+                            bech32PrefixConsAddr: Meteor.settings.public.bech32PrefixConsAddr,
+                            bech32PrefixConsPub: Meteor.settings.public.bech32PrefixConsPub
                         },
                         // List of all coin/tokens used in this chain.
                         currencies: [{
@@ -226,7 +226,7 @@ export default class Header extends Component {
                             // Actual denom (i.e. uatom, uscrt) used by the blockchain.
                             coinMinimalDenom: coinDenom,
                             // # of decimal points to convert minimal denomination to user-facing denomination.
-                            coinDecimals: 0,
+                            coinDecimals: 6,
                             // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
                             // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
                             // coinGeckoId: ""
@@ -238,7 +238,7 @@ export default class Header extends Component {
                             // Actual denom (i.e. uatom, uscrt) used by the blockchain.
                             coinMinimalDenom: coinDenom,
                             // # of decimal points to convert minimal denomination to user-facing denomination.
-                            coinDecimals: 0,
+                            coinDecimals: 6,
                             // (Optional) Keplr can show the fiat value of the coin if a coingecko id is provided.
                             // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
                             // coinGeckoId: ""

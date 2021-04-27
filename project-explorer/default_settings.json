@@ -39,7 +39,8 @@
         },
         "coingeckoId": "cudos",
         "urls": {
-            "rpc":"http://localhost:26657"
+            "rpc":"http://localhost:26657",
+            "rest":"http://localhost:1317"
         },
         "fees": {
             "delegate": {
@@ -53,8 +54,12 @@
             "undelegate": {
                 "amount": [{"denom": "cudos", "amount": 100}],
                 "gas": "180000"
+            },
+            "withdraw": {
+                "amount": [{"denom": "cudos", "amount": 100}],
+                "gas": "180000"
             }
-        },
+        }
     },
     "remote":{
         "rpc":"http://localhost:26657",

@@ -364,6 +364,12 @@ class LedgerButton extends Component {
                 this.props.validator.operator_address,
                 this.state.delegateAmount.amount);
             break;
+        case Types.WITHDRAW:
+            txMsg = Ledger.createWithdraw(
+                this.getTxContext(),
+                this.state.user
+                );
+            break;
         case Types.SEND:
             txMsg = Ledger.createTransfer(
                 this.getTxContext(),
@@ -392,7 +398,7 @@ class LedgerButton extends Component {
 
 
         }
-
+        console.log(txMsg);
         //callback(txMsg, this.getSimulateBody(txMsg))        
         callback(txMsg)
     }
@@ -790,28 +796,28 @@ class DelegationButtons extends LedgerButton {
 
 class WithdrawButton extends LedgerButton {
 
-    createMessage = (callback) => {
-        Meteor.call('transaction.execute', {from: this.state.user}, this.getPath(), (err, res) =>{
-            if (res){
-                Meteor.call('isValidator', this.state.user, (error, result) => {
-                    if (result && result.address){
-                        res.value.msg.push({
-                            type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
-                            value: { validator_address: result.address }
-                        })
-                    }
-                    callback(res, res)
-                })
-            }
-            else {
-                this.setState({
-                    loading: false,
-                    simulating: false,
-                    errorMessage: 'something went wrong'
-                })
-            }
-        })
-    }
+    // createMessage = (callback) => {
+    //     Meteor.call('transaction.execute', {from: this.state.user}, this.getPath(), (err, res) =>{
+    //         if (res){
+    //             Meteor.call('isValidator', this.state.user ,(error, result) => {
+    //                 if (result && result.address){
+    //                     res.value.msg.push({
+    //                         type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
+    //                         value: { validator_address: result.address }
+    //                     })
+    //                 }
+    //                 callback(res, res)
+    //             })
+    //         }
+    //         else {
+    //             this.setState({
+    //                 loading: false,
+    //                 simulating: false,
+    //                 errorMessage: 'something went wrong'
+    //             })
+    //         }
+    //     })
+    // }
 
     supportAction(action) {
         return action === Types.WITHDRAW;

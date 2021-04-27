@@ -124,7 +124,7 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
     --commission-max-change-rate="0.01" \
     --min-self-delegation="1" \
     --gas="auto" \
-    --gas-prices="0.025stake" \
+    --gas-prices="0.025cudos" \
     --gas-adjustment="1.80" \
     --keyring-backend test
 
