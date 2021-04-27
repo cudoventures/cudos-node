@@ -342,7 +342,7 @@ class LedgerButton extends Component {
     }
 
     createMessage = (callback) => {
-        let txMsg, fee;
+        let txMsg;
 
         switch (this.state.actionType) {
         case Types.DELEGATE:
@@ -393,28 +393,8 @@ class LedgerButton extends Component {
 
         }
 
-        (async () => {
-            const chainId = "cudos-network";
-            await window.keplr.enable(chainId);
-    
-
-            const offlineSigner = window.getOfflineSigner(chainId);
-
-            const rpcEndpoint = "http://localhost:26657";
-            const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, offlineSigner);
-
-            const account = (await offlineSigner.getAccounts())[0];
-            const result = await client.signAndBroadcast(
-                account.address,
-                [txMsg.msgAny],
-                txMsg.fee
-            );
-
-
-            assertIsBroadcastTxSuccess(result);
-        })();
-
-        //callback(txMsg, this.getSimulateBody(txMsg))
+        //callback(txMsg, this.getSimulateBody(txMsg))        
+        callback(txMsg)
     }
 
     getSimulateBody (txMsg) {
@@ -428,10 +408,11 @@ class LedgerButton extends Component {
     }
 
     simulate = () => {
-        if (this.state.simulating) return
-        this.initStateOnLoad('simulating')
+        if (this.state.simulating) return this.initStateOnLoad('simulating')
+        
         try {
-            this.createMessage(this.runSimulatation);
+            //this.createMessage(this.runSimulatation);
+            this.createMessage(this.sign);
         } catch (e) {
             this.setStateOnError('simulating', e.message)
         }
@@ -456,35 +437,63 @@ class LedgerButton extends Component {
         })
     }
 
-    sign = () => {
+    sign = async (txMsg) => {
         if (this.state.signing) return
         this.initStateOnLoad('signing')
 
-        try {
-            let txMsg = this.state.txMsg;
-            console.log(txMsg);
-            const txContext = this.getTxContext();
-            const bytesToSign = Ledger.getBytesToSign(txMsg, txContext);
-            this.ledger.sign(bytesToSign).then((sig) => {
-                try {
-                    Ledger.applySignature(txMsg, txContext, sig);
-                    Meteor.call('transaction.submit', txMsg, (err, res) => {
-                        if (err) {
-                            this.setStateOnError('signing', err.reason)
-                        } else if (res) {
-                            this.setStateOnSuccess('signing', {
-                                txHash: res,
-                                activeTab: '4'
-                            })
-                        }
-                    })
-                } catch (e) {
-                    this.setStateOnError('signing', e.message)
-                }
-            }, (err) => this.setStateOnError('signing', err.message))
-        } catch (e) {
+        try{
+            const chainId = Meteor.settings.public.chainId;
+            await window.keplr.enable(chainId);
+    
+
+            const offlineSigner = window.getOfflineSigner(chainId);
+
+            const rpcEndpoint = Meteor.settings.public.urls.rpc;
+            const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, offlineSigner);
+
+            const account = (await offlineSigner.getAccounts())[0];
+            const result = await client.signAndBroadcast(
+                account.address,
+                [txMsg.msgAny],
+                txMsg.fee,
+            );
+
+            assertIsBroadcastTxSuccess(result);
+
+            this.setStateOnSuccess('signing', {
+                txHash: result,
+                activeTab: '4'
+            })
+
+        } catch (e){
             this.setStateOnError('signing', e.message)
         }
+
+        // try {
+            // let txMsg = this.state.txMsg;
+            // console.log(txMsg);
+            // const txContext = this.getTxContext();
+            // const bytesToSign = Ledger.getBytesToSign(txMsg, txContext);
+            // this.ledger.sign(bytesToSign).then((sig) => {
+            //     try {
+            //         Ledger.applySignature(txMsg, txContext, sig);
+            //         Meteor.call('transaction.submit', txMsg, (err, res) => {
+            //             if (err) {
+            //                 this.setStateOnError('signing', err.reason)
+            //             } else if (res) {
+            //                 this.setStateOnSuccess('signing', {
+            //                     txHash: res,
+            //                     activeTab: '4'
+            //                 })
+            //             }
+            //         })
+            //     } catch (e) {
+            //         this.setStateOnError('signing', e.message)
+            //     }
+            // }, (err) => this.setStateOnError('signing', err.message))
+        // } catch (e) {
+        //     this.setStateOnError('signing', e.message)
+        // }
     }
 
     handleInputChange = (e) => {

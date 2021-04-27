@@ -10,13 +10,20 @@ import bech32 from "bech32";
 import sha256 from "crypto-js/sha256"
 import ripemd160 from "crypto-js/ripemd160"
 import CryptoJS from "crypto-js"
-import { MsgDelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
+import { MsgDelegate, MsgUndelegate, MsgBeginRedelegate } from "@cosmjs/stargate/build/codec/cosmos/staking/v1beta1/tx"; 
 
 
 // TODO: discuss TIMEOUT value
 const INTERACTION_TIMEOUT = 10000
 const REQUIRED_COSMOS_APP_VERSION = Meteor.settings.public.ledger.ledgerAppVersion || "2.16.0";
 const DEFAULT_DENOM = Meteor.settings.public.bondDenom || 'cudo';
+const TYPE_URLS = {
+    msgDelegate: "/cosmos.staking.v1beta1.MsgDelegate",
+    msgUndelegate:"/cosmos.staking.v1beta1.MsgUndelegate",
+    msgRedelegate: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+
+}
+
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
 export const DEFAULT_MEMO = 'Sent via Big Dipper'
 
@@ -28,12 +35,8 @@ DerivationPath{44, 118, account, 0, index}
 const COINTYPE = Meteor.settings.public.ledger.coinType || 118;
 
 const HDPATH = [44, COINTYPE, 0, 0, 0]
-const BECH32PREFIX = Meteor.settings.public.bech32PrefixAccAddr
 
-const chainId = "cudos-network";
-
-let offlineSigner = null;
-let account = null;
+const chainId = Meteor.settings.public.chainId;
 
 function bech32ify(address, prefix) {
     const words = bech32.toWords(address)
@@ -328,7 +331,7 @@ export class Ledger {
         uatomAmount
     ) {
         const msgAny = {    
-            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            typeUrl: TYPE_URLS.msgDelegate,
             value: MsgDelegate.fromPartial({
                 delegatorAddress: txContext.bech32,
                 validatorAddress: validatorBech32,
@@ -337,13 +340,10 @@ export class Ledger {
                     denom: txContext.denom,
                 },
               }),
-        };
-        const fee = {
-            amount: [{denom: "cudo",amount: "2000"}],
-            gas: "180000", // 180k
+            memo: txContext.memo,
         };
 
-        return {msgAny, fee};
+        return {msgAny, fee: Meteor.settings.public.fees.delegate};
     }
 
     // Creates a new undelegation tx based on the input parameters
@@ -353,19 +353,20 @@ export class Ledger {
         validatorBech32,
         uatomAmount
     ) {
-        const txMsg = {
-            type: 'cosmos-sdk/MsgUndelegate',
-            value: {
+        const msgAny = {    
+            typeUrl: TYPE_URLS.msgUndelegate,
+            value: MsgUndelegate.fromPartial({
+                delegatorAddress: txContext.bech32,
+                validatorAddress: validatorBech32,
                 amount: {
                     amount: uatomAmount.toString(),
                     denom: txContext.denom,
                 },
-                delegator_address: txContext.bech32,
-                validator_address: validatorBech32,
-            },
+              }),
+            memo: txContext.memo,
         };
 
-        return Ledger.createSkeleton(txContext, [txMsg]);
+        return {msgAny, fee: Meteor.settings.public.fees.undelegate};
     }
 
     // Creates a new redelegation tx based on the input parameters
@@ -376,20 +377,21 @@ export class Ledger {
         validatorDestBech32,
         uatomAmount
     ) {
-        const txMsg = {
-            type: 'cosmos-sdk/MsgBeginRedelegate',
-            value: {
+        const msgAny = {    
+            typeUrl: TYPE_URLS.msgRendelegate,
+            value: MsgBeginRedelegate.fromPartial({
+                delegatorAddress: txContext.bech32,
+                validatorSrcAddress: validatorSourceBech32,
+                validatorDstAddress: validatorDestBech32,
                 amount: {
                     amount: uatomAmount.toString(),
                     denom: txContext.denom,
                 },
-                delegator_address: txContext.bech32,
-                validator_dst_address: validatorDestBech32,
-                validator_src_address: validatorSourceBech32,
-            },
+              }),
+            memo: txContext.memo,
         };
 
-        return Ledger.createSkeleton(txContext, [txMsg]);
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
     // Creates a new transfer tx based on the input parameters
@@ -458,11 +460,7 @@ export class Ledger {
         return Ledger.createSkeleton(txContext, [txMsg]);
     }
 
-    static createDeposit(
-        txContext,
-        proposalId,
-        amount,
-    ) {
+    static createDeposit() {
         const txMsg = {
             type: 'cosmos-sdk/MsgDeposit',
             value: {

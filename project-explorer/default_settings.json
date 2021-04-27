@@ -37,7 +37,24 @@
             "gov": true,
             "distribution": true
         },
-        "coingeckoId": "cudo"
+        "coingeckoId": "cudo",
+        "urls": {
+            "rpc":"http://localhost:26657"
+        },
+        "fees": {
+            "delegate": {
+                "amount": [{"denom": "cudos", "amount": 100}],
+                "gas": "180000"
+            },
+            "redelegate": {
+                "amount": [{"denom": "cudos", "amount": 100}],
+                "gas": "180000"
+            },
+            "undelegate": {
+                "amount": [{"denom": "cudos", "amount": 100}],
+                "gas": "180000"
+            }
+        }
     },
     "remote":{
         "rpc":"http://localhost:26657",
