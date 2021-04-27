@@ -24,7 +24,7 @@ const TYPE_URLS = {
     msgUndelegate:"/cosmos.staking.v1beta1.MsgUndelegate",
     msgRedelegate: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
     msgSend: "/cosmos.bank.v1beta1.MsgSend",
-    msgWithdraw: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+    msgWithdraw: "/cosmos.distribution.v1beta1.MsgWithdrawDelegationReward",
 }
 
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
@@ -333,7 +333,7 @@ export class Ledger {
         validatorBech32,
         uatomAmount
     ) {
-        const msgAny = {    
+        const msgAny = [{    
             typeUrl: TYPE_URLS.msgDelegate,
             value: MsgDelegate.fromPartial({
                 delegatorAddress: txContext.bech32,
@@ -344,7 +344,7 @@ export class Ledger {
                 },
               }),
             memo: txContext.memo,
-        };
+        }];
 
         return {msgAny, fee: Meteor.settings.public.fees.delegate};
     }
@@ -356,7 +356,7 @@ export class Ledger {
         validatorBech32,
         uatomAmount
     ) {
-        const msgAny = {    
+        const msgAny = [{    
             typeUrl: TYPE_URLS.msgUndelegate,
             value: MsgUndelegate.fromPartial({
                 delegatorAddress: txContext.bech32,
@@ -367,7 +367,7 @@ export class Ledger {
                 },
               }),
             memo: txContext.memo,
-        };
+        }];
 
         return {msgAny, fee: Meteor.settings.public.fees.undelegate};
     }
@@ -380,7 +380,7 @@ export class Ledger {
         validatorDestBech32,
         uatomAmount
     ) {
-        const msgAny = {    
+        const msgAny = [{    
             typeUrl: TYPE_URLS.msgRedelegate,
             value: MsgBeginRedelegate.fromPartial({
                 delegatorAddress: txContext.bech32,
@@ -392,19 +392,22 @@ export class Ledger {
                 },
               }),
             memo: txContext.memo,
-        };
+        }];
 
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
-    static async createWithdraw(txContext){
-        const msgAny = {    
+    static async createWithdraw(txContext, validators){
+        const msgAny = [];
+
+        validators.forEach(validator => msgAny.push({    
             typeUrl: TYPE_URLS.msgWithdraw,
             value: MsgWithdrawDelegatorReward.fromPartial({
                 delegatorAddress: txContext.bech32,
-                validatorAddress: ""
+                validatorAddress: validator.address
                 })
-        };
+        }));
+
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
@@ -415,7 +418,7 @@ export class Ledger {
         toAddress,
         amount
     ) {
-        const msgAny = {    
+        const msgAny = [{    
             typeUrl: TYPE_URLS.msgSend,
             value: MsgSend.fromPartial({
                 fromAddress: txContext.bech32,
@@ -426,7 +429,7 @@ export class Ledger {
                 }],
               }),
             memo: txContext.memo,
-        };
+        }];
 
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
@@ -437,6 +440,27 @@ export class Ledger {
         description,
         deposit
     ) {
+
+        const msgAny = [{
+            type: 'cosmos-sdk/MsgSubmitProposal',
+            value: {
+                content: {
+                    type: "/cosmos.TextProposal",
+                    value: {
+                        description: description,
+                        title: title
+                    }
+                },
+                initial_deposit: [{
+                    amount: deposit.toString(),
+                    denom: txContext.denom
+                }],
+                proposer: txContext.bech32
+            }
+        }];
+
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
+
         const txMsg = {
             type: 'cosmos-sdk/MsgSubmitProposal',
             value: {

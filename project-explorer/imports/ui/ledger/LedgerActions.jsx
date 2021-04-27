@@ -343,12 +343,7 @@ class LedgerButton extends Component {
 
     createMessage = (callback) => {
         let txMsg;
-        let activeValidators = Validators.find(
-            {"jailed": false, "status": 'BOND_STATUS_BONDED'},
-            {"sort":{"description.moniker":1}}
-        );
 
-        activeValidators.map(a => console.log(a));
         switch (this.state.actionType) {
         case Types.DELEGATE:
             txMsg = Ledger.createDelegate(
@@ -371,8 +366,12 @@ class LedgerButton extends Component {
             break;
         case Types.WITHDRAW:
             txMsg = Ledger.createWithdraw(
-                this.getTxContext()
-                );
+                this.getTxContext(),
+                Validators.find(
+                    {"jailed": false, "status": 'BOND_STATUS_BONDED'},
+                    {"sort":{"description.moniker":1}}
+                )
+            );
             break;
         case Types.SEND:
             txMsg = Ledger.createTransfer(
@@ -450,10 +449,10 @@ class LedgerButton extends Component {
         if (this.state.signing) return
         this.initStateOnLoad('signing')
 
+
         try{
             const chainId = Meteor.settings.public.chainId;
             await window.keplr.enable(chainId);
-    
 
             const offlineSigner = window.getOfflineSigner(chainId);
 
@@ -462,11 +461,13 @@ class LedgerButton extends Component {
 
             const account = (await offlineSigner.getAccounts())[0];
 
+            console.log("got here2");
             const result = await client.signAndBroadcast(
                 account.address,
-                [txMsg.msgAny],
+                txMsg.msgAny,
                 txMsg.fee,
             );
+            console.log("got here2.5");
 
             assertIsBroadcastTxSuccess(result);
 
@@ -475,8 +476,10 @@ class LedgerButton extends Component {
                 activeTab: '4'
             })
 
+            console.log("got here3");
         } catch (e){
             this.setStateOnError('signing', e.message)
+            console.log(e);
         }
 
         // try {
@@ -573,8 +576,7 @@ class LedgerButton extends Component {
             {"sort":{"description.moniker":1}}
         );
 
-        activeValidators.map(a => console.log(a));
-
+        console.log(activeValidators);
         let redelegations = this.state.redelegations || {};
         let maxEntries = (this.props.stakingParams&&this.props.stakingParams.max_entries)?this.props.stakingParams.max_entries:7;
         return <UncontrolledDropdown direction='down' size='sm' className='redelegate-validators'>
