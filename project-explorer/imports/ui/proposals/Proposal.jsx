@@ -23,6 +23,7 @@ const Result = posed.div({
     closed: { height: 0},
     open: { height: 'auto'}
 });
+
 export default class Proposal extends Component{
     constructor(props){
         super(props);

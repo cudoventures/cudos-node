@@ -9,16 +9,23 @@ import i18n from 'meteor/universe:i18n';
 
 const T = i18n.createComponent();
 
-const ProposalList = (props) => {
-    return <div>
-        <p className="lead"><T>proposals.listOfProposals</T></p>
-        <Row>
-            <Col md={12}>
-                <List {...props}/>
-            </Col>
-        </Row>
-    </div>
+class ProposalList extends Component {
+
+    render() {
+        return (
+            <div>
+                <p className="lead"><T>proposals.listOfProposals</T></p>
+                <Row>
+                    <Col md={12}>
+                        <List {...this.props}/>
+                    </Col>
+                </Row>
+            </div>
+        )
+    }
+
 }
+
 export default class Proposals extends Component{
     constructor(props){
         super(props);

@@ -446,11 +446,13 @@ class LedgerButton extends Component {
     }
 
     sign = async (txMsg) => {
-        if (this.state.signing) return
+        if (this.state.signing) {
+            return;
+        }
+
         this.initStateOnLoad('signing')
 
-
-        try{
+        try {
             const chainId = Meteor.settings.public.chainId;
             await window.keplr.enable(chainId);
 
@@ -461,13 +463,14 @@ class LedgerButton extends Component {
 
             const account = (await offlineSigner.getAccounts())[0];
 
-            console.log("got here2");
+            console.log(account.address);
+            console.log(txMsg.msgAny);
+            console.log(txMsg.fee);
             const result = await client.signAndBroadcast(
                 account.address,
                 txMsg.msgAny,
                 txMsg.fee,
             );
-            console.log("got here2.5");
 
             assertIsBroadcastTxSuccess(result);
 
@@ -475,35 +478,33 @@ class LedgerButton extends Component {
                 txHash: result,
                 activeTab: '4'
             })
-
-            console.log("got here3");
         } catch (e){
             this.setStateOnError('signing', e.message)
             console.log(e);
         }
 
         // try {
-            // let txMsg = this.state.txMsg;
-            // console.log(txMsg);
-            // const txContext = this.getTxContext();
-            // const bytesToSign = Ledger.getBytesToSign(txMsg, txContext);
-            // this.ledger.sign(bytesToSign).then((sig) => {
-            //     try {
-            //         Ledger.applySignature(txMsg, txContext, sig);
-            //         Meteor.call('transaction.submit', txMsg, (err, res) => {
-            //             if (err) {
-            //                 this.setStateOnError('signing', err.reason)
-            //             } else if (res) {
-            //                 this.setStateOnSuccess('signing', {
-            //                     txHash: res,
-            //                     activeTab: '4'
-            //                 })
-            //             }
-            //         })
-            //     } catch (e) {
-            //         this.setStateOnError('signing', e.message)
-            //     }
-            // }, (err) => this.setStateOnError('signing', err.message))
+        // let txMsg = this.state.txMsg;
+        // console.log(txMsg);
+        // const txContext = this.getTxContext();
+        // const bytesToSign = Ledger.getBytesToSign(txMsg, txContext);
+        // this.ledger.sign(bytesToSign).then((sig) => {
+        //     try {
+        //         Ledger.applySignature(txMsg, txContext, sig);
+        //         Meteor.call('transaction.submit', txMsg, (err, res) => {
+        //             if (err) {
+        //                 this.setStateOnError('signing', err.reason)
+        //             } else if (res) {
+        //                 this.setStateOnSuccess('signing', {
+        //                     txHash: res,
+        //                     activeTab: '4'
+        //                 })
+        //             }
+        //         })
+        //     } catch (e) {
+        //         this.setStateOnError('signing', e.message)
+        //     }
+        // }, (err) => this.setStateOnError('signing', err.message))
         // } catch (e) {
         //     this.setStateOnError('signing', e.message)
         // }
@@ -1113,7 +1114,7 @@ LedgerButton.propTypes = {
     }),
     rewards:PropTypes.array,
     commission:PropTypes.array,
-    denom:PropTypes.string.isRequired,
+    denom:PropTypes.string,
 }
 
 DelegationButtons.propTypes = {
