@@ -6,3 +6,4 @@ cudos-data
 faucelt.wallet.txt
 secrets.json
 node_modules
+.idea
