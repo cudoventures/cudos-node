@@ -463,9 +463,6 @@ class LedgerButton extends Component {
 
             const account = (await offlineSigner.getAccounts())[0];
 
-            console.log(account.address);
-            console.log(txMsg.msgAny);
-            console.log(txMsg.fee);
             const result = await client.signAndBroadcast(
                 account.address,
                 txMsg.msgAny,
