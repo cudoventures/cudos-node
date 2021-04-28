@@ -17,6 +17,9 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	appparams "cudos.org/cudos-node/app/params"
+	"cudos.org/cudos-node/x/admin"
+	adminkeeper "cudos.org/cudos-node/x/admin/keeper"
+	admintypes "cudos.org/cudos-node/x/admin/types"
 	"cudos.org/cudos-node/x/blog"
 	blogkeeper "cudos.org/cudos-node/x/blog/keeper"
 	blogtypes "cudos.org/cudos-node/x/blog/types"
@@ -90,6 +93,7 @@ import (
 )
 
 const Name = "cudos-node"
+
 // We pull these out so we can set them with LDFLAGS in the Makefile
 var (
 	// If EnabledSpecificProposals is "", and this is "true", then enable all x/wasm proposals.
@@ -146,6 +150,7 @@ var (
 		vesting.AppModuleBasic{},
 		blog.AppModuleBasic{},
 		wasm.AppModuleBasic{},
+		admin.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -227,8 +232,9 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
-	blogKeeper blogkeeper.Keeper
-	wasmKeeper       wasm.Keeper
+	blogKeeper  blogkeeper.Keeper
+	wasmKeeper  wasm.Keeper
+	adminKeeper adminkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -257,7 +263,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		blogtypes.StoreKey, wasm.StoreKey,
+		blogtypes.StoreKey, wasm.StoreKey, admintypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -325,7 +331,6 @@ func New(
 		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, scopedIBCKeeper,
 	)
 
-
 	// just re-use the full router - do we want to limit this more?
 	var wasmRouter = bApp.Router()
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -364,6 +369,12 @@ func New(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.IBCKeeper.ClientKeeper))
+
+	app.adminKeeper = *adminkeeper.NewKeeper(
+		appCodec, keys[admintypes.StoreKey], keys[admintypes.MemStoreKey],
+		app.DistrKeeper, app.BankKeeper,
+	)
+
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,
@@ -426,6 +437,7 @@ func New(
 		transferModule,
 		blog.NewAppModule(appCodec, app.blogKeeper),
 		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
+		admin.NewAppModule(appCodec, app.adminKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -460,6 +472,7 @@ func New(
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
+		admintypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
