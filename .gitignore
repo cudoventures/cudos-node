@@ -7,3 +7,5 @@ faucelt.wallet.txt
 secrets.json
 node_modules
 .idea
+cudos-noded
+libwasmvm.so

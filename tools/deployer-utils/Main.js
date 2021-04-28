@@ -204,6 +204,7 @@ async function executeCommands(args, secrets, deployFilePath, deployFilename) {
         `cd ./project-faucet-cli`,
         `make`,
         `cp ./bin/cudos-noded "$GOPATH/bin"`,
+        `sudo cp ./bin/libwasmvm.so "/usr/lib"`,
         `chmod +x "$GOPATH/bin/cudos-noded"`,
         `chmod +x ./run-testnet.sh`,
         `cp ./run-testnet.sh ../../faucet`,
