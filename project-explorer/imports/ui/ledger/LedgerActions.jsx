@@ -461,13 +461,11 @@ class LedgerButton extends Component {
 
             const account = (await offlineSigner.getAccounts())[0];
 
-            console.log("got here2");
             const result = await client.signAndBroadcast(
                 account.address,
                 txMsg.msgAny,
                 txMsg.fee,
             );
-            console.log("got here2.5");
 
             assertIsBroadcastTxSuccess(result);
 
@@ -476,7 +474,6 @@ class LedgerButton extends Component {
                 activeTab: '4'
             })
 
-            console.log("got here3");
         } catch (e){
             this.setStateOnError('signing', e.message)
             console.log(e);

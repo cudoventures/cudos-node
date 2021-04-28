@@ -408,6 +408,7 @@ export class Ledger {
                 })
         }));
 
+        console.log(msgAny);
         return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
@@ -487,16 +488,16 @@ export class Ledger {
         proposalId,
         option,
     ) {
-        const txMsg = {
+        const msgAny = [{
             type: 'cosmos-sdk/MsgVote',
             value: {
                 option,
                 proposal_id: proposalId.toString(),
                 voter: txContext.bech32
             }
-        };
+        }];
 
-        return Ledger.createSkeleton(txContext, [txMsg]);
+        return {msgAny, fee: Meteor.settings.public.fees.redelegate};
     }
 
     static createDeposit() {
