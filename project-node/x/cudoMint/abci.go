@@ -21,13 +21,11 @@ var (
 // BeginBlocker mints new tokens for the previous block.
 func 	BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-	logger := k.Logger(ctx)
-	logger.Info("Test me?")
 	blockHeight := ctx.BlockHeight()
 	if blockHeight > blockSpan {
 		return
 	}
-	logger.Info("Im here aint?")
+
 	mintAmount := sdk.NewDec(blockSpan - blockHeight).Mul(commonDifference)
 	mintedCoin := sdk.NewCoin("stake", mintAmount.TruncateInt())
 	mintedCoins := sdk.NewCoins(mintedCoin)
