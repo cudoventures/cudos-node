@@ -3,9 +3,9 @@ package keeper
 import (
 	"strconv"
 
+	"cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"cudos.org/cudos-node/x/blog/types"
 )
 
 // GetPostCount get the total number of post

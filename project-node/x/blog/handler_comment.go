@@ -1,10 +1,10 @@
 package blog
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"cudos.org/cudos-node/x/blog/keeper"
 	"cudos.org/cudos-node/x/blog/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func handleMsgCreateComment(ctx sdk.Context, k keeper.Keeper, msg *types.MsgCreateComment) (*sdk.Result, error) {

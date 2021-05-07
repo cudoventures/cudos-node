@@ -90,6 +90,9 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	"cudos.org/cudos-node/x/cudoMint"
+	cudoMintkeeper "cudos.org/cudos-node/x/cudoMint/keeper"
+	cudoMinttypes "cudos.org/cudos-node/x/cudoMint/types"
 )
 
 const Name = "cudos-node"
@@ -151,6 +154,7 @@ var (
 		blog.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		admin.AppModuleBasic{},
+		cudoMint.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -163,6 +167,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		cudoMinttypes.ModuleName: {authtypes.Minter},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -235,6 +240,7 @@ type App struct {
 	blogKeeper  blogkeeper.Keeper
 	wasmKeeper  wasm.Keeper
 	adminKeeper adminkeeper.Keeper
+	cudoMintKeeper cudoMintkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -265,6 +271,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		blogtypes.StoreKey, wasm.StoreKey, admintypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		cudoMinttypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -406,6 +413,15 @@ func New(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
+	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
+		appCodec,
+		keys[cudoMinttypes.StoreKey],
+		keys[cudoMinttypes.MemStoreKey],
+		app.BankKeeper,
+		authtypes.FeeCollectorName,
+	)
+	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -438,6 +454,7 @@ func New(
 		blog.NewAppModule(appCodec, app.blogKeeper),
 		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
+		cudoMintModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -447,7 +464,7 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, cudoMinttypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
@@ -473,6 +490,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
+		cudoMinttypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -668,6 +686,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
+	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 
 	return paramsKeeper
 }

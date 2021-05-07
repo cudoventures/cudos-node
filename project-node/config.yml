@@ -7,3 +7,9 @@ accounts:
 validator:
   name: user1
   staked: "100000000stake"
+genesis:
+  app_state:
+    mint:
+      params:
+        inflation_max: "0.000000000000000000"
+        inflation_min: "0.000000000000000000"

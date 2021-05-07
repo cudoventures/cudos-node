@@ -24,4 +24,3 @@ func AddGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
 	return txCmd
 
 }
-
