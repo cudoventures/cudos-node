@@ -3,10 +3,10 @@ package cli
 import (
 	"github.com/spf13/cobra"
 
+	"cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"cudos.org/cudos-node/x/blog/types"
 )
 
 func CmdCreateComment() *cobra.Command {

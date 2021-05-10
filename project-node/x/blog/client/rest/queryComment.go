@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"cudos.org/cudos-node/x/blog/types"
 	"github.com/gorilla/mux"
 )
 

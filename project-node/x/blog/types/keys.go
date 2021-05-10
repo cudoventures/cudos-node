@@ -26,6 +26,6 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	CommentKey= "Comment-value-"
-	CommentCountKey= "Comment-count-"
+	CommentKey      = "Comment-value-"
+	CommentCountKey = "Comment-count-"
 )

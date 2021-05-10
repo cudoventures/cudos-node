@@ -1,9 +1,9 @@
 package wasm
 
 import (
-	"fmt"
 	"cudos.org/cudos-node/x/wasm/internal/keeper"
 	"cudos.org/cudos-node/x/wasm/internal/types"
+	"fmt"
 	"github.com/gogo/protobuf/proto"
 	abci "github.com/tendermint/tendermint/abci/types"
 

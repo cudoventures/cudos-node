@@ -13,15 +13,15 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"cudos.org/cudos-node/x/blog/client/cli"
+	"cudos.org/cudos-node/x/blog/client/rest"
+	"cudos.org/cudos-node/x/blog/keeper"
+	"cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"cudos.org/cudos-node/x/blog/client/cli"
-	"cudos.org/cudos-node/x/blog/client/rest"
-	"cudos.org/cudos-node/x/blog/keeper"
-	"cudos.org/cudos-node/x/blog/types"
 )
 
 var (
