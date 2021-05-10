@@ -9,3 +9,4 @@ node_modules
 .idea
 cudos-noded
 libwasmvm.so
+/tools/deployer-utils/temp

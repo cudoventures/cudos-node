@@ -6,6 +6,6 @@ export KEYRING_BACKEND="test"
 export CREDIT_AMOUNT="1000"
 export MAX_CREDIT="100000000"
 export NODE="http://10.128.0.2:26657"
-export MNEMONIC="become bind merge kitchen oval chair erase material draw impose enemy useful habit science project face multiply bird pact bottom ahead basic kitten boy"
+export MNEMONIC="point unknown typical hold snow disease access wedding chunk void bike average coach inflict acoustic peanut pen error spin faith lounge void satoshi chief"
 
 faucet
