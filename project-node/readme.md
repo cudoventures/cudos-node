@@ -134,3 +134,18 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
 
 # Reset the blockchain
 All data of the blockchain is store at ~/.blog folder. By deleting it the entire blockchain is completely reset and it must be initialized again.
+
+# Static compile
+
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags wasmvm -ldflags '-extldflags "-static"' ./cmd/cudos-noded/
+
+LD_LIBRARY_PATH="/Working/Cudos/CudosNode/project-node" && go build -a -tags libwasmvm -ldflags '-extldflags "-static"' ./cmd/cudos-noded/
+
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags '-extldflags "-static"' ./cmd/cudos-noded/
+go build -a -linkshared -ldflags '-extldflags "-static -lwasmvm"' ./cmd/cudos-noded/
+go build -a -ldflags '-extldflags "-lwasmvm -static"' ./cmd/cudos-noded/
+
+go build -compiler gccgo --gccgoflags "-static" ./cmd/cudos-noded/
+
+
+go build -tags netgo,osusergo -ldflags="-extldflags=-static" ./cmd/cudos-noded/
