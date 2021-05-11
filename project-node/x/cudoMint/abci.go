@@ -14,14 +14,13 @@ var (
 	// based on the assumption that we have 1 block per 5 seconds
 	blocksPerMonth sdk.Int = sdk.NewInt(525657)
 	// regulate offset of n
-	monthsOffset int64  = 0
+	monthsOffset int64  = 4
 	monthsActive int64  = 9
 	denom        string = "cudos"
 )
 
 func calculateMintedCoins(monthsPassed sdk.Int, minter types.Minter) sdk.Dec {
-	monthsPassed = monthsPassed.AddRaw(1) // the algorithm is 1-based
-	monthsDenominator := sdk.MustNewDecFromStr("1.5").Add(sdk.MustNewDecFromStr("0.004")).Mul(monthsPassed.ToDec().Power(2))
+	monthsDenominator := ((sdk.MustNewDecFromStr("0.004")).Mul(monthsPassed.ToDec().Power(2))).Add(sdk.MustNewDecFromStr("1.5"))
 	coinsForMonth := sdk.NewDec(28653300 + monthsPassed.MulRaw(5000).Int64()).Quo(monthsDenominator)
 	return (coinsForMonth.QuoInt(blocksPerMonth)).Add(minter.MintRemainder)
 }
@@ -34,8 +33,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if monthsPassed.GT(sdk.NewInt(monthsActive)) {
 		return
 	}
-
 	minter := k.GetMinter(ctx)
+	monthsPassed = monthsPassed.AddRaw(1) // the algorithm is 1-based
 	mintAmountDec := calculateMintedCoins(monthsPassed, minter)
 	mintAmountInt := mintAmountDec.TruncateInt()
 	mintedCoin := sdk.NewCoin(denom, mintAmountInt)
