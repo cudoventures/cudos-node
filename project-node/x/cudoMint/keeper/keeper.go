@@ -44,6 +44,24 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
+// get the minter
+func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.MinterKey)
+	if b == nil {
+		panic("stored minter should not have been nil")
+	}
+
+	k.cdc.MustUnmarshalBinaryBare(b, &minter)
+	return minter
+}
+
+//set the minter
+func (k Keeper) SetMinter(ctx sdk.Context, minter types.Minter) {
+	store := ctx.KVStore(k.storeKey)
+	b := k.cdc.MustMarshalBinaryBare(&minter)
+	store.Set(types.MinterKey, b)
+}
 
 // MintCoins implements an alias call to the underlying supply keeper's
 // MintCoins to be used in BeginBlocker.

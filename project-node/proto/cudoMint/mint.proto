@@ -1,0 +1,15 @@
+syntax = "proto3";
+package cudosnode.cudosnode.cudoMint;
+
+option go_package = "cudos.org/cudos-node/x/cudoMint/types";
+
+import "gogoproto/gogo.proto";
+
+// Minter represents the minting state.
+message Minter {
+  // current annual inflation rate
+  string mint_remainder = 1
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}

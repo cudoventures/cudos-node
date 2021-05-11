@@ -1,5 +1,7 @@
 package types
 
+var MinterKey = []byte{0x00}
+
 const (
 	// ModuleName defines the module name
 	ModuleName = "cudoMint"
