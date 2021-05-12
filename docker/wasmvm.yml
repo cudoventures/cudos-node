@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  cudos-wasmvm:
+    image: wasmvm-builder
+    container_name: wasmvm-builder
+    build:
+      dockerfile: docker/wasmvm.dockerfile
+      context: ../
+    restart: unless-stopped
+    volumes:
+      - ../project-wasmvm:/code
