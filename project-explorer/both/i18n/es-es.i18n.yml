@@ -23,7 +23,7 @@ common:
     cancel: 'Cancelar'
     retry: 'Reintentar'
 navbar:
-    siteName: 'BIG DIPPER'
+    siteName: 'CUDOS Explorer'
     validators: 'Validadores'
     blocks: 'Bloques'
     transactions: 'Transacciones'

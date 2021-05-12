@@ -21,6 +21,8 @@ export default class TwentyEighty extends Component{
             let topPercent = this.props.stats.topTwentyPower/this.props.stats.totalVotingPower;
             let bottomPercent = this.props.stats.bottomEightyPower/this.props.stats.totalVotingPower;
 
+            console.log(topPercent);
+            console.log(bottomPercent);
             this.setState({
                 data:{
                     labels:

@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"errors"
 	"fmt"
+	"time"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -19,6 +21,56 @@ import (
 	"github.com/tendermint/starport/starport/pkg/cosmosver"
 	"github.com/tendermint/starport/starport/pkg/xhttp"
 )
+
+type SiteVerifyResponse struct {
+	Success     bool      `json:"success"`
+	Score       float64   `json:"score"`
+	Action      string    `json:"action"`
+	ChallengeTS time.Time `json:"challenge_ts"`
+	Hostname    string    `json:"hostname"`
+	ErrorCodes  []string  `json:"error-codes"`
+}
+
+type TransferRequest struct {
+	// AccountAddress to request for coins.
+	AccountAddress string `json:"address"`
+
+	// Coins that are requested.
+	// default ones used when this one isn't provided.
+	Coins []string `json:"coins"`
+
+	CaptchaResponse string `json: "captchaResponse"`
+}
+
+func checkCaptchaWithKey(captcha string) error {
+	siteVerifyURL := "https://www.google.com/recaptcha/api/siteverify"
+	req, err := http.NewRequest(http.MethodPost, siteVerifyURL, nil)
+
+	q := req.URL.Query()
+	q.Add("secret", captchBackend)
+	q.Add("response", captcha)
+	req.URL.RawQuery = q.Encode()
+
+	// Make request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Decode response.
+	var body SiteVerifyResponse
+	if err = json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return err
+	}
+
+	// Check recaptcha verification success.
+	if !body.Success {
+		return errors.New("unsuccessful recaptcha verify request")
+	}
+
+	return nil
+}
 
 func main() {
 	flag.Parse()
@@ -84,9 +136,18 @@ func main() {
 		rdr1 := ioutil.NopCloser(bytes.NewBuffer(buf))
 		rdr2 := ioutil.NopCloser(bytes.NewBuffer(buf))
 
-		var req cosmosfaucet.TransferRequest
+		var req TransferRequest
 		err := json.NewDecoder(rdr1).Decode(&req)
+		
+
 		if err == nil {
+			captchaErr := checkCaptchaWithKey(req.CaptchaResponse);
+
+			if captchaErr != nil {
+				http.Error(w, "Wrong captcha", http.StatusUnauthorized)
+				return
+			}
+
 			coin := req.Coins[0]
 			amount, denom, err := cosmoscoin.Parse(coin)
 			if err == nil {

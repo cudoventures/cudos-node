@@ -1,5 +1,6 @@
 export DENOMS="ucudos"
 export PORT="5000"
+export CAPTCHA_BACKEND="6Ldjs9EaAAAAAO6GmEKsDB1teUDi0AwRJNKfA7oF"
 export ACCOUNT_NAME="faucet"
 export CLI_NAME="cudos-noded"
 export KEYRING_BACKEND="test"

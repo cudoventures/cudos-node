@@ -4,13 +4,19 @@ import { Helmet } from 'react-helmet';
 import i18n from 'meteor/universe:i18n';
 import FaucetModal from './FaucetModal';
 import { Meteor } from 'meteor/meteor';
-import { TRANSACTION_STATUS_DONE_ERROR, TRANSACTION_STATUS_DONE_OK, TRANSACTION_STATUS_PENDING } from './FaucetUtils';
+import { TRANSACTION_STATUS_DONE_ERROR, TRANSACTION_STATUS_DONE_ERROR_WRONG_CAPTCHA, TRANSACTION_STATUS_DONE_OK, TRANSACTION_STATUS_PENDING } from './FaucetUtils';
+
+import CaptchaWrapper from '../components/CaptchaWrapper';
 
 const T = i18n.createComponent();
 export default class Faucet extends Component {
 
     constructor(props) {
         super(props);
+
+        this.nodes = {
+            'captcha': React.createRef(),
+        };
 
         this.state = {
             walletAddress: '',
@@ -48,40 +54,51 @@ export default class Faucet extends Component {
             return;
         }
 
-        this.setState({
-            modalOpen: true,
-            transactionStatus: TRANSACTION_STATUS_PENDING,
-        });
-
-        const address = this.state.walletAddress;
-        const amount = parseInt(parseFloat(this.state.amount * Meteor.settings.public.coins[0].fraction))
-        const data = {
-            address: address,
-            coins: [`${amount}${Meteor.settings.public.bondDenom}`]
-        };
-
-        HTTP.post(Meteor.settings.public.faucetUrl, {
-            data
-        }, (err, result) => {
-            if (err !== null || result.statusCode !== 200) {
-                console.error(err, result);
-                this.setState({
-                    transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
-                });
-                return;
-            }
-
-            result = JSON.parse(result.content);
-            if (result.transfers[0].status !== 'ok') {
-                console.error(result);
-                this.setState({
-                    transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
-                });
-                return;
-            }
+        this.nodes.captcha.current.execute((captchaResponse) => {
 
             this.setState({
-                transactionStatus: TRANSACTION_STATUS_DONE_OK,
+                modalOpen: true,
+                transactionStatus: TRANSACTION_STATUS_PENDING,
+            });
+
+            const address = this.state.walletAddress;
+            const amount = parseInt(parseFloat(this.state.amount * Meteor.settings.public.coins[0].fraction))
+            const data = {
+                address: address,
+                coins: [`${amount}${Meteor.settings.public.bondDenom}`],
+                captchaResponse //set to '' to test catcha
+            };
+
+            HTTP.post(Meteor.settings.public.faucetUrl, {
+                data
+            }, (err, result) => {
+                if (err !== null || result.statusCode !== 200) {
+                    if(resylt.content === "Wrong captcha"){
+                        console.error("WRONG CAPTCHA");
+                        this.setState({
+                            transactionStatus: TRANSACTION_STATUS_DONE_ERROR_WRONG_CAPTCHA,
+                        });
+                    }
+
+                    console.error(err, result);
+                    this.setState({
+                        transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
+                    });
+                    return;
+                }
+
+                result = JSON.parse(result.content);
+                if (result.transfers[0].status !== 'ok') {
+                    console.error(result);
+                    this.setState({
+                        transactionStatus: TRANSACTION_STATUS_DONE_ERROR,
+                    });
+                    return;
+                }
+
+                this.setState({
+                    transactionStatus: TRANSACTION_STATUS_DONE_OK,
+                });
             });
         });
     }
@@ -107,7 +124,7 @@ export default class Faucet extends Component {
         return (
             <div>
                 <Helmet>
-                    <title>Faucet | Big Dipper</title>
+                    <title>Faucet | CUDOS</title>
                     <meta name="description" content="Faucet for cudos testnet" />
                 </Helmet>
                 <div className="container-md">
@@ -116,6 +133,7 @@ export default class Faucet extends Component {
                     <br />
                     <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount').replace('%s', Meteor.settings.public.coins[0].displayName)}/>
                     <br />
+                    <CaptchaWrapper ref = { this.nodes.captcha } className = { 'CaptchaWrapper' } />
                     <div className="d-flex justify-content-center mt-5">
                         <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }>{i18n.__('faucet.send').replace('%s', Meteor.settings.public.coins[0].displayName)}</button>
                     </div>

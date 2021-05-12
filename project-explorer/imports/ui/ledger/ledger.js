@@ -28,7 +28,7 @@ const TYPE_URLS = {
 }
 
 export const DEFAULT_GAS_PRICE = parseFloat(Meteor.settings.public.ledger.gasPrice) || 0.025;
-export const DEFAULT_MEMO = 'Sent via Big Dipper'
+export const DEFAULT_MEMO = 'Sent via CUDOS explorer'
 
 /*
 HD wallet derivation path (BIP44)

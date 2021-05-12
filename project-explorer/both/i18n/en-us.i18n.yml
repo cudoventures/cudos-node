@@ -25,7 +25,7 @@ common:
     rewards: 'Rewards'
     bondedTokens: 'Bonded Tokens'
 navbar:
-    siteName: 'BIG DIPPER'
+    siteName: 'CUDOS Explorer'
     version: '-'
     validators: 'Validators'
     blocks: 'Blocks'
@@ -137,6 +137,8 @@ faucet:
     modalMsgTransactionPending: 'Processing the transaction, please wait...'
     modalMsgTransactionSuccess: 'Your %s were sent. Please, check you wallet.'
     modalMsgTransactionError: 'There was an error. Please check the address and amount.'
+    modalMsgCaptchaError: 'Wrong captcha, please try again'
+
 transactions:
     transaction: 'Transaction'
     transactions: 'Transactions'

@@ -24,7 +24,7 @@ common:
     retry: 'Tentar novamente'
     rewards: 'Recompensas'
 navbar:
-    siteName: 'BIG DIPPER'
+    siteName: 'CUDOS Explorer'
     validators: 'Validadores'
     blocks: 'Blocos'
     transactions: 'Transações'
