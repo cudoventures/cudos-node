@@ -8,31 +8,43 @@ import (
 	"time"
 )
 
-// Minting based on arithmetic progression
+// Minting based on the polynomial "=(28653300+5000*n)/(1.5+0.004*n^2)"
+// where n indicates number of months since Ethereum minting (n = 1 means Jan 2021, n = 2 means Feb 2021, etc.)
 var (
-	blockSpan int64 = 1_000_000
-	mintTokens int64 = 10_000_000_000
-
-	//Find d where: an = a1 + (n - 1)d, n is blockSpan and the sum of the series is mintTokens
-	commonDifference sdk.Dec = sdk.NewDec(2 * mintTokens).Quo(sdk.NewDec(blockSpan * (blockSpan - 1)))
+	// based on the assumption that we have 1 block per 5 seconds
+	blocksPerMonth sdk.Int = sdk.NewInt(525657)
+	// regulate offset of n
+	monthsOffset int64  = 4
+	monthsActive int64  = 9
+	denom        string = "cudos"
 )
 
+func calculateMintedCoins(monthsPassed sdk.Int, minter types.Minter) sdk.Dec {
+	monthsDenominator := ((sdk.MustNewDecFromStr("0.004")).Mul(monthsPassed.ToDec().Power(2))).Add(sdk.MustNewDecFromStr("1.5"))
+	coinsForMonth := sdk.NewDec(28653300 + monthsPassed.MulRaw(5000).Int64()).Quo(monthsDenominator)
+	return (coinsForMonth.QuoInt(blocksPerMonth)).Add(minter.MintRemainder)
+}
 
 // BeginBlocker mints new tokens for the previous block.
-func 	BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 	blockHeight := ctx.BlockHeight()
-	if blockHeight > blockSpan {
+	monthsPassed := sdk.NewInt(blockHeight).Quo(blocksPerMonth).AddRaw(monthsOffset)
+	if monthsPassed.GT(sdk.NewInt(monthsActive)) {
 		return
 	}
-
-	mintAmount := sdk.NewDec(blockSpan - blockHeight).Mul(commonDifference)
-	mintedCoin := sdk.NewCoin("stake", mintAmount.TruncateInt())
+	minter := k.GetMinter(ctx)
+	monthsPassed = monthsPassed.AddRaw(1) // the algorithm is 1-based
+	mintAmountDec := calculateMintedCoins(monthsPassed, minter)
+	mintAmountInt := mintAmountDec.TruncateInt()
+	mintedCoin := sdk.NewCoin(denom, mintAmountInt)
 	mintedCoins := sdk.NewCoins(mintedCoin)
 	err := k.MintCoins(ctx, mintedCoins)
 	if err != nil {
 		panic(err)
 	}
+	minter.MintRemainder = mintAmountDec.Sub(mintAmountInt.ToDec())
+	k.SetMinter(ctx, minter)
 
 	// send the minted coins to the fee collector account
 	err = k.AddCollectedFees(ctx, mintedCoins)
@@ -48,7 +60,7 @@ func 	BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		sdk.NewEvent(
 			types.EventTypeMint,
 			sdk.NewAttribute(types.AttributeMintedDenom, "stake"),
-			sdk.NewAttribute(types.AttributeMintedTokens, mintAmount.String()),
+			sdk.NewAttribute(types.AttributeMintedTokens, mintAmountInt.String()),
 		),
 	)
 }
