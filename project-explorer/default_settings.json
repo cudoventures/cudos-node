@@ -15,7 +15,7 @@
         "bech32PrefixConsPub": "cudosvalconspub",
         "bondDenom": "ucudos",
         "powerReduction": 1000000,
-        "genesisTime": "2021-04-65T09:15:0.268797802Z",
+        "genesisTime": "2021-05-12T11:33:06.992163482Z",
         "faucetUrl": "http://localhost:5000",
         "coins": [
             {

@@ -436,7 +436,7 @@ Meteor.methods({
                     if (lastSyncedTime){
                         let dateLatest = new Date(blockData.time);
                         let dateLast = new Date(lastSyncedTime);
-                        let genesisTime = new Date(Meteor.settings.public.genesisTime);
+                        let genesisTime = new Date(Date.parse(Meteor.settings.public.genesisTime));
                         console.log('Genesistime: ' + genesisTime);
                         timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
                         // blockTime = (chainStatus.blockTime * (blockData.height - 1) + timeDiff) / blockData.height;
