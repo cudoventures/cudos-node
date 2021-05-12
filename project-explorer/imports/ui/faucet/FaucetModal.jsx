@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import i18n from 'meteor/universe:i18n';
 import { Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from 'reactstrap';
-import { TRANSACTION_STATUS_DONE_ERROR, TRANSACTION_STATUS_DONE_OK, TRANSACTION_STATUS_PENDING } from './FaucetUtils';
+import { TRANSACTION_STATUS_DONE_ERROR, TRANSACTION_STATUS_DONE_OK, TRANSACTION_STATUS_PENDING, TRANSACTION_STATUS_DONE_ERROR_WRONG_CAPTCHA } from './FaucetUtils';
 
 const T = i18n.createComponent();
 
@@ -24,6 +24,9 @@ export default class FaucetModal extends Component {
                     ) }
                     { this.props.transactionStatus === TRANSACTION_STATUS_DONE_ERROR && (
                         <span className="text-danger"><T>faucet.modalMsgTransactionError</T></span>
+                    ) }
+                    { this.props.transactionStatus === TRANSACTION_STATUS_DONE_ERROR_WRONG_CAPTCHA && (
+                        <span className="text-danger"><T>faucet.modalMsgCaptchaError</T></span>
                     ) }
                 </ModalHeader>
                 { this.props.transactionStatus === TRANSACTION_STATUS_PENDING && (

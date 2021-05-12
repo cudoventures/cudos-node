@@ -59,7 +59,8 @@
                 "amount": [{"denom": "cudos", "amount": 100}],
                 "gas": "180000"
             }
-        }
+        },
+        "CAPTCHA_FRONTEND_KEY": "6Ldjs9EaAAAAABJ3DZHmjeNjChAunXrWmHREaB05"
     },
     "remote":{
         "rpc":"http://localhost:26657",

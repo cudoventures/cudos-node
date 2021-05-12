@@ -14,6 +14,7 @@ const (
 
 var (
 	port            int
+	captchBackend	string
 	keyringBackend  string
 	sdkVersion      string
 	keyName         string
@@ -31,6 +32,10 @@ func init() {
 	flag.IntVar(&port, "port",
 		environ.GetInt("PORT", 8000),
 		"tcp port where faucet will be listening for requests",
+	)
+	flag.StringVar(&captchBackend, "captcha-backend",
+		environ.GetString("CAPTCHA_BACKEND", ""),
+		"backend key of recaptcha",
 	)
 	flag.StringVar(&keyringBackend, "keyring-backend",
 		environ.GetString("KEYRING_BACKEND", ""),
