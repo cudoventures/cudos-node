@@ -1,6 +1,6 @@
 FROM golang:alpine as cudos-root-node-builder
 
-RUN apk add --no-cache jq make bash
+RUN apk add --no-cache jq make bash gcc
 
 WORKDIR /usr/cudos-builder
 

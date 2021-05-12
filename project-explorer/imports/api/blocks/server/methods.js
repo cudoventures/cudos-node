@@ -432,10 +432,12 @@ Meteor.methods({
                     let lastSyncedTime = chainStatus?chainStatus.lastSyncedTime:0;
                     let timeDiff;
                     let blockTime = Meteor.settings.params.defaultBlockTime;
+                    console.log(blockTime);
                     if (lastSyncedTime){
                         let dateLatest = new Date(blockData.time);
                         let dateLast = new Date(lastSyncedTime);
                         let genesisTime = new Date(Meteor.settings.public.genesisTime);
+                        console.log('Genesistime: ' + genesisTime);
                         timeDiff = Math.abs(dateLatest.getTime() - dateLast.getTime());
                         // blockTime = (chainStatus.blockTime * (blockData.height - 1) + timeDiff) / blockData.height;
                         blockTime = (dateLatest.getTime() - genesisTime.getTime()) / blockData.height;

@@ -24,7 +24,7 @@ common:
     retry: 'Повторить попытку'
     rewards: 'награды'
 navbar:
-    siteName: 'BIG DIPPER'
+    siteName: 'CUDOS Explorer'
     validators: 'валидаторы'
     blocks: 'блоки'
     transactions: 'транзакции'

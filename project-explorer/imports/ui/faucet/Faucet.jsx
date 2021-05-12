@@ -107,7 +107,7 @@ export default class Faucet extends Component {
         return (
             <div>
                 <Helmet>
-                    <title>Faucet | Big Dipper</title>
+                    <title>Faucet | CUDOS</title>
                     <meta name="description" content="Faucet for cudos testnet" />
                 </Helmet>
                 <div className="container-md">
