@@ -10,8 +10,9 @@
     npm run deploy-and-init-testnet
 
 # Deploy utils
-1. Download faucet.wallet from cudos-root-node
-2. Copy faucet mnemonic in /project-faucet-cli/run-testnet.sh
-3. Download cudos-noded binary from cudos-root-node and copy it to /project-faucet-cli/bin/cudos-noded
+1. Copy node id to notion
+2. Download faucet.wallet from cudos-root-node
+3. Copy faucet mnemonic in /project-faucet-cli/run-testnet.sh
+4. Download cudos-noded binary from cudos-root-node and copy it to /project-faucet-cli/bin/cudos-noded
 
 

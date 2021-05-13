@@ -1,0 +1,13 @@
+/target
+**/*.rs.bk
+*.iml
+.idea
+
+# no static libraries (35MB+)
+lib*.a
+
+# artifacts from compile tests
+artifacts/
+muslc.exe
+tmp
+a.out
