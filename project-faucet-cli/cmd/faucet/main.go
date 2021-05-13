@@ -101,7 +101,6 @@ func main() {
 			chaincmd.WithLaunchpadCLI(appCli),
 		)
 	}
-
 	cr, err := chaincmdrunner.New(context.Background(), chaincmd.New(appCli, ccoptions...))
 	if err != nil {
 		log.Fatal(err)
@@ -117,6 +116,7 @@ func main() {
 	faucetOptions = append(faucetOptions, cosmosfaucet.Account(keyName, keyMnemonic))
 
 	faucet, err := cosmosfaucet.New(context.Background(), cr, faucetOptions...)
+
 	if err != nil {
 		log.Fatal(err)
 	}
