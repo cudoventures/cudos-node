@@ -66,18 +66,19 @@ export default class Faucet extends Component {
             const data = {
                 address: address,
                 coins: [`${amount}${Meteor.settings.public.bondDenom}`],
-                captchaResponse //set to '' to test catcha
+                captchaResponse
             };
 
             HTTP.post(Meteor.settings.public.faucetUrl, {
                 data
             }, (err, result) => {
                 if (err !== null || result.statusCode !== 200) {
-                    if(resylt.content === "Wrong captcha"){
+                    if(result.statusCode === 401){
                         console.error("WRONG CAPTCHA");
                         this.setState({
                             transactionStatus: TRANSACTION_STATUS_DONE_ERROR_WRONG_CAPTCHA,
                         });
+                        return;
                     }
 
                     console.error(err, result);
