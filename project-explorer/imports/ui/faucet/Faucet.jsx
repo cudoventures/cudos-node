@@ -134,7 +134,7 @@ export default class Faucet extends Component {
                     <br />
                     <Input value={this.state.amount} onChange={this.onChangeAmount} placeholder={i18n.__('faucet.placeHolderAmount').replace('%s', Meteor.settings.public.coins[0].displayName)}/>
                     <br />
-                    <CaptchaWrapper ref = { this.nodes.captcha } className = { 'CaptchaWrapper' } />
+                    <CaptchaWrapper ref={ this.nodes.captcha } className="d-flex justify-content-center" />
                     <div className="d-flex justify-content-center mt-5">
                         <button type="button" className={ `btn btn-primary ${this.state.valid === false ? 'disabled' : ''}` } onClick={ this.onClickSend }>{i18n.__('faucet.send').replace('%s', Meteor.settings.public.coins[0].displayName)}</button>
                     </div>

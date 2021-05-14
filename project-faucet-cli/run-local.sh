@@ -8,7 +8,7 @@ export KEYRING_PASSWORD="123123123" #at least 8 characters
 export CREDIT_AMOUNT="1000"
 export MAX_CREDIT="100000000"
 export NODE="http://localhost:26657"
-export MNEMONIC="approve universe victory naive excuse chuckle mirror lyrics evoke field forum fantasy tired bean deposit goat lawsuit battle balance height enlist total toe correct"
+export MNEMONIC="black select bar south name card input labor movie cluster try fantasy flip jazz north inherit chat paddle scatter fox chapter spot shield donkey"
 
 #remove old data before launch
 rm -R cudos-data
