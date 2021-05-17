@@ -1,6 +1,0 @@
-{
-    "includePaths": [
-        "{}/node_modules/bootswatch/dist/",
-        "{}/node_modules/bootstrap/scss/"
-    ]
-}
