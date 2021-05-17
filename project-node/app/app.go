@@ -1,7 +1,7 @@
 package app
 
 import (
-	"cudos.org/cudos-node/x/wasm"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"io"
 	"os"
 	"path/filepath"
@@ -298,6 +298,8 @@ func New(
 	// grant capabilities for the ibc and ibc-transfer modules
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -339,16 +341,14 @@ func New(
 	)
 
 	// just re-use the full router - do we want to limit this more?
-	var wasmRouter = bApp.Router()
 	wasmDir := filepath.Join(homePath, "wasm")
-
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
 		panic("error while reading wasm config: " + err.Error())
 	}
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "staking"
+	supportedFeatures := "staking,stargate"
 	app.wasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -357,12 +357,16 @@ func New(
 		app.BankKeeper,
 		app.StakingKeeper,
 		app.DistrKeeper,
-		wasmRouter,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		scopedWasmKeeper,
+		app.TransferKeeper,
+		app.Router(),
+		app.GRPCQueryRouter(),
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		nil,
-		nil,
+		nil...,
 	)
 	govRouter := govtypes.NewRouter()
 	// The gov proposal types can be individually enabled
@@ -452,7 +456,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		blog.NewAppModule(appCodec, app.blogKeeper),
-		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
+		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMintModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
