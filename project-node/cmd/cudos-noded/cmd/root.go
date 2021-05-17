@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cudos.org/cudos-node/x/wasm"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"errors"
 	"io"
 	"os"
