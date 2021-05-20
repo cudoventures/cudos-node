@@ -87,6 +87,9 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/cosmos/gravity-bridge/module/x/gravity"
+	gravitykeeper "github.com/cosmos/gravity-bridge/module/x/gravity/keeper"
+	gravitytypes "github.com/cosmos/gravity-bridge/module/x/gravity/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
@@ -167,7 +170,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		cudoMinttypes.ModuleName: {authtypes.Minter},
+		cudoMinttypes.ModuleName:       {authtypes.Minter},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -237,10 +240,11 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
-	blogKeeper  blogkeeper.Keeper
-	wasmKeeper  wasm.Keeper
-	adminKeeper adminkeeper.Keeper
+	blogKeeper     blogkeeper.Keeper
+	wasmKeeper     wasm.Keeper
+	adminKeeper    adminkeeper.Keeper
 	cudoMintKeeper cudoMintkeeper.Keeper
+	GravityKeeper  gravitykeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -299,7 +303,6 @@ func New(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
-
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -426,6 +429,10 @@ func New(
 	)
 	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
 
+	app.GravityKeeper = gravitykeeper.NewKeeper(
+		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
+	)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -459,6 +466,7 @@ func New(
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMintModule,
+		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
