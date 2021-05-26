@@ -20,9 +20,6 @@ import (
 	"cudos.org/cudos-node/x/admin"
 	adminkeeper "cudos.org/cudos-node/x/admin/keeper"
 	admintypes "cudos.org/cudos-node/x/admin/types"
-	"cudos.org/cudos-node/x/blog"
-	blogkeeper "cudos.org/cudos-node/x/blog/keeper"
-	blogtypes "cudos.org/cudos-node/x/blog/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -154,7 +151,6 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		blog.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
@@ -240,7 +236,6 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
-	blogKeeper     blogkeeper.Keeper
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
 	cudoMintKeeper cudoMintkeeper.Keeper
@@ -273,7 +268,6 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		blogtypes.StoreKey, wasm.StoreKey, admintypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		cudoMinttypes.StoreKey,
 	)
@@ -414,10 +408,6 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.blogKeeper = *blogkeeper.NewKeeper(
-		appCodec, keys[blogtypes.StoreKey], keys[blogtypes.MemStoreKey],
-	)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
@@ -462,7 +452,6 @@ func New(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		blog.NewAppModule(appCodec, app.blogKeeper),
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMintModule,
