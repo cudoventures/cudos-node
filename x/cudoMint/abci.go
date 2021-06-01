@@ -8,34 +8,38 @@ import (
 	"time"
 )
 
-// Minting based on the polynomial "=(28653300+5000*n)/(1.5+0.004*n^2)"
-// where n indicates number of months since Ethereum minting (n = 1 means Jan 2021, n = 2 means Feb 2021, etc.)
+// Minting based on pre defined yearly values
 var (
 	// based on the assumption that we have 1 block per 5 seconds
 	blocksPerMonth sdk.Int = sdk.NewInt(525657)
-	// regulate offset of n
-	monthsOffset int64  = 4
-	monthsActive int64  = 9
-	denom        string = "cudos"
+	denom         string = "acudos"
+	tokensPerYear        = map[int]sdk.Dec{
+		2021: sdk.NewDec(306_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2022: sdk.NewDec(272_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2023: sdk.NewDec(238_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2024: sdk.NewDec(204_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2025: sdk.NewDec(170_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2026: sdk.NewDec(68_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2027: sdk.NewDec(68_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2028: sdk.NewDec(68_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2029: sdk.NewDec(68_000_000).Mul(sdk.NewDec(10).Power(18)),
+		2030: sdk.NewDec(68_000_000).Mul(sdk.NewDec(10).Power(18)),
+	}
 )
 
-func calculateMintedCoins(monthsPassed sdk.Int, minter types.Minter) sdk.Dec {
-	monthsDenominator := ((sdk.MustNewDecFromStr("0.004")).Mul(monthsPassed.ToDec().Power(2))).Add(sdk.MustNewDecFromStr("1.5"))
-	coinsForMonth := sdk.NewDec(28653300 + monthsPassed.MulRaw(5000).Int64()).Quo(monthsDenominator)
-	return (coinsForMonth.QuoInt(blocksPerMonth)).Add(minter.MintRemainder)
+func calculateMintedCoins(year int, minter types.Minter) sdk.Dec {
+	if yearlyTokens, ok := tokensPerYear[year]; ok {
+		return yearlyTokens.QuoInt(blocksPerMonth).Add(minter.MintRemainder)
+	} else {
+		return sdk.ZeroDec()
+	}
 }
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
-	blockHeight := ctx.BlockHeight()
-	monthsPassed := sdk.NewInt(blockHeight).Quo(blocksPerMonth).AddRaw(monthsOffset)
-	if monthsPassed.GT(sdk.NewInt(monthsActive)) {
-		return
-	}
 	minter := k.GetMinter(ctx)
-	monthsPassed = monthsPassed.AddRaw(1) // the algorithm is 1-based
-	mintAmountDec := calculateMintedCoins(monthsPassed, minter)
+	mintAmountDec := calculateMintedCoins(ctx.BlockTime().Year(), minter)
 	mintAmountInt := mintAmountDec.TruncateInt()
 	mintedCoin := sdk.NewCoin(denom, mintAmountInt)
 	mintedCoins := sdk.NewCoins(mintedCoin)
@@ -59,7 +63,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeMint,
-			sdk.NewAttribute(types.AttributeMintedDenom, "stake"),
+			sdk.NewAttribute(types.AttributeMintedDenom, denom),
 			sdk.NewAttribute(types.AttributeMintedTokens, mintAmountInt.String()),
 		),
 	)
