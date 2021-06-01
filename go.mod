@@ -5,8 +5,6 @@ go 1.15
 require (
 	github.com/CosmWasm/wasmd v0.16.0
 	github.com/cosmos/cosmos-sdk v0.42.4
-	github.com/cosmos/gravity-bridge v0.1.3-0.20210512001249-3c4c5d1dbe2e // indirect
-	github.com/cosmos/gravity-bridge/module v0.0.0-20210512001249-3c4c5d1dbe2e
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
