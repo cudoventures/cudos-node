@@ -1,4 +1,4 @@
-# POC 1 - Create Cosmos Chain with BFT, Wallets and preconfigured accounts
+# Cudos Testnet
 
 ## Prerequirements
 Starport: https://github.com/tendermint/starport/releases (linux only)<br />
