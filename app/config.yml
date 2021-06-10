@@ -15,4 +15,4 @@ genesis:
         inflation_min: "0.000000000000000000"
     gravity:
       params:
-        gravity_id: "cudos-gravity-test"
+        gravity_id: "549848test"
