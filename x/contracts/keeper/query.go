@@ -2,8 +2,7 @@ package keeper
 
 import (
 	// this line is used by starport scaffolding # 1
-
-	"cudos.org/cudos-node/x/admin/types"
+	"cudos.org/cudos-node/x/contracts/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -19,7 +18,7 @@ func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
 		)
 
 		switch path[0] {
-		// this line is used by starport scaffolding # 2
+		// this line is used by starport scaffolding # 1
 		default:
 			err = sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown %s query endpoint: %s", types.ModuleName, path[0])
 		}

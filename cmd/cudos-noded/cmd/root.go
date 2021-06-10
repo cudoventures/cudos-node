@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"errors"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"io"
 	"os"
 	"path/filepath"

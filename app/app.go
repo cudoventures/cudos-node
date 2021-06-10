@@ -87,6 +87,9 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	"cudos.org/cudos-node/x/contracts"
+	contractskeeper "cudos.org/cudos-node/x/contracts/keeper"
+	contractstypes "cudos.org/cudos-node/x/contracts/types"
 	"cudos.org/cudos-node/x/cudoMint"
 	cudoMintkeeper "cudos.org/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "cudos.org/cudos-node/x/cudoMint/types"
@@ -152,6 +155,7 @@ var (
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		contracts.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -238,6 +242,8 @@ type App struct {
 	cudoMintKeeper cudoMintkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
+	contractsKeeper contractskeeper.Keeper
+
 	// the module manager
 	mm *module.Manager
 }
@@ -265,6 +271,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		contractstypes.StoreKey,
 		cudoMinttypes.StoreKey,
 		wasm.StoreKey,
 	)
@@ -360,8 +367,9 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		nil...,
+		contractstypes.MaskPlugins()...,
 	)
+
 	govRouter := govtypes.NewRouter()
 	// The gov proposal types can be individually enabled
 	if len(GetEnabledProposals()) != 0 {
@@ -407,6 +415,13 @@ func New(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
+	app.contractsKeeper = *contractskeeper.NewKeeper(
+		appCodec,
+		keys[contractstypes.StoreKey],
+		keys[contractstypes.MemStoreKey],
+	)
+	contractsModule := contracts.NewAppModule(appCodec, app.contractsKeeper)
+
 	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
 		appCodec,
 		keys[cudoMinttypes.StoreKey],
@@ -449,6 +464,7 @@ func New(
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMintModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
+		contractsModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -485,6 +501,7 @@ func New(
 		admintypes.ModuleName,
 		cudoMinttypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
+		contractstypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -679,6 +696,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
+	paramsKeeper.Subspace(contractstypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 
 	return paramsKeeper

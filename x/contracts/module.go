@@ -1,4 +1,4 @@
-package admin
+package contracts
 
 import (
 	"encoding/json"
@@ -11,20 +11,22 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"cudos.org/cudos-node/x/admin/client/cli"
-	"cudos.org/cudos-node/x/admin/client/rest"
-	"cudos.org/cudos-node/x/admin/keeper"
-	"cudos.org/cudos-node/x/admin/types"
+	"cudos.org/cudos-node/x/contracts/client/cli"
+	"cudos.org/cudos-node/x/contracts/client/rest"
+	"cudos.org/cudos-node/x/contracts/keeper"
+	"cudos.org/cudos-node/x/contracts/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	// this line is used by starport scaffolding # ibc/module/import
 )
 
 var (
 	_ module.AppModule      = AppModule{}
 	_ module.AppModuleBasic = AppModuleBasic{}
+	// this line is used by starport scaffolding # ibc/module/interface
 )
 
 // ----------------------------------------------------------------------------

@@ -12,8 +12,8 @@ import (
 var (
 	// based on the assumption that we have 1 block per 5 seconds
 	blocksPerMonth sdk.Int = sdk.NewInt(525657)
-	denom         string = "acudos"
-	tokensPerYear        = map[int]sdk.Dec{
+	denom          string  = "acudos"
+	tokensPerYear          = map[int]sdk.Dec{
 		2021: sdk.NewDec(306_000_000).Mul(sdk.NewDec(10).Power(18)),
 		2022: sdk.NewDec(272_000_000).Mul(sdk.NewDec(10).Power(18)),
 		2023: sdk.NewDec(238_000_000).Mul(sdk.NewDec(10).Power(18)),
