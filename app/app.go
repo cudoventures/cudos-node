@@ -1,12 +1,11 @@
 package app
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/CosmWasm/wasmd/x/wasm"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -87,15 +86,10 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"cudos.org/cudos-node/x/cudoMint"
 	cudoMintkeeper "cudos.org/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "cudos.org/cudos-node/x/cudoMint/types"
-
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 )
 
 const Name = "cudos-node"
@@ -157,7 +151,6 @@ var (
 		wasm.AppModuleBasic{},
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
-		gravity.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -171,7 +164,6 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
-		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -244,7 +236,6 @@ type App struct {
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
 	cudoMintKeeper cudoMintkeeper.Keeper
-	GravityKeeper  gravitykeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -276,7 +267,6 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		cudoMinttypes.StoreKey,
 		wasm.StoreKey,
-		gravitytypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -426,12 +416,6 @@ func New(
 	)
 	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
 
-	app.GravityKeeper = gravitykeeper.NewKeeper(
-		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
-	)
-
-	gravityModule := gravity.NewAppModule(app.GravityKeeper, app.BankKeeper)
-
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -464,7 +448,6 @@ func New(
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMintModule,
-		gravityModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -477,7 +460,7 @@ func New(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, cudoMinttypes.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, gravitytypes.ModuleName)
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -501,7 +484,6 @@ func New(
 		wasm.ModuleName,
 		admintypes.ModuleName,
 		cudoMinttypes.ModuleName,
-		gravitytypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
@@ -698,7 +680,6 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
-	paramsKeeper.Subspace(gravitytypes.ModuleName)
 
 	return paramsKeeper
 }
