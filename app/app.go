@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"io"
 	"os"
 	"path/filepath"
@@ -367,7 +368,8 @@ func New(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		contractstypes.MaskPlugins()...,
+		keeper.WithQueryPlugins(contractstypes.ReflectPlugins()),
+		keeper.WithMessageEncoders(contractstypes.ReflectEncoders(appCodec)),
 	)
 
 	govRouter := govtypes.NewRouter()

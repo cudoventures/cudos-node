@@ -2,27 +2,39 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/CosmWasm/wasmvm/types"
-	codec2 "github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec"
+	types2 "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strings"
+	"math/rand"
 )
 
-type maskCustomMsg struct {
+type Text struct {
+	Text string `json:"text"`
+}
+
+/**** Code to support custom messages *****/
+
+type reflectCustomMsg struct {
 	Debug string `json:"debug,omitempty"`
 	Raw   []byte `json:"raw,omitempty"`
 }
 
-// toMaskRawMsg encodes an sdk msg using amino json encoding.
+// toReflectRawMsg encodes an sdk msg using any type with json encoding.
 // Then wraps it as an opaque message
-func toMaskRawMsg(cdc *codec2.LegacyAmino, msg sdk.Msg) (types.CosmosMsg, error) {
-	rawBz, err := cdc.MarshalJSON(msg)
+func toReflectRawMsg(cdc codec.Marshaler, msg sdk.Msg) (types.CosmosMsg, error) {
+	any, err := types2.NewAnyWithValue(msg)
+	if err != nil {
+		return types.CosmosMsg{}, err
+	}
+	rawBz, err := cdc.MarshalJSON(any)
 	if err != nil {
 		return types.CosmosMsg{}, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 	}
-	customMsg, err := json.Marshal(maskCustomMsg{
+	customMsg, err := json.Marshal(reflectCustomMsg{
 		Raw: rawBz,
 	})
 	res := types.CosmosMsg{
@@ -31,29 +43,32 @@ func toMaskRawMsg(cdc *codec2.LegacyAmino, msg sdk.Msg) (types.CosmosMsg, error)
 	return res, nil
 }
 
-// maskEncoders needs to be registered in test setup to handle custom message callbacks
-func maskEncoders(cdc *codec2.LegacyAmino) *wasm.MessageEncoders {
+// reflectEncoders needs to be registered in test setup to handle custom message callbacks
+func ReflectEncoders(cdc codec.Marshaler) *wasm.MessageEncoders {
 	return &wasm.MessageEncoders{
-		Custom: fromMaskRawMsg(cdc),
+		Custom: fromReflectRawMsg(cdc),
 	}
 }
 
-// fromMaskRawMsg decodes msg.Data to an sdk.Msg using amino json encoding.
+// fromReflectRawMsg decodes msg.Data to an sdk.Msg using proto Any and json encoding.
 // this needs to be registered on the Encoders
-func fromMaskRawMsg(cdc *codec2.LegacyAmino) wasm.CustomEncoder {
+func fromReflectRawMsg(cdc codec.Marshaler) wasm.CustomEncoder {
 	return func(_sender sdk.AccAddress, msg json.RawMessage) ([]sdk.Msg, error) {
-		var custom maskCustomMsg
+		var custom reflectCustomMsg
 		err := json.Unmarshal(msg, &custom)
 		if err != nil {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 		}
 		if custom.Raw != nil {
-			var sdkMsg sdk.Msg
-			err := cdc.UnmarshalJSON(custom.Raw, &sdkMsg)
-			if err != nil {
+			var any types2.Any
+			if err := cdc.UnmarshalJSON(custom.Raw, &any); err != nil {
 				return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 			}
-			return []sdk.Msg{sdkMsg}, nil
+			var msg sdk.Msg
+			if err := cdc.UnpackAny(&any, &msg); err != nil {
+				return nil, err
+			}
+			return []sdk.Msg{msg}, nil
 		}
 		if custom.Debug != "" {
 			return nil, sdkerrors.Wrapf(wasm.ErrInvalidMsg, "Custom Debug: %s", custom.Debug)
@@ -62,40 +77,59 @@ func fromMaskRawMsg(cdc *codec2.LegacyAmino) wasm.CustomEncoder {
 	}
 }
 
+type reflectCustomQueryWrapper struct {
+	Route string `json:"route,omitempty""`
+	QueryData reflectCustomQuery `json:"query_data,omitempty"`
+}
 
+type reflectCustomQuery struct {
+	Ping        *struct{} `json:"ping,omitempty"`
+	Capitalized *Text     `json:"capital,omitempty"`
+}
 
-type Text struct {
+// this is from the go code back to the contract (capitalized or ping)
+type customQueryResponse struct {
+	Msg uint64 `json:"msg"`
+}
+
+// these are the return values from contract -> go depending on type of query
+type ownerResponse struct {
+	Owner string `json:"owner"`
+}
+
+type capitalizedResponse struct {
 	Text string `json:"text"`
 }
 
-type maskCustomQuery struct {
-	Ping    *struct{} `json:"ping,omitempty"`
-	Capital *Text     `json:"capital,omitempty"`
+type chainResponse struct {
+	Data []byte `json:"data"`
 }
 
-type customQueryResponse struct {
-	Msg string `json:"msg"`
-}
 
-// maskPlugins needs to be registered in test setup to handle custom query callbacks
-func MaskPlugins() *wasm.QueryPlugins {
+
+// reflectPlugins needs to be registered in test setup to handle custom query callbacks
+func ReflectPlugins() *wasm.QueryPlugins {
 	return &wasm.QueryPlugins{
 		Custom: performCustomQuery,
 	}
 }
 
-func performCustomQuery(_ sdk.Context, request json.RawMessage) ([]byte, error) {
-	var custom maskCustomQuery
+func performCustomQuery(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
+	var custom reflectCustomQueryWrapper
 	err := json.Unmarshal(request, &custom)
 	if err != nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
 	}
-	if custom.Capital != nil {
-		msg := strings.ToUpper(custom.Capital.Text)
-		return json.Marshal(customQueryResponse{Msg: msg})
+	randMsg := rand.Uint64() % 10_000
+
+	fmt.Printf("Here wi %s", request)
+	ctx.Logger().Info(fmt.Sprintf("here with %v %v", custom.QueryData.Capitalized, custom.QueryData.Ping))
+	if custom.QueryData.Capitalized != nil {
+		//msg := strings.ToUpper(custom.QueryData.Capitalized.Text)
+		return json.Marshal(customQueryResponse{Msg: randMsg})
 	}
-	if custom.Ping != nil {
-		return json.Marshal(customQueryResponse{Msg: "pong"})
+	if custom.QueryData.Capitalized != nil {
+		return json.Marshal(customQueryResponse{Msg: randMsg})
 	}
 	return nil, sdkerrors.Wrap(wasm.ErrInvalidMsg, "Unknown Custom query variant")
 }
