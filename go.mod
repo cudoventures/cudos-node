@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/CosmWasm/wasmd v0.17.0
+	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210611212501-5de966823aa6
 	github.com/cosmos/cosmos-sdk v0.42.5
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -15,8 +16,9 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/tendermint/tendermint v0.34.10
 	github.com/tendermint/tm-db v0.6.4
-	google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea
+	google.golang.org/genproto v0.0.0-20210426193834-eac7f76ac494
 	google.golang.org/grpc v1.37.0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 
 )
 
