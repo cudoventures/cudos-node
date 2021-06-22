@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudosnode.cudosnode.cudoMint;
+package cudos.cudoMint;
 
 option go_package = "cudos.org/cudos-node/x/cudoMint/types";
 
@@ -7,9 +7,16 @@ import "gogoproto/gogo.proto";
 
 // Minter represents the minting state.
 message Minter {
-  // current annual inflation rate
   string mint_remainder = 1
   [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
+  string norm_time_passed = 2
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message Params {
+  string blocks_per_day = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }
