@@ -2,9 +2,12 @@ module cudos.org/cudos-node
 
 go 1.15
 
+replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
+
 require (
 	github.com/CosmWasm/wasmd v0.17.0
-	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210611212501-5de966823aa6
+	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
+	// github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210611212501-5de966823aa6
 	github.com/cosmos/cosmos-sdk v0.42.5
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
