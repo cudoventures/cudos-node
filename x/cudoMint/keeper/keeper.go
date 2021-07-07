@@ -8,6 +8,7 @@ import (
 	"cudos.org/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
@@ -18,6 +19,7 @@ type (
 		memKey   sdk.StoreKey
 		bankKeeper       types.BankKeeper
 		feeCollectorName string
+		paramSpace       paramtypes.Subspace
 		// this line is used by starport scaffolding # ibc/keeper/attribute
 	}
 )
@@ -27,14 +29,27 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	bk types.BankKeeper,
+	ak types.AccountKeeper,
+	paramSpace paramtypes.Subspace,
 	feeCollectorName string,
 	// this line is used by starport scaffolding # ibc/keeper/parameter
 ) *Keeper {
+	// ensure mint module account is set
+	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
+		panic("the mint module account has not been set")
+	}
+
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
+
+
 	return &Keeper{
 		cdc:      cdc,
 		storeKey: storeKey,
 		memKey:   memKey,
 		bankKeeper: bk,
+		paramSpace: paramSpace,
 		feeCollectorName: feeCollectorName,
 		// this line is used by starport scaffolding # ibc/keeper/return
 	}
@@ -44,7 +59,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// get the minter
+// GetMinter get the minter
 func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types.MinterKey)
@@ -56,11 +71,22 @@ func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
 	return minter
 }
 
-//set the minter
+// SetMinter set the minter
 func (k Keeper) SetMinter(ctx sdk.Context, minter types.Minter) {
 	store := ctx.KVStore(k.storeKey)
 	b := k.cdc.MustMarshalBinaryBare(&minter)
 	store.Set(types.MinterKey, b)
+}
+
+// GetParams returns the total set of minting parameters.
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
+	k.paramSpace.GetParamSet(ctx, &params)
+	return params
+}
+
+// SetParams sets the total set of minting parameters.
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
 }
 
 // MintCoins implements an alias call to the underlying supply keeper's
