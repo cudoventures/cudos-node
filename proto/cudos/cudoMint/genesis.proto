@@ -1,12 +1,20 @@
 syntax = "proto3";
-package cudosnode.cudosnode.cudoMint;
+package cudos.cudoMint;
 
+import "cudos/cudoMint/mint.proto";
+import "gogoproto/gogo.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "cudos.org/cudos-node/x/cudoMint/types";
 
 // GenesisState defines the cudoMint module's genesis state.
 message GenesisState {
-    // this line is used by starport scaffolding # genesis/proto/state
-    // this line is used by starport scaffolding # ibc/genesis/proto
+  // minter is a space for holding current minting progress information.
+  Minter minter = 1 [(gogoproto.nullable) = false];
+
+  // params defines all the paramaters of the module.
+  Params params = 2[(gogoproto.nullable) = false];
+
+  // this line is used by starport scaffolding # genesis/proto/state
+  // this line is used by starport scaffolding # ibc/genesis/proto
 }

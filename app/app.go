@@ -412,6 +412,8 @@ func New(
 		keys[cudoMinttypes.StoreKey],
 		keys[cudoMinttypes.MemStoreKey],
 		app.BankKeeper,
+		app.AccountKeeper,
+		app.GetSubspace(cudoMinttypes.ModuleName),
 		authtypes.FeeCollectorName,
 	)
 	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)

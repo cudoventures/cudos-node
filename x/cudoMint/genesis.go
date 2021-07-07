@@ -8,8 +8,9 @@ import (
 
 // InitGenesis initializes the capability module's state from a provided genesis
 // state.
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
-	k.SetMinter(ctx, types.NewMinter(sdk.NewDec(0)))
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, data types.GenesisState) {
+	k.SetMinter(ctx, data.Minter)
+	k.SetParams(ctx, data.Params)
 	// this line is used by starport scaffolding # genesis/module/init
 
 	// this line is used by starport scaffolding # ibc/genesis/init
@@ -17,11 +18,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 // ExportGenesis returns the capability module's exported genesis.
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	genesis := types.DefaultGenesis()
+	minter := k.GetMinter(ctx)
+	params := k.GetParams(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export
 
 	// this line is used by starport scaffolding # ibc/genesis/export
-
-	return genesis
+	return types.NewGenesisState(minter, params)
 }
