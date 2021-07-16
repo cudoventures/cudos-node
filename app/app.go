@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -564,6 +565,10 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 			panic(err)
 		}
 	}
+
+	acc := app.AccountKeeper.GetModuleAccount(ctx, "gravity")
+	coin := app.BankKeeper.GetBalance(ctx, acc.GetAddress(), "acudos")
+	fmt.Printf("Gravity module balance %s\n", coin.Amount.String())
 
 	return app.mm.BeginBlock(ctx, req)
 }
