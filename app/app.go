@@ -559,7 +559,7 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	if ctx.BlockHeight() == 1 {
 		amount, _ := sdkTypes.NewIntFromString("1000000000000000000000")
-		coins := sdk.Coins{sdk.NewCoin("ucudos", amount)}
+		coins := sdk.Coins{sdk.NewCoin("acudos", amount)}
 
 		if err := app.BankKeeper.MintCoins(ctx, "gravity", coins); err != nil {
 			panic(err)
@@ -567,7 +567,7 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 	}
 
 	acc := app.AccountKeeper.GetModuleAccount(ctx, "gravity")
-	coin := app.BankKeeper.GetBalance(ctx, acc.GetAddress(), "ucudos")
+	coin := app.BankKeeper.GetBalance(ctx, acc.GetAddress(), "acudos")
 	fmt.Printf("Gravity module balance %s\n", coin.Amount.String())
 
 	return app.mm.BeginBlock(ctx, req)

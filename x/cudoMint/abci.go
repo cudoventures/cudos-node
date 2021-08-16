@@ -12,7 +12,7 @@ import (
 // Minting based on the formula f(t)=358 - 53 * t + 1.8 * t^2, where t is number of years passed since the release = 150mil, 7 sec - 150mils/(7)
 var (
 	// based on the assumption that we have 1 block per 5 seconds
-	denom               = "ucudos"         // Hardcoded to the ucudos currency. Its not changeable, because some of the math depends on the size of this denomination
+	denom               = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
 	totalDays           = sdk.NewInt(3652) // Hardcoded to 10 years
 	FinalNormTimePassed = sdk.NewDec(10)
 	zeroPointSix        = sdk.MustNewDecFromStr("0.6")
@@ -33,7 +33,7 @@ func calculateIntegral(t sdk.Dec) sdk.Dec {
 func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
 	prevStep := calculateIntegral(minter.NormTimePassed)
 	nextStep := calculateIntegral(minter.NormTimePassed.Add(increment))
-	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to ucudos
+	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to acudos
 }
 
 // BeginBlocker mints new tokens for the previous block.
