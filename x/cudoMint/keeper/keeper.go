@@ -14,9 +14,9 @@ import (
 
 type (
 	Keeper struct {
-		cdc      codec.Marshaler
-		storeKey sdk.StoreKey
-		memKey   sdk.StoreKey
+		cdc              codec.Codec
+		storeKey         sdk.StoreKey
+		memKey           sdk.StoreKey
 		bankKeeper       types.BankKeeper
 		feeCollectorName string
 		paramSpace       paramtypes.Subspace
@@ -25,7 +25,7 @@ type (
 )
 
 func NewKeeper(
-	cdc codec.Marshaler,
+	cdc codec.Codec,
 	storeKey,
 	memKey sdk.StoreKey,
 	bk types.BankKeeper,
@@ -43,13 +43,12 @@ func NewKeeper(
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
 
-
 	return &Keeper{
-		cdc:      cdc,
-		storeKey: storeKey,
-		memKey:   memKey,
-		bankKeeper: bk,
-		paramSpace: paramSpace,
+		cdc:              cdc,
+		storeKey:         storeKey,
+		memKey:           memKey,
+		bankKeeper:       bk,
+		paramSpace:       paramSpace,
 		feeCollectorName: feeCollectorName,
 		// this line is used by starport scaffolding # ibc/keeper/return
 	}
@@ -67,14 +66,14 @@ func (k Keeper) GetMinter(ctx sdk.Context) (minter types.Minter) {
 		panic("stored minter should not have been nil")
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(b, &minter)
+	k.cdc.MustUnmarshal(b, &minter)
 	return minter
 }
 
 // SetMinter set the minter
 func (k Keeper) SetMinter(ctx sdk.Context, minter types.Minter) {
 	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshalBinaryBare(&minter)
+	b := k.cdc.MustMarshal(&minter)
 	store.Set(types.MinterKey, b)
 }
 

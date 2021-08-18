@@ -5,14 +5,14 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	"cudos.org/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"cudos.org/cudos-node/x/admin/types"
 )
 
 type (
 	Keeper struct {
-		cdc                codec.Marshaler
+		cdc                codec.Codec
 		storeKey           sdk.StoreKey
 		memKey             sdk.StoreKey
 		distributionKeeper types.DistributionKeeper
@@ -20,7 +20,7 @@ type (
 	}
 )
 
-func NewKeeper(cdc codec.Marshaler, storeKey, memKey sdk.StoreKey,
+func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey,
 	dk types.DistributionKeeper, bk types.BankKeeper) *Keeper {
 	return &Keeper{
 		cdc:                cdc,
