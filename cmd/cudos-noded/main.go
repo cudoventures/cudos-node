@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(100000000000000000)
+	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
 	app.SetConfig()
 	rootCmd, _ := cmd.NewRootCmd()
 	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {

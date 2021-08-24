@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -581,7 +580,7 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	if ctx.BlockHeight() == 1 {
-		amount, _ := sdkTypes.NewIntFromString("1000000000000000000000")
+		amount, _ := sdkTypes.NewIntFromString("10000000000000000000000000000")
 		coins := sdk.Coins{sdk.NewCoin("acudos", amount)}
 
 		if err := app.BankKeeper.MintCoins(ctx, "gravity", coins); err != nil {
@@ -591,7 +590,7 @@ func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.R
 
 	acc := app.AccountKeeper.GetModuleAccount(ctx, "gravity")
 	coin := app.BankKeeper.GetBalance(ctx, acc.GetAddress(), "acudos")
-	fmt.Printf("Gravity module balance %s\n", coin.Amount.String())
+	app.Logger().Info("Gravity module", "balance", coin.Amount.String()+"acudos")
 
 	return app.mm.BeginBlock(ctx, req)
 }
