@@ -3,10 +3,10 @@ package keeper
 import (
 	// this line is used by starport scaffolding # 1
 
+	"cudos.org/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"cudos.org/cudos-node/x/admin/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 )

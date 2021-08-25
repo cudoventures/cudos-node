@@ -8,7 +8,7 @@ import (
 
 // BlocksPerDay Parameter store keys
 var (
-	BlocksPerDay           = []byte("BlocksPerDay")
+	BlocksPerDay = []byte("BlocksPerDay")
 )
 
 // ParamKeyTable ParamTable for minting module.
@@ -21,14 +21,14 @@ func NewParams(
 ) Params {
 
 	return Params{
-		BlocksPerDay:       blocksPerDay,
+		BlocksPerDay: blocksPerDay,
 	}
 }
 
 // DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		BlocksPerDay:       sdk.NewInt(14400), // assuming 6 second block times
+		BlocksPerDay: sdk.NewInt(14400), // assuming 6 second block times
 	}
 }
 

@@ -94,6 +94,9 @@ import (
 	"cudos.org/cudos-node/x/cudoMint"
 	cudoMintkeeper "cudos.org/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "cudos.org/cudos-node/x/cudoMint/types"
+	nftmodule "cudos.org/cudos-node/x/nft"
+	nftmodulekeeper "cudos.org/cudos-node/x/nft/keeper"
+	nftmoduletypes "cudos.org/cudos-node/x/nft/types"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
@@ -164,6 +167,7 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
+		nftmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -253,6 +257,8 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
+	NftKeeper nftmodulekeeper.Keeper
+
 	// the module manager
 	mm *module.Manager
 }
@@ -280,6 +286,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
+		nftmoduletypes.StoreKey,
 		cudoMinttypes.StoreKey,
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
@@ -427,6 +434,13 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
+	app.NftKeeper = *nftmodulekeeper.NewKeeper(
+		appCodec,
+		keys[nftmoduletypes.StoreKey],
+		keys[nftmoduletypes.MemStoreKey],
+	)
+	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
@@ -483,6 +497,7 @@ func New(
 		gravityModule,
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
+		nftModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -520,6 +535,7 @@ func New(
 		cudoMinttypes.ModuleName,
 		gravitytypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
+		nftmoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -737,6 +753,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
+	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 
