@@ -2,11 +2,13 @@ syntax = "proto3";
 package cudosnode.cudosnode.nft;
 
 // this line is used by starport scaffolding # genesis/proto/import
+import "nft/nft.proto";
 
 option go_package = "cudos.org/cudos-node/x/nft/types";
 
 // GenesisState defines the nft module's genesis state.
 message GenesisState {
     // this line is used by starport scaffolding # genesis/proto/state
+		repeated NFT Nftist = 1; // this line is used by starport scaffolding # genesis/proto/stateField
     // this line is used by starport scaffolding # ibc/genesis/proto
 }

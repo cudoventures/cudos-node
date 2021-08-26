@@ -4,12 +4,66 @@ package cudosnode.cudosnode.nft;
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
+import "nft/nft.proto";
 
 option go_package = "cudos.org/cudos-node/x/nft/types";
 
 // Query defines the gRPC querier service.
 service Query {
     // this line is used by starport scaffolding # 2
+
+	// Queries a Nft by index.
+	rpc NFT(QueryGetNFTRequest) returns (QueryGetNFTResponse) {
+		option (google.api.http).get = "/cudos-node/cudosnode/nft/nFT/{index}";
+	}
+
+	// Queries a list of Nft items.
+	rpc NFTAll(QueryAllNFTRequest) returns (QueryAllNFTResponse) {
+		option (google.api.http).get = "/cudos-node/cudosnode/nft/nFT";
+	}
+
+
+	// Queries a list of nft items.
+	rpc Nft(QueryNftRequest) returns (QueryNftResponse) {
+		option (google.api.http).get = "/cudos-node/cudosnode/nft/nft";
+	}
+
+
+	// Queries a list of collection items.
+	rpc Collection(QueryCollectionRequest) returns (QueryCollectionResponse) {
+		option (google.api.http).get = "/cudos-node/cudosnode/nft/collection";
+	}
+
 }
 
 // this line is used by starport scaffolding # 3
+message QueryGetNFTRequest {
+	string index = 1;
+}
+
+message QueryGetNFTResponse {
+	NFT NFT = 1;
+}
+
+message QueryAllNFTRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllNFTResponse {
+	repeated NFT NFT = 1;
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+message QueryNftRequest {
+  string nftId = 1;
+}
+
+message QueryNftResponse {
+}
+
+message QueryCollectionRequest {
+  string collectionId = 1;
+}
+
+message QueryCollectionResponse {
+}
+

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package cudosnode.cudosnode.nft;
+
+option go_package = "cudos.org/cudos-node/x/nft/types";
+
+import "gogoproto/gogo.proto";
+
+message NFT {
+  string creator = 1;
+  string index = 2;
+  string owner = 3; 
+  string tokenURI = 4; 
+}

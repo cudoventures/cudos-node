@@ -8,6 +8,45 @@ option go_package = "cudos.org/cudos-node/x/nft/types";
 // Msg defines the Msg service.
 service Msg {
     // this line is used by starport scaffolding # proto/tx/rpc
+  rpc Update(MsgUpdate) returns (MsgUpdateResponse);
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
+  rpc Send(MsgSend) returns (MsgSendResponse);
 }
 
 // this line is used by starport scaffolding # proto/tx/message
+message MsgUpdate {
+  string creator = 1;
+  string id = 2;
+  string owner = 3;
+}
+
+message MsgUpdateResponse {
+}
+
+message MsgBurn {
+  string creator = 1;
+  string id = 2;
+  string owner = 3;
+}
+
+message MsgBurnResponse {
+}
+
+message MsgCreate {
+  string creator = 1;
+  string id = 2;
+  string owner = 3;
+}
+
+message MsgCreateResponse {
+}
+
+message MsgSend {
+  string creator = 1;
+  string id = 2;
+  string receiver = 3;
+}
+
+message MsgSendResponse {
+}
