@@ -439,7 +439,7 @@ func New(
 		keys[nftmoduletypes.StoreKey],
 		keys[nftmoduletypes.MemStoreKey],
 	)
-	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper)
+	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
