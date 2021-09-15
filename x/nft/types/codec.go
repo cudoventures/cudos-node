@@ -29,20 +29,26 @@ func init() {
 // (Amino is still needed for Ledger at the moment)
 // nolint: staticcheck
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgIssueDenom{}, "chainmain/nft/MsgIssueDenom", nil)
-	cdc.RegisterConcrete(&MsgTransferNFT{}, "chainmain/nft/MsgTransferNFT", nil)
-	cdc.RegisterConcrete(&MsgEditNFT{}, "chainmain/nft/MsgEditNFT", nil)
-	cdc.RegisterConcrete(&MsgMintNFT{}, "chainmain/nft/MsgMintNFT", nil)
-	cdc.RegisterConcrete(&MsgBurnNFT{}, "chainmain/nft/MsgBurnNFT", nil)
+	cdc.RegisterConcrete(&MsgIssueDenom{}, "cudos.org/cudos-node/nft/MsgIssueDenom", nil)
+	cdc.RegisterConcrete(&MsgTransferNft{}, "cudos.org/cudos-node/nft/MsgTransferNft", nil)
+	cdc.RegisterConcrete(&MsgSendNft{}, "cudos.org/cudos-node/nft/MsgSendNft", nil)
+	cdc.RegisterConcrete(&MsgApproveNft{}, "cudos.org/cudos-node/nft/MsgApproveNft", nil)
+	cdc.RegisterConcrete(&MsgRevokeNft{}, "cudos.org/cudos-node/nft/MsgRevokeNft", nil)
+	cdc.RegisterConcrete(&MsgEditNFT{}, "cudos.org/cudos-node/nft/MsgEditNFT", nil)
+	cdc.RegisterConcrete(&MsgMintNFT{}, "cudos.org/cudos-node/nft/MsgMintNFT", nil)
+	cdc.RegisterConcrete(&MsgBurnNFT{}, "cudos.org/cudos-node/nft/MsgBurnNFT", nil)
 
 	cdc.RegisterInterface((*exported.NFT)(nil), nil)
-	cdc.RegisterConcrete(&BaseNFT{}, "chainmain/nft/BaseNFT", nil)
+	cdc.RegisterConcrete(&BaseNFT{}, "cudos.org/cudos-node/nft/BaseNFT", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgIssueDenom{},
-		&MsgTransferNFT{},
+		&MsgTransferNft{},
+		&MsgSendNft{},
+		&MsgApproveNft{},
+		&MsgRevokeNft{},
 		&MsgEditNFT{},
 		&MsgMintNFT{},
 		&MsgBurnNFT{},

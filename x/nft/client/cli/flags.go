@@ -14,13 +14,18 @@ const (
 	FlagDenomName = "name"
 	FlagDenomID   = "denom-id"
 	FlagSchema    = "schema"
+	FlagMessage   = "msg"
+	FlagExpires   = "expires"
 )
 
 var (
 	FsIssueDenom  = flag.NewFlagSet("", flag.ContinueOnError)
 	FsMintNFT     = flag.NewFlagSet("", flag.ContinueOnError)
 	FsEditNFT     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferNFT = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferNft = flag.NewFlagSet("", flag.ContinueOnError)
+	FsSendNft     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsApproveNft     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsRevokeNft     = flag.NewFlagSet("", flag.ContinueOnError)
 	FsQuerySupply = flag.NewFlagSet("", flag.ContinueOnError)
 	FsQueryOwner  = flag.NewFlagSet("", flag.ContinueOnError)
 )

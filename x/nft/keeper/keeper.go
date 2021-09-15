@@ -12,6 +12,7 @@ import (
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
+// Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type (
 	Keeper struct {
 		cdc      codec.Codec
@@ -22,6 +23,7 @@ type (
 	}
 )
 
+// NewKeeper creates a new instance of the NFT Keeper
 func NewKeeper(
 	cdc codec.Codec,
 	storeKey,
@@ -38,12 +40,14 @@ func NewKeeper(
 	}
 }
 
+// Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("cudos.org/cudos-node/%s", types.ModuleName))
 }
 
 // IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema string,
+func (k Keeper) IssueDenom(ctx sdk.Context,
+	id, name, schema string,
 	creator sdk.AccAddress) error {
 	return k.SetDenom(ctx, types.NewDenom(id, name, schema, creator))
 }

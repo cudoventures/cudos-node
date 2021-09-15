@@ -18,6 +18,7 @@ const (
 	RestParamDenomName = "denom-name"
 	RestParamTokenID   = "token-id"
 	RestParamOwner     = "owner"
+	RestParamMessage   = "msg"
 )
 
 type issueDenomReq struct {
@@ -54,6 +55,30 @@ type transferNFTReq struct {
 	Name      string       `json:"name"`
 	URI       string       `json:"uri"`
 	Data      string       `json:"data"`
+}
+
+type sendNFTReq struct {
+	BaseReq   rest.BaseReq `json:"base_req"`
+	Owner     string       `json:"owner"`
+	Recipient string       `json:"recipient"`
+	Name      string       `json:"name"`
+	URI       string       `json:"uri"`
+	Data      string       `json:"data"`
+	Messsage  string       `json:msg`
+}
+
+type approveNFTReq struct {
+	BaseReq   rest.BaseReq `json:"base_req"`
+	Owner     string       `json:"owner"`
+	Recipient string       `json:"recipient"`
+	Expires string         `json:"expires"`
+}
+
+
+type revokeNFTReq struct {
+	BaseReq   rest.BaseReq `json:"base_req"`
+	Owner     string       `json:"owner"`
+	Recipient string       `json:"recipient"`
 }
 
 type burnNFTReq struct {

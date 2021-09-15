@@ -3,7 +3,10 @@ package types
 // NFT module event types
 var (
 	EventTypeIssueDenom = "issue_denom"
-	EventTypeTransfer   = "transfer_nft"
+	EventTypeTransferNft   = "transfer_nft"
+	EventTypeSendNft   = "send_nft"
+	EventTypeApproveNft   = "approve_nft"
+	EventTypeRevokeNft   = "revoke_nft"
 	EventTypeEditNFT    = "edit_nft"
 	EventTypeMintNFT    = "mint_nft"
 	EventTypeBurnNFT    = "burn_nft"
@@ -18,4 +21,6 @@ var (
 	AttributeKeyTokenURI  = "token_uri"
 	AttributeKeyDenomID   = "denom_id"
 	AttributeKeyDenomName = "denom_name"
+	AttributeKeyMessage   = "message"
+	AttributeKeyExpires   = "expires"
 )
