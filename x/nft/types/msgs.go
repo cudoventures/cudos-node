@@ -14,7 +14,7 @@ const (
 	TypeMsgBurnNFT     = "burn_nft"
 	TypeMsgSendNft     = "send_nft"
 	TypeMsgApproveNft  = "approve_nft"
-	TypeMsgRevokeNft  = "revoke_nft"
+	TypeMsgRevokeNft   = "revoke_nft"
 )
 
 var (
@@ -120,17 +120,20 @@ func (msg MsgTransferNft) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// func NewMsgIssueDenom(denomID, denomName, schema, sender string) *MsgIssueDenom {
+
 // NewMsgApproveNft is a constructor function for MsgSetName
-func NewMsgApproveNft(
-	tokenID, denomID, sender, expires string,
+func NewMsgApproveNft(tokenID, denomID, sender, expires, to string,
 ) *MsgApproveNft {
 	return &MsgApproveNft{
-		Id:        tokenID,
-		DenomId:   denomID,
-		Sender:    sender,
-		Expires:   expires,
+		Id:      tokenID,
+		DenomId: denomID,
+		Sender:  sender,
+		Expires: expires,
+		Spender: to,
 	}
 }
+
 // Route Implements Msg
 func (msg MsgApproveNft) Route() string { return RouterKey }
 
@@ -170,9 +173,9 @@ func NewMsgRevokeNft(
 	tokenID, denomID, sender, recipient string,
 ) *MsgRevokeNft {
 	return &MsgRevokeNft{
-		Id:        tokenID,
-		DenomId:   denomID,
-		Sender:    sender,
+		Id:      tokenID,
+		DenomId: denomID,
+		Sender:  sender,
 	}
 }
 

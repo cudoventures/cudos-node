@@ -170,3 +170,16 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 
 	return nil
 }
+
+func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress, approvedAddress sdk.AccAddress) error {
+
+	// extract nft fetching from method
+	nft, err := k.IsOwner(ctx, denomID, tokenID, owner)
+	if err != nil {
+		return err
+	}
+
+	k.approveNFT(ctx, nft, approvedAddress, denomID)
+
+	return nil
+}

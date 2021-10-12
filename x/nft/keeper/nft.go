@@ -62,8 +62,18 @@ func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
 func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 	store := ctx.KVStore(k.storeKey)
 
+	// why Must? What happens if it fails and the app panics? Is there a global panic handler?
 	bz := k.cdc.MustMarshal(&nft)
 	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
+}
+
+func (k Keeper) approveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) {
+	if nft.ApprovedAddresses == nil {
+		nft.ApprovedAddresses = map[string]bool{approvedAddress.String(): true}
+	} else {
+		nft.ApprovedAddresses[approvedAddress.String()] = true
+	}
+	k.setNFT(ctx, denomID, nft)
 }
 
 // deleteNFT deletes an existing NFT from store

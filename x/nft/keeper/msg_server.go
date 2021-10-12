@@ -207,7 +207,7 @@ func (m msgServer) RevokeNft(goCtx context.Context, msg *types.MsgRevokeNft) (*t
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-    //TODO add approval
+	//TODO add approval
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -227,13 +227,20 @@ func (m msgServer) RevokeNft(goCtx context.Context, msg *types.MsgRevokeNft) (*t
 }
 
 func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (*types.MsgApproveNftResponse, error) {
-	_, err := sdk.AccAddressFromBech32(msg.Sender)
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	spender, err := sdk.AccAddressFromBech32(msg.Spender)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-    //TODO add approval
+	if err := m.Keeper.AddApproval(ctx, msg.DenomId, msg.Id, sender, spender); err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

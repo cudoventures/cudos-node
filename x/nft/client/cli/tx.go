@@ -305,11 +305,11 @@ func GetCmdSendNft() *cobra.Command {
 // GetCmdApproveNft  is the CLI command for grants permission to spender to transfer or send the given token
 func GetCmdApproveNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "approve [spender] [denom-id] [token-id] [expires]",
-		Long: "Grants permission to spender to transfer or send the given token",
+		// no expire in ERC721
+		Use:  "approve [denom-id] [token-id] [to]",
+		Long: "Adds the to adress to the approved list.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft send <contract> <denom-id> <token-id>  <msg>"+
-				"--uri=<uri> "+
+			"$ %s tx nft approve <denom-id> <token-id> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
@@ -322,16 +322,17 @@ func GetCmdApproveNft() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
-			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
-				return err
-			}
+			var sender = clientCtx.GetFromAddress().String()
+			denomId := args[0]
+			tokenId := args[1]
+			toAddress := args[2]
 
 			msg := types.NewMsgApproveNft(
-				args[2],
-				args[1],
-				clientCtx.GetFromAddress().String(),
-				args[0],
+				tokenId,
+				denomId,
+				sender,
+				"test",
+				toAddress,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -339,7 +340,7 @@ func GetCmdApproveNft() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	cmd.Flags().AddFlagSet(FsSendNft)
+	cmd.Flags().AddFlagSet(FsApproveNft)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

@@ -81,6 +81,7 @@ message MsgApproveNft {
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 3;
     string expires = 4;
+    string spender = 5;
 }
 
 // MsgApproveNft defines the Msg/Approve response type.
