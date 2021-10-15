@@ -51,3 +51,16 @@ message Collection {
     Denom denom = 1 [ (gogoproto.nullable) = false ];
     repeated BaseNFT nfts = 2 [ (gogoproto.customname) = "NFTs", (gogoproto.nullable) = false ];
 }
+
+message ApprovedAddresses {
+    option (gogoproto.equal) = true;
+    map<string, ApprovedAddressesData> approvedAdresses = 1;
+
+
+}
+
+message ApprovedAddressesData {
+    option (gogoproto.equal) = true;
+
+    map<string, bool> approvedAddresses = 1;
+}

@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strconv"
 
 	"cudos.org/cudos-node/x/nft/types"
 )
@@ -258,6 +258,38 @@ func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (
 	})
 
 	return &types.MsgApproveNftResponse{}, nil
+}
+
+// ApproveAllNft adds an adress to the globally approved list
+func (m msgServer) ApproveAllNft(goCtx context.Context, msg *types.MsgApproveAllNft) (*types.MsgApproveAllNftResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	operatorAddressToBeAdded, err := sdk.AccAddressFromBech32(msg.OperatorToBeApproved)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	m.Keeper.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, msg.Approved)
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeApproveAllNft,
+			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
+			sdk.NewAttribute(types.AttributeKeyOperator, msg.OperatorToBeApproved),
+			sdk.NewAttribute(types.AttributeKeyApproved, strconv.FormatBool(msg.Approved)),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgApproveAllNftResponse{}, nil
 }
 
 func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types.MsgBurnNFTResponse, error) {

@@ -183,3 +183,11 @@ func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, owner sdk.
 
 	return nil
 }
+
+func (k Keeper) AddApprovalForAll(ctx sdk.Context, sender sdk.AccAddress, operatorAddressToBeAdded sdk.AccAddress, approved bool) error {
+	if sender.Equals(operatorAddressToBeAdded) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "ApproveAll failed! Sender address (%s) is the same as operator (%s)! ", sender, operatorAddressToBeAdded)
+	}
+	k.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, approved)
+	return nil
+}

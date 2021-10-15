@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -34,6 +35,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdBurnNFT(),
 		GetCmdSendNft(),
 		GetCmdApproveNft(),
+		GetCmdApproveAllNFT(),
 		GetCmdRevokeNft(),
 	)
 
@@ -307,7 +309,7 @@ func GetCmdApproveNft() *cobra.Command {
 	cmd := &cobra.Command{
 		// no expire in ERC721
 		Use:  "approve [denom-id] [token-id] [to]",
-		Long: "Adds the to adress to the approved list.",
+		Long: "Adds the to address to the approved list.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft approve <denom-id> <token-id> "+
 				"--from=<key-name> "+
@@ -327,6 +329,11 @@ func GetCmdApproveNft() *cobra.Command {
 			tokenId := args[1]
 			toAddress := args[2]
 
+			// nolint: govet
+			if _, err := sdk.AccAddressFromBech32(toAddress); err != nil {
+				return err
+			}
+
 			msg := types.NewMsgApproveNft(
 				tokenId,
 				denomId,
@@ -341,6 +348,54 @@ func GetCmdApproveNft() *cobra.Command {
 		},
 	}
 	cmd.Flags().AddFlagSet(FsApproveNft)
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func GetCmdApproveAllNFT() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "approveAll [operatorToBeApproved] [approved]",
+		Long: "Adds operatorToBeApproved address to the globally approved list.",
+		Example: fmt.Sprintf(
+			"$ %s tx nft approve <operatorToBeApproved> <true/false> "+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var sender = clientCtx.GetFromAddress().String()
+			operatorToBeApproved := args[0]
+			approved, err := strconv.ParseBool(args[1])
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if _, err := sdk.AccAddressFromBech32(operatorToBeApproved); err != nil {
+				return err
+			}
+
+			msg := types.NewMsgApproveAllNft(
+				operatorToBeApproved,
+				sender,
+				approved,
+			)
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsApproveAllNft)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

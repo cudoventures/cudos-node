@@ -120,7 +120,50 @@ func (msg MsgTransferNft) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-// func NewMsgIssueDenom(denomID, denomName, schema, sender string) *MsgIssueDenom {
+// NewMsgApproveAllNft NewMsgApproveNft is a constructor function for MsgSetName
+func NewMsgApproveAllNft(operatoBeApproved, sender string, approved bool,
+) *MsgApproveAllNft {
+	return &MsgApproveAllNft{
+		OperatorToBeApproved: operatoBeApproved,
+		Sender:               sender,
+		Approved:             approved,
+	}
+}
+
+// Route Implements Msg
+func (msg MsgApproveAllNft) Route() string { return RouterKey }
+
+// Type Implements Msg
+func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveNft }
+
+// ValidateBasic Implements Msg.
+func (msg MsgApproveAllNft) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.OperatorToBeApproved); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+	}
+
+	return nil
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgApproveAllNft) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgApproveAllNft) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
+}
 
 // NewMsgApproveNft is a constructor function for MsgSetName
 func NewMsgApproveNft(tokenID, denomID, sender, expires, to string,

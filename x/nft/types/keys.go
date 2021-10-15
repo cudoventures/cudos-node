@@ -27,11 +27,12 @@ const (
 )
 
 var (
-	PrefixNFT        = []byte{0x01}
-	PrefixOwners     = []byte{0x02} // key for a owner
-	PrefixCollection = []byte{0x03} // key for balance of NFTs held by the denom
-	PrefixDenom      = []byte{0x04} // key for denom of the nft
-	PrefixDenomName  = []byte{0x05} // key for denom name of the nft
+	PrefixNFT               = []byte{0x01}
+	PrefixOwners            = []byte{0x02} // key for a owner
+	PrefixCollection        = []byte{0x03} // key for balance of NFTs held by the denom
+	PrefixDenom             = []byte{0x04} // key for denom of the nft
+	PrefixDenomName         = []byte{0x05} // key for denom name of the nft
+	PrefixApprovedAddresses = []byte{0x06} // key for globally approved operator addresses
 
 	delimiter = []byte("/")
 )
@@ -116,4 +117,10 @@ func KeyDenomID(id string) []byte {
 func KeyDenomName(name string) []byte {
 	key := append(PrefixDenomName, delimiter...)
 	return append(key, []byte(name)...)
+}
+
+// KeyApprovedAddresses  gets the key of an approved address
+func KeyApprovedAddresses(address string) []byte {
+	key := append(PrefixApprovedAddresses, delimiter...)
+	return append(key, []byte(address)...)
 }

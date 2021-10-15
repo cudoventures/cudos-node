@@ -70,10 +70,9 @@ type sendNFTReq struct {
 type approveNFTReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`
 	Owner     string       `json:"owner"`
-	Recipient string       `json:"recipient"`
-	Expires string         `json:"expires"`
+	ToAddress string       `json:"recipient"`
+	Expires   string       `json:"expires"`
 }
-
 
 type revokeNFTReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`

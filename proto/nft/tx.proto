@@ -26,6 +26,9 @@ service Msg {
     // Approve grants permission to spender to transfer or send the given token.
     rpc ApproveNft(MsgApproveNft) returns (MsgApproveNftResponse);
 
+    // Approve grants permission to spender to transfer or send the given token.
+    rpc ApproveAllNft(MsgApproveAllNft) returns (MsgApproveAllNftResponse);
+
     // Revokes permission to spender to transfer or send the given token.
       rpc RevokeNft(MsgRevokeNft) returns (MsgRevokeNftResponse);
 
@@ -86,6 +89,19 @@ message MsgApproveNft {
 
 // MsgApproveNft defines the Msg/Approve response type.
 message MsgApproveNftResponse {}
+
+message MsgApproveAllNft {
+    option (gogoproto.equal) = true;
+
+    string  operatorToBeApproved = 1;
+    string  sender = 2;
+    bool  approved = 3;
+
+}
+
+// MsgApproveNft defines the Msg/Approve response type.
+message MsgApproveAllNftResponse {}
+
 
 // MsgRevokeNft defines an SDK message for transferring an NFT to recipient.
 message MsgRevokeNft {
