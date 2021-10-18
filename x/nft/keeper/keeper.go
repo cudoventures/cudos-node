@@ -129,23 +129,37 @@ func (k Keeper) EditNFT(
 }
 
 // TransferOwner transfers the ownership of the given NFT to the new owner
-func (k Keeper) TransferOwner(
-	ctx sdk.Context, denomID, tokenID string, srcOwner, dstOwner sdk.AccAddress,
-) error {
+func (k Keeper) TransferOwner(ctx sdk.Context, denomID, tokenID string, from, to, sender sdk.AccAddress) error {
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	nft, err := k.IsOwner(ctx, denomID, tokenID, srcOwner)
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return err
 	}
 
-	nft.Owner = dstOwner.String()
+	if !from.Equals(nft.GetOwner()) {
+		return sdkerrors.Wrapf(types.ErrInvalidNFT,
+			"From [%s] is not the owner of NFT with denomId [%s] / tokenId [%s]. The owner is [%s]", sender.String(), denomID, tokenID, nft.GetOwner())
+	}
 
+	if sender.Equals(nft.GetOwner()) || // if the owner is requesting the transfer
+		(nft.ApprovedAddresses != nil && nft.ApprovedAddresses[sender.String()]) || // or if the sender is approved for the nft
+		k.IsApprovedOperator(ctx, from, sender) { // or if the sender is part of approveAll of user
+		transferNFT(ctx, denomID, tokenID, from, to, nft, k)
+		return nil
+	}
+
+	return sdkerrors.Wrapf(types.ErrUnauthorized,
+		"Sender [%s] is neither owner or approved for transfer of denomId [%s] / tokenId [%s]", sender.String(), denomID, tokenID)
+}
+
+func transferNFT(ctx sdk.Context, denomID string, tokenID string, from sdk.AccAddress, to sdk.AccAddress, nft types.BaseNFT, k Keeper) {
+	nft.ApprovedAddresses = nil
+	nft.Owner = to.String()
 	k.setNFT(ctx, denomID, nft)
-	k.swapOwner(ctx, denomID, tokenID, srcOwner, dstOwner)
-	return nil
+	k.swapOwner(ctx, denomID, tokenID, from, to)
 }
 
 // BurnNFT deletes a specified NFT
@@ -171,12 +185,17 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 	return nil
 }
 
-func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress, approvedAddress sdk.AccAddress) error {
+func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, sender sdk.AccAddress, approvedAddress sdk.AccAddress) error {
 
-	// extract nft fetching from method
-	nft, err := k.IsOwner(ctx, denomID, tokenID, owner)
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return err
+	}
+
+	if !nft.GetOwner().Equals(sender) || !k.IsApprovedOperator(ctx, nft.GetOwner(), sender) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			"Approve failed! Sender address (%s) neither owner or approved for  denomId (%s) / tokenId (%s)! ", sender, approvedAddress)
+
 	}
 
 	k.approveNFT(ctx, nft, approvedAddress, denomID)
@@ -189,5 +208,25 @@ func (k Keeper) AddApprovalForAll(ctx sdk.Context, sender sdk.AccAddress, operat
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "ApproveAll failed! Sender address (%s) is the same as operator (%s)! ", sender, operatorAddressToBeAdded)
 	}
 	k.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, approved)
+	return nil
+}
+
+func (k Keeper) RevokeApproval(ctx sdk.Context, denomID, tokenID string, sender, addressToRevoke sdk.AccAddress) error {
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
+	if err != nil {
+		return err
+	}
+
+	if !nft.GetOwner().Equals(sender) || !k.IsApprovedOperator(ctx, nft.GetOwner(), sender) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+			"Revoke failed! Sender address (%s) neither owner or approved for  denomId (%s) / tokenId (%s)! ", sender, addressToRevoke)
+
+	}
+
+	err = k.RevokeApprovalNFT(ctx, nft, addressToRevoke, denomID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

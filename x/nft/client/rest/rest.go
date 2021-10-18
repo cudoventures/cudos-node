@@ -49,12 +49,12 @@ type editNFTReq struct {
 }
 
 type transferNFTReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	Owner     string       `json:"owner"`
-	Recipient string       `json:"recipient"`
-	Name      string       `json:"name"`
-	URI       string       `json:"uri"`
-	Data      string       `json:"data"`
+	BaseReq rest.BaseReq `json:"base_req"`
+	From    string       `json:"from"`
+	To      string       `json:"to"`
+	Name    string       `json:"name"`
+	URI     string       `json:"uri"`
+	Data    string       `json:"data"`
 }
 
 type sendNFTReq struct {
@@ -64,7 +64,7 @@ type sendNFTReq struct {
 	Name      string       `json:"name"`
 	URI       string       `json:"uri"`
 	Data      string       `json:"data"`
-	Messsage  string       `json:msg`
+	Messsage  string       `json:"msg"`
 }
 
 type approveNFTReq struct {

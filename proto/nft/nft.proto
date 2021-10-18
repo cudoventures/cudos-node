@@ -54,7 +54,7 @@ message Collection {
 
 message ApprovedAddresses {
     option (gogoproto.equal) = true;
-    map<string, ApprovedAddressesData> approvedAdresses = 1;
+    map<string, ApprovedAddressesData> approvedAddresses = 1;
 
 
 }
@@ -62,5 +62,5 @@ message ApprovedAddresses {
 message ApprovedAddressesData {
     option (gogoproto.equal) = true;
 
-    map<string, bool> approvedAddresses = 1;
+    map<string, bool> approvedAddressesData = 1;
 }

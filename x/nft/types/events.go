@@ -24,6 +24,7 @@ var (
 	AttributeKeyDenomID   = "denom_id"
 	AttributeKeyDenomName = "denom_name"
 	AttributeKeyMessage   = "message"
-	AttributeKeyExpires   = "expires"
 	AttributeKeyApproved  = "approved"
+	AttributeKeyFrom      = "from"
+	AttributeKeyTo        = "to"
 )

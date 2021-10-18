@@ -73,13 +73,14 @@ func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
 
 // NewMsgTransferNft is a constructor function for MsgSetName
 func NewMsgTransferNft(
-	tokenID, denomID, sender, recipient string,
+	tokenID, denomID, from, to, msgSender string,
 ) *MsgTransferNft {
 	return &MsgTransferNft{
-		Id:        tokenID,
-		DenomId:   denomID,
-		Sender:    sender,
-		Recipient: recipient,
+		TokenId: tokenID,
+		DenomId: denomID,
+		From:    from,
+		To:      to,
+		Sender:  msgSender,
 	}
 }
 
@@ -95,14 +96,19 @@ func (msg MsgTransferNft) ValidateBasic() error {
 		return err
 	}
 
-	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.From); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 
-	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.To); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
-	return ValidateTokenID(msg.Id)
+
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
+	}
+
+	return ValidateTokenID(msg.TokenId)
 }
 
 // GetSignBytes Implements Msg.
@@ -121,12 +127,12 @@ func (msg MsgTransferNft) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgApproveAllNft NewMsgApproveNft is a constructor function for MsgSetName
-func NewMsgApproveAllNft(operatoBeApproved, sender string, approved bool,
+func NewMsgApproveAllNft(operator, sender string, approved bool,
 ) *MsgApproveAllNft {
 	return &MsgApproveAllNft{
-		OperatorToBeApproved: operatoBeApproved,
-		Sender:               sender,
-		Approved:             approved,
+		Operator: operator,
+		Sender:   sender,
+		Approved: approved,
 	}
 }
 
@@ -139,11 +145,11 @@ func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveNft }
 // ValidateBasic Implements Msg.
 func (msg MsgApproveAllNft) ValidateBasic() error {
 
-	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
 	}
 
-	if _, err := sdk.AccAddressFromBech32(msg.OperatorToBeApproved); err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
 	}
 
@@ -166,14 +172,13 @@ func (msg MsgApproveAllNft) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgApproveNft is a constructor function for MsgSetName
-func NewMsgApproveNft(tokenID, denomID, sender, expires, to string,
+func NewMsgApproveNft(tokenID, denomID, sender, approvedAddress string,
 ) *MsgApproveNft {
 	return &MsgApproveNft{
-		Id:      tokenID,
-		DenomId: denomID,
-		Sender:  sender,
-		Expires: expires,
-		Spender: to,
+		Id:              tokenID,
+		DenomId:         denomID,
+		Sender:          sender,
+		ApprovedAddress: approvedAddress,
 	}
 }
 
@@ -190,6 +195,10 @@ func (msg MsgApproveNft) ValidateBasic() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+
+	if _, err := sdk.AccAddressFromBech32(msg.ApprovedAddress); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 
@@ -213,12 +222,13 @@ func (msg MsgApproveNft) GetSigners() []sdk.AccAddress {
 
 // NewMsgRevokeNft is a constructor function for MsgSetName
 func NewMsgRevokeNft(
-	tokenID, denomID, sender, recipient string,
+	addressToApprove, sender, denomId, tokenId string,
 ) *MsgRevokeNft {
 	return &MsgRevokeNft{
-		Id:      tokenID,
-		DenomId: denomID,
-		Sender:  sender,
+		AddressToRevoke: addressToApprove,
+		Sender:          sender,
+		DenomId:         denomId,
+		TokenId:         tokenId,
 	}
 }
 
@@ -238,7 +248,11 @@ func (msg MsgRevokeNft) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 
-	return ValidateTokenID(msg.Id)
+	if _, err := sdk.AccAddressFromBech32(msg.AddressToRevoke); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid AddressToRevoke (%s)", err)
+	}
+
+	return ValidateTokenID(msg.TokenId)
 }
 
 // GetSignBytes Implements Msg.

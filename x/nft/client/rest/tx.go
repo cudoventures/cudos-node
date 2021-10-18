@@ -128,7 +128,7 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.To); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -138,9 +138,9 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		msg := types.NewMsgTransferNft(
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
-			req.Owner,
-			req.Recipient,
-		)
+			req.From,
+			req.To,
+			req.BaseReq.From)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -173,7 +173,6 @@ func approveNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			tokenId,
 			denomId,
 			req.Owner,
-			"test",
 			req.ToAddress,
 		)
 		if err := msg.ValidateBasic(); err != nil {
@@ -202,7 +201,7 @@ func revokeNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		// create the message
-		msg := types.NewMsgTransferNft(
+		msg := types.NewMsgRevokeNft(
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
 			req.Owner,
@@ -227,7 +226,7 @@ func sendNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.To); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -237,8 +236,8 @@ func sendNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		msg := types.NewMsgSendNft(
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
-			req.Owner,
-			req.Recipient,
+			req.From,
+			req.To,
 			vars[RestParamMessage],
 		)
 		if err := msg.ValidateBasic(); err != nil {

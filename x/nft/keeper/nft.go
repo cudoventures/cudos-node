@@ -23,6 +23,22 @@ func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.N
 	return baseNFT, nil
 }
 
+// GetNFT set a specific NFT in the store from its index
+func (k Keeper) GetBaseNFT(ctx sdk.Context, denomID, tokenID string) (nft types.BaseNFT, err error) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.KeyNFT(denomID, tokenID))
+	if bz == nil {
+		// why do I return a value instead of a reference?
+		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: %s", denomID)
+	}
+
+	var baseNFT types.BaseNFT
+	k.cdc.MustUnmarshal(bz, &baseNFT)
+
+	return baseNFT, nil
+}
+
 // GetNFTs returns all NFTs by the specified denom ID
 func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
 	store := ctx.KVStore(k.storeKey)
@@ -61,8 +77,6 @@ func (k Keeper) HasNFT(ctx sdk.Context, denomID, tokenID string) bool {
 
 func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 	store := ctx.KVStore(k.storeKey)
-
-	// why Must? What happens if it fails and the app panics? Is there a global panic handler?
 	bz := k.cdc.MustMarshal(&nft)
 	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
 }
@@ -74,6 +88,23 @@ func (k Keeper) approveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress s
 		nft.ApprovedAddresses[approvedAddress.String()] = true
 	}
 	k.setNFT(ctx, denomID, nft)
+}
+
+func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) error {
+
+	if nft.ApprovedAddresses == nil {
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+	}
+
+	_, ok := nft.ApprovedAddresses[approvedAddress.String()]
+	if ok {
+		delete(nft.ApprovedAddresses, approvedAddress.String())
+	} else {
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+	}
+
+	k.setNFT(ctx, denomID, nft)
+	return nil
 }
 
 // deleteNFT deletes an existing NFT from store

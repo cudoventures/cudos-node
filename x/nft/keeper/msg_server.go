@@ -132,15 +132,21 @@ func (m msgServer) TransferNft(goCtx context.Context, msg *types.MsgTransferNft)
 		return nil, err
 	}
 
-	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
+	from, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	to, err := sdk.AccAddressFromBech32(msg.To)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
+	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.TokenId,
+		from,
+		to,
 		sender,
-		recipient,
 	); err != nil {
 		return nil, err
 	}
@@ -148,10 +154,11 @@ func (m msgServer) TransferNft(goCtx context.Context, msg *types.MsgTransferNft)
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeTransferNft,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyFrom, msg.From),
+			sdk.NewAttribute(types.AttributeKeyTo, msg.To),
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -163,6 +170,7 @@ func (m msgServer) TransferNft(goCtx context.Context, msg *types.MsgTransferNft)
 	return &types.MsgTransferNftResponse{}, nil
 }
 
+//TODO: Once we know how to differentiate contract from user address, implement
 func (m msgServer) SendNft(goCtx context.Context, msg *types.MsgSendNft) (*types.MsgSendNftResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
@@ -174,13 +182,16 @@ func (m msgServer) SendNft(goCtx context.Context, msg *types.MsgSendNft) (*types
 		return nil, err
 	}
 
+	_ = recipient
+	_ = sender
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
-		sender,
-		recipient,
-	); err != nil {
-		return nil, err
-	}
+	// if err := m.Keeper.TransferOwner(ctx, msg.DenomId, msg.Id,
+	// 	sender,
+	// 	recipient,
+	// ); err != nil {
+	// 	return nil, err
+	// }
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
@@ -201,18 +212,26 @@ func (m msgServer) SendNft(goCtx context.Context, msg *types.MsgSendNft) (*types
 	return &types.MsgSendNftResponse{}, nil
 }
 func (m msgServer) RevokeNft(goCtx context.Context, msg *types.MsgRevokeNft) (*types.MsgRevokeNftResponse, error) {
-	_, err := sdk.AccAddressFromBech32(msg.Sender)
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	addressToRevoke, err := sdk.AccAddressFromBech32(msg.AddressToRevoke)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	//TODO add approval
+
+	if err := m.Keeper.RevokeApproval(ctx, msg.DenomId, msg.TokenId, sender, addressToRevoke); err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeRevokeNft,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
 		),
@@ -232,13 +251,13 @@ func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (
 		return nil, err
 	}
 
-	spender, err := sdk.AccAddressFromBech32(msg.Spender)
+	approvedAddress, err := sdk.AccAddressFromBech32(msg.ApprovedAddress)
 	if err != nil {
 		return nil, err
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.AddApproval(ctx, msg.DenomId, msg.Id, sender, spender); err != nil {
+	if err := m.Keeper.AddApproval(ctx, msg.DenomId, msg.Id, sender, approvedAddress); err != nil {
 		return nil, err
 	}
 
@@ -248,7 +267,6 @@ func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyExpires, msg.Expires),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
@@ -262,24 +280,26 @@ func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (
 
 // ApproveAllNft adds an adress to the globally approved list
 func (m msgServer) ApproveAllNft(goCtx context.Context, msg *types.MsgApproveAllNft) (*types.MsgApproveAllNftResponse, error) {
+
+	operator, err := sdk.AccAddressFromBech32(msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		return nil, err
 	}
 
-	operatorAddressToBeAdded, err := sdk.AccAddressFromBech32(msg.OperatorToBeApproved)
-	if err != nil {
-		return nil, err
-	}
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	m.Keeper.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, msg.Approved)
+	// m.Keeper.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, msg.Approved)
+	m.Keeper.SetApprovedAddress(ctx, operator, sender, msg.Approved)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeApproveAllNft,
 			sdk.NewAttribute(types.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeKeyOperator, msg.OperatorToBeApproved),
+			sdk.NewAttribute(types.AttributeKeyOperator, msg.Operator),
 			sdk.NewAttribute(types.AttributeKeyApproved, strconv.FormatBool(msg.Approved)),
 		),
 		sdk.NewEvent(

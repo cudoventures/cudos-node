@@ -53,10 +53,11 @@ message MsgIssueDenomResponse {}
 message MsgTransferNft {
     option (gogoproto.equal) = true;
 
-    string id = 1;
+    string token_id = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
-    string recipient = 4;
+    string from = 3;
+    string to = 4;
+    string sender = 5;
 }
 
 // MsgTransferNftResponse defines the Msg/TransferNft response type.
@@ -83,8 +84,7 @@ message MsgApproveNft {
     string id = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 3;
-    string expires = 4;
-    string spender = 5;
+    string approvedAddress = 4;
 }
 
 // MsgApproveNft defines the Msg/Approve response type.
@@ -93,7 +93,7 @@ message MsgApproveNftResponse {}
 message MsgApproveAllNft {
     option (gogoproto.equal) = true;
 
-    string  operatorToBeApproved = 1;
+    string  operator = 1;
     string  sender = 2;
     bool  approved = 3;
 
@@ -107,9 +107,10 @@ message MsgApproveAllNftResponse {}
 message MsgRevokeNft {
     option (gogoproto.equal) = true;
 
-    string id = 1;
+    string addressToRevoke = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
+    string token_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string sender = 4;
 }
 
 // MsgRevokeNftResponse defines the Msg/RevokeNft response type.
