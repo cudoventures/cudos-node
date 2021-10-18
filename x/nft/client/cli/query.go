@@ -303,3 +303,47 @@ func GetCmdQueryNFT() *cobra.Command {
 
 	return cmd
 }
+
+// GetCmdQueryApprovedNFT queries the NFT and returns its approved operators list
+func GetCmdQueryApprovedNFT() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "approvals [tokenId]",
+		Long:    "Get the approved addresses for the NFT",
+		Example: fmt.Sprintf("$ %s query nft approvals <address> --denom-id=<denom-id>", version.AppName),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
+				return err
+			}
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			denomID, err := cmd.Flags().GetString(FlagDenomID)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.Owner(context.Background(), &types.QueryOwnerRequest{
+				DenomId:    denomID,
+				Owner:      args[0],
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsQueryOwner)
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nfts")
+
+	return cmd
+}

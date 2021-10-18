@@ -29,10 +29,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := msgServer.TransferNft(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgSendNft:
-			res, err := msgServer.SendNft(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
-
 		case *types.MsgApproveNft:
 			res, err := msgServer.ApproveNft(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

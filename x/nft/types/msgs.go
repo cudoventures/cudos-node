@@ -12,7 +12,6 @@ const (
 	TypeMsgEditNFT     = "edit_nft"
 	TypeMsgMintNFT     = "mint_nft"
 	TypeMsgBurnNFT     = "burn_nft"
-	TypeMsgSendNft     = "send_nft"
 	TypeMsgApproveNft  = "approve_nft"
 	TypeMsgRevokeNft   = "revoke_nft"
 )
@@ -23,7 +22,6 @@ var (
 	_ sdk.Msg = &MsgEditNFT{}
 	_ sdk.Msg = &MsgMintNFT{}
 	_ sdk.Msg = &MsgBurnNFT{}
-	_ sdk.Msg = &MsgSendNft{}
 	_ sdk.Msg = &MsgApproveNft{}
 	_ sdk.Msg = &MsgRevokeNft{}
 )
@@ -263,56 +261,6 @@ func (msg MsgRevokeNft) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgRevokeNft) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(msg.Sender)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{from}
-}
-
-// NewMsgSendNft is a constructor function for MsgSetName
-func NewMsgSendNft(
-	tokenID, denomID, sender, recipient, msg string,
-) *MsgSendNft {
-	return &MsgSendNft{
-		Id:        tokenID,
-		DenomId:   denomID,
-		Sender:    sender,
-		Recipient: recipient,
-		Message:   msg,
-	}
-}
-
-// Route Implements Msg
-func (msg MsgSendNft) Route() string { return RouterKey }
-
-// Type Implements Msg
-func (msg MsgSendNft) Type() string { return TypeMsgSendNft }
-
-// ValidateBasic Implements Msg.
-func (msg MsgSendNft) ValidateBasic() error {
-	if err := ValidateDenomID(msg.DenomId); err != nil {
-		return err
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
-	}
-
-	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
-	}
-	return ValidateTokenID(msg.Id)
-}
-
-// GetSignBytes Implements Msg.
-func (msg MsgSendNft) GetSignBytes() []byte {
-	bz := ModuleCdc.MustMarshalJSON(&msg)
-	return sdk.MustSortJSON(bz)
-}
-
-// GetSigners Implements Msg.
-func (msg MsgSendNft) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)

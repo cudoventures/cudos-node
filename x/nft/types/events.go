@@ -4,7 +4,6 @@ package types
 var (
 	EventTypeIssueDenom    = "issue_denom"
 	EventTypeTransferNft   = "transfer_nft"
-	EventTypeSendNft       = "send_nft"
 	EventTypeApproveNft    = "approve_nft"
 	EventTypeApproveAllNft = "approve_all_nft"
 	EventTypeRevokeNft     = "revoke_nft"

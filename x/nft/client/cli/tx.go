@@ -33,7 +33,6 @@ func NewTxCmd() *cobra.Command {
 		GetCmdEditNFT(),
 		GetCmdTransferNft(),
 		GetCmdBurnNFT(),
-		GetCmdSendNft(),
 		GetCmdApproveNft(),
 		GetCmdApproveAllNFT(),
 		GetCmdRevokeNft(),
@@ -257,50 +256,6 @@ func GetCmdTransferNft() *cobra.Command {
 		},
 	}
 	cmd.Flags().AddFlagSet(FsTransferNft)
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-// GetCmdSendNft is the CLI command for ownership transfer of the token to contract account
-func GetCmdSendNft() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:  "send [contract] [denom-id] [token-id] [msg]",
-		Long: "Send an NFT to a contract.",
-		Example: fmt.Sprintf(
-			"$ %s tx nft send <contract> <denom-id> <token-id>  <msg>"+
-				"--uri=<uri> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
-			version.AppName,
-		),
-		Args: cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			// nolint: govet
-			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
-				return err
-			}
-
-			msg := types.NewMsgSendNft(
-				args[2],
-				args[1],
-				clientCtx.GetFromAddress().String(),
-				args[0],
-				args[3],
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
-		},
-	}
-	cmd.Flags().AddFlagSet(FsSendNft)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

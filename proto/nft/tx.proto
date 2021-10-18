@@ -20,9 +20,6 @@ service Msg {
     // TransferNft transfers ownership of the token to recipient account.
     rpc TransferNft(MsgTransferNft) returns (MsgTransferNftResponse);
 
-    // SendNft transfers ownership of the token to recipient account.
-    rpc SendNft(MsgSendNft) returns (MsgSendNftResponse);
-
     // Approve grants permission to spender to transfer or send the given token.
     rpc ApproveNft(MsgApproveNft) returns (MsgApproveNftResponse);
 
@@ -62,20 +59,6 @@ message MsgTransferNft {
 
 // MsgTransferNftResponse defines the Msg/TransferNft response type.
 message MsgTransferNftResponse {}
-
-// MsgSendNft defines an SDK message for transferring an NFT to recipient.
-message MsgSendNft {
-    option (gogoproto.equal) = true;
-
-    string id = 1;
-    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
-    string recipient = 4;
-    string message = 5;
-}
-
-// MsgSendNftResponse defines the Msg/SendNft response type.
-message MsgSendNftResponse {}
 
 // MsgApproveNft defines an SDK message for granted approval.
 message MsgApproveNft {
