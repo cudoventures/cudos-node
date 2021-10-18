@@ -44,6 +44,11 @@ service Query {
     rpc NFT(QueryNFTRequest) returns (QueryNFTResponse) {
         option (google.api.http).get = "/cudosnode/nft/nfts/{denom_id}/{token_id}";
     }
+
+    // NFT queries the NFT for the given denom and token ID
+    rpc GetApprovalsNFT(QueryApprovalsNFTRequest) returns (QueryApprovalsNFTResponse) {
+        option (google.api.http).get = "/cudosnode/nft/approvals/{denom_id}/{token_id}";
+    }
 }
 
 // QuerySupplyRequest is the request type for the Query/HTLC RPC method
@@ -127,3 +132,15 @@ message QueryNFTRequest {
 message QueryNFTResponse {
     BaseNFT nft = 1 [ (gogoproto.customname) = "NFT" ];
 }
+
+// QueryNFTRequest is the request type for the Query/NFT RPC method
+message QueryApprovalsNFTRequest {
+    string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string token_id = 2 [ (gogoproto.moretags) = "yaml:\"token_id\"" ];
+}
+
+// QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
+message QueryApprovalsNFTResponse {
+    map<string, bool> ApprovedAddresses = 1 [ (gogoproto.customname) = "ApprovedAddresses" ];
+}
+

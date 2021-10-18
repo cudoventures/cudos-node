@@ -30,6 +30,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
+		GetCmdQueryApprovedNFT(),
 	)
 
 	return queryCmd
@@ -307,9 +308,9 @@ func GetCmdQueryNFT() *cobra.Command {
 // GetCmdQueryApprovedNFT queries the NFT and returns its approved operators list
 func GetCmdQueryApprovedNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "approvals [tokenId]",
+		Use:     "approvals [denomId] [tokenId]",
 		Long:    "Get the approved addresses for the NFT",
-		Example: fmt.Sprintf("$ %s query nft approvals <address> --denom-id=<denom-id>", version.AppName),
+		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenId>", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -318,27 +319,26 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 			}
 
 			// nolint: govet
-			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
+			denomId := args[0]
+			if err := types.ValidateDenomID(denomId); err != nil {
 				return err
 			}
-			pageReq, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
+
+			// nolint: govet
+			tokenId := args[1]
+			if err := types.ValidateTokenID(tokenId); err != nil {
 				return err
 			}
-			denomID, err := cmd.Flags().GetString(FlagDenomID)
-			if err != nil {
-				return err
-			}
+
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.Owner(context.Background(), &types.QueryOwnerRequest{
-				DenomId:    denomID,
-				Owner:      args[0],
-				Pagination: pageReq,
+			resp, err := queryClient.NFT(context.Background(), &types.QueryNFTRequest{
+				DenomId: denomId,
+				TokenId: tokenId,
 			})
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(resp)
+			return clientCtx.PrintProto(resp.NFT)
 		},
 	}
 	cmd.Flags().AddFlagSet(FsQueryOwner)
