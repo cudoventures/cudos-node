@@ -352,7 +352,7 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 // GetCmdQueryIsApprovedForAll queries if the operator address is authorized for owner address
 func GetCmdQueryIsApprovedForAll() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "approvals [owner] [operator]",
+		Use:     "isApprovedForAll [owner] [operator]",
 		Long:    "Query if an address is an authorized operator for another address",
 		Example: fmt.Sprintf("$ %s query nft approvals <owner> <operator>", version.AppName),
 		Args:    cobra.ExactArgs(2),
