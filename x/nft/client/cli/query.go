@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/spf13/cobra"
 
@@ -31,6 +32,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
 		GetCmdQueryApprovedNFT(),
+		GetCmdQueryIsApprovedForAll(),
 	)
 
 	return queryCmd
@@ -311,7 +313,7 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 		Use:     "approvals [denomId] [tokenId]",
 		Long:    "Get the approved addresses for the NFT",
 		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenId>", version.AppName),
-		Args:    cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -331,19 +333,59 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.NFT(context.Background(), &types.QueryNFTRequest{
+			resp, err := queryClient.GetApprovalsNFT(context.Background(), &types.QueryApprovalsNFTRequest{
 				DenomId: denomId,
 				TokenId: tokenId,
 			})
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(resp.NFT)
+			return clientCtx.PrintProto(resp)
 		},
 	}
 	cmd.Flags().AddFlagSet(FsQueryOwner)
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "nfts")
+
+	return cmd
+}
+
+// GetCmdQueryIsApprovedForAll queries if the operator address is authorized for owner address
+func GetCmdQueryIsApprovedForAll() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "approvals [owner] [operator]",
+		Long:    "Query if an address is an authorized operator for another address",
+		Example: fmt.Sprintf("$ %s query nft approvals <owner> <operator>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			owner := args[0]
+			if _, err := sdk.AccAddressFromBech32(owner); err != nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+			}
+
+			operator := args[1]
+			if _, err := sdk.AccAddressFromBech32(operator); err != nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.QueryApprovalsIsApprovedForAll(context.Background(), &types.QueryApprovalsIsApprovedForAllRequest{
+				Owner:    owner,
+				Operator: operator,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsQueryOwner)
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

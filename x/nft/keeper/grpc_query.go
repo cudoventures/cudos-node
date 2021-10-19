@@ -165,3 +165,19 @@ func (k Keeper) GetApprovalsNFT(c context.Context, request *types.QueryApprovals
 
 	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: nft.ApprovedAddresses}, nil
 }
+
+func (k Keeper) QueryApprovalsIsApprovedForAll(c context.Context, request *types.QueryApprovalsIsApprovedForAllRequest) (*types.QueryApprovalsIsApprovedForAllResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	owner, err := sdk.AccAddressFromBech32(request.Owner)
+	if err != nil {
+		return &types.QueryApprovalsIsApprovedForAllResponse{}, err
+	}
+	operator, err := sdk.AccAddressFromBech32(request.Operator)
+	if err != nil {
+		return &types.QueryApprovalsIsApprovedForAllResponse{}, err
+	}
+
+	isApprovedOperator := k.IsApprovedOperator(ctx, owner, operator)
+	return &types.QueryApprovalsIsApprovedForAllResponse{IsApproved: isApprovedOperator}, nil
+}
