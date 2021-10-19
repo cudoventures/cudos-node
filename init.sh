@@ -66,7 +66,12 @@ cudos-noded init $MONIKER --chain-id=$CHAIN_ID
 # sed -i "s/cors_allowed_origins = \[\]/cors_allowed_origins = \[\"\*\"\]/" ${CUDOS_HOME}/config/config.toml
 
 # setting time after commit before proposing a new block
-sed -i '' "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" "${CUDOS_HOME}/config/config.toml"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+   sed -i '' "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" "${CUDOS_HOME}/config/config.toml"
+  else
+    sed -i "s/timeout_commit = \"5s\"/timeout_commit = \"$TIMEOUT_COMMIT\"/" "${CUDOS_HOME}/config/config.toml"
+fi
+
 
 # setting slashing time
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg JAIL_DURATION "$JAIL_DURATION" '.app_state.slashing.params.downtime_jail_duration = $JAIL_DURATION' > "${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
@@ -146,10 +151,16 @@ cudos-noded add-genesis-account $FAUCET_ADDRESS "1000000000000000000000000${BOND
 
 cudos-noded collect-gentxs
 
-sed -i '' "s/pex = true/pex = false/" "${CUDOS_HOME}/config/config.toml"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+   sed -i '' "s/pex = true/pex = false/" "${CUDOS_HOME}/config/config.toml"
+   MY_OWN_PEER_ID=$(cudos-noded tendermint show-node-id)
+   sed -i '' "s/private_peer_ids = \"\"/private_peer_ids = \"$MY_OWN_PEER_ID\"/g" "${CUDOS_HOME}/config/config.toml"
+  else
+    sed -i "s/pex = true/pex = false/" "${CUDOS_HOME}/config/config.toml"
+    MY_OWN_PEER_ID=$(cudos-noded tendermint show-node-id)
+    sed -i "s/private_peer_ids = \"\"/private_peer_ids = \"$MY_OWN_PEER_ID\"/g" "${CUDOS_HOME}/config/config.toml"
+fi
 
-MY_OWN_PEER_ID=$(cudos-noded tendermint show-node-id)
-sed -i '' "s/private_peer_ids = \"\"/private_peer_ids = \"$MY_OWN_PEER_ID\"/g" "${CUDOS_HOME}/config/config.toml"
 
 cudos-noded tendermint show-node-id "${CUDOS_HOME}/tendermint.nodeid"
 
