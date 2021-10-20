@@ -49,8 +49,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	return &types.MsgIssueDenomResponse{}, nil
 }
 
-// TODO: remove duplicate code in `MintNFT` and `EditNFT`
-// nolint: dupl
+// MintNFT mints a new NFT
 func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types.MsgMintNFTResponse, error) {
 	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
 	if err != nil {
@@ -91,7 +90,7 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	return &types.MsgMintNFTResponse{}, nil
 }
 
-//nolint:dupl
+// EditNFT edits a NFT
 func (m msgServer) EditNFT(goCtx context.Context, msg *types.MsgEditNFT) (*types.MsgEditNFTResponse, error) {
 	sender, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {

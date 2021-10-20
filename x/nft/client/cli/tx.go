@@ -309,6 +309,7 @@ func GetCmdApproveNft() *cobra.Command {
 	return cmd
 }
 
+// GetCmdApproveAllNFT is the CLI command to add a valid address to the users approved list
 func GetCmdApproveAllNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "approveAll [operator] [approved]",
