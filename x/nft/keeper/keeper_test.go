@@ -227,6 +227,76 @@ func (suite *KeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTProperties() {
 
 }
 
+func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenDenomDoesNotExist() {
+	err := suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+}
+
+func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenNFTDoesNotBelongToFromAddress() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address3, address2, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenSenderDoesNotHavePermissionForTransfer() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address)
+	suite.NoError(err)
+}
+
+func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOnNFT() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenID, address, address3)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
+	suite.NoError(err)
+
+}
+
+// doesnt work, need to check why
+func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOperatorAllForNFTOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApprovalForAll(suite.ctx, address, address3, true)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
+	suite.NoError(err)
+}
+
 func TestKeeperSuite(t *testing.T) {
 	suite.Run(t, new(KeeperSuite))
 }

@@ -144,7 +144,7 @@ func (k Keeper) TransferOwner(ctx sdk.Context, denomID, tokenID string, from, to
 	}
 
 	if !from.Equals(nft.GetOwner()) {
-		return sdkerrors.Wrapf(types.ErrInvalidNFT,
+		return sdkerrors.Wrapf(types.ErrUnauthorized,
 			"From [%s] is not the owner of NFT with denomId [%s] / tokenId [%s]. The owner is [%s]", sender.String(), denomID, tokenID, nft.GetOwner())
 	}
 
