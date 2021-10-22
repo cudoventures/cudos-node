@@ -129,7 +129,7 @@ func (suite *KeeperSuite) TestMintNFT_ShouldError_WhenNFTAlreadyExists() {
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_Correctly_MintsNewNFT() {
+func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -141,7 +141,7 @@ func (suite *KeeperSuite) TestMintNFT_Correctly_MintsNewNFT() {
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_Correctly_SetsOwner() {
+func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -155,7 +155,7 @@ func (suite *KeeperSuite) TestMintNFT_Correctly_SetsOwner() {
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_Correctly_IncreasesTotalSupply() {
+func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
 	supplyBeforeMinting := suite.keeper.GetTotalSupply(suite.ctx, denomID)
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
