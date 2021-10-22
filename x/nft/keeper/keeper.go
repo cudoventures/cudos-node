@@ -101,9 +101,13 @@ func (k Keeper) EditNFT(
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	nft, err := k.IsOwner(ctx, denomID, tokenID, sender)
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return err
+	}
+
+	if !k.IsOwner(nft, sender) {
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the owner of %s/%s", sender.String(), denomID, tokenID)
 	}
 
 	_, err = k.IsDenomCreator(ctx, denomID, sender)
@@ -168,9 +172,13 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	nft, err := k.IsOwner(ctx, denomID, tokenID, owner)
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return err
+	}
+
+	if !k.IsOwner(nft, owner) {
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the owner of %s/%s", owner.String(), denomID, tokenID)
 	}
 
 	_, err = k.IsDenomCreator(ctx, denomID, owner)

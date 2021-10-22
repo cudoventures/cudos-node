@@ -42,12 +42,13 @@ var (
 	denomNm3     = "denom3nm"
 	denomSymbol3 = "denomSymbol3"
 
-	address   = CreateTestAddrs(1)[0]
-	address2  = CreateTestAddrs(2)[1]
-	address3  = CreateTestAddrs(3)[2]
-	tokenURI  = "https://google.com/token-1.json"
-	tokenURI2 = "https://google.com/token-2.json"
-	tokenData = "{a:a,b:b}"
+	address    = CreateTestAddrs(1)[0]
+	address2   = CreateTestAddrs(2)[1]
+	address3   = CreateTestAddrs(3)[2]
+	tokenURI   = "https://google.com/token-1.json"
+	tokenURI2  = "https://google.com/token-2.json"
+	tokenData  = "{a:a,b:b}"
+	tokenData2 = "{a:a,b:b,c:c}"
 
 	isCheckTx = false
 )
@@ -165,6 +166,64 @@ func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
 	supplyAfterMinting := suite.keeper.GetTotalSupply(suite.ctx, denomID)
 
 	assert.Greater(suite.T(), supplyAfterMinting, supplyBeforeMinting)
+
+}
+
+func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenDenomDoesNotExist() {
+	err := suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+}
+
+func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotDenomCreator() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenNFTDoesNotExit() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address)
+	suite.ErrorIs(err, types.ErrNotFoundNFT)
+}
+
+func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *KeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTProperties() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address2)
+	suite.NoError(err)
+
+	originalNFT, _ := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm2, tokenURI2, tokenData2, address2)
+	suite.NoError(err)
+
+	editedNFT, _ := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)
+
+	assert.Equal(suite.T(), editedNFT.GetName(), tokenNm2)
+	assert.Equal(suite.T(), editedNFT.GetData(), tokenData2)
+	assert.Equal(suite.T(), editedNFT.GetURI(), tokenURI2)
+
+	assert.NotEqual(suite.T(), originalNFT.GetName(), editedNFT.GetName())
+	assert.NotEqual(suite.T(), originalNFT.GetData(), editedNFT.GetData())
+	assert.NotEqual(suite.T(), originalNFT.GetURI(), editedNFT.GetURI())
 
 }
 
