@@ -2,11 +2,11 @@ package keeper_test
 
 import (
 	"bytes"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -53,7 +53,7 @@ var (
 	isCheckTx = false
 )
 
-type KeeperSuite struct {
+type IntegrationTestKeeperSuite struct {
 	suite.Suite
 
 	legacyAmino *codec.LegacyAmino
@@ -64,11 +64,7 @@ type KeeperSuite struct {
 	queryClient types.QueryClient
 }
 
-type MockedKeeper struct {
-	mock.Mock
-}
-
-func (suite *KeeperSuite) SetupTest() {
+func (suite *IntegrationTestKeeperSuite) SetupTest() {
 
 	app := simapp.Setup(isCheckTx)
 
@@ -83,11 +79,46 @@ func (suite *KeeperSuite) SetupTest() {
 
 }
 
-func (suite *KeeperSuite) AfterTest(_, _ string) {
+func TestKeeperSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationTestKeeperSuite))
 }
 
-//TODO: Refactor with Should syntaxis
-func (suite *KeeperSuite) TestIssueDenom() {
+func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomIdAlreadyExists() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomNameAlreadyExists() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldCorrectly_SetDenomIdAndName() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldError_WhenSenderIsNotDenomCreator() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldError_WhenDenomDoesNotExist() {
+	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestGetCollection_ShouldCorrectly_ReturnDenomCollections() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -104,21 +135,7 @@ func (suite *KeeperSuite) TestIssueDenom() {
 	suite.Equal(len(collections), 3)
 }
 
-func (suite *KeeperSuite) TestMintNFT_ShouldError_WhenSenderIsNotDenomCreator() {
-
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
-	suite.NoError(err)
-
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
-	suite.ErrorIs(err, types.ErrUnauthorized)
-}
-
-func (suite *KeeperSuite) TestMintNFT_ShouldError_WhenDenomDoesNotExist() {
-	err := suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
-	suite.ErrorIs(err, types.ErrInvalidDenom)
-}
-
-func (suite *KeeperSuite) TestMintNFT_ShouldError_WhenNFTAlreadyExists() {
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldError_WhenNFTAlreadyExists() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -130,7 +147,7 @@ func (suite *KeeperSuite) TestMintNFT_ShouldError_WhenNFTAlreadyExists() {
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT() {
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -142,7 +159,8 @@ func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT() {
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
+// TODO: Fix this test to check for get owner prefix
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -152,14 +170,15 @@ func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
 	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
 	suite.NoError(err)
 
+	// not good - you should test setOwner()
 	assert.Equal(suite.T(), nft.Owner, address2.String())
 
 }
 
-func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
-	supplyBeforeMinting := suite.keeper.GetTotalSupply(suite.ctx, denomID)
+func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
+	supplyBeforeMinting := suite.keeper.GetTotalSupply(suite.ctx, denomID)
 
 	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
@@ -169,23 +188,12 @@ func (suite *KeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
 
 }
 
-func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenDenomDoesNotExist() {
+func (suite *IntegrationTestKeeperSuite) TestEditNFT_ShouldError_WhenDenomDoesNotExist() {
 	err := suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address)
 	suite.ErrorIs(err, types.ErrInvalidDenom)
 }
 
-func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotDenomCreator() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
-	suite.NoError(err)
-
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address, address2)
-	suite.NoError(err)
-
-	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2)
-	suite.ErrorIs(err, types.ErrUnauthorized)
-}
-
-func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenNFTDoesNotExit() {
+func (suite *IntegrationTestKeeperSuite) TestEditNFT_ShouldError_WhenNFTDoesNotExit() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -193,7 +201,7 @@ func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenNFTDoesNotExit() {
 	suite.ErrorIs(err, types.ErrNotFoundNFT)
 }
 
-func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotOwner() {
+func (suite *IntegrationTestKeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
@@ -204,7 +212,7 @@ func (suite *KeeperSuite) TestEditNFT_ShouldError_WhenSenderIsNotOwner() {
 	suite.ErrorIs(err, types.ErrUnauthorized)
 }
 
-func (suite *KeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTProperties() {
+func (suite *IntegrationTestKeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTProperties() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
@@ -227,12 +235,12 @@ func (suite *KeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTProperties() {
 
 }
 
-func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenDenomDoesNotExist() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenDenomDoesNotExist() {
 	err := suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
 	suite.ErrorIs(err, types.ErrInvalidDenom)
 }
 
-func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenNFTDoesNotBelongToFromAddress() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenNFTDoesNotBelongToFromAddress() {
 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
@@ -244,7 +252,7 @@ func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenNFTDoesNotBelongToFr
 	suite.ErrorIs(err, types.ErrUnauthorized)
 }
 
-func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenSenderDoesNotHavePermissionForTransfer() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenSenderDoesNotHavePermissionForTransfer() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
@@ -255,7 +263,7 @@ func (suite *KeeperSuite) TestTransferOwner_ShouldError_WhenSenderDoesNotHavePer
 	suite.ErrorIs(err, types.ErrUnauthorized)
 }
 
-func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsOwner() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
@@ -266,7 +274,7 @@ func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIs
 	suite.NoError(err)
 }
 
-func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOnNFT() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOnNFT() {
 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
@@ -282,8 +290,7 @@ func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIs
 
 }
 
-// doesnt work, need to check why
-func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOperatorAllForNFTOwner() {
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOperatorAllForNFTOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
@@ -297,8 +304,161 @@ func (suite *KeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIs
 	suite.NoError(err)
 }
 
-func TestKeeperSuite(t *testing.T) {
-	suite.Run(t, new(KeeperSuite))
+// TODO: Fix this test to check for swap with get owner prefix
+func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_SwapOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApprovalForAll(suite.ctx, address, address3, true)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
+	suite.NoError(err)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldError_WhenSenderIsNotOwnerOfNftOrIsNotApproved() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenID, address2, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldCorrectly_AddAddressToNFTApprovedList() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenID, address, address2)
+	suite.NoError(err)
+
+	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	isApproved := nft.ApprovedAddresses[address2.String()]
+	assert.Equal(suite.T(), isApproved, true)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestAddApprovalAll_ShouldError_WhenSenderAddressIsTheSameAsApproved() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApprovalForAll(suite.ctx, address2, address2, true)
+	suite.ErrorIs(err, sdkerrors.ErrInvalidRequest)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestAddApprovalAll_ShouldCorrectly_AddAddressToNFTApprovedList() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApprovalForAll(suite.ctx, address, address2, true)
+	suite.NoError(err)
+
+	approvedAddresses, _ := suite.keeper.GetApprovedAddresses(suite.ctx, address)
+	isApproved := approvedAddresses.ApprovedAddressesData[address2.String()]
+	assert.Equal(suite.T(), isApproved, true)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldError_WhenSenderIsNotOwnerOrApprovedOperator() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.RevokeApproval(suite.ctx, denomID, tokenID, address2, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldCorrectly_RevokeNFTApproval() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenID, address, address2)
+	suite.NoError(err)
+
+	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	isApproved := nft.ApprovedAddresses[address2.String()]
+	assert.Equal(suite.T(), isApproved, true)
+
+	err = suite.keeper.RevokeApproval(suite.ctx, denomID, tokenID, address, address2)
+
+	nft, _ = suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	isApproved = nft.ApprovedAddresses[address2.String()]
+	assert.Equal(suite.T(), isApproved, false)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldError_WhenDenomIdDoesNotExist() {
+	err := suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address)
+	suite.ErrorIs(err, types.ErrInvalidDenom)
+
+}
+
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldError_WhenSenderIsNotOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address2)
+	suite.ErrorIs(err, types.ErrUnauthorized)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFT() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	suite.NoError(err, types.ErrNotFoundNFT)
+	assert.NotNil(suite.T(), nft)
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address)
+	suite.NoError(err)
+
+	_, err = suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	suite.ErrorIs(err, types.ErrNotFoundNFT)
+}
+
+// TODO: Fix this test to check for get owner prefix
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFTOwner() {
+}
+
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DecreaseSupply() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	suite.NoError(err, types.ErrNotFoundNFT)
+	assert.NotNil(suite.T(), nft)
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address)
+	suite.NoError(err)
+
+	supplyAfterBurn := suite.keeper.GetTotalSupply(suite.ctx, denomID)
+
+	assert.Equal(suite.T(), uint64(0), supplyAfterBurn)
 }
 
 // CreateTestAddrs creates test addresses

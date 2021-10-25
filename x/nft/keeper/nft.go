@@ -29,7 +29,6 @@ func (k Keeper) GetBaseNFT(ctx sdk.Context, denomID, tokenID string) (nft types.
 
 	bz := store.Get(types.KeyNFT(denomID, tokenID))
 	if bz == nil {
-		// why do I return a value instead of a reference?
 		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: %s", denomID)
 	}
 
@@ -75,7 +74,7 @@ func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 	store.Set(types.KeyNFT(denomID, nft.GetID()), bz)
 }
 
-func (k Keeper) approveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) {
+func (k Keeper) ApproveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) {
 	if nft.ApprovedAddresses == nil {
 		nft.ApprovedAddresses = map[string]bool{approvedAddress.String(): true}
 	} else {
@@ -84,17 +83,17 @@ func (k Keeper) approveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress s
 	k.setNFT(ctx, denomID, nft)
 }
 
-func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) error {
+func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, addressToRevoke sdk.AccAddress, denomID string) error {
 
 	if nft.ApprovedAddresses == nil {
-		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 	}
 
-	_, ok := nft.ApprovedAddresses[approvedAddress.String()]
+	_, ok := nft.ApprovedAddresses[addressToRevoke.String()]
 	if ok {
-		delete(nft.ApprovedAddresses, approvedAddress.String())
+		delete(nft.ApprovedAddresses, addressToRevoke.String())
 	} else {
-		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 	}
 
 	k.setNFT(ctx, denomID, nft)

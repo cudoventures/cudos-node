@@ -46,9 +46,7 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context,
-	id, name, schema string,
-	creator sdk.AccAddress) error {
+func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema string, creator sdk.AccAddress) error {
 	return k.SetDenom(ctx, types.NewDenom(id, name, schema, creator))
 }
 
@@ -108,11 +106,6 @@ func (k Keeper) EditNFT(
 
 	if !k.IsOwner(nft, sender) {
 		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the owner of %s/%s", sender.String(), denomID, tokenID)
-	}
-
-	_, err = k.IsDenomCreator(ctx, denomID, sender)
-	if err != nil {
-		return err
 	}
 
 	if types.Modified(tokenNm) {
@@ -181,11 +174,6 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the owner of %s/%s", owner.String(), denomID, tokenID)
 	}
 
-	_, err = k.IsDenomCreator(ctx, denomID, owner)
-	if err != nil {
-		return err
-	}
-
 	k.deleteNFT(ctx, denomID, nft)
 	k.deleteOwner(ctx, denomID, tokenID, owner)
 	k.decreaseSupply(ctx, denomID)
@@ -201,12 +189,22 @@ func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, sender sdk
 	}
 
 	if nft.GetOwner().Equals(sender) || k.IsApprovedOperator(ctx, nft.GetOwner(), sender) {
-		k.approveNFT(ctx, nft, approvedAddress, denomID)
+		k.ApproveNFT(ctx, nft, approvedAddress, denomID)
 		return nil
 	}
 
-	return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+	return sdkerrors.Wrapf(types.ErrUnauthorized,
 		"Approve failed - could not authorize (%s)! Sender address (%s) is neither owner or approved for denomId (%s) / tokenId (%s)! ", approvedAddress, sender, denomID, tokenID)
+}
+
+// Todo: check if we need this to be private. For example, right now its defined in the keeper
+// if it is accessible from there - it means all the check are bypassed ??
+func approveNFT(nft types.BaseNFT, approvedAddress sdk.AccAddress) {
+	if nft.ApprovedAddresses == nil {
+		nft.ApprovedAddresses = map[string]bool{approvedAddress.String(): true}
+	} else {
+		nft.ApprovedAddresses[approvedAddress.String()] = true
+	}
 }
 
 func (k Keeper) AddApprovalForAll(ctx sdk.Context, sender sdk.AccAddress, operatorAddressToBeAdded sdk.AccAddress, approved bool) error {
@@ -224,14 +222,29 @@ func (k Keeper) RevokeApproval(ctx sdk.Context, denomID, tokenID string, sender,
 	}
 
 	if nft.GetOwner().Equals(sender) || k.IsApprovedOperator(ctx, nft.GetOwner(), sender) {
-		err = k.RevokeApprovalNFT(ctx, nft, addressToRevoke, denomID)
+		err := k.RevokeApprovalNFT(ctx, nft, addressToRevoke, denomID)
 		if err != nil {
 			return err
 		}
 		return nil
 	}
 
-	return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized,
+	return sdkerrors.Wrapf(types.ErrUnauthorized,
 		"Approve failed - could not revoke access for (%s)! Sender address (%s) is neither owner or approved for denomId (%s) / tokenId (%s)! ", addressToRevoke, sender, denomID, tokenID)
+}
 
+// Todo: check if we need this to be private. For example, right now its defined in the keeper
+// if it is accessible from there - it means all the check are bypassed ??
+func revokeApprovalNFT(nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) error {
+	if nft.ApprovedAddresses == nil {
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+	}
+
+	_, ok := nft.ApprovedAddresses[approvedAddress.String()]
+	if ok {
+		delete(nft.ApprovedAddresses, approvedAddress.String())
+	} else {
+		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
+	}
+	return nil
 }
