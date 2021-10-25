@@ -10,7 +10,7 @@ require (
 	github.com/CosmWasm/wasmd v0.17.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
 	// github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210611212501-5de966823aa6
-	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/cosmos-sdk v0.44.3
 	github.com/cosmos/ibc-go v1.0.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
