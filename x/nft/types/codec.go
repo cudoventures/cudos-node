@@ -31,7 +31,6 @@ func init() {
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgIssueDenom{}, "cudos.org/cudos-node/nft/MsgIssueDenom", nil)
 	cdc.RegisterConcrete(&MsgTransferNft{}, "cudos.org/cudos-node/nft/MsgTransferNft", nil)
-	cdc.RegisterConcrete(&MsgSendNft{}, "cudos.org/cudos-node/nft/MsgSendNft", nil)
 	cdc.RegisterConcrete(&MsgApproveNft{}, "cudos.org/cudos-node/nft/MsgApproveNft", nil)
 	cdc.RegisterConcrete(&MsgRevokeNft{}, "cudos.org/cudos-node/nft/MsgRevokeNft", nil)
 	cdc.RegisterConcrete(&MsgEditNFT{}, "cudos.org/cudos-node/nft/MsgEditNFT", nil)
@@ -46,7 +45,6 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgIssueDenom{},
 		&MsgTransferNft{},
-		&MsgSendNft{},
 		&MsgApproveNft{},
 		&MsgRevokeNft{},
 		&MsgEditNFT{},

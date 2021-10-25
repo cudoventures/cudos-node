@@ -23,13 +23,11 @@ func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}", RestParamDenomID, RestParamTokenID), editNFTHandlerFn(cliCtx)).Methods("PUT")
 	// Transfer an NFT to an address
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/transfer", RestParamDenomID, RestParamTokenID), transferNFTHandlerFn(cliCtx)).Methods("POST")
-	// Send an NFT to an address
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/send", RestParamDenomID, RestParamTokenID, RestParamMessage), sendNFTHandlerFn(cliCtx)).Methods("POST")
 	// Approve NFT transfers for address
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/approve", RestParamDenomID, RestParamTokenID, RestParamMessage), approveNFTHandlerFn(cliCtx)).Methods("POST")
 	// Revoke NFT transfers for address
-    r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/revoke", RestParamDenomID, RestParamTokenID, RestParamMessage), revokeNFTHandlerFn(cliCtx)).Methods("POST")
-    	// Burn an NFT
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/revoke", RestParamDenomID, RestParamTokenID, RestParamMessage), revokeNFTHandlerFn(cliCtx)).Methods("POST")
+	// Burn an NFT
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/burn", RestParamDenomID, RestParamTokenID), burnNFTHandlerFn(cliCtx)).Methods("POST")
 }
 
@@ -128,7 +126,7 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.To); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -138,9 +136,9 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		msg := types.NewMsgTransferNft(
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
-			req.Owner,
-			req.Recipient,
-		)
+			req.From,
+			req.To,
+			req.BaseReq.From)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -160,18 +158,20 @@ func approveNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.ToAddress); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
+		tokenId := vars[RestParamTokenID]
+		denomId := vars[RestParamDenomID]
 		// create the message
 		msg := types.NewMsgApproveNft(
-			vars[RestParamTokenID],
-			vars[RestParamDenomID],
+			tokenId,
+			denomId,
 			req.Owner,
-			req.Recipient,
+			req.ToAddress,
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -199,44 +199,11 @@ func revokeNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 
 		vars := mux.Vars(r)
 		// create the message
-		msg := types.NewMsgTransferNft(
+		msg := types.NewMsgRevokeNft(
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
 			req.Owner,
 			req.Recipient,
-		)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, msg)
-	}
-}
-
-func sendNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req transferNFTReq
-		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
-			return
-		}
-		baseReq := req.BaseReq.Sanitize()
-		if !baseReq.ValidateBasic(w) {
-			return
-		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		vars := mux.Vars(r)
-		// create the message
-		msg := types.NewMsgSendNft(
-			vars[RestParamTokenID],
-			vars[RestParamDenomID],
-			req.Owner,
-			req.Recipient,
-			vars[RestParamMessage],
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

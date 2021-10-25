@@ -29,17 +29,17 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := msgServer.TransferNft(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgSendNft:
-			res, err := msgServer.SendNft(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgApproveNft:
+			res, err := msgServer.ApproveNft(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *types.MsgApproveNft:
-            res, err := msgServer.ApproveNft(sdk.WrapSDKContext(ctx), msg)
-            return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgApproveAllNft:
+			res, err := msgServer.ApproveAllNft(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-         case *types.MsgRevokeNft:
-             res, err := msgServer.RevokeNft(sdk.WrapSDKContext(ctx), msg)
-             return sdk.WrapServiceResult(ctx, res, err)
+		case *types.MsgRevokeNft:
+			res, err := msgServer.RevokeNft(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *types.MsgEditNFT:
 			res, err := msgServer.EditNFT(sdk.WrapSDKContext(ctx), msg)

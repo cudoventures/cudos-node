@@ -25,11 +25,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // BaseNFT defines a non-fungible token
 type BaseNFT struct {
-	Id    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name  string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	URI   string `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
-	Data  string `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
-	Owner string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 }
 
 func (m *BaseNFT) Reset()         { *m = BaseNFT{} }
@@ -223,48 +224,136 @@ func (m *Collection) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Collection proto.InternalMessageInfo
 
+type ApprovedAddresses struct {
+	ApprovedAddresses map[string]*ApprovedAddressesData `protobuf:"bytes,1,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (m *ApprovedAddresses) Reset()         { *m = ApprovedAddresses{} }
+func (m *ApprovedAddresses) String() string { return proto.CompactTextString(m) }
+func (*ApprovedAddresses) ProtoMessage()    {}
+func (*ApprovedAddresses) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{5}
+}
+func (m *ApprovedAddresses) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ApprovedAddresses) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ApprovedAddresses.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ApprovedAddresses) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ApprovedAddresses.Merge(m, src)
+}
+func (m *ApprovedAddresses) XXX_Size() int {
+	return m.Size()
+}
+func (m *ApprovedAddresses) XXX_DiscardUnknown() {
+	xxx_messageInfo_ApprovedAddresses.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ApprovedAddresses proto.InternalMessageInfo
+
+type ApprovedAddressesData struct {
+	ApprovedAddressesData map[string]bool `protobuf:"bytes,1,rep,name=approvedAddressesData,proto3" json:"approvedAddressesData,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+
+func (m *ApprovedAddressesData) Reset()         { *m = ApprovedAddressesData{} }
+func (m *ApprovedAddressesData) String() string { return proto.CompactTextString(m) }
+func (*ApprovedAddressesData) ProtoMessage()    {}
+func (*ApprovedAddressesData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_fe8ab7e15b7f0646, []int{6}
+}
+func (m *ApprovedAddressesData) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ApprovedAddressesData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ApprovedAddressesData.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ApprovedAddressesData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ApprovedAddressesData.Merge(m, src)
+}
+func (m *ApprovedAddressesData) XXX_Size() int {
+	return m.Size()
+}
+func (m *ApprovedAddressesData) XXX_DiscardUnknown() {
+	xxx_messageInfo_ApprovedAddressesData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ApprovedAddressesData proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*BaseNFT)(nil), "cudosnode.cudosnode.nft.BaseNFT")
+	proto.RegisterMapType((map[string]bool)(nil), "cudosnode.cudosnode.nft.BaseNFT.ApprovedAddressesEntry")
 	proto.RegisterType((*Denom)(nil), "cudosnode.cudosnode.nft.Denom")
 	proto.RegisterType((*IDCollection)(nil), "cudosnode.cudosnode.nft.IDCollection")
 	proto.RegisterType((*Owner)(nil), "cudosnode.cudosnode.nft.Owner")
 	proto.RegisterType((*Collection)(nil), "cudosnode.cudosnode.nft.Collection")
+	proto.RegisterType((*ApprovedAddresses)(nil), "cudosnode.cudosnode.nft.ApprovedAddresses")
+	proto.RegisterMapType((map[string]*ApprovedAddressesData)(nil), "cudosnode.cudosnode.nft.ApprovedAddresses.ApprovedAddressesEntry")
+	proto.RegisterType((*ApprovedAddressesData)(nil), "cudosnode.cudosnode.nft.ApprovedAddressesData")
+	proto.RegisterMapType((map[string]bool)(nil), "cudosnode.cudosnode.nft.ApprovedAddressesData.ApprovedAddressesDataEntry")
 }
 
 func init() { proto.RegisterFile("nft/nft.proto", fileDescriptor_fe8ab7e15b7f0646) }
 
 var fileDescriptor_fe8ab7e15b7f0646 = []byte{
-	// 467 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0x3f, 0x6f, 0xd3, 0x4e,
-	0x18, 0xc7, 0xed, 0xc4, 0x6e, 0x9a, 0x27, 0x4d, 0x7f, 0x3f, 0x1d, 0x11, 0x18, 0x06, 0x3b, 0xb2,
-	0x40, 0xea, 0x82, 0x2d, 0xca, 0x96, 0x81, 0xe1, 0xa8, 0x2a, 0x65, 0x29, 0xd2, 0xa9, 0x2c, 0x2c,
-	0x91, 0xf1, 0x5d, 0x82, 0x45, 0x72, 0x57, 0xf9, 0xae, 0x6a, 0xfb, 0x2e, 0x10, 0x2b, 0x0b, 0x2f,
-	0x27, 0x63, 0x47, 0x26, 0x0b, 0x9c, 0x85, 0x39, 0xaf, 0x00, 0xdd, 0x9d, 0x5d, 0xb2, 0x44, 0x62,
-	0xfb, 0x3e, 0xff, 0xfc, 0xf9, 0x3e, 0xbe, 0x07, 0x86, 0x7c, 0xae, 0x52, 0x3e, 0x57, 0xc9, 0x55,
-	0x29, 0x94, 0x40, 0x4f, 0xf2, 0x6b, 0x2a, 0x24, 0x17, 0x94, 0x25, 0x7f, 0x15, 0x9f, 0xab, 0x67,
-	0xa3, 0x85, 0x58, 0x08, 0xd3, 0x93, 0x6a, 0x65, 0xdb, 0xe3, 0x5b, 0xe8, 0xe1, 0x4c, 0xb2, 0x8b,
-	0xf3, 0x4b, 0x74, 0x0c, 0x9d, 0x82, 0x06, 0xee, 0xd8, 0x3d, 0xe9, 0x93, 0x4e, 0x41, 0x11, 0x02,
-	0x8f, 0x67, 0x2b, 0x16, 0x74, 0x4c, 0xc6, 0x68, 0xf4, 0x14, 0xba, 0xd7, 0x65, 0x11, 0x74, 0x75,
-	0x0a, 0xf7, 0xea, 0x2a, 0xea, 0xbe, 0x27, 0x53, 0xa2, 0x73, 0xba, 0x9d, 0x66, 0x2a, 0x0b, 0x3c,
-	0xdb, 0xae, 0x35, 0x1a, 0x81, 0x2f, 0x6e, 0x38, 0x2b, 0x03, 0xdf, 0x24, 0x6d, 0x30, 0xf1, 0x7e,
-	0x7f, 0x8f, 0xdc, 0x38, 0x07, 0xff, 0x8c, 0x71, 0xb1, 0xfa, 0x27, 0xee, 0x63, 0x38, 0x90, 0xf9,
-	0x27, 0xb6, 0xca, 0x2c, 0x9a, 0x34, 0x11, 0x0a, 0xa0, 0x97, 0x97, 0x2c, 0x53, 0xa2, 0x6c, 0xb8,
-	0x6d, 0xd8, 0x40, 0x6e, 0xe0, 0x68, 0x7a, 0xf6, 0x56, 0x2c, 0x97, 0x2c, 0x57, 0x85, 0xe0, 0x28,
-	0x81, 0x43, 0xaa, 0xa1, 0xb3, 0x96, 0x88, 0x1f, 0x6d, 0xab, 0xe8, 0xbf, 0xbb, 0x6c, 0xb5, 0x9c,
-	0xc4, 0x6d, 0x25, 0x26, 0x3d, 0x23, 0xa7, 0x14, 0xbd, 0x82, 0xbe, 0x12, 0x9f, 0x19, 0x9f, 0x15,
-	0x54, 0x06, 0x9d, 0x71, 0xf7, 0xa4, 0x8f, 0x47, 0xdb, 0x2a, 0xfa, 0xdf, 0x0e, 0x3c, 0x94, 0x62,
-	0x72, 0x68, 0xf4, 0x94, 0xca, 0x06, 0xfc, 0xcd, 0x05, 0xff, 0x9d, 0xde, 0x56, 0x5b, 0xcc, 0x28,
-	0x2d, 0x99, 0x94, 0xcd, 0x8e, 0x6d, 0x88, 0x4a, 0x38, 0x2e, 0xe8, 0x2c, 0x7f, 0x70, 0x67, 0x09,
-	0x83, 0xd3, 0x17, 0xc9, 0x9e, 0x37, 0x4c, 0x76, 0x77, 0xc1, 0xcf, 0xd7, 0x55, 0xe4, 0xd4, 0x55,
-	0x34, 0xdc, 0xcd, 0xca, 0x6d, 0x15, 0x0d, 0xac, 0xbb, 0x82, 0xe6, 0x32, 0x26, 0xc3, 0x82, 0xee,
-	0x54, 0x1b, 0x77, 0x5f, 0x5d, 0x80, 0x9d, 0xbf, 0x32, 0x01, 0xdf, 0x2c, 0x6c, 0x0c, 0x0e, 0x4e,
-	0xc3, 0xbd, 0x7c, 0xf3, 0x60, 0xd8, 0xd3, 0x60, 0x62, 0x47, 0x10, 0x06, 0x8f, 0xcf, 0x55, 0x6b,
-	0x7d, 0xbc, 0x77, 0xb4, 0xb9, 0x32, 0x7c, 0xd4, 0xb8, 0xf6, 0x2e, 0xce, 0x2f, 0x25, 0x31, 0xb3,
-	0xd6, 0x14, 0x7e, 0xb3, 0xfe, 0x15, 0x3a, 0xeb, 0x3a, 0x74, 0xef, 0xeb, 0xd0, 0xfd, 0x59, 0x87,
-	0xee, 0x97, 0x4d, 0xe8, 0xdc, 0x6f, 0x42, 0xe7, 0xc7, 0x26, 0x74, 0x3e, 0x8c, 0xcd, 0xe7, 0x12,
-	0x51, 0x2e, 0x52, 0xa3, 0x5e, 0xea, 0x2f, 0xa7, 0xb7, 0xfa, 0xf2, 0x53, 0x75, 0x77, 0xc5, 0xe4,
-	0xc7, 0x03, 0x73, 0xd1, 0xaf, 0xff, 0x04, 0x00, 0x00, 0xff, 0xff, 0xeb, 0x73, 0x73, 0xd7, 0x11,
-	0x03, 0x00, 0x00,
+	// 612 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x3f, 0x6f, 0xd3, 0x4e,
+	0x18, 0x8e, 0xff, 0xa4, 0x69, 0xdf, 0xb4, 0xfd, 0xb5, 0xf7, 0x6b, 0x8b, 0xc9, 0x60, 0x47, 0x16,
+	0x48, 0x5d, 0x70, 0x44, 0x18, 0x40, 0x19, 0x90, 0x6a, 0x42, 0x45, 0x96, 0x22, 0x59, 0x65, 0x61,
+	0xa9, 0x0e, 0xdf, 0xa5, 0x58, 0x4d, 0x7c, 0x91, 0xef, 0xda, 0x92, 0x09, 0x3e, 0x02, 0x62, 0x65,
+	0x61, 0xe1, 0xbb, 0x74, 0xec, 0xc8, 0x64, 0x41, 0xb2, 0x74, 0xce, 0x27, 0x40, 0xbe, 0x73, 0x4a,
+	0x44, 0x1c, 0xd1, 0x6c, 0xcf, 0xfb, 0xef, 0x9e, 0xe7, 0x7d, 0xef, 0xbd, 0x83, 0x8d, 0xb8, 0x2b,
+	0x1a, 0x71, 0x57, 0x78, 0x83, 0x84, 0x09, 0x86, 0xee, 0x85, 0xe7, 0x84, 0xf1, 0x98, 0x11, 0xea,
+	0xfd, 0x41, 0x71, 0x57, 0xd4, 0x76, 0x4e, 0xd9, 0x29, 0x93, 0x39, 0x8d, 0x0c, 0xa9, 0x74, 0xf7,
+	0xbb, 0x0e, 0x15, 0x1f, 0x73, 0x7a, 0x74, 0x78, 0x8c, 0x36, 0x41, 0x8f, 0x88, 0xa5, 0xd5, 0xb5,
+	0xfd, 0xb5, 0x40, 0x8f, 0x08, 0x42, 0x60, 0xc6, 0xb8, 0x4f, 0x2d, 0x5d, 0x7a, 0x24, 0x46, 0xf7,
+	0xc1, 0x38, 0x4f, 0x22, 0xcb, 0xc8, 0x5c, 0x7e, 0x65, 0x94, 0x3a, 0xc6, 0x9b, 0xa0, 0x13, 0x64,
+	0xbe, 0x2c, 0x9d, 0x60, 0x81, 0x2d, 0x53, 0xa5, 0x67, 0x18, 0xed, 0x40, 0x99, 0x5d, 0xc6, 0x34,
+	0xb1, 0xca, 0xd2, 0xa9, 0x0c, 0x44, 0x61, 0x1b, 0x0f, 0x06, 0x09, 0xbb, 0xa0, 0xe4, 0x80, 0x90,
+	0x84, 0x72, 0x4e, 0xb9, 0xb5, 0x52, 0x37, 0xf6, 0xab, 0xcd, 0xa7, 0xde, 0x02, 0xfd, 0x5e, 0xae,
+	0xd2, 0x3b, 0xf8, 0xbb, 0xf2, 0x65, 0x2c, 0x92, 0x61, 0x30, 0x7f, 0x62, 0xad, 0x0d, 0x7b, 0xc5,
+	0xc9, 0x68, 0x0b, 0x8c, 0x33, 0x3a, 0xcc, 0x5b, 0xcd, 0x60, 0x26, 0xf4, 0x02, 0xf7, 0xce, 0x55,
+	0xb3, 0xab, 0x81, 0x32, 0x5a, 0xfa, 0x33, 0xad, 0x65, 0xde, 0x7c, 0x73, 0x34, 0x37, 0x84, 0x72,
+	0x9b, 0xc6, 0xac, 0x7f, 0xa7, 0x21, 0xed, 0xc1, 0x0a, 0x0f, 0xdf, 0xd3, 0x3e, 0x56, 0x73, 0x0a,
+	0x72, 0x0b, 0x59, 0x50, 0x09, 0x13, 0x8a, 0x05, 0x4b, 0xf2, 0x21, 0x4d, 0xcd, 0x9c, 0xe4, 0x12,
+	0xd6, 0x3b, 0xed, 0x17, 0xac, 0xd7, 0xa3, 0xa1, 0x88, 0x58, 0x8c, 0x3c, 0x58, 0x25, 0x19, 0xe9,
+	0xc9, 0x94, 0xd1, 0xff, 0x7f, 0x92, 0x3a, 0xff, 0x0d, 0x71, 0xbf, 0xd7, 0x72, 0xa7, 0x11, 0x37,
+	0xa8, 0x48, 0xd8, 0x21, 0xe8, 0x31, 0xac, 0x09, 0x76, 0x46, 0xe3, 0x93, 0x88, 0x70, 0x4b, 0xaf,
+	0x1b, 0xfb, 0x6b, 0xfe, 0xce, 0x24, 0x75, 0xb6, 0x54, 0xc1, 0x6d, 0xc8, 0x0d, 0x56, 0x25, 0xee,
+	0x10, 0x9e, 0x13, 0x7f, 0xd5, 0xa0, 0xfc, 0x5a, 0x5e, 0x8d, 0x05, 0x15, 0xac, 0x66, 0x95, 0xf7,
+	0x38, 0x35, 0x51, 0x02, 0x9b, 0x11, 0x39, 0x09, 0x6f, 0xd5, 0x29, 0x86, 0x6a, 0xf3, 0xe1, 0xc2,
+	0x1b, 0x9b, 0xed, 0xc5, 0x7f, 0x70, 0x95, 0x3a, 0xa5, 0x51, 0xea, 0x6c, 0xcc, 0x7a, 0xf9, 0x24,
+	0x75, 0xaa, 0x4a, 0x5d, 0x44, 0x42, 0xee, 0x06, 0x1b, 0x11, 0x99, 0x89, 0xe6, 0xea, 0xbe, 0x68,
+	0x00, 0x33, 0x53, 0x69, 0x41, 0x59, 0x36, 0x2c, 0x05, 0x56, 0x9b, 0xf6, 0x42, 0x7e, 0x79, 0x61,
+	0xbe, 0x99, 0x11, 0x07, 0xaa, 0x04, 0xf9, 0x60, 0xc6, 0x5d, 0x31, 0x95, 0x5e, 0xff, 0xd7, 0xb2,
+	0xf9, 0xeb, 0xb9, 0x6a, 0xf3, 0xe8, 0xf0, 0x98, 0x07, 0xb2, 0x36, 0x17, 0xf5, 0x49, 0x87, 0xed,
+	0xb9, 0xed, 0x42, 0xac, 0x68, 0xb3, 0x35, 0x49, 0x76, 0xb0, 0x90, 0x6c, 0xee, 0x98, 0x25, 0x76,
+	0x5c, 0x2c, 0xb1, 0xe3, 0xed, 0xd9, 0x1d, 0xaf, 0x36, 0xbd, 0xbb, 0x0b, 0x6a, 0x63, 0x81, 0xe7,
+	0xdf, 0xc4, 0x8d, 0x06, 0xbb, 0x85, 0xa9, 0xe8, 0x23, 0xec, 0xe2, 0xa2, 0x40, 0x3e, 0x8a, 0xce,
+	0x72, 0xcc, 0xc5, 0x5e, 0x35, 0x92, 0x62, 0x9e, 0xda, 0x2b, 0xa8, 0x2d, 0x2e, 0x5a, 0xfe, 0xf9,
+	0xfb, 0xcf, 0xaf, 0x7e, 0xd9, 0xa5, 0xab, 0x91, 0xad, 0x5d, 0x8f, 0x6c, 0xed, 0xe7, 0xc8, 0xd6,
+	0x3e, 0x8f, 0xed, 0xd2, 0xf5, 0xd8, 0x2e, 0xfd, 0x18, 0xdb, 0xa5, 0xb7, 0x75, 0xd9, 0x84, 0xc7,
+	0x92, 0xd3, 0x86, 0x44, 0x8f, 0xb2, 0x7e, 0x1a, 0x1f, 0xb2, 0x5f, 0xb9, 0x21, 0x86, 0x03, 0xca,
+	0xdf, 0xad, 0xc8, 0xdf, 0xf6, 0xc9, 0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x50, 0x59, 0xa0, 0x38,
+	0xad, 0x05, 0x00, 0x00,
 }
 
 func (this *BaseNFT) Equal(that interface{}) bool {
@@ -300,6 +389,14 @@ func (this *BaseNFT) Equal(that interface{}) bool {
 	}
 	if this.Owner != that1.Owner {
 		return false
+	}
+	if len(this.ApprovedAddresses) != len(that1.ApprovedAddresses) {
+		return false
+	}
+	for i := range this.ApprovedAddresses {
+		if this.ApprovedAddresses[i] != that1.ApprovedAddresses[i] {
+			return false
+		}
 	}
 	return true
 }
@@ -432,6 +529,64 @@ func (this *Collection) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *ApprovedAddresses) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ApprovedAddresses)
+	if !ok {
+		that2, ok := that.(ApprovedAddresses)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if len(this.ApprovedAddresses) != len(that1.ApprovedAddresses) {
+		return false
+	}
+	for i := range this.ApprovedAddresses {
+		if !this.ApprovedAddresses[i].Equal(that1.ApprovedAddresses[i]) {
+			return false
+		}
+	}
+	return true
+}
+func (this *ApprovedAddressesData) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*ApprovedAddressesData)
+	if !ok {
+		that2, ok := that.(ApprovedAddressesData)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if len(this.ApprovedAddressesData) != len(that1.ApprovedAddressesData) {
+		return false
+	}
+	for i := range this.ApprovedAddressesData {
+		if this.ApprovedAddressesData[i] != that1.ApprovedAddressesData[i] {
+			return false
+		}
+	}
+	return true
+}
 func (m *BaseNFT) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -452,6 +607,28 @@ func (m *BaseNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ApprovedAddresses) > 0 {
+		for k := range m.ApprovedAddresses {
+			v := m.ApprovedAddresses[k]
+			baseI := i
+			i--
+			if v {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintNft(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintNft(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x32
+		}
+	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
 		copy(dAtA[i:], m.Owner)
@@ -671,6 +848,100 @@ func (m *Collection) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *ApprovedAddresses) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ApprovedAddresses) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ApprovedAddresses) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ApprovedAddresses) > 0 {
+		for k := range m.ApprovedAddresses {
+			v := m.ApprovedAddresses[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintNft(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintNft(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintNft(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ApprovedAddressesData) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ApprovedAddressesData) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ApprovedAddressesData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ApprovedAddressesData) > 0 {
+		for k := range m.ApprovedAddressesData {
+			v := m.ApprovedAddressesData[k]
+			baseI := i
+			i--
+			if v {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintNft(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintNft(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintNft(dAtA []byte, offset int, v uint64) int {
 	offset -= sovNft(v)
 	base := offset
@@ -707,6 +978,14 @@ func (m *BaseNFT) Size() (n int) {
 	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovNft(uint64(l))
+	}
+	if len(m.ApprovedAddresses) > 0 {
+		for k, v := range m.ApprovedAddresses {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovNft(uint64(len(k))) + 1 + 1
+			n += mapEntrySize + 1 + sovNft(uint64(mapEntrySize))
+		}
 	}
 	return n
 }
@@ -786,6 +1065,45 @@ func (m *Collection) Size() (n int) {
 		for _, e := range m.NFTs {
 			l = e.Size()
 			n += 1 + l + sovNft(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *ApprovedAddresses) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.ApprovedAddresses) > 0 {
+		for k, v := range m.ApprovedAddresses {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovNft(uint64(l))
+			}
+			mapEntrySize := 1 + len(k) + sovNft(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovNft(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *ApprovedAddressesData) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.ApprovedAddressesData) > 0 {
+		for k, v := range m.ApprovedAddressesData {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovNft(uint64(len(k))) + 1 + 1
+			n += mapEntrySize + 1 + sovNft(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -985,6 +1303,121 @@ func (m *BaseNFT) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApprovedAddresses", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ApprovedAddresses == nil {
+				m.ApprovedAddresses = make(map[string]bool)
+			}
+			var mapkey string
+			var mapvalue bool
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowNft
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapvaluetemp int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvaluetemp |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					mapvalue = bool(mapvaluetemp != 0)
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipNft(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if skippy < 0 {
+						return ErrInvalidLengthNft
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.ApprovedAddresses[mapkey] = mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1522,6 +1955,356 @@ func (m *Collection) Unmarshal(dAtA []byte) error {
 			if err := m.NFTs[len(m.NFTs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ApprovedAddresses) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ApprovedAddresses: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ApprovedAddresses: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApprovedAddresses", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ApprovedAddresses == nil {
+				m.ApprovedAddresses = make(map[string]*ApprovedAddressesData)
+			}
+			var mapkey string
+			var mapvalue *ApprovedAddressesData
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowNft
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthNft
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthNft
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &ApprovedAddressesData{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipNft(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if skippy < 0 {
+						return ErrInvalidLengthNft
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.ApprovedAddresses[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipNft(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthNft
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ApprovedAddressesData) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowNft
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ApprovedAddressesData: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ApprovedAddressesData: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApprovedAddressesData", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowNft
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthNft
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthNft
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ApprovedAddressesData == nil {
+				m.ApprovedAddressesData = make(map[string]bool)
+			}
+			var mapkey string
+			var mapvalue bool
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowNft
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthNft
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapvaluetemp int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowNft
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvaluetemp |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					mapvalue = bool(mapvaluetemp != 0)
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipNft(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if skippy < 0 {
+						return ErrInvalidLengthNft
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.ApprovedAddressesData[mapkey] = mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/spf13/cobra"
 
@@ -30,6 +31,8 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
+		GetCmdQueryApprovedNFT(),
+		GetCmdQueryIsApprovedForAll(),
 	)
 
 	return queryCmd
@@ -299,6 +302,89 @@ func GetCmdQueryNFT() *cobra.Command {
 			return clientCtx.PrintProto(resp.NFT)
 		},
 	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryApprovedNFT queries the NFT and returns its approved operators list
+func GetCmdQueryApprovedNFT() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "approvals [denomId] [tokenId]",
+		Long:    "Get the approved addresses for the NFT",
+		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenId>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			denomId := args[0]
+			if err := types.ValidateDenomID(denomId); err != nil {
+				return err
+			}
+
+			// nolint: govet
+			tokenId := args[1]
+			if err := types.ValidateTokenID(tokenId); err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.GetApprovalsNFT(context.Background(), &types.QueryApprovalsNFTRequest{
+				DenomId: denomId,
+				TokenId: tokenId,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsQueryOwner)
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryIsApprovedForAll queries if the operator address is authorized for owner address
+func GetCmdQueryIsApprovedForAll() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "isApprovedForAll [owner] [operator]",
+		Long:    "Query if an address is an authorized operator for another address",
+		Example: fmt.Sprintf("$ %s query nft approvals <owner> <operator>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			owner := args[0]
+			if _, err := sdk.AccAddressFromBech32(owner); err != nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)
+			}
+
+			operator := args[1]
+			if _, err := sdk.AccAddressFromBech32(operator); err != nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.QueryApprovalsIsApprovedForAll(context.Background(), &types.QueryApprovalsIsApprovedForAllRequest{
+				Owner:    owner,
+				Operator: operator,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	cmd.Flags().AddFlagSet(FsQueryOwner)
 	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd

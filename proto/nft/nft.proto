@@ -15,6 +15,7 @@ message BaseNFT {
     string uri = 3 [ (gogoproto.customname) = "URI" ];
     string data = 4;
     string owner = 5;
+    map<string, bool> approvedAddresses = 6;
 }
 
 // Denom defines a type of NFT
@@ -49,4 +50,17 @@ message Collection {
 
     Denom denom = 1 [ (gogoproto.nullable) = false ];
     repeated BaseNFT nfts = 2 [ (gogoproto.customname) = "NFTs", (gogoproto.nullable) = false ];
+}
+
+message ApprovedAddresses {
+    option (gogoproto.equal) = true;
+    map<string, ApprovedAddressesData> approvedAddresses = 1;
+
+
+}
+
+message ApprovedAddressesData {
+    option (gogoproto.equal) = true;
+
+    map<string, bool> approvedAddressesData = 1;
 }

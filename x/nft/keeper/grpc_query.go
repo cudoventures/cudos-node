@@ -149,3 +149,35 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 
 	return &types.QueryNFTResponse{NFT: &baseNFT}, nil
 }
+
+func (k Keeper) GetApprovalsNFT(c context.Context, request *types.QueryApprovalsNFTRequest) (*types.QueryApprovalsNFTResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	nft, err := k.GetBaseNFT(ctx, request.DenomId, request.TokenId)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+	}
+
+	if nft.ApprovedAddresses == nil {
+		return &types.QueryApprovalsNFTResponse{},
+			sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved addresses for NFT %s from collection %s", request.TokenId, request.DenomId)
+	}
+
+	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: nft.ApprovedAddresses}, nil
+}
+
+func (k Keeper) QueryApprovalsIsApprovedForAll(c context.Context, request *types.QueryApprovalsIsApprovedForAllRequest) (*types.QueryApprovalsIsApprovedForAllResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	owner, err := sdk.AccAddressFromBech32(request.Owner)
+	if err != nil {
+		return &types.QueryApprovalsIsApprovedForAllResponse{}, err
+	}
+	operator, err := sdk.AccAddressFromBech32(request.Operator)
+	if err != nil {
+		return &types.QueryApprovalsIsApprovedForAllResponse{}, err
+	}
+
+	isApprovedOperator := k.IsApprovedOperator(ctx, owner, operator)
+	return &types.QueryApprovalsIsApprovedForAllResponse{IsApproved: isApprovedOperator}, nil
+}

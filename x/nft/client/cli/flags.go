@@ -19,15 +19,15 @@ const (
 )
 
 var (
-	FsIssueDenom  = flag.NewFlagSet("", flag.ContinueOnError)
-	FsMintNFT     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsEditNFT     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsTransferNft = flag.NewFlagSet("", flag.ContinueOnError)
-	FsSendNft     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsApproveNft     = flag.NewFlagSet("", flag.ContinueOnError)
+	FsIssueDenom    = flag.NewFlagSet("", flag.ContinueOnError)
+	FsMintNFT       = flag.NewFlagSet("", flag.ContinueOnError)
+	FsEditNFT       = flag.NewFlagSet("", flag.ContinueOnError)
+	FsTransferNft   = flag.NewFlagSet("", flag.ContinueOnError)
+	FsApproveNft    = flag.NewFlagSet("", flag.ContinueOnError)
+	FsApproveAllNft = flag.NewFlagSet("", flag.ContinueOnError)
 	FsRevokeNft     = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQuerySupply = flag.NewFlagSet("", flag.ContinueOnError)
-	FsQueryOwner  = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQuerySupply   = flag.NewFlagSet("", flag.ContinueOnError)
+	FsQueryOwner    = flag.NewFlagSet("", flag.ContinueOnError)
 )
 
 func init() {

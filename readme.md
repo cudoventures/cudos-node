@@ -140,3 +140,39 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo -ldflags '-extldfl
 
 export CGO_LDFLAGS="-lpthread -ldl"
 go build -v -a -tags netgo,osusergo -ldflags='-lpthread -extldflags "-lpthread -static"' ./cmd/cudos-noded/
+
+
+
+<h1>
+NFT Module
+</h1>
+
+## Create denom
+```
+$ <appd> tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+```
+
+## Mint token
+```
+$ <appd> tx nft mint <denom-id> <token-id> --uri=<uri> --recipient=<recipient> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+## Query Collection
+```
+$ <appd> query nft collection <denom-id>
+```
+
+## Approve NFT
+```
+$ <appd> tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+## Revoke Approval
+```
+$ <appd> tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+## Approve All
+```
+$ <appd> tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```

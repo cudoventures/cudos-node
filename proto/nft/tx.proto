@@ -20,11 +20,11 @@ service Msg {
     // TransferNft transfers ownership of the token to recipient account.
     rpc TransferNft(MsgTransferNft) returns (MsgTransferNftResponse);
 
-    // SendNft transfers ownership of the token to recipient account.
-    rpc SendNft(MsgSendNft) returns (MsgSendNftResponse);
-
     // Approve grants permission to spender to transfer or send the given token.
     rpc ApproveNft(MsgApproveNft) returns (MsgApproveNftResponse);
+
+    // Approve grants permission to spender to transfer or send the given token.
+    rpc ApproveAllNft(MsgApproveAllNft) returns (MsgApproveAllNftResponse);
 
     // Revokes permission to spender to transfer or send the given token.
       rpc RevokeNft(MsgRevokeNft) returns (MsgRevokeNftResponse);
@@ -50,28 +50,15 @@ message MsgIssueDenomResponse {}
 message MsgTransferNft {
     option (gogoproto.equal) = true;
 
-    string id = 1;
+    string token_id = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
-    string recipient = 4;
+    string from = 3;
+    string to = 4;
+    string sender = 5;
 }
 
 // MsgTransferNftResponse defines the Msg/TransferNft response type.
 message MsgTransferNftResponse {}
-
-// MsgSendNft defines an SDK message for transferring an NFT to recipient.
-message MsgSendNft {
-    option (gogoproto.equal) = true;
-
-    string id = 1;
-    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
-    string recipient = 4;
-    string message = 5;
-}
-
-// MsgSendNftResponse defines the Msg/SendNft response type.
-message MsgSendNftResponse {}
 
 // MsgApproveNft defines an SDK message for granted approval.
 message MsgApproveNft {
@@ -80,19 +67,33 @@ message MsgApproveNft {
     string id = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 3;
-    string expires = 4;
+    string approvedAddress = 4;
 }
 
 // MsgApproveNft defines the Msg/Approve response type.
 message MsgApproveNftResponse {}
 
+message MsgApproveAllNft {
+    option (gogoproto.equal) = true;
+
+    string  operator = 1;
+    string  sender = 2;
+    bool  approved = 3;
+
+}
+
+// MsgApproveNft defines the Msg/Approve response type.
+message MsgApproveAllNftResponse {}
+
+
 // MsgRevokeNft defines an SDK message for transferring an NFT to recipient.
 message MsgRevokeNft {
     option (gogoproto.equal) = true;
 
-    string id = 1;
+    string addressToRevoke = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
-    string sender = 3;
+    string token_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string sender = 4;
 }
 
 // MsgRevokeNftResponse defines the Msg/RevokeNft response type.

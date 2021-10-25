@@ -727,6 +727,204 @@ func (m *QueryNFTResponse) GetNFT() *BaseNFT {
 	return nil
 }
 
+// QueryApprovalsNFTRequest is the request type for the Query/NFT RPC method
+type QueryApprovalsNFTRequest struct {
+	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" yaml:"token_id"`
+}
+
+func (m *QueryApprovalsNFTRequest) Reset()         { *m = QueryApprovalsNFTRequest{} }
+func (m *QueryApprovalsNFTRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryApprovalsNFTRequest) ProtoMessage()    {}
+func (*QueryApprovalsNFTRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{14}
+}
+func (m *QueryApprovalsNFTRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryApprovalsNFTRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryApprovalsNFTRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryApprovalsNFTRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryApprovalsNFTRequest.Merge(m, src)
+}
+func (m *QueryApprovalsNFTRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryApprovalsNFTRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryApprovalsNFTRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryApprovalsNFTRequest proto.InternalMessageInfo
+
+func (m *QueryApprovalsNFTRequest) GetDenomId() string {
+	if m != nil {
+		return m.DenomId
+	}
+	return ""
+}
+
+func (m *QueryApprovalsNFTRequest) GetTokenId() string {
+	if m != nil {
+		return m.TokenId
+	}
+	return ""
+}
+
+// QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
+type QueryApprovalsNFTResponse struct {
+	ApprovedAddresses map[string]bool `protobuf:"bytes,1,rep,name=ApprovedAddresses,proto3" json:"ApprovedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+
+func (m *QueryApprovalsNFTResponse) Reset()         { *m = QueryApprovalsNFTResponse{} }
+func (m *QueryApprovalsNFTResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryApprovalsNFTResponse) ProtoMessage()    {}
+func (*QueryApprovalsNFTResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{15}
+}
+func (m *QueryApprovalsNFTResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryApprovalsNFTResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryApprovalsNFTResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryApprovalsNFTResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryApprovalsNFTResponse.Merge(m, src)
+}
+func (m *QueryApprovalsNFTResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryApprovalsNFTResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryApprovalsNFTResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryApprovalsNFTResponse proto.InternalMessageInfo
+
+func (m *QueryApprovalsNFTResponse) GetApprovedAddresses() map[string]bool {
+	if m != nil {
+		return m.ApprovedAddresses
+	}
+	return nil
+}
+
+// QueryNFTRequest is the request type for the Query/NFT RPC method
+type QueryApprovalsIsApprovedForAllRequest struct {
+	Owner    string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
+	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) Reset()         { *m = QueryApprovalsIsApprovedForAllRequest{} }
+func (m *QueryApprovalsIsApprovedForAllRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryApprovalsIsApprovedForAllRequest) ProtoMessage()    {}
+func (*QueryApprovalsIsApprovedForAllRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{16}
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryApprovalsIsApprovedForAllRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryApprovalsIsApprovedForAllRequest.Merge(m, src)
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryApprovalsIsApprovedForAllRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryApprovalsIsApprovedForAllRequest proto.InternalMessageInfo
+
+func (m *QueryApprovalsIsApprovedForAllRequest) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) GetOperator() string {
+	if m != nil {
+		return m.Operator
+	}
+	return ""
+}
+
+// QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
+type QueryApprovalsIsApprovedForAllResponse struct {
+	IsApproved bool `protobuf:"varint,1,opt,name=isApproved,proto3" json:"isApproved,omitempty"`
+}
+
+func (m *QueryApprovalsIsApprovedForAllResponse) Reset() {
+	*m = QueryApprovalsIsApprovedForAllResponse{}
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryApprovalsIsApprovedForAllResponse) ProtoMessage()    {}
+func (*QueryApprovalsIsApprovedForAllResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ce02d034d3adf2e9, []int{17}
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryApprovalsIsApprovedForAllResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryApprovalsIsApprovedForAllResponse.Merge(m, src)
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryApprovalsIsApprovedForAllResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryApprovalsIsApprovedForAllResponse proto.InternalMessageInfo
+
+func (m *QueryApprovalsIsApprovedForAllResponse) GetIsApproved() bool {
+	if m != nil {
+		return m.IsApproved
+	}
+	return false
+}
+
 func init() {
 	proto.RegisterType((*QuerySupplyRequest)(nil), "cudosnode.cudosnode.nft.QuerySupplyRequest")
 	proto.RegisterType((*QuerySupplyResponse)(nil), "cudosnode.cudosnode.nft.QuerySupplyResponse")
@@ -742,66 +940,85 @@ func init() {
 	proto.RegisterType((*QueryDenomsResponse)(nil), "cudosnode.cudosnode.nft.QueryDenomsResponse")
 	proto.RegisterType((*QueryNFTRequest)(nil), "cudosnode.cudosnode.nft.QueryNFTRequest")
 	proto.RegisterType((*QueryNFTResponse)(nil), "cudosnode.cudosnode.nft.QueryNFTResponse")
+	proto.RegisterType((*QueryApprovalsNFTRequest)(nil), "cudosnode.cudosnode.nft.QueryApprovalsNFTRequest")
+	proto.RegisterType((*QueryApprovalsNFTResponse)(nil), "cudosnode.cudosnode.nft.QueryApprovalsNFTResponse")
+	proto.RegisterMapType((map[string]bool)(nil), "cudosnode.cudosnode.nft.QueryApprovalsNFTResponse.ApprovedAddressesEntry")
+	proto.RegisterType((*QueryApprovalsIsApprovedForAllRequest)(nil), "cudosnode.cudosnode.nft.QueryApprovalsIsApprovedForAllRequest")
+	proto.RegisterType((*QueryApprovalsIsApprovedForAllResponse)(nil), "cudosnode.cudosnode.nft.QueryApprovalsIsApprovedForAllResponse")
 }
 
 func init() { proto.RegisterFile("nft/query.proto", fileDescriptor_ce02d034d3adf2e9) }
 
 var fileDescriptor_ce02d034d3adf2e9 = []byte{
-	// 855 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0x4d, 0x4f, 0x6a, 0x47,
-	0x18, 0xc7, 0x19, 0x10, 0xd4, 0xb1, 0x8d, 0x3a, 0xbe, 0x11, 0xda, 0x02, 0x99, 0xa6, 0x8a, 0x6f,
-	0xe7, 0x88, 0x75, 0x65, 0xbb, 0xc2, 0x86, 0xc6, 0x2e, 0xd4, 0x9e, 0xba, 0x32, 0x4d, 0x9a, 0x23,
-	0x0c, 0x84, 0x14, 0x66, 0x90, 0x39, 0xb4, 0x25, 0x86, 0x8d, 0xcb, 0x36, 0x4d, 0x4c, 0x5c, 0x35,
-	0x69, 0xba, 0xe9, 0xa2, 0x1f, 0xa0, 0x5f, 0xc2, 0xa5, 0xc9, 0xdd, 0xdc, 0x15, 0xb9, 0xc1, 0xfb,
-	0x09, 0xfc, 0x04, 0x37, 0xf3, 0x72, 0xe4, 0x1c, 0x01, 0x39, 0x97, 0xeb, 0x6e, 0xe6, 0xcc, 0xf3,
-	0xfc, 0x9f, 0x1f, 0xff, 0xf3, 0xcc, 0x73, 0x80, 0xb3, 0xb4, 0xe4, 0x98, 0x17, 0x4d, 0xd2, 0x68,
-	0x19, 0xf5, 0x06, 0x73, 0x18, 0x5a, 0x29, 0x34, 0x8b, 0x8c, 0x53, 0x56, 0x24, 0x46, 0x6f, 0x45,
-	0x4b, 0x4e, 0x62, 0xb1, 0xcc, 0xca, 0x4c, 0xc6, 0x98, 0x62, 0xa5, 0xc2, 0x13, 0x9f, 0x96, 0x19,
-	0x2b, 0x57, 0x89, 0x69, 0xd7, 0x2b, 0xa6, 0x4d, 0x29, 0x73, 0x6c, 0xa7, 0xc2, 0x28, 0xd7, 0xa7,
-	0x1f, 0x0b, 0x75, 0x5a, 0x72, 0xf4, 0x76, 0xa3, 0xc0, 0x78, 0x8d, 0x71, 0xf3, 0xdc, 0xe6, 0x44,
-	0x15, 0x35, 0x7f, 0xc9, 0x9e, 0x13, 0xc7, 0xce, 0x9a, 0x75, 0xbb, 0x5c, 0xa1, 0x32, 0x57, 0xc5,
-	0xe2, 0x33, 0x88, 0xbe, 0x17, 0x11, 0x3f, 0x34, 0xeb, 0xf5, 0x6a, 0xcb, 0x22, 0x17, 0x4d, 0xc2,
-	0x1d, 0x64, 0xc0, 0xa9, 0x22, 0xa1, 0xac, 0xf6, 0x53, 0xa5, 0x18, 0x07, 0x69, 0x90, 0x99, 0xce,
-	0x2d, 0x3c, 0x74, 0x52, 0xb3, 0x2d, 0xbb, 0x56, 0xdd, 0xc7, 0xee, 0x09, 0xb6, 0x26, 0xe5, 0xf2,
-	0xb0, 0x88, 0x16, 0x61, 0x94, 0xfd, 0x4a, 0x49, 0x23, 0x1e, 0x16, 0xc1, 0x96, 0xda, 0xe0, 0x6d,
-	0xb8, 0xe0, 0xd3, 0xe6, 0x75, 0x46, 0x39, 0x41, 0xcb, 0x30, 0x66, 0xd7, 0x58, 0x93, 0x3a, 0x52,
-	0x7a, 0xc2, 0xd2, 0x3b, 0xfc, 0x3f, 0x80, 0xf3, 0x32, 0xfe, 0x58, 0x64, 0x8f, 0x8b, 0xb2, 0xea,
-	0x43, 0xc9, 0xcd, 0x3d, 0x74, 0x52, 0x1f, 0xa9, 0x60, 0x05, 0xa5, 0xe1, 0x50, 0x1e, 0xc2, 0x9e,
-	0x19, 0xf1, 0x48, 0x1a, 0x64, 0x66, 0x76, 0x57, 0x0d, 0xe5, 0x9c, 0x21, 0x9c, 0x33, 0xd4, 0xeb,
-	0xd2, 0xce, 0x19, 0x27, 0x76, 0x99, 0x68, 0x26, 0xcb, 0x93, 0x89, 0x6f, 0x80, 0x76, 0x50, 0x53,
-	0xeb, 0x1f, 0xb9, 0xe7, 0x62, 0x00, 0xa9, 0x9c, 0x34, 0x86, 0xbc, 0x6f, 0x43, 0xa5, 0x69, 0xa8,
-	0x6f, 0x7d, 0x50, 0x61, 0x99, 0xba, 0x36, 0x12, 0x4a, 0x95, 0xf4, 0x51, 0x5d, 0x03, 0xb8, 0x2c,
-	0xa9, 0x0e, 0x58, 0xb5, 0x4a, 0x0a, 0xe2, 0xd9, 0xb8, 0x86, 0xe6, 0x07, 0x30, 0x8d, 0x63, 0xd4,
-	0x7f, 0x00, 0xae, 0xf4, 0x21, 0x69, 0xb7, 0x0e, 0x20, 0x2c, 0x3c, 0x3e, 0xd5, 0x96, 0x7d, 0x3e,
-	0xd4, 0x32, 0x8f, 0x80, 0x27, 0xed, 0xe5, 0xcc, 0x3b, 0xd0, 0x7d, 0xf8, 0x8d, 0x70, 0x60, 0x4c,
-	0xdb, 0xf0, 0x77, 0xba, 0x2d, 0xb4, 0x48, 0xaf, 0x2d, 0x64, 0xc0, 0xc8, 0xb6, 0x50, 0x69, 0x2a,
-	0x18, 0x1f, 0x6b, 0xe7, 0xe4, 0xc3, 0x5c, 0xeb, 0xc8, 0xae, 0xb9, 0x0e, 0xa3, 0x3d, 0x08, 0x55,
-	0x71, 0x6a, 0xd7, 0x88, 0x06, 0x5b, 0x7a, 0xe8, 0xa4, 0xe6, 0xbd, 0x60, 0xe2, 0x0c, 0x5b, 0xd3,
-	0x72, 0x23, 0x92, 0xf1, 0x09, 0x8c, 0xf7, 0x0b, 0x7e, 0x10, 0xe2, 0x8f, 0xde, 0x9f, 0xcb, 0x5d,
-	0x3a, 0x7f, 0xef, 0x80, 0xb1, 0x7b, 0xe7, 0x6f, 0xa0, 0x47, 0x89, 0x2b, 0xaf, 0x59, 0xbf, 0x86,
-	0x31, 0x59, 0x9e, 0xc7, 0x41, 0x3a, 0x32, 0x1a, 0x36, 0x37, 0x71, 0xdb, 0x49, 0x85, 0x2c, 0x9d,
-	0xf3, 0x72, 0x0d, 0x73, 0x01, 0x67, 0x25, 0xdd, 0x51, 0xfe, 0x74, 0xdc, 0x5b, 0x66, 0xc0, 0x29,
-	0x87, 0xfd, 0x4c, 0xa8, 0x88, 0x0f, 0x3f, 0x8d, 0x77, 0x4f, 0xb0, 0x35, 0x29, 0x97, 0x87, 0x45,
-	0x7c, 0x0c, 0xe7, 0x7a, 0x25, 0xb5, 0x1b, 0x5f, 0xc1, 0x08, 0x2d, 0x39, 0xda, 0xe6, 0xf4, 0x50,
-	0x2b, 0x72, 0x36, 0x27, 0x47, 0xf9, 0xd3, 0xdc, 0x64, 0xb7, 0x93, 0x8a, 0x88, 0x7c, 0x91, 0xb5,
-	0xfb, 0xc7, 0x14, 0x8c, 0x4a, 0x45, 0xf4, 0x17, 0x80, 0x31, 0x35, 0xb2, 0xd1, 0xe6, 0x50, 0x91,
-	0xfe, 0x8f, 0x46, 0x62, 0x2b, 0x58, 0xb0, 0x82, 0xc5, 0x7b, 0x57, 0xaf, 0xde, 0xde, 0x84, 0x0d,
-	0xb4, 0x65, 0x3e, 0xc6, 0x8a, 0x4f, 0x98, 0xd9, 0xbb, 0xd0, 0xdc, 0xbc, 0x74, 0x8d, 0x6a, 0x9b,
-	0x5c, 0x01, 0xb5, 0x61, 0x54, 0x0e, 0x4c, 0xb4, 0xf1, 0x7c, 0x31, 0xef, 0x27, 0x24, 0xb1, 0x19,
-	0x28, 0x56, 0x73, 0x7d, 0x22, 0xb9, 0x96, 0xd0, 0xc2, 0x13, 0x2e, 0x5a, 0x72, 0x38, 0xfa, 0x07,
-	0x40, 0xd8, 0x9b, 0x3e, 0xc8, 0x7c, 0x5e, 0xb8, 0x6f, 0xf6, 0x26, 0x76, 0x82, 0x27, 0x68, 0x9c,
-	0x6d, 0x89, 0xb3, 0x86, 0xbe, 0x08, 0x64, 0x13, 0xfa, 0x1d, 0xc0, 0xa8, 0x6c, 0xf5, 0x51, 0x06,
-	0x79, 0x67, 0xdb, 0x28, 0x83, 0x7c, 0x23, 0x0c, 0x67, 0x24, 0x11, 0x46, 0xe9, 0x27, 0x44, 0xea,
-	0x52, 0x79, 0x61, 0xfe, 0x05, 0x70, 0xc6, 0x33, 0x61, 0xd0, 0x4e, 0x80, 0x32, 0xbe, 0xe9, 0x96,
-	0xc8, 0xbe, 0x47, 0x86, 0xc6, 0x33, 0x25, 0xde, 0x3a, 0x5a, 0x1b, 0x8c, 0x27, 0x46, 0xa1, 0xcb,
-	0x28, 0xd6, 0x6d, 0x74, 0x05, 0x60, 0x4c, 0x8d, 0x15, 0x14, 0xc4, 0x07, 0x1e, 0xb0, 0xdd, 0xfd,
-	0x93, 0x0a, 0x7f, 0x26, 0xb1, 0x56, 0xd0, 0xd2, 0x40, 0x2c, 0xf4, 0x27, 0x80, 0xe2, 0x2a, 0xa2,
-	0xcc, 0xf3, 0xa2, 0xbd, 0x01, 0x93, 0x58, 0x0f, 0x10, 0xa9, 0x6b, 0x67, 0x65, 0xed, 0x4d, 0xb4,
-	0x3e, 0xa0, 0xa5, 0xbd, 0x77, 0xec, 0xd2, 0x9d, 0x33, 0xed, 0xdc, 0xfe, 0x6d, 0x37, 0x09, 0xee,
-	0xba, 0x49, 0xf0, 0xa6, 0x9b, 0x04, 0xd7, 0xf7, 0xc9, 0xd0, 0xdd, 0x7d, 0x32, 0xf4, 0xfa, 0x3e,
-	0x19, 0x3a, 0x4b, 0x4b, 0x0d, 0x83, 0x35, 0xca, 0x4a, 0x6d, 0x5b, 0xca, 0xfd, 0x26, 0x05, 0x9d,
-	0x56, 0x9d, 0xf0, 0xf3, 0x98, 0xfc, 0x67, 0xf9, 0xe5, 0xbb, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5f,
-	0x8f, 0xa6, 0xa2, 0xf4, 0x0a, 0x00, 0x00,
+	// 1075 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x97, 0x4d, 0x6f, 0x1b, 0x45,
+	0x18, 0xc7, 0x33, 0x49, 0x93, 0xb8, 0x4f, 0x40, 0x49, 0x26, 0x6f, 0x66, 0x01, 0xdb, 0x1a, 0xd4,
+	0xbc, 0x34, 0xcd, 0x6e, 0x9c, 0x46, 0x08, 0x05, 0x04, 0x8a, 0x53, 0x5c, 0xc2, 0x21, 0x29, 0x4b,
+	0x2f, 0x54, 0x48, 0x68, 0x13, 0x8f, 0x2d, 0xab, 0xf6, 0xce, 0xc6, 0xb3, 0x0e, 0x98, 0xc8, 0x97,
+	0x1e, 0x91, 0x40, 0x95, 0x7a, 0x40, 0x48, 0x88, 0x0b, 0x07, 0xae, 0x48, 0x7c, 0x89, 0x1e, 0x2b,
+	0x21, 0x21, 0x4e, 0x16, 0x72, 0xf8, 0x04, 0xf9, 0x04, 0x68, 0x5e, 0x36, 0xde, 0x8d, 0x5f, 0x63,
+	0xaa, 0xde, 0x66, 0x76, 0x9e, 0x97, 0xdf, 0xfc, 0xf7, 0xf1, 0xf3, 0xac, 0x61, 0xda, 0xcd, 0xfb,
+	0xd6, 0x49, 0x95, 0x56, 0x6a, 0xa6, 0x57, 0x61, 0x3e, 0xc3, 0x4b, 0xc7, 0xd5, 0x1c, 0xe3, 0x2e,
+	0xcb, 0x51, 0xb3, 0xb5, 0x72, 0xf3, 0xbe, 0x31, 0x5f, 0x60, 0x05, 0x26, 0x6d, 0x2c, 0xb1, 0x52,
+	0xe6, 0xc6, 0x5b, 0x05, 0xc6, 0x0a, 0x25, 0x6a, 0x39, 0x5e, 0xd1, 0x72, 0x5c, 0x97, 0xf9, 0x8e,
+	0x5f, 0x64, 0x2e, 0xd7, 0xa7, 0xaf, 0x8b, 0xe8, 0x6e, 0xde, 0xd7, 0xdb, 0xdb, 0xc7, 0x8c, 0x97,
+	0x19, 0xb7, 0x8e, 0x1c, 0x4e, 0x55, 0x52, 0xeb, 0x34, 0x7d, 0x44, 0x7d, 0x27, 0x6d, 0x79, 0x4e,
+	0xa1, 0xe8, 0x4a, 0x5f, 0x65, 0x4b, 0x1e, 0x01, 0xfe, 0x4c, 0x58, 0x7c, 0x5e, 0xf5, 0xbc, 0x52,
+	0xcd, 0xa6, 0x27, 0x55, 0xca, 0x7d, 0x6c, 0x42, 0x2c, 0x47, 0x5d, 0x56, 0xfe, 0xaa, 0x98, 0x8b,
+	0xa3, 0x14, 0x5a, 0xbd, 0x99, 0x99, 0xbb, 0x68, 0x24, 0xa7, 0x6b, 0x4e, 0xb9, 0xb4, 0x43, 0x82,
+	0x13, 0x62, 0x4f, 0xca, 0xe5, 0x7e, 0x0e, 0xcf, 0xc3, 0x38, 0xfb, 0xda, 0xa5, 0x95, 0xf8, 0xa8,
+	0x30, 0xb6, 0xd5, 0x86, 0x6c, 0xc0, 0x5c, 0x24, 0x36, 0xf7, 0x98, 0xcb, 0x29, 0x5e, 0x84, 0x09,
+	0xa7, 0xcc, 0xaa, 0xae, 0x2f, 0x43, 0xdf, 0xb0, 0xf5, 0x8e, 0xfc, 0x81, 0x60, 0x56, 0xda, 0x1f,
+	0x0a, 0xef, 0x61, 0x51, 0x96, 0x23, 0x28, 0x99, 0x99, 0x8b, 0x46, 0xf2, 0x35, 0x65, 0xac, 0xa0,
+	0x34, 0x1c, 0xce, 0x02, 0xb4, 0xc4, 0x88, 0x8f, 0xa5, 0xd0, 0xea, 0xd4, 0xd6, 0xb2, 0xa9, 0x94,
+	0x33, 0x85, 0x72, 0xa6, 0x7a, 0x5d, 0x5a, 0x39, 0xf3, 0x81, 0x53, 0xa0, 0x9a, 0xc9, 0x0e, 0x79,
+	0x92, 0x67, 0x48, 0x2b, 0xa8, 0xa9, 0xf5, 0x25, 0xb7, 0x03, 0x0c, 0x24, 0x23, 0x27, 0xcc, 0x2e,
+	0xef, 0xdb, 0x54, 0x6e, 0x1a, 0xea, 0x7e, 0x04, 0x6a, 0x54, 0xba, 0xae, 0xf4, 0x85, 0x52, 0x29,
+	0x23, 0x54, 0x4f, 0x11, 0x2c, 0x4a, 0xaa, 0x3d, 0x56, 0x2a, 0xd1, 0x63, 0xf1, 0x6c, 0x58, 0x41,
+	0xb3, 0x1d, 0x98, 0x86, 0x11, 0xea, 0x37, 0x04, 0x4b, 0x6d, 0x48, 0x5a, 0xad, 0x3d, 0x80, 0xe3,
+	0xcb, 0xa7, 0x5a, 0xb2, 0x77, 0xba, 0x4a, 0x16, 0x0a, 0x10, 0x72, 0x7b, 0x79, 0xe2, 0xed, 0xe9,
+	0x3a, 0xbc, 0x27, 0x14, 0x18, 0x52, 0x36, 0xf2, 0xa9, 0x2e, 0x0b, 0x1d, 0xa4, 0x55, 0x16, 0xd2,
+	0xa0, 0x6f, 0x59, 0x28, 0x37, 0x65, 0x4c, 0x0e, 0xb5, 0x72, 0xf2, 0x61, 0xa6, 0x76, 0xe0, 0x94,
+	0x03, 0x85, 0xf1, 0x36, 0x80, 0x4a, 0xee, 0x3a, 0x65, 0xaa, 0xc1, 0x16, 0x2e, 0x1a, 0xc9, 0xd9,
+	0x30, 0x98, 0x38, 0x23, 0xf6, 0x4d, 0xb9, 0x11, 0xce, 0xe4, 0x01, 0xc4, 0xdb, 0x03, 0xfe, 0x2f,
+	0xc4, 0x2f, 0xc3, 0xd7, 0xe5, 0x01, 0x5d, 0xb4, 0x76, 0xd0, 0xd0, 0xb5, 0xf3, 0x33, 0xd2, 0xad,
+	0x24, 0x08, 0xaf, 0x59, 0x3f, 0x80, 0x09, 0x99, 0x9e, 0xc7, 0x51, 0x6a, 0xac, 0x3f, 0x6c, 0xe6,
+	0xc6, 0xf3, 0x46, 0x72, 0xc4, 0xd6, 0x3e, 0x2f, 0xaf, 0x60, 0x4e, 0x60, 0x5a, 0xd2, 0x1d, 0x64,
+	0x1f, 0x0e, 0xfb, 0x2b, 0x33, 0x21, 0xe6, 0xb3, 0xc7, 0xd4, 0x15, 0xf6, 0xa3, 0x57, 0xed, 0x83,
+	0x13, 0x62, 0x4f, 0xca, 0xe5, 0x7e, 0x8e, 0x1c, 0xc2, 0x4c, 0x2b, 0xa5, 0x56, 0xe3, 0x7d, 0x18,
+	0x73, 0xf3, 0xbe, 0x96, 0x39, 0xd5, 0x55, 0x8a, 0x8c, 0xc3, 0xe9, 0x41, 0xf6, 0x61, 0x66, 0xb2,
+	0xd9, 0x48, 0x8e, 0x09, 0x7f, 0xe1, 0x45, 0xbe, 0xd5, 0x25, 0xb1, 0xeb, 0x79, 0x15, 0x76, 0xea,
+	0x94, 0xf8, 0x2b, 0xbc, 0xcc, 0x05, 0x82, 0x37, 0x3a, 0x24, 0xd7, 0xd7, 0xfa, 0x01, 0xc1, 0xac,
+	0x3a, 0xa0, 0xb9, 0xdd, 0x5c, 0xae, 0x42, 0x39, 0xa7, 0xc1, 0x0b, 0xdf, 0xef, 0x7a, 0xcb, 0xae,
+	0xf1, 0xcc, 0xb6, 0x58, 0x1f, 0xbb, 0x7e, 0xa5, 0x96, 0x59, 0x68, 0x36, 0x92, 0xed, 0x79, 0xec,
+	0xf6, 0x47, 0xc6, 0x3d, 0x58, 0xec, 0x1c, 0x03, 0xcf, 0xc0, 0xd8, 0x63, 0x5a, 0x53, 0x1a, 0xd9,
+	0x62, 0x29, 0x26, 0xe3, 0xa9, 0x53, 0xaa, 0x52, 0xa9, 0x43, 0xcc, 0x56, 0x9b, 0x9d, 0xd1, 0xf7,
+	0x10, 0xf9, 0x02, 0x6e, 0x45, 0x19, 0xf7, 0x79, 0x10, 0x35, 0xcb, 0x2a, 0xbb, 0xa5, 0x52, 0xa0,
+	0xfe, 0x7c, 0x78, 0x94, 0x04, 0xc3, 0x15, 0x1b, 0x10, 0x63, 0x1e, 0xad, 0x38, 0x3e, 0x0b, 0xa6,
+	0xee, 0xe5, 0x9e, 0x7c, 0x02, 0xcb, 0xfd, 0x42, 0x6b, 0x6d, 0x13, 0x00, 0xc5, 0xcb, 0x33, 0x99,
+	0x20, 0x66, 0x87, 0x9e, 0x6c, 0xfd, 0x38, 0x05, 0xe3, 0x32, 0x14, 0xfe, 0x09, 0xc1, 0x84, 0x1a,
+	0xe4, 0x78, 0xbd, 0xb7, 0xe8, 0x91, 0x4f, 0x09, 0xe3, 0xce, 0x60, 0xc6, 0x8a, 0x87, 0x6c, 0x3f,
+	0xf9, 0xf3, 0xdf, 0x67, 0xa3, 0x26, 0xbe, 0x63, 0x5d, 0xda, 0x8a, 0x0f, 0x1b, 0xab, 0xd5, 0xe6,
+	0xb9, 0x75, 0x16, 0x54, 0x5c, 0xdd, 0xe2, 0x0a, 0xa8, 0x0e, 0xe3, 0x72, 0x8c, 0xe2, 0xdb, 0xbd,
+	0x93, 0x85, 0x3f, 0x2c, 0x8c, 0xf5, 0x81, 0x6c, 0x35, 0xd7, 0x9b, 0x92, 0x6b, 0x01, 0xcf, 0x5d,
+	0xe1, 0x72, 0xf3, 0x3e, 0xc7, 0xbf, 0x20, 0x80, 0xd6, 0x4c, 0xc2, 0x56, 0xef, 0xc0, 0x6d, 0x13,
+	0xd9, 0xd8, 0x1c, 0xdc, 0x41, 0xe3, 0x6c, 0x48, 0x9c, 0x15, 0x7c, 0x6b, 0x20, 0x99, 0xf0, 0x77,
+	0x08, 0xc6, 0x65, 0x03, 0xec, 0x27, 0x50, 0x78, 0xe2, 0xf5, 0x13, 0x28, 0x32, 0xd8, 0xc8, 0xaa,
+	0x24, 0x22, 0x38, 0x75, 0x85, 0x48, 0xb5, 0xda, 0x30, 0xcc, 0xaf, 0x08, 0xa6, 0x42, 0x73, 0x07,
+	0x6f, 0x0e, 0x90, 0x26, 0x32, 0xf3, 0x8c, 0xf4, 0x35, 0x3c, 0x34, 0x9e, 0x25, 0xf1, 0xd6, 0xf0,
+	0x4a, 0x67, 0x3c, 0x31, 0x20, 0x03, 0x46, 0xb1, 0xae, 0xe3, 0x27, 0x08, 0x26, 0xd4, 0xb0, 0xc1,
+	0x83, 0xe8, 0xc0, 0x07, 0x2c, 0xf7, 0xe8, 0xfc, 0x22, 0x6f, 0x4b, 0xac, 0x25, 0xbc, 0xd0, 0x11,
+	0x0b, 0x7f, 0x8f, 0x40, 0x34, 0x68, 0xbc, 0xda, 0x3b, 0x68, 0xab, 0x53, 0x1b, 0x6b, 0x03, 0x58,
+	0xea, 0xdc, 0x69, 0x99, 0x7b, 0x1d, 0xaf, 0x75, 0x28, 0xe9, 0xf0, 0x6f, 0xec, 0x2c, 0x68, 0xd8,
+	0x75, 0xfc, 0x3b, 0x82, 0xe9, 0xfb, 0xd4, 0x0f, 0x77, 0x55, 0x9c, 0xbe, 0x4e, 0x07, 0x56, 0x90,
+	0x5b, 0xd7, 0x6f, 0xda, 0xe4, 0x5d, 0x49, 0xbb, 0x89, 0xcd, 0x2b, 0xb4, 0x4e, 0x60, 0xdc, 0x05,
+	0xf9, 0x2f, 0x04, 0x89, 0xde, 0xbd, 0x10, 0x7f, 0x38, 0x20, 0x4e, 0x97, 0xfe, 0x6c, 0x7c, 0x34,
+	0xb4, 0xbf, 0xbe, 0xdb, 0x5d, 0x79, 0xb7, 0x0d, 0xbc, 0xde, 0xfd, 0x6e, 0xb2, 0xe7, 0xd7, 0xad,
+	0xb3, 0xa0, 0xc5, 0xd7, 0x33, 0x3b, 0xcf, 0x9b, 0x09, 0xf4, 0xa2, 0x99, 0x40, 0xff, 0x34, 0x13,
+	0xe8, 0xe9, 0x79, 0x62, 0xe4, 0xc5, 0x79, 0x62, 0xe4, 0xef, 0xf3, 0xc4, 0xc8, 0xa3, 0x94, 0x8c,
+	0x62, 0xb2, 0x4a, 0x41, 0xc5, 0xdb, 0x90, 0x01, 0xbf, 0x91, 0x21, 0xfd, 0x9a, 0x47, 0xf9, 0xd1,
+	0x84, 0xfc, 0xef, 0x77, 0xf7, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x91, 0x32, 0x97, 0xb1, 0x96,
+	0x0e, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -830,6 +1047,10 @@ type QueryClient interface {
 	Denoms(ctx context.Context, in *QueryDenomsRequest, opts ...grpc.CallOption) (*QueryDenomsResponse, error)
 	// NFT queries the NFT for the given denom and token ID
 	NFT(ctx context.Context, in *QueryNFTRequest, opts ...grpc.CallOption) (*QueryNFTResponse, error)
+	// NFT queries the NFT for the given denom and token ID
+	GetApprovalsNFT(ctx context.Context, in *QueryApprovalsNFTRequest, opts ...grpc.CallOption) (*QueryApprovalsNFTResponse, error)
+	// NFT queries the NFT for the given denom and token ID
+	QueryApprovalsIsApprovedForAll(ctx context.Context, in *QueryApprovalsIsApprovedForAllRequest, opts ...grpc.CallOption) (*QueryApprovalsIsApprovedForAllResponse, error)
 }
 
 type queryClient struct {
@@ -903,6 +1124,24 @@ func (c *queryClient) NFT(ctx context.Context, in *QueryNFTRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *queryClient) GetApprovalsNFT(ctx context.Context, in *QueryApprovalsNFTRequest, opts ...grpc.CallOption) (*QueryApprovalsNFTResponse, error) {
+	out := new(QueryApprovalsNFTResponse)
+	err := c.cc.Invoke(ctx, "/cudosnode.cudosnode.nft.Query/GetApprovalsNFT", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) QueryApprovalsIsApprovedForAll(ctx context.Context, in *QueryApprovalsIsApprovedForAllRequest, opts ...grpc.CallOption) (*QueryApprovalsIsApprovedForAllResponse, error) {
+	out := new(QueryApprovalsIsApprovedForAllResponse)
+	err := c.cc.Invoke(ctx, "/cudosnode.cudosnode.nft.Query/QueryApprovalsIsApprovedForAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Supply queries the total supply of a given denom or owner
@@ -919,6 +1158,10 @@ type QueryServer interface {
 	Denoms(context.Context, *QueryDenomsRequest) (*QueryDenomsResponse, error)
 	// NFT queries the NFT for the given denom and token ID
 	NFT(context.Context, *QueryNFTRequest) (*QueryNFTResponse, error)
+	// NFT queries the NFT for the given denom and token ID
+	GetApprovalsNFT(context.Context, *QueryApprovalsNFTRequest) (*QueryApprovalsNFTResponse, error)
+	// NFT queries the NFT for the given denom and token ID
+	QueryApprovalsIsApprovedForAll(context.Context, *QueryApprovalsIsApprovedForAllRequest) (*QueryApprovalsIsApprovedForAllResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -945,6 +1188,12 @@ func (*UnimplementedQueryServer) Denoms(ctx context.Context, req *QueryDenomsReq
 }
 func (*UnimplementedQueryServer) NFT(ctx context.Context, req *QueryNFTRequest) (*QueryNFTResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NFT not implemented")
+}
+func (*UnimplementedQueryServer) GetApprovalsNFT(ctx context.Context, req *QueryApprovalsNFTRequest) (*QueryApprovalsNFTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetApprovalsNFT not implemented")
+}
+func (*UnimplementedQueryServer) QueryApprovalsIsApprovedForAll(ctx context.Context, req *QueryApprovalsIsApprovedForAllRequest) (*QueryApprovalsIsApprovedForAllResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryApprovalsIsApprovedForAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1077,6 +1326,42 @@ func _Query_NFT_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GetApprovalsNFT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryApprovalsNFTRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GetApprovalsNFT(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cudosnode.cudosnode.nft.Query/GetApprovalsNFT",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GetApprovalsNFT(ctx, req.(*QueryApprovalsNFTRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_QueryApprovalsIsApprovedForAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryApprovalsIsApprovedForAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).QueryApprovalsIsApprovedForAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cudosnode.cudosnode.nft.Query/QueryApprovalsIsApprovedForAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).QueryApprovalsIsApprovedForAll(ctx, req.(*QueryApprovalsIsApprovedForAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "cudosnode.cudosnode.nft.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1108,6 +1393,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NFT",
 			Handler:    _Query_NFT_Handler,
+		},
+		{
+			MethodName: "GetApprovalsNFT",
+			Handler:    _Query_GetApprovalsNFT_Handler,
+		},
+		{
+			MethodName: "QueryApprovalsIsApprovedForAll",
+			Handler:    _Query_QueryApprovalsIsApprovedForAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1650,6 +1943,158 @@ func (m *QueryNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryApprovalsNFTRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryApprovalsNFTRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryApprovalsNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.TokenId) > 0 {
+		i -= len(m.TokenId)
+		copy(dAtA[i:], m.TokenId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.DenomId) > 0 {
+		i -= len(m.DenomId)
+		copy(dAtA[i:], m.DenomId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryApprovalsNFTResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryApprovalsNFTResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryApprovalsNFTResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ApprovedAddresses) > 0 {
+		for k := range m.ApprovedAddresses {
+			v := m.ApprovedAddresses[k]
+			baseI := i
+			i--
+			if v {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+			i -= len(k)
+			copy(dAtA[i:], k)
+			i = encodeVarintQuery(dAtA, i, uint64(len(k)))
+			i--
+			dAtA[i] = 0xa
+			i = encodeVarintQuery(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Operator) > 0 {
+		i -= len(m.Operator)
+		copy(dAtA[i:], m.Operator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Operator)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryApprovalsIsApprovedForAllResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryApprovalsIsApprovedForAllResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryApprovalsIsApprovedForAllResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.IsApproved {
+		i--
+		if m.IsApproved {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -1872,6 +2317,69 @@ func (m *QueryNFTResponse) Size() (n int) {
 	if m.NFT != nil {
 		l = m.NFT.Size()
 		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryApprovalsNFTRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DenomId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.TokenId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryApprovalsNFTResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.ApprovedAddresses) > 0 {
+		for k, v := range m.ApprovedAddresses {
+			_ = k
+			_ = v
+			mapEntrySize := 1 + len(k) + sovQuery(uint64(len(k))) + 1 + 1
+			n += mapEntrySize + 1 + sovQuery(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *QueryApprovalsIsApprovedForAllRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Operator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryApprovalsIsApprovedForAllResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.IsApproved {
+		n += 2
 	}
 	return n
 }
@@ -3337,6 +3845,481 @@ func (m *QueryNFTResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryApprovalsNFTRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryApprovalsNFTRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryApprovalsNFTRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DenomId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryApprovalsNFTResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryApprovalsNFTResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryApprovalsNFTResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ApprovedAddresses", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.ApprovedAddresses == nil {
+				m.ApprovedAddresses = make(map[string]bool)
+			}
+			var mapkey string
+			var mapvalue bool
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthQuery
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey < 0 {
+						return ErrInvalidLengthQuery
+					}
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapvaluetemp int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapvaluetemp |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					mapvalue = bool(mapvaluetemp != 0)
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipQuery(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if skippy < 0 {
+						return ErrInvalidLengthQuery
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.ApprovedAddresses[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryApprovalsIsApprovedForAllRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryApprovalsIsApprovedForAllRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryApprovalsIsApprovedForAllRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Operator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryApprovalsIsApprovedForAllResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryApprovalsIsApprovedForAllResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryApprovalsIsApprovedForAllResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsApproved", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.IsApproved = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
