@@ -14,8 +14,6 @@ const (
 	FlagDenomName = "name"
 	FlagDenomID   = "denom-id"
 	FlagSchema    = "schema"
-	FlagMessage   = "msg"
-	FlagExpires   = "expires"
 )
 
 var (
@@ -42,6 +40,10 @@ func init() {
 	FsEditNFT.String(FlagTokenURI, "[do-not-modify]", "URI for the supplemental off-chain token data (should return a JSON object)")
 	FsEditNFT.String(FlagTokenData, "[do-not-modify]", "The token data of the nft")
 	FsEditNFT.String(FlagTokenName, "[do-not-modify]", "The name of the nft")
+
+	FsTransferNft.String(FlagTokenURI, "[do-not-modify]", "URI for the supplemental off-chain token data (should return a JSON object)")
+	FsTransferNft.String(FlagTokenData, "[do-not-modify]", "The token data of the nft")
+	FsTransferNft.String(FlagTokenName, "[do-not-modify]", "The name of the nft")
 
 	FsQuerySupply.String(FlagOwner, "", "The owner of the nft")
 
