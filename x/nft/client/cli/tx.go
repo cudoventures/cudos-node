@@ -48,8 +48,8 @@ func GetCmdIssueDenom() *cobra.Command {
 		Long: "Issue a new denom.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft issue <denom-id> "+
-				"--from=<key-name> "+
 				"--name=<denom-name> "+
+				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",

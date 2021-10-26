@@ -142,10 +142,73 @@ export CGO_LDFLAGS="-lpthread -ldl"
 go build -v -a -tags netgo,osusergo -ldflags='-lpthread -extldflags "-lpthread -static"' ./cmd/cudos-noded/
 
 
+0884 188 072
 
-<h1>
-NFT Module
-</h1>
+# NFT Module Specification
+
+
+## Overview
+
+A module for operating with Non-Fungible Tokens on the CUDOS network. The methods that are exposed by it are mainly based on [ERC721 interface](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) from the Ethereum network and not so much on the [CW-721](https://github.com/CosmWasm/cw-nfts) from the Cosmos network. The reason for this is that the main idea of the module is to transfer tokens through [GravityBridge](https://github.com/CudoVentures/cosmos-gravity-bridge) between CUDOS network and Ethereum and thus it is better to follow the ERC721 standard. 
+
+## Module Interface
+The module gives the user to either write(via transaction) or read(via query) to/from the network.
+
+The following transaction commands are available (click on them for further info) :
+
+| Command                                               | Description                                                                                                                            |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| [`Issue Denom`](#issue)                           | Issues a new [`Denom`](#addDenomLink) to the specified owner                                                   |
+| [`Mint NFT`](#mint)                             | Mints a new NFT to the specified owner                                                                       |
+| [`Edit NFT`](#edit-nft)             | Edits an already existing NFT  |
+| [`Transfer NFT`](#transfer-nft)                        | Transfers an existing NFT from one owner to another                                                                                                   |
+| [`Burn NFT`](#burn-nft)                  | Burns the specified NFT                                                                                        |
+| [`Approve NFT`](#cudos-run)                        |  Adds an approved operator that can transfer the NFT                                                                                                |
+| [`Revoke NFT`](#cudos-keys)                 | Removes an approved operated for the NFT 
+| [`Approve All`](#cudos-keys)                 | Approves an operator on user level - the operator can transfer all of the user tokens
+
+
+
+## Full commands info
+
+### `issue`
+
+> Issues a new denom that will be used for minting new NFTs. Only the denom creator can issue new NFTs
+
+- arguments:
+  - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
+- options: 
+  - `--name` `string` `The unique name of the denom.` `required: true`
+  - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an addresso or alias to that address` `required: true`
+  - `--schema` `string` `!!!Insert what is schema here!!! Schema-content or path to schema.json.` `required: false`
+  - `--chain-id` `string` `The name of the network.` `required`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+```
+### `mint`
+
+> Mints a new NFT to the specified owner. Only the denom creator can mint a NFT
+
+- arguments:
+    - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
+- options:
+    - `--name` `string` `The unique name of the denom.` `required: true`
+    - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an addresso or alias to that address` `required: true`
+    - `--schema` `string` `!!!Insert what is schema here!!! Schema-content or path to schema.json.` `required: false`
+    - `--chain-id` `string` `The name of the network.` `required`
+    - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+```
+
+
 
 ## Create denom
 ```
