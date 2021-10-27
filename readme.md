@@ -152,11 +152,12 @@ A module for operating with Non-Fungible Tokens on the CUDOS network. The method
 ## Module Interface
 The module gives the user to either write(via transaction) or read(via query) to/from the network.
 
-The following transaction commands are available (click on them for further info) :
+### The following commands are available (click on them for further info)
 
+#### Transaction
 | Command                                               | Description                                                                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Issue Denom`](#issue)                           | Issues a new [`Denom`](#addDenomLink) to the specified owner                                                   |
+| [`Issue Denom`](#issue)                           | Issues a new [`denomination`](#addDenomLink) to the specified owner                                                   |
 | [`Mint NFT`](#mint)                             | Mints a new [`NFT`](#addNFTLink) to the specified owner                                                                       |
 | [`Edit NFT`](#edit)             | Edits an already existing [`NFT`](#addNFTLink)  |
 | [`Transfer NFT`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
@@ -165,9 +166,26 @@ The following transaction commands are available (click on them for further info
 | [`Revoke NFT`](#revoke)                 | Removes an approved operated for the NFT 
 | [`Approve All`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
 
+#### Query
+
+| Command                                               | Description                                                                                                                            |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| [`denom`](#denom)                           | Queries for a [`denomination`](#addDenomLink) by denomination Id                                                  |
+| [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#addDenomLink) by denomination name                                                                  |
+| [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
+| [`collection`](#collection)                        | Get all the NFTs from a given collection.                                                                                                 |
+| [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
+| [`owner`](#owner)                        |  Get the NFTs owned by an account address.                                                                                               |
+| [`Query NFT`](#token)                 | Query a single NFT from a collection.
+| [`approvals`](#approvals)                 | Get the approved addresses for the NFT
+| [`isApprovedForAll`](#isApprovedForAll)                 | Gets whether the address is approved for all
+
+
 
 
 ## Full commands info
+
+## Transaction commands
 
 ### `issue`
 
@@ -287,7 +305,7 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
 $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
-### `approveall`
+### `approveAll`
 
 > Adds the address to the approved operator list for the user. Approved address on user level can transfer the nft from one owner to another. The address is automatically added to the msg.sender(--from) approved list
 
@@ -305,35 +323,142 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
 $ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
+## Query commands
 
-<h1>STOP</h1>
+### `denom`
 
-## Create denom
-```
-$ <appd> tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
-```
+> Query the denom by the specified denom id.
 
-## Mint token
-```
-$ <appd> tx nft mint <denom-id> <token-id> --uri=<uri> --recipient=<recipient> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
-```
+- arguments:
+  - `denom-id` `string` `The denomId to search for` `required: true`
+- flags:
+  - none
+  
+**Example:**
 
-## Query Collection
-```
-$ <appd> query nft collection <denom-id>
-```
-
-## Approve NFT
-```
-$ <appd> tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+``` bash
+$ cudos-noded query nft denom <denomId>
 ```
 
-## Revoke Approval
-```
-$ <appd> tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+### `denom-by-name`
+
+> Query the denom by the specified denom name.
+
+- arguments:
+  - `denom-name` `string` `The denom name to search for` `required: true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft denom <denomName>
 ```
 
-## Approve All
+### `denoms`
+
+> Query all denominations of all collections of NFTs.
+
+- arguments:
+  - none
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft denoms
 ```
-$ <appd> tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+
+### `collection`
+
+> Query all denominations of all collections of NFTs.
+
+- arguments:
+  - `denom-id`: `The id of the denomination collection.` `required:true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft collection <denom-id>
+```
+
+### `supply`
+
+> Gets the total supply of a collection or owner of NFTs.
+
+- arguments:
+  - `denom-id`: `The id of the denomination collection.` `required:true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft supply <denom-id>
+```
+
+### `owner`
+
+> Get the NFTs owned by an account address.
+
+- arguments:
+  - `address`: `The address of the owner.` `required:true`
+- flags:
+  - `--denom-id`: `The id of the denom` `required:true`
+  
+**Example:**
+``` bash
+$ cudos-noded query nft owner <address> --denom-id=<denom-id>
+```
+
+### `token`
+
+> Query a single NFT from a collection.
+
+- arguments:
+  - `denom-id`: `The id of the denom collection` `required:true`
+  - `token-id`: `The id of the NFT` `required:true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft token <denom-id> <token-id>
+```
+
+### `approvals`
+
+> Get the approved addresses for the NFT
+
+- arguments:
+  - `denom-id`: `The id of the denom collection` `required:true`
+  - `token-id`: `The id of the NFT` `required:true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft approvals <denomId> <tokenId>
+```
+
+
+### `isApprovedForAll`
+
+> Query if an address is an authorized operator for another address
+
+- arguments:
+  - `owner`: `The owner addresses to search` `required:true`
+  - `operator`: `The operator address to be searched for` `required:true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft approvals <owner> <operator>
 ```
