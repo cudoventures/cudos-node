@@ -157,28 +157,28 @@ The module gives the user to either write(via transaction) or read(via query) to
 #### Transaction
 | Command                                               | Description                                                                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`Issue Denom`](#issue)                           | Issues a new [`denomination`](#addDenomLink) to the specified owner                                                   |
-| [`Mint NFT`](#mint)                             | Mints a new [`NFT`](#addNFTLink) to the specified owner                                                                       |
-| [`Edit NFT`](#edit)             | Edits an already existing [`NFT`](#addNFTLink)  |
-| [`Transfer NFT`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
-| [`Burn NFT`](#burn)                  | Burns the specified NFT                                                                                        |
-| [`Approve NFT`](#approve)                        |  Adds an approved operator that can transfer the NFT                                                                                                |
-| [`Revoke NFT`](#revoke)                 | Removes an approved operated for the NFT 
-| [`Approve All`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
+| [`issue`](#issue)                           | Issues a new [`denomination`](#Denom) to the specified owner                                                   |
+| [`mint`](#mint)                             | Mints a new [`NFT`](#NFT) to the specified owner                                                                       |
+| [`edit`](#edit)             | Edits an already existing [`NFT`](#NFT)  |
+| [`transfer`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
+| [`burn`](#burn)                  | Burns the specified [`NFT`](#NFT)                                                                                         |
+| [`approve`](#approve)                        |  Adds an approved operator that can transfer the [`NFT`](#NFT)                                                                                                |
+| [`revoke`](#revoke)                 | Removes an approved operated for the [`NFT`](#NFT)
+| [`approveAll`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
 
 #### Query
 
 | Command                                               | Description                                                                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`denom`](#denom)                           | Queries for a [`denomination`](#addDenomLink) by denomination Id                                                  |
-| [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#addDenomLink) by denomination name                                                                  |
+| [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
+| [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
 | [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
-| [`collection`](#collection)                        | Get all the NFTs from a given collection.                                                                                                 |
+| [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#collection).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
-| [`owner`](#owner)                        |  Get the NFTs owned by an account address.                                                                                               |
-| [`Query NFT`](#token)                 | Query a single NFT from a collection.
-| [`approvals`](#approvals)                 | Get the approved addresses for the NFT
-| [`isApprovedForAll`](#isApprovedForAll)                 | Gets whether the address is approved for all
+| [`owner`](#owner)                        |  Queries for the [`owner`](#owner) and returns the NFTs owned by an account address.                                                                                               |
+| [`Query NFT`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#collection).
+| [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
+| [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
 
 
 
@@ -196,9 +196,9 @@ The module gives the user to either write(via transaction) or read(via query) to
 - flags: 
   - `--name` `string` `The unique name of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
-  - `--schema` `string` `!!!Insert what is schema here!!! Schema-content or path to schema.json.` `required: false`
+  - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -218,7 +218,7 @@ $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --sc
     - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
     - `--uri` `string` `The URI of the NFT.` `required: false`
     - `--chain-id` `string` `The name of the network.` `required: true`
-    - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+    - `--fees` `string` ` The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -238,12 +238,30 @@ $ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
 $ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee>
+```
+
+### `burn`
+
+> Burns the NFT - deletes it permanently
+
+- arguments:
+  - `denom-id` `string` `The denomId of the edited NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### `transfer`
@@ -259,7 +277,7 @@ $ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> -
   - `--from` `string` `The address that is requesting the transfer of the NFT. Can be either an address or alias to that address. must be either the owner, approved address on NFT or globally approved operator.` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -278,7 +296,7 @@ $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-nam
 - flags:
   - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -297,7 +315,7 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
 - flags:
   - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `Тhe specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -315,7 +333,7 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
 - flags:
   - `--from` `string` `The address that is requesting the approval. The approved address will be able to handle the transfers of --from assets. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -461,4 +479,93 @@ $ cudos-noded query nft approvals <denomId> <tokenId>
 
 ``` bash
 $ cudos-noded query nft approvals <owner> <operator>
+```
+
+## Object types:
+
+### NFT
+```go
+// NFT non fungible token interface
+type NFT interface {
+    GetID() string              // unique identifier of the NFT
+    GetName() string            // return the name of BaseNFT
+    GetOwner() sdk.AccAddress   // gets owner account of the NFT
+    GetURI() string             // tokenData field: URI to retrieve the of chain tokenData of the NFT
+    GetData() string            // return the Data of BaseNFT
+    GetApprovedAddresses() map[string]bool// returns the approved addresses of BaseNFT
+
+}
+```
+
+### NFT implementation
+```go
+type BaseNFT struct {
+	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+```
+
+## Collections
+
+>As all NFTs belong to a specific `Collection` under `{denomID}/{tokenID}`
+
+```go
+// Collection of non fungible tokens
+type Collection struct {
+    Denom Denom     `json:"denom"`  // Denom of the collection; not exported to clients
+    NFTs  []BaseNFT `json:"nfts"`   // NFTs that belongs to a collection
+}
+```
+
+## Owners
+
+>Owner holds the address of the user and his collection of NFTs
+
+```go
+// Owner of non fungible tokens
+type Owner struct {
+    Address       string            `json:"address"`
+    IDCollections []IDCollection    `json:"id_collections"`
+}
+```
+
+## IDCollection
+>IDCollection holds the denomId and the Ids of the NFTs(insted of the full object)
+
+```go
+// IDCollection of non fungible tokens
+type IDCollection struct {
+    DenomId string   `json:"denom_id"`
+    TokenIds []string `json:"token_ids"`
+}
+
+```
+
+## Denom
+> The denomination is used to group NFTs under it
+```go
+// Denom defines a type of NFT
+type Denom struct {
+	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+```
+
+## Events
+> The events that are emitted after certain operations
+```go
+	EventTypeIssueDenom    = "issue_denom"
+	EventTypeTransferNft   = "transfer_nft"
+	EventTypeApproveNft    = "approve_nft"
+	EventTypeApproveAllNft = "approve_all_nft"
+	EventTypeRevokeNft     = "revoke_nft"
+	EventTypeEditNFT       = "edit_nft"
+	EventTypeMintNFT       = "mint_nft"
+	EventTypeBurnNFT       = "burn_nft"
 ```
