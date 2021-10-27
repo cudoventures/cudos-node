@@ -173,16 +173,16 @@ The module gives the user to either write(via transaction) or read(via query) to
 | [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
 | [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
 | [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
-| [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#collection).                                                                                                 |
+| [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#Collections).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
-| [`owner`](#owner)                        |  Queries for the [`owner`](#owner) and returns the NFTs owned by an account address.                                                                                               |
-| [`token`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#collection).
+| [`owner`](#owner)                        |  Queries for the [`owner`](#Owners) and returns the NFTs owned by an account address.                                                                                               |
+| [`token`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#Collections).
 | [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
 | [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
 
-## Full commands info
+## Full commands info:
 
-## Transaction commands
+### Transaction commands
 
 ### `issue`
 
@@ -338,7 +338,7 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
 $ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
-## Query commands
+### Query commands
 
 ### `denom`
 
