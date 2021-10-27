@@ -176,12 +176,9 @@ The module gives the user to either write(via transaction) or read(via query) to
 | [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#collection).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
 | [`owner`](#owner)                        |  Queries for the [`owner`](#owner) and returns the NFTs owned by an account address.                                                                                               |
-| [`Query NFT`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#collection).
+| [`token`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#collection).
 | [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
 | [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
-
-
-
 
 ## Full commands info
 
