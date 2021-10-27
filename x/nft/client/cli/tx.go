@@ -97,12 +97,12 @@ func GetCmdIssueDenom() *cobra.Command {
 func GetCmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "mint [denom-id] [token-id]",
-		Long: "Mint an NFT and set the owner to the recipient.",
+		Long: "Mint an NFT and set the owner to the recipient. Only the denom creator can mint a new NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft mint <denom-id> <token-id> "+
-				"--uri=<uri> "+
 				"--recipient=<recipient> "+
 				"--from=<key-name> "+
+				"--uri=<uri> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
@@ -171,8 +171,8 @@ func GetCmdEditNFT() *cobra.Command {
 		Long: "Edit the token data of an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft edit <denom-id> <token-id> "+
-				"--uri=<uri> "+
 				"--from=<key-name> "+
+				"--uri=<uri> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
@@ -223,8 +223,8 @@ func GetCmdTransferNft() *cobra.Command {
 		Long: "Transfer an NFT to a recipient.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft transfer <from> <to> <denom-id> <token-id> "+
-				"--uri=<uri> "+
 				"--from=<key-name> "+
+				"--uri=<uri> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",
 			version.AppName,
@@ -356,13 +356,10 @@ func GetCmdApproveAllNFT() *cobra.Command {
 // GetCmdRevokeNft is the CLI command for ownership transfer of the token to contract account
 func GetCmdRevokeNft() *cobra.Command {
 	cmd := &cobra.Command{
-		// Use:  "approve [approvedAddress][denom-id] [token-id] ",
-
 		Use:  "revoke [addressToRevoke] [denom-id] [token-id]",
 		Long: "Revokes a previously granted permission to transfer the given an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft revoke <addressToRevoke> <denom-id> <token-id>"+
-				"--uri=<uri> "+
 				"--from=<key-name> "+
 				"--chain-id=<chain-id> "+
 				"--fees=<fee>",

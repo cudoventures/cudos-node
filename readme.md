@@ -142,8 +142,6 @@ export CGO_LDFLAGS="-lpthread -ldl"
 go build -v -a -tags netgo,osusergo -ldflags='-lpthread -extldflags "-lpthread -static"' ./cmd/cudos-noded/
 
 
-0884 188 072
-
 # NFT Module Specification
 
 
@@ -159,13 +157,13 @@ The following transaction commands are available (click on them for further info
 | Command                                               | Description                                                                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | [`Issue Denom`](#issue)                           | Issues a new [`Denom`](#addDenomLink) to the specified owner                                                   |
-| [`Mint NFT`](#mint)                             | Mints a new NFT to the specified owner                                                                       |
-| [`Edit NFT`](#edit-nft)             | Edits an already existing NFT  |
-| [`Transfer NFT`](#transfer-nft)                        | Transfers an existing NFT from one owner to another                                                                                                   |
-| [`Burn NFT`](#burn-nft)                  | Burns the specified NFT                                                                                        |
-| [`Approve NFT`](#cudos-run)                        |  Adds an approved operator that can transfer the NFT                                                                                                |
-| [`Revoke NFT`](#cudos-keys)                 | Removes an approved operated for the NFT 
-| [`Approve All`](#cudos-keys)                 | Approves an operator on user level - the operator can transfer all of the user tokens
+| [`Mint NFT`](#mint)                             | Mints a new [`NFT`](#addNFTLink) to the specified owner                                                                       |
+| [`Edit NFT`](#edit)             | Edits an already existing [`NFT`](#addNFTLink)  |
+| [`Transfer NFT`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
+| [`Burn NFT`](#burn)                  | Burns the specified NFT                                                                                        |
+| [`Approve NFT`](#approve)                        |  Adds an approved operator that can transfer the NFT                                                                                                |
+| [`Revoke NFT`](#revoke)                 | Removes an approved operated for the NFT 
+| [`Approve All`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
 
 
 
@@ -177,9 +175,9 @@ The following transaction commands are available (click on them for further info
 
 - arguments:
   - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
-- options: 
+- flags: 
   - `--name` `string` `The unique name of the denom.` `required: true`
-  - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an addresso or alias to that address` `required: true`
+  - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `!!!Insert what is schema here!!! Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
   - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
@@ -189,26 +187,126 @@ The following transaction commands are available (click on them for further info
 ``` bash
 $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
 ```
+
 ### `mint`
 
-> Mints a new NFT to the specified owner. Only the denom creator can mint a NFT
+> Mint a NFT and set the owner to the recipient. Only the denom creator can mint a new NFT
 
 - arguments:
-    - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
-- options:
-    - `--name` `string` `The unique name of the denom.` `required: true`
-    - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an addresso or alias to that address` `required: true`
-    - `--schema` `string` `!!!Insert what is schema here!!! Schema-content or path to schema.json.` `required: false`
-    - `--chain-id` `string` `The name of the network.` `required`
+    - `denom-id` `string` `The denomId that this NFT will be associated` `required: true`
+    - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+    - `--from` `string` `The address that is minting the NFT. Must be denom creator. Can be either an address or alias to that address` `required: true`
+    - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
+    - `--uri` `string` `The URI of the NFT.` `required: false`
+    - `--chain-id` `string` `The name of the network.` `required: true`
     - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee>
+
+```
+
+### `edit`
+
+> Edit an NFT - can change name, uri or data. Only the owner can edit the NFT.
+
+- arguments:
+  - `denom-id` `string` `The denomId of the edited NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
+  - `--uri` `string` `The URI of the NFT.` `required: false`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee>
+```
+
+### `transfer`
+
+> Transfer an NFT - from one owner to another The sender must be either the owner, approved address on NFT or globally approved operator.
+
+- arguments:
+  - `from` `string` `The address of the NFT owner` `required: true`
+  - `to` `string` `The address of the user that will receive the NFT` `required: true`
+  - `denom-id` `string` `The denomId of the edited NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the transfer of the NFT. Can be either an address or alias to that address. must be either the owner, approved address on NFT or globally approved operator.` `required: true`
+  - `--uri` `string` `The URI of the NFT.` `required: false`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee> 
+```
+
+### `approve`
+
+> Adds the to address to the approved list. Approved address on NFT level can transfer the nft from one owner to another. Approved addresses for the NFT are cleared upon transfer.
+
+- arguments:
+  - `approvedAddress` `string` `The address that will be approved` `required: true`
+  - `denom-id` `string` `The denomId of the edited NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+### `revoke`
+
+> Removes the to address to the approved list. Approved address on NFT level can transfer the nft from one owner to another. Approved addresses for the NFT are cleared upon transfer.
+
+- arguments:
+  - `addressToRevoke` `string` `The address that will be approved` `required: true`
+  - `denom-id` `string` `The denomId of the edited NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+### `approveall`
+
+> Adds the address to the approved operator list for the user. Approved address on user level can transfer the nft from one owner to another. The address is automatically added to the msg.sender(--from) approved list
+
+- arguments:
+  - `operator` `string` `The address that will be approved` `required: true`
+  - `approved` `string` `Boolean value indicating if the addres is approved: can be true or false` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the approval. The approved address will be able to handle the transfers of --from assets. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `!!!Inert more info here!!! The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
 
+<h1>STOP</h1>
 
 ## Create denom
 ```
