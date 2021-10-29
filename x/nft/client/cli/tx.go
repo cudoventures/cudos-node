@@ -264,7 +264,6 @@ func GetCmdTransferNft() *cobra.Command {
 // GetCmdApproveNft  is the CLI command for grants permission to spender to transfer or send the given token
 func GetCmdApproveNft() *cobra.Command {
 	cmd := &cobra.Command{
-		// no expire in ERC721
 		Use:  "approve [approvedAddress][denom-id] [token-id] ",
 		Long: "Adds the to address to the approved list.",
 		Example: fmt.Sprintf(

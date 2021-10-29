@@ -70,6 +70,29 @@ func TransferNFTExec(clientCtx client.Context, from, to, denomID, tokenID string
 	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdTransferNft(), args)
 }
 
+func ApproveNFTExec(clientCtx client.Context, from, approvedAddress, denomID, tokenID string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		approvedAddress,
+		denomID,
+		tokenID,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdApproveNft(), args)
+}
+
+func ApproveAll(clientCtx client.Context, from, approvedAddress, isApproved string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		approvedAddress,
+		isApproved,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdApproveAllNFT(), args)
+}
+
 func QueryDenomExec(clientCtx client.Context, denomID string, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
 		denomID,
@@ -130,13 +153,24 @@ func QueryNFTExec(clientCtx client.Context, denomID string, tokenID string, extr
 	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryNFT(), args)
 }
 
-// func TransferDenomExec(clientCtx client.Context, from string, recipient string, denomID string, extraArgs ...string) (testutil.BufferWriter, error) {
-// 	args := []string{
-// 		recipient,
-// 		denomID,
-// 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
-// 	}
-//
-// 	args = append(args, extraArgs...)
-// 	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdTransferDenom(), args)
-// }
+func QueryIsApprovedAll(clientCtx client.Context, owner, operator string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		owner,
+		operator,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryIsApprovedForAll(), args)
+}
+
+func QueryIsApprovedNFT(clientCtx client.Context, denomId, tokenId string, extraArgs ...string) (testutil.BufferWriter, error) {
+	args := []string{
+		denomId,
+		tokenId,
+		fmt.Sprintf("--%s=json", cli.OutputFlag),
+	}
+	args = append(args, extraArgs...)
+
+	return clitestutil.ExecTestCLICmd(clientCtx, nftcli.GetCmdQueryApprovedNFT(), args)
+}

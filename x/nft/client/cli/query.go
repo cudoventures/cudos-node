@@ -354,7 +354,7 @@ func GetCmdQueryIsApprovedForAll() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "isApprovedForAll [owner] [operator]",
 		Long:    "Query if an address is an authorized operator for another address",
-		Example: fmt.Sprintf("$ %s query nft approvals <owner> <operator>", version.AppName),
+		Example: fmt.Sprintf("$ %s query nft isApprovedForAll <owner> <operator>", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

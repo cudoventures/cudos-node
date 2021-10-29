@@ -60,6 +60,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenURI := "uri"
 	tokenData := "data"
 	tokenID := "testtoken"
+	tokenID2 := "testtoken2"
 	denomName := "name"
 	denom := "denom"
 	schema := "schema"
@@ -224,6 +225,82 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(newTokenData, nftItem.Data)
 	s.Require().Equal(recipient.String(), nftItem.Owner)
 
+	//------test GetCmdApproveNFT() GetCmdQueryApproveNFT() -------------
+
+	approvedAddress := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
+
+	// mint new NFT
+	args = []string{
+		fmt.Sprintf("--%s=%s", nftcli.FlagTokenData, tokenData),
+		fmt.Sprintf("--%s=%s", nftcli.FlagRecipient, from.String()),
+		fmt.Sprintf("--%s=%s", nftcli.FlagTokenURI, tokenURI),
+		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, tokenName),
+
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+
+	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID2, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+	args = []string{
+
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+
+	bz, err = nfttestutil.ApproveNFTExec(val.ClientCtx, from.String(), approvedAddress.String(), denomID, tokenID2, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	respType = proto.Message(&nfttypes.BaseNFT{})
+	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID2)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+	nftItem = respType.(*nfttypes.BaseNFT)
+	s.Require().Equal(nftItem.ApprovedAddresses[approvedAddress.String()], true)
+
+	respType = proto.Message(&nfttypes.QueryApprovalsNFTResponse{})
+	bz, err = nfttestutil.QueryIsApprovedNFT(val.ClientCtx, denomID, tokenID2)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+	isApprovedNft := respType.(*nfttypes.QueryApprovalsNFTResponse)
+	s.Require().Equal(isApprovedNft.ApprovedAddresses[approvedAddress.String()], true)
+
+	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
+
+	args = []string{
+
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+
+	bz, err = nfttestutil.ApproveAll(val.ClientCtx, from.String(), approvedAddress.String(), "true", args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	respType = proto.Message(&nfttypes.QueryApprovalsIsApprovedForAllResponse{})
+	bz, err = nfttestutil.QueryIsApprovedAll(val.ClientCtx, from.String(), approvedAddress.String())
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+	isApprovedAllResponse := respType.(*nfttypes.QueryApprovalsIsApprovedForAllResponse)
+	s.Require().Equal(isApprovedAllResponse.IsApproved, true)
+
 	//------test GetCmdBurnNFT()-------------
 	newTokenID := "dgsbl"
 	args = []string{
@@ -250,7 +327,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
-	s.Require().Equal(uint64(2), supplyResp.Amount)
+	s.Require().Equal(uint64(3), supplyResp.Amount)
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -269,7 +346,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
-	s.Require().Equal(uint64(1), supplyResp.Amount)
+	s.Require().Equal(uint64(2), supplyResp.Amount)
 }
 
 // TODO: Add integration test for Approve and ApproveAll
