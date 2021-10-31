@@ -21,14 +21,12 @@ import (
 )
 
 var (
-	denomID     = "denomid"
-	denomNm     = "denomnm"
-	denomSymbol = "denomSymbol"
-	schema      = "{a:a,b:b}"
+	denomID = "denomid"
+	denomNm = "denomnm"
+	schema  = "{a:a,b:b}"
 
-	denomID2     = "denomid2"
-	denomNm2     = "denom2nm"
-	denomSymbol2 = "denomSymbol2"
+	denomID2 = "denomid2"
+	denomNm2 = "denom2nm"
 
 	tokenID  = "tokenid"
 	tokenID2 = "tokenid2"
@@ -38,9 +36,8 @@ var (
 	tokenNm2 = "tokennm2"
 	tokenNm3 = "tokennm3"
 
-	denomID3     = "denomid3"
-	denomNm3     = "denom3nm"
-	denomSymbol3 = "denomSymbol3"
+	denomID3 = "denomid3"
+	denomNm3 = "denom3nm"
 
 	address    = CreateTestAddrs(1)[0]
 	address2   = CreateTestAddrs(2)[1]
@@ -159,7 +156,6 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT(
 
 }
 
-// TODO: Fix this test to check for get owner prefix
 func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
@@ -170,8 +166,22 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() 
 	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
 	suite.NoError(err)
 
-	// not good - you should test setOwner()
 	assert.Equal(suite.T(), nft.Owner, address2.String())
+
+	owner, err := suite.keeper.GetOwner(suite.ctx, address2, denomID)
+	isOwnerCorrectlySavedInDb := false
+
+	for _, collection := range owner.IDCollections {
+		if collection.DenomId == denomID {
+			for _, ownedTokenId := range collection.TokenIds {
+				if ownedTokenId == tokenID {
+					isOwnerCorrectlySavedInDb = true
+				}
+			}
+		}
+	}
+
+	assert.Equal(suite.T(), true, isOwnerCorrectlySavedInDb)
 
 }
 
@@ -307,19 +317,36 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_Trans
 	suite.NoError(err)
 }
 
-// TODO: Fix this test to check for swap with get owner prefix
 func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_SwapOwner() {
-	// err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
-	// suite.NoError(err)
-	//
-	// err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
-	// suite.NoError(err)
-	//
-	// err = suite.keeper.AddApprovalForAll(suite.ctx, address, address3, true)
-	// suite.NoError(err)
-	//
-	// err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address3)
-	// suite.NoError(err)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenID, address, address2, address)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetNFT(suite.ctx, denomID, tokenID)
+	suite.NoError(err)
+
+	assert.Equal(suite.T(), nft.GetOwner().String(), address2.String())
+
+	owner, err := suite.keeper.GetOwner(suite.ctx, address2, denomID)
+	isOwnerCorrectlySwappedInDb := false
+
+	for _, collection := range owner.IDCollections {
+		if collection.DenomId == denomID {
+			for _, ownedTokenId := range collection.TokenIds {
+				if ownedTokenId == tokenID {
+					isOwnerCorrectlySwappedInDb = true
+				}
+			}
+		}
+	}
+
+	assert.Equal(suite.T(), true, isOwnerCorrectlySwappedInDb)
+
 }
 
 func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldError_WhenSenderIsNotOwnerOfNftOrIsNotApproved() {
@@ -431,7 +458,7 @@ func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFT()
 	suite.NoError(err)
 
 	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
-	suite.NoError(err, types.ErrNotFoundNFT)
+	suite.NoError(err)
 	assert.NotNil(suite.T(), nft)
 
 	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address)
@@ -441,8 +468,38 @@ func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFT()
 	suite.ErrorIs(err, types.ErrNotFoundNFT)
 }
 
-// TODO: Fix this test to check for get owner prefix
 func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFTOwner() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	suite.NoError(err)
+	assert.NotNil(suite.T(), nft)
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenID, address)
+	suite.NoError(err)
+
+	_, err = suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	suite.ErrorIs(err, types.ErrNotFoundNFT)
+
+	owner, err := suite.keeper.GetOwner(suite.ctx, address, denomID)
+	isOwnerCorrectlySwappedInDb := false
+
+	for _, collection := range owner.IDCollections {
+		if collection.DenomId == denomID {
+			for _, ownedTokenId := range collection.TokenIds {
+				if ownedTokenId == tokenID {
+					isOwnerCorrectlySwappedInDb = true
+				}
+			}
+		}
+	}
+
+	assert.Equal(suite.T(), false, isOwnerCorrectlySwappedInDb)
+
 }
 
 func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DecreaseSupply() {

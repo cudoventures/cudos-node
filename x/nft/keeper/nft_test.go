@@ -1,6 +1,9 @@
 package keeper_test
 
-import "cudos.org/cudos-node/x/nft/types"
+import (
+	"cudos.org/cudos-node/x/nft/types"
+	"github.com/stretchr/testify/assert"
+)
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldCorrectly_ReturnNFT() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
@@ -54,4 +57,86 @@ func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsCorrect_WhenNFTDoesEx
 	suite.True(isNFT)
 }
 
-//TODO: Test approve and revoke
+func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	suite.keeper.ApproveNFT(suite.ctx, nft, address3, denomID2)
+
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	assert.Equal(suite.T(), true, nft.ApprovedAddresses[address3.String()])
+}
+
+func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	suite.keeper.ApproveNFT(suite.ctx, nft, address2, denomID2)
+	suite.NoError(err)
+
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+	assert.Equal(suite.T(), nft.ApprovedAddresses[address2.String()], true)
+
+	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
+
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+
+	suite.NoError(err)
+	assert.Equal(suite.T(), map[string]bool(nil), nft.ApprovedAddresses)
+
+}
+
+func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenUserHasNoApprovedAddresses() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
+	suite.ErrorIs(err, types.ErrNoApprovedAddresses)
+
+}
+
+func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenApprovedAddressIsNotFound() {
+
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	suite.NoError(err)
+
+	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	suite.NoError(err)
+
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	suite.keeper.ApproveNFT(suite.ctx, nft, address2, denomID2)
+	suite.NoError(err)
+
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	suite.NoError(err)
+
+	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address3, denomID2)
+	suite.ErrorIs(err, types.ErrNoApprovedAddresses)
+
+}

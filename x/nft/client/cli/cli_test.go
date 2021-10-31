@@ -348,5 +348,3 @@ func (s *IntegrationTestSuite) TestNft() {
 	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(2), supplyResp.Amount)
 }
-
-// TODO: Add integration test for Approve and ApproveAll
