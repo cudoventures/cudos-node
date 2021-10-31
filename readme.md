@@ -147,10 +147,10 @@ go build -v -a -tags netgo,osusergo -ldflags='-lpthread -extldflags "-lpthread -
 
 ## Overview
 
-A module for operating with Non-Fungible Tokens on the CUDOS network. The methods that are exposed by it are mainly based on [ERC721 interface](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) from the Ethereum network and not so much on the [CW-721](https://github.com/CosmWasm/cw-nfts) from the Cosmos network. The reason for this is that the main idea of the module is to transfer tokens through [GravityBridge](https://github.com/CudoVentures/cosmos-gravity-bridge) between CUDOS network and Ethereum and thus it is better to follow the ERC721 standard. 
+A module for operating with Non-Fungible Tokens on the CUDOS network. The methods that are exposed by it are mainly based on [ERC721 interface](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) from the Ethereum network and not so much on the [CW-721](https://github.com/CosmWasm/cw-nfts) from the Cosmos network. The reason for this is that the main idea of the module is to transfer tokens through a [bridge](https://github.com/CudoVentures/cosmos-gravity-bridge) between CUDOS network and Ethereum and thus it is better to follow the ERC721 standard. 
 
 ## Module Interface
-The module gives the user to either write(via transaction) or read(via query) to/from the network.
+The module gives the user the ability to either write(via transaction) or read(via query) to/from the network.
 
 ### The following commands are available (click on them for further info)
 
@@ -158,10 +158,10 @@ The module gives the user to either write(via transaction) or read(via query) to
 | Command                                               | Description                                                                                                                            |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | [`issue`](#issue)                           | Issues a new [`denomination`](#Denom) to the specified owner                                                   |
-| [`mint`](#mint)                             | Mints a new [`NFT`](#NFT) to the specified owner                                                                       |
+| [`mint`](#mint)                             | Mints a new [`NFT`](#NFT) in a given denomination to the specified owner                                                                       |
 | [`edit`](#edit)             | Edits an already existing [`NFT`](#NFT)  |
 | [`transfer`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
-| [`burn`](#burn)                  | Burns the specified [`NFT`](#NFT)                                                                                         |
+| [`burn`](#burn)                  | Burns the specified [`NFT`](#NFT) . Only the owner can burn the NFT                                                                                        |
 | [`approve`](#approve)                        |  Adds an approved operator that can transfer the [`NFT`](#NFT)                                                                                                |
 | [`revoke`](#revoke)                 | Removes an approved operated for the [`NFT`](#NFT)
 | [`approveAll`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
@@ -284,7 +284,7 @@ $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-nam
 
 ### `approve`
 
-> Adds the to address to the approved list. Approved address on NFT level can transfer the nft from one owner to another. Approved addresses for the NFT are cleared upon transfer.
+> Adds an address to the approved list. Approved address on NFT level can transfer the NFT from one owner to another. Approved addresses for the NFT are cleared upon transfer.
 
 - arguments:
   - `approvedAddress` `string` `The address that will be approved` `required: true`
@@ -303,14 +303,14 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
 
 ### `revoke`
 
-> Removes the to address to the approved list. Approved address on NFT level can transfer the nft from one owner to another. Approved addresses for the NFT are cleared upon transfer.
+> Removes the address from the approved list. Approved address on NFT level can transfer the nft from one owner to another. Approved addresses for the NFT are cleared upon transfer.
 
 - arguments:
-  - `addressToRevoke` `string` `The address that will be approved` `required: true`
+  - `addressToRevoke` `string` `The address that will be removed` `required: true`
   - `denom-id` `string` `The denomId of the edited NFT` `required: true`
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
-  - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
+  - `--from` `string` `The address that is requesting the removal of approval. Can be either an address or alias to that address. Must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
   - `--fees` `string` `Тhe specified fee for the operation` `required: true`
 
