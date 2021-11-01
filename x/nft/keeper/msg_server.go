@@ -250,8 +250,9 @@ func (m msgServer) ApproveAllNft(goCtx context.Context, msg *types.MsgApproveAll
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	// m.Keeper.SetApprovedAddress(ctx, sender, operatorAddressToBeAdded, msg.Approved)
-	m.Keeper.SetApprovedAddress(ctx, operator, sender, msg.Approved)
+	if err := m.Keeper.AddApprovalForAll(ctx, sender, operator, msg.Approved); err != nil {
+		return nil, err
+	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(

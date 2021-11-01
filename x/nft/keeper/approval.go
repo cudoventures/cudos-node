@@ -29,7 +29,7 @@ func (k Keeper) IsApprovedOperator(ctx sdk.Context, owner, operator sdk.AccAddre
 	return hasPermission
 }
 
-func (k Keeper) SetApprovedAddress(ctx sdk.Context, operator, sender sdk.AccAddress, approved bool) {
+func (k Keeper) SetApprovedAddress(ctx sdk.Context, sender, operator sdk.AccAddress, approved bool) {
 
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.KeyApprovedAddresses(sender.String())) // all types.ApprovedAddresses
