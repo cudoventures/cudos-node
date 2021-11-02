@@ -23,7 +23,7 @@ func (suite *IntegrationTestKeeperSuite) TestQuerySupply_ReturnsCorrectSupply() 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	querier := keep.NewQuerier(suite.keeper, suite.legacyAmino)
@@ -69,7 +69,7 @@ func (suite *IntegrationTestKeeperSuite) TestQueryCollection_ReturnsCorrectColle
 	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	querier := keep.NewQuerier(suite.keeper, suite.legacyAmino)
@@ -115,9 +115,9 @@ func (suite *IntegrationTestKeeperSuite) TestQueryOwner_ReturnsCorrectOwner() {
 	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	querier := keep.NewQuerier(suite.keeper, suite.legacyAmino)
@@ -144,8 +144,8 @@ func (suite *IntegrationTestKeeperSuite) TestQueryOwner_ReturnsCorrectOwner() {
 	suite.legacyAmino.MustUnmarshalJSON(res, &out)
 
 	// build the owner using both denoms
-	idCollection1 := types.NewIDCollection(denomID, []string{tokenID})
-	idCollection2 := types.NewIDCollection(denomID2, []string{tokenID})
+	idCollection1 := types.NewIDCollection(denomID, []string{tokenId})
+	idCollection2 := types.NewIDCollection(denomID2, []string{tokenId})
 	owner := types.NewOwner(address, idCollection1, idCollection2)
 
 	suite.EqualValues(out.String(), owner.String())
@@ -155,7 +155,7 @@ func (suite *IntegrationTestKeeperSuite) TestQueryNFT_ReturnsCorrectNFT() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	querier := keep.NewQuerier(suite.keeper, suite.legacyAmino)
@@ -172,7 +172,7 @@ func (suite *IntegrationTestKeeperSuite) TestQueryNFT_ReturnsCorrectNFT() {
 	suite.Error(err)
 	suite.Nil(res)
 
-	params := types.NewQueryNFTParams(denomID2, tokenID2)
+	params := types.NewQueryNFTParams(denomID2, "1234")
 	bz, err2 := suite.legacyAmino.MarshalJSON(params)
 	suite.Nil(err2)
 
@@ -181,7 +181,7 @@ func (suite *IntegrationTestKeeperSuite) TestQueryNFT_ReturnsCorrectNFT() {
 	suite.Error(err)
 	suite.Nil(res)
 
-	params = types.NewQueryNFTParams(denomID, tokenID)
+	params = types.NewQueryNFTParams(denomID, tokenId)
 	bz, err2 = suite.legacyAmino.MarshalJSON(params)
 	suite.Nil(err2)
 
@@ -193,7 +193,7 @@ func (suite *IntegrationTestKeeperSuite) TestQueryNFT_ReturnsCorrectNFT() {
 	var out exported.NFT
 	suite.legacyAmino.MustUnmarshalJSON(res, &out)
 
-	suite.Equal(out.GetID(), tokenID)
+	suite.Equal(out.GetID(), tokenId)
 	suite.Equal(out.GetURI(), tokenURI)
 	suite.Equal(out.GetOwner(), address)
 }
@@ -202,13 +202,13 @@ func (suite *IntegrationTestKeeperSuite) TestQueryDenoms_ReturnsCorrectDenoms() 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	querier := keep.NewQuerier(suite.keeper, suite.legacyAmino)
