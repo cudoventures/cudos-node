@@ -2,6 +2,7 @@ package types
 
 import (
 	"regexp"
+	"strconv"
 	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -44,11 +45,10 @@ func ValidateDenomName(denomName string) error {
 
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
-	if len(tokenID) < MinDenomLen || len(tokenID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "the length of nft id(%s) only accepts value [%d, %d]", tokenID, MinDenomLen, MaxDenomLen)
-	}
-	if !IsBeginWithAlpha(tokenID) || !IsAlphaNumeric(tokenID) {
-		return sdkerrors.Wrapf(ErrInvalidTokenID, "nft id(%s) only accepts lowercase alphanumeric characters, and begin with an english letter", tokenID)
+
+	_, err := isUint64(tokenID)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -64,4 +64,17 @@ func ValidateTokenURI(tokenURI string) error {
 // Modified returns whether the field is modified
 func Modified(target string) bool {
 	return target != DoNotModify
+}
+
+func isUint64(v string) (bool, error) {
+	if val, err := strconv.ParseInt(v, 10, 64); err == nil {
+		if val > 0 {
+			return true, nil
+		} else {
+			return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%d]", v, MaxTokenURILen)
+		}
+	}
+
+	return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%d]", v, MaxTokenURILen)
+
 }

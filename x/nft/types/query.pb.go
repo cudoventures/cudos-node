@@ -825,7 +825,7 @@ func (m *QueryApprovalsNFTResponse) GetApprovedAddresses() map[string]bool {
 	return nil
 }
 
-// QueryNFTRequest is the request type for the Query/NFT RPC method
+// QueryApprovalsIsApprovedForAllRequest is the request type for the Query/NFT RPC method
 type QueryApprovalsIsApprovedForAllRequest struct {
 	Owner    string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`

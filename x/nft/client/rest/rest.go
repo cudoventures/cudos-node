@@ -34,7 +34,6 @@ type mintNFTReq struct {
 	Owner     string       `json:"owner"`
 	Recipient string       `json:"recipient"`
 	DenomID   string       `json:"denom_id"`
-	ID        string       `json:"id"`
 	Name      string       `json:"name"`
 	URI       string       `json:"uri"`
 	Data      string       `json:"data"`

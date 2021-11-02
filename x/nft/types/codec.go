@@ -84,3 +84,14 @@ func MustUnMarshalTokenID(cdc codec.Codec, value []byte) string {
 	cdc.MustUnmarshal(value, &tokenIDWrap)
 	return tokenIDWrap.Value
 }
+
+func MustUnMarshalTotalNftCountForCollection(cdc codec.Codec, value []byte) uint64 {
+	var totalCountWrap gogotypes.UInt64Value
+	cdc.MustUnmarshal(value, &totalCountWrap)
+	return totalCountWrap.Value
+}
+
+func MustMarshallTotalCountForCollection(cdc codec.Codec, supply uint64) []byte {
+	totalCountWrap := gogotypes.UInt64Value{Value: supply}
+	return cdc.MustMarshal(&totalCountWrap)
+}

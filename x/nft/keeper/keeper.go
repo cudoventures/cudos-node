@@ -2,8 +2,8 @@ package keeper
 
 import (
 	"fmt"
-
 	"github.com/tendermint/tendermint/libs/log"
+	"strconv"
 
 	"cudos.org/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -52,42 +52,48 @@ func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema string, creator sdk
 
 // MintNFTUnverified mints an NFT without verifying if the owner is the creator of denom
 // Needed during genesis initialization
-func (k Keeper) MintNFTUnverified(ctx sdk.Context, denomID, tokenID, tokenNm, tokenURI, tokenData string, owner sdk.AccAddress) error {
+func (k Keeper) MintNFTUnverified(
+	ctx sdk.Context,
+	denomID string,
+	tokenNm,
+	tokenURI,
+	tokenData string,
+	owner sdk.AccAddress) (string, error) {
 	if !k.HasDenomID(ctx, denomID) {
-		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
 
-	if k.HasNFT(ctx, denomID, tokenID) {
-		return sdkerrors.Wrapf(types.ErrNFTAlreadyExists, "NFT %s already exists in collection %s", tokenID, denomID)
-	}
+	tokenId := strconv.FormatUint(
+		k.GetNftTotalCountForCollection(ctx, denomID)+1, 10)
 
 	k.setNFT(
 		ctx, denomID,
 		types.NewBaseNFT(
-			tokenID,
+			tokenId,
 			tokenNm,
 			owner,
 			tokenURI,
 			tokenData,
 		),
 	)
-	k.setOwner(ctx, denomID, tokenID, owner)
+	k.setOwner(ctx, denomID, tokenId, owner)
 	k.increaseSupply(ctx, denomID)
+	k.IncrementTotalCounterForCollection(ctx, denomID)
 
-	return nil
+	return tokenId, nil
 }
 
 // MintNFT mints an NFT and manages the NFT's existence within Collections and Owners
 func (k Keeper) MintNFT(
-	ctx sdk.Context, denomID, tokenID, tokenNm,
+	ctx sdk.Context, denomID string, tokenNm,
 	tokenURI, tokenData string, sender, owner sdk.AccAddress,
-) error {
+) (string, error) {
+
 	_, err := k.IsDenomCreator(ctx, denomID, sender)
 	if err != nil {
-		return err
+		return "", err
 	}
-
-	return k.MintNFTUnverified(ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, owner)
+	return k.MintNFTUnverified(ctx, denomID, tokenNm, tokenURI, tokenData, owner)
 }
 
 // EditNFT updates an already existing NFT

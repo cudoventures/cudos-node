@@ -249,7 +249,6 @@ func queryNFT(cliCtx client.Context, queryRoute string) http.HandlerFunc {
 		if err := types.ValidateTokenID(tokenID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
-
 		params := types.NewQueryNFTParams(denomID, tokenID)
 		bz, err := cliCtx.LegacyAmino.MarshalJSON(params)
 		if err != nil {
