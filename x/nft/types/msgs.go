@@ -320,11 +320,9 @@ func (msg MsgEditNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgMintNFT is a constructor function for MsgMintNFT
-func NewMsgMintNFT(
-	tokenID, denomID, tokenName, tokenURI, tokenData, sender, recipient string,
+func NewMsgMintNFT(denomID, tokenName, tokenURI, tokenData, sender, recipient string,
 ) *MsgMintNFT {
 	return &MsgMintNFT{
-		Id:        tokenID,
 		DenomId:   denomID,
 		Name:      tokenName,
 		URI:       tokenURI,
@@ -354,7 +352,8 @@ func (msg MsgMintNFT) ValidateBasic() error {
 	if err := ValidateTokenURI(msg.URI); err != nil {
 		return err
 	}
-	return ValidateTokenID(msg.Id)
+
+	return nil
 }
 
 // GetSignBytes Implements Msg.

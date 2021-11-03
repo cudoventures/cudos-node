@@ -96,10 +96,10 @@ func GetCmdIssueDenom() *cobra.Command {
 // GetCmdMintNFT is the CLI command for a MintNFT transaction
 func GetCmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "mint [denom-id] [token-id]",
+		Use:  "mint [denom-id]",
 		Long: "Mint an NFT and set the owner to the recipient. Only the denom creator can mint a new NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft mint <denom-id> <token-id> "+
+			"$ %s tx nft mint <denom-id> "+
 				"--recipient=<recipient> "+
 				"--from=<key-name> "+
 				"--uri=<uri> "+
@@ -107,7 +107,7 @@ func GetCmdMintNFT() *cobra.Command {
 				"--fees=<fee>",
 			version.AppName,
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -143,9 +143,10 @@ func GetCmdMintNFT() *cobra.Command {
 				return err
 			}
 
+			denomId := args[0]
+
 			msg := types.NewMsgMintNFT(
-				args[1],
-				args[0],
+				denomId,
 				tokenName,
 				tokenURI,
 				tokenData,

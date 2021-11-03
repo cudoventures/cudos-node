@@ -59,8 +59,6 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenName := "Test Token"
 	tokenURI := "uri"
 	tokenData := "data"
-	tokenID := "testtoken"
-	tokenID2 := "testtoken2"
 	denomName := "name"
 	denom := "denom"
 	schema := "schema"
@@ -118,11 +116,12 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
+	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+	tokenID := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
 
 	//------test GetCmdQuerySupply()-------------
 	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
@@ -243,11 +242,13 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, tokenID2, args...)
+	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+	tokenID2 := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
+
 	args = []string{
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -302,7 +303,6 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(isApprovedAllResponse.IsApproved, true)
 
 	//------test GetCmdBurnNFT()-------------
-	newTokenID := "dgsbl"
 	args = []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenData, newTokenData),
 		fmt.Sprintf("--%s=%s", nftcli.FlagRecipient, from.String()),
@@ -316,11 +316,12 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	respType = proto.Message(&sdk.TxResponse{})
 
-	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, newTokenID, args...)
+	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
+	newTokenId := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
 
 	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
 	bz, err = nfttestutil.QuerySupplyExec(val.ClientCtx, denomID)
@@ -335,7 +336,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
-	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenID, args...)
+	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenId, args...)
 	s.Require().NoError(err)
 	s.Require().NoError(val2.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)

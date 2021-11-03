@@ -9,18 +9,18 @@ func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldCorrectly_ReturnNFT() 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, denomNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, denomNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
 	suite.NoError(err)
-	suite.Equal(nft.GetID(), tokenID)
+	suite.Equal(nft.GetID(), tokenId)
 	suite.True(nft.GetOwner().Equals(address2))
 	suite.Equal(nft.GetURI(), tokenURI)
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldErr_WhenNFTNotFound() {
-	_, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenID)
+	_, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, "1234")
 	suite.ErrorIs(err, types.ErrNotFoundNFT)
 }
 
@@ -28,13 +28,13 @@ func (suite *IntegrationTestKeeperSuite) TestGetNFTs_CorrectlyReturns_Collection
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID2, tokenNm2, tokenURI, tokenData, address, address2)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm2, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID3, tokenNm3, tokenURI, tokenData, address, address2)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm3, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
 	nfts := suite.keeper.GetNFTs(suite.ctx, denomID2)
@@ -42,7 +42,7 @@ func (suite *IntegrationTestKeeperSuite) TestGetNFTs_CorrectlyReturns_Collection
 }
 
 func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsFalse_WhenNFTDoesNotExist() {
-	isNFT := suite.keeper.HasNFT(suite.ctx, denomID, tokenID)
+	isNFT := suite.keeper.HasNFT(suite.ctx, denomID, "1234")
 	suite.False(isNFT)
 }
 
@@ -50,10 +50,10 @@ func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsCorrect_WhenNFTDoesEx
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	isNFT := suite.keeper.HasNFT(suite.ctx, denomID2, tokenID)
+	isNFT := suite.keeper.HasNFT(suite.ctx, denomID2, tokenId)
 	suite.True(isNFT)
 }
 
@@ -62,15 +62,15 @@ func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	suite.keeper.ApproveNFT(suite.ctx, nft, address3, denomID2)
 
-	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	assert.Equal(suite.T(), true, nft.ApprovedAddresses[address3.String()])
@@ -81,22 +81,22 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() 
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	suite.keeper.ApproveNFT(suite.ctx, nft, address2, denomID2)
 	suite.NoError(err)
 
-	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 	assert.Equal(suite.T(), nft.ApprovedAddresses[address2.String()], true)
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
 
-	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 
 	suite.NoError(err)
 	assert.Equal(suite.T(), map[string]bool(nil), nft.ApprovedAddresses)
@@ -108,10 +108,10 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_When
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
@@ -124,16 +124,16 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_When
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenID, tokenNm, tokenURI, tokenData, address, address2)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
 	suite.NoError(err)
 
-	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	suite.keeper.ApproveNFT(suite.ctx, nft, address2, denomID2)
 	suite.NoError(err)
 
-	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenID)
+	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address3, denomID2)

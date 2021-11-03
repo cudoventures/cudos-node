@@ -9,7 +9,7 @@ func (suite *IntegrationTestKeeperSuite) TestSupplyReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Supply(gocontext.Background(), &types.QuerySupplyRequest{
@@ -25,7 +25,7 @@ func (suite *IntegrationTestKeeperSuite) TestOwner_ReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenID, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Owner(gocontext.Background(), &types.QueryOwnerRequest{
@@ -43,7 +43,7 @@ func (suite *IntegrationTestKeeperSuite) TestCollection_ReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Collection(gocontext.Background(), &types.QueryCollectionRequest{
@@ -53,13 +53,14 @@ func (suite *IntegrationTestKeeperSuite) TestCollection_ReturnsCorrect() {
 	suite.NoError(err)
 	suite.NotNil(response.Collection)
 	suite.Len(response.Collection.NFTs, 1)
-	suite.Equal(response.Collection.NFTs[0].Id, tokenID)
+	suite.Equal(response.Collection.NFTs[0].Id, tokenId)
 }
 
 func (suite *IntegrationTestKeeperSuite) TestDenom_ReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Denom(gocontext.Background(), &types.QueryDenomRequest{
@@ -75,7 +76,7 @@ func (suite *IntegrationTestKeeperSuite) TestDenoms_ReturnsCorrectCollection() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.Denoms(gocontext.Background(), &types.QueryDenomsRequest{})
@@ -90,32 +91,32 @@ func (suite *IntegrationTestKeeperSuite) TestNFT_ReturnsCorrect() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.NFT(gocontext.Background(), &types.QueryNFTRequest{
 		DenomId: denomID,
-		TokenId: tokenID,
+		TokenId: tokenId,
 	})
 
 	suite.NoError(err)
 	suite.NotEmpty(response.NFT)
-	suite.Equal(response.NFT.Id, tokenID)
+	suite.Equal(response.NFT.Id, tokenId)
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetApprovalsNFT_Correctly_ReturnsApprovals() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.MintNFT(suite.ctx, denomID, tokenID, tokenNm, tokenURI, tokenData, address2, address)
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
 	suite.NoError(err)
 
-	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenID, address, address2)
+	err = suite.keeper.AddApproval(suite.ctx, denomID, tokenId, address, address2)
 	suite.NoError(err)
 
 	response, err := suite.queryClient.GetApprovalsNFT(gocontext.Background(), &types.QueryApprovalsNFTRequest{
 		DenomId: denomID,
-		TokenId: tokenID,
+		TokenId: tokenId,
 	})
 
 	suite.NoError(err)

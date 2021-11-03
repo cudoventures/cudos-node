@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 
 	"cudos.org/cudos-node/x/nft/types"
@@ -28,6 +29,9 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	if msg.Id == "" || msg.Name == "" {
+		return &types.MsgIssueDenomResponse{}, sdkerrors.Wrapf(types.ErrInvalidDenom, "DenomId or name cannot be empty!")
+	}
 	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, sender); err != nil {
 		return nil, err
 	}
@@ -62,20 +66,23 @@ func (m msgServer) MintNFT(goCtx context.Context, msg *types.MsgMintNFT) (*types
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	if err := m.Keeper.MintNFT(ctx, msg.DenomId, msg.Id,
+
+	tokenId, err := m.Keeper.MintNFT(ctx,
+		msg.DenomId,
 		msg.Name,
 		msg.URI,
 		msg.Data,
 		sender,
 		recipient,
-	); err != nil {
+	)
+	if err != nil {
 		return nil, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventTypeMintNFT,
-			sdk.NewAttribute(types.AttributeKeyTokenID, msg.Id),
+			sdk.NewAttribute(types.AttributeKeyTokenID, tokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
 			sdk.NewAttribute(types.AttributeKeyTokenURI, msg.URI),
 			sdk.NewAttribute(types.AttributeKeyRecipient, msg.Recipient),

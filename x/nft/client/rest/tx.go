@@ -70,7 +70,6 @@ func mintNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 		// create the message
 		msg := types.NewMsgMintNFT(
-			req.ID,
 			req.DenomID,
 			req.Name,
 			req.URI,

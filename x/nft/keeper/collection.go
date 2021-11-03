@@ -17,10 +17,9 @@ import (
 // account address is invalid
 func (k Keeper) SetGenesisCollection(ctx sdk.Context, collection types.Collection) error {
 	for _, nft := range collection.NFTs {
-		if err := k.MintNFTUnverified(
+		if _, err := k.MintNFTUnverified(
 			ctx,
 			collection.Denom.Id,
-			nft.GetID(),
 			nft.GetName(),
 			nft.GetURI(),
 			nft.GetData(),
@@ -36,10 +35,9 @@ func (k Keeper) SetGenesisCollection(ctx sdk.Context, collection types.Collectio
 // address is invalid or any NFT's owner is not the creator of denomination
 func (k Keeper) SetCollection(ctx sdk.Context, collection types.Collection, sender sdk.AccAddress) error {
 	for _, nft := range collection.NFTs {
-		if err := k.MintNFT(
+		if _, err := k.MintNFT(
 			ctx,
 			collection.Denom.Id,
-			nft.GetID(),
 			nft.GetName(),
 			nft.GetURI(),
 			nft.GetData(),
@@ -135,4 +133,24 @@ func (k Keeper) decreaseSupply(ctx sdk.Context, denomID string) {
 
 	bz := types.MustMarshalSupply(k.cdc, supply)
 	store.Set(types.KeyCollection(denomID), bz)
+}
+
+// GetNftTotalCountForCollection returns the count of all minted nfts ( including burned )
+func (k Keeper) GetNftTotalCountForCollection(ctx sdk.Context, denomID string) uint64 {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.KeyCollectionTotalNfts(denomID))
+	if len(bz) == 0 {
+		return 0
+	}
+	return types.MustUnMarshalTotalNftCountForCollection(k.cdc, bz)
+}
+
+// IncrementTotalCounterForCollection increments the count of all minted nfts for a collection
+func (k Keeper) IncrementTotalCounterForCollection(ctx sdk.Context, denomID string) {
+	totalCount := k.GetNftTotalCountForCollection(ctx, denomID)
+	totalCount++
+
+	store := ctx.KVStore(k.storeKey)
+	bz := types.MustMarshallTotalCountForCollection(k.cdc, totalCount)
+	store.Set(types.KeyCollectionTotalNfts(denomID), bz)
 }
