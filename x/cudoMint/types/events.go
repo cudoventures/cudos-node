@@ -4,7 +4,6 @@ package types
 const (
 	EventTypeMint = ModuleName
 
-	AttributeMintedDenom      = "minted_denom"
-	AttributeMintedTokens      = "minted_tokens"
+	AttributeMintedDenom  = "minted_denom"
+	AttributeMintedTokens = "minted_tokens"
 )
-

@@ -2,9 +2,9 @@ package keeper
 
 import (
 	"context"
+	"cudos.org/cudos-node/x/admin/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"cudos.org/cudos-node/x/admin/types"
 )
 
 type msgServer struct {

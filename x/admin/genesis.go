@@ -1,9 +1,9 @@
 package admin
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"cudos.org/cudos-node/x/admin/keeper"
 	"cudos.org/cudos-node/x/admin/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

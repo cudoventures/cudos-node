@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 func TestCalculateMintedCoins(t *testing.T) {
 	blocksPerDay := sdk.NewInt(100)
 	minter := types.NewMinter(sdk.NewDec(0), sdk.NewDec(0))
@@ -18,7 +17,7 @@ func TestCalculateMintedCoins(t *testing.T) {
 		coins := calculateMintedCoins(minter, incr)
 		mintedCoins = mintedCoins.Add(coins)
 		minter.NormTimePassed = minter.NormTimePassed.Add(incr)
-		if i % 10000 == 0 {
+		if i%10000 == 0 {
 			blocksPerDay = blocksPerDay.Add(sdk.NewInt(24))
 			fmt.Println(fmt.Sprintf("%v: Printed %v, Got total %v mil, norm time passed %v, blocks per day %v", i, coins, mintedCoins, minter.NormTimePassed, blocksPerDay))
 		}

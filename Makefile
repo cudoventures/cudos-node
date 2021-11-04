@@ -6,7 +6,7 @@ COMMIT := $(shell git log -1 --format='%H')
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=cudos-node \
 	-X github.com/cosmos/cosmos-sdk/version.ServerName=cudos-noded \
 	-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
-	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) 
+	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(ldflags)'
 

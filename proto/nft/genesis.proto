@@ -1,0 +1,12 @@
+syntax = "proto3";
+package cudosnode.cudosnode.nft;
+
+import "gogoproto/gogo.proto";
+import "nft/nft.proto";
+
+option go_package = "cudos.org/cudos-node/x/nft/types";
+
+// GenesisState defines the NFT module's genesis state
+message GenesisState {
+    repeated Collection collections = 1 [ (gogoproto.nullable) = false ];
+}
