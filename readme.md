@@ -165,6 +165,7 @@ The module gives the user the ability to either write(via transaction) or read(v
 | [`approve`](#approve)                        |  Adds an approved operator that can transfer the [`NFT`](#NFT)                                                                                                |
 | [`revoke`](#revoke)                 | Removes an approved operated for the [`NFT`](#NFT)
 | [`approveAll`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
+| [`sendToEth`](#sendToEth)                 | Sends the token to the Ethereum network
 
 #### Query
 
@@ -336,6 +337,25 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
 
 ``` bash
 $ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+```
+
+### `sendToEth`
+
+> Sends the NFT from Cudos to Ethereum. Only the owner of the NFT can execute this operation.
+
+- arguments:
+  - `denom-id` `string` `The denomId of the  NFT` `required: true`
+  - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
+  - `eth-address` `string` `A valid ethereum address that will receive the token identifies the token. Must be all lowercase` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the eth transfer. Must be the owner of the NFT.` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft sendToEth <denom-id> <token-id> <eth-address> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### Query commands
