@@ -31,6 +31,8 @@ service Msg {
 
     // BurnNFT defines a method for burning a nft.
     rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
+
+    rpc SendToEthNft(MsgSendToEthNFT) returns (MsgSendToEthNftResponse);
 }
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
@@ -140,3 +142,16 @@ message MsgBurnNFT {
 
 // MsgBurnNFTResponse defines the Msg/BurnNFT response type.
 message MsgBurnNFTResponse {}
+
+// MsgBurnNFT defines an SDK message for burning a NFT.
+message MsgSendToEthNFT {
+    option (gogoproto.equal) = true;
+
+    string token_id = 1;
+    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string eth_address = 3;
+    string sender = 4;
+}
+
+// MsgBurnNFTResponse defines the Msg/BurnNFT response type.
+message MsgSendToEthNftResponse {}

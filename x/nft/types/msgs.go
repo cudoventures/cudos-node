@@ -411,3 +411,45 @@ func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
 	}
 	return []sdk.AccAddress{from}
 }
+
+// NewMsgSendToEthNFT is a constructor function for MsgSendToEth
+func NewMsgSendToEthNFT(denomID, tokenID, ethAddress, sender string) *MsgSendToEthNFT {
+	return &MsgSendToEthNFT{
+		DenomId:    denomID,
+		TokenId:    tokenID,
+		EthAddress: ethAddress,
+		Sender:     sender,
+	}
+}
+
+// Route Implements Msg
+func (msg MsgSendToEthNFT) Route() string { return RouterKey }
+
+// Type Implements Msg
+func (msg MsgSendToEthNFT) Type() string { return TypeMsgBurnNFT }
+
+// ValidateBasic Implements Msg.
+func (msg MsgSendToEthNFT) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+	if err := ValidateDenomID(msg.DenomId); err != nil {
+		return err
+	}
+	return ValidateTokenID(msg.TokenId)
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgSendToEthNFT) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgSendToEthNFT) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
+}

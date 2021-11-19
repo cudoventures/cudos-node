@@ -14,11 +14,12 @@ func RegisterHandlers(cliCtx client.Context, r *mux.Router, queryRoute string) {
 }
 
 const (
-	RestParamDenomID   = "denom-id"
-	RestParamDenomName = "denom-name"
-	RestParamTokenID   = "token-id"
-	RestParamOwner     = "owner"
-	RestParamMessage   = "msg"
+	RestParamDenomID        = "denom-id"
+	RestParamDenomName      = "denom-name"
+	RestParamEthAddressName = "eth-address"
+	RestParamTokenID        = "token-id"
+	RestParamOwner          = "owner"
+	RestParamMessage        = "msg"
 )
 
 type issueDenomReq struct {
@@ -72,4 +73,11 @@ type revokeNFTReq struct {
 type burnNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Owner   string       `json:"owner"`
+}
+
+type sendToEthReq struct {
+	BaseReq    rest.BaseReq `json:"base_req"`
+	DenomId    string       `json:"denomId"`
+	TokenId    string       `json:"tokenId"`
+	EthAddress string       `json:"ethAddress"`
 }

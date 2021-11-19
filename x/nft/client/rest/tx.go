@@ -29,6 +29,8 @@ func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/revoke", RestParamDenomID, RestParamTokenID, RestParamMessage), revokeNFTHandlerFn(cliCtx)).Methods("POST")
 	// Burn an NFT
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/burn", RestParamDenomID, RestParamTokenID), burnNFTHandlerFn(cliCtx)).Methods("POST")
+	// Send an NFT to ethereum
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/sendToEth", RestParamDenomID, RestParamTokenID, RestParamEthAddressName), sendToEthHandler(cliCtx)).Methods("POST")
 }
 
 func issueDenomHandlerFn(cliCtx client.Context) http.HandlerFunc {
@@ -231,6 +233,35 @@ func burnNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			req.Owner,
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
+		)
+		if err := msg.ValidateBasic(); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, msg)
+	}
+}
+
+func sendToEthHandler(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req sendToEthReq
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		vars := mux.Vars(r)
+
+		// create the message
+		msg := types.NewMsgSendToEthNFT(
+			vars[RestParamTokenID],
+			vars[RestParamDenomID],
+			vars[RestParamEthAddressName],
+			req.BaseReq.From,
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

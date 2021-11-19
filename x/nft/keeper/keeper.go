@@ -239,6 +239,10 @@ func (k Keeper) RevokeApproval(ctx sdk.Context, denomID, tokenID string, sender,
 		"Approve failed - could not revoke access for (%s)! Sender address (%s) is neither owner or approved for denomId (%s) / tokenId (%s)! ", addressToRevoke, sender, denomID, tokenID)
 }
 
+func (k Keeper) SendToEth(ctx sdk.Context, denomID, tokenID, ethAddress string, sender sdk.AccAddress) error {
+	panic("SendToEth not implemented")
+}
+
 // Todo: check if we need this to be private. For example, right now its defined in the keeper
 // if it is accessible from there - it means all the check are bypassed ??
 func revokeApprovalNFT(nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) error {

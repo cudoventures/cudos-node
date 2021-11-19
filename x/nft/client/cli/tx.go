@@ -36,6 +36,7 @@ func NewTxCmd() *cobra.Command {
 		GetCmdApproveNft(),
 		GetCmdApproveAllNFT(),
 		GetCmdRevokeNft(),
+		GetCmdSendToEthNft(),
 	)
 
 	return txCmd
@@ -423,6 +424,46 @@ func GetCmdBurnNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				args[1],
 				args[0],
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdSendToEthNft is the CLI command for sending a SendToEth transaction
+func GetCmdSendToEthNft() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:  "sendToEth [denom-id] [token-id] [eth-address]",
+		Long: "Sends an NFT to Ethereum through a bridge.",
+		Example: fmt.Sprintf(
+			"$ %s tx nft sendToEth <denom-id> <token-id> <eth-address> "+
+				"--from=<key-name> "+
+				"--chain-id=<chain-id> "+
+				"--fees=<fee>",
+			version.AppName,
+		),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			denomId := args[0]
+			tokenId := args[1]
+			ethAddress := args[2]
+
+			msg := types.NewMsgSendToEthNFT(
+				denomId,
+				tokenId,
+				ethAddress,
+				clientCtx.GetFromAddress().String(),
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

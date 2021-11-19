@@ -305,3 +305,32 @@ func (m msgServer) BurnNFT(goCtx context.Context, msg *types.MsgBurnNFT) (*types
 
 	return &types.MsgBurnNFTResponse{}, nil
 }
+
+func (m msgServer) SendToEthNft(goCtx context.Context, msg *types.MsgSendToEthNFT) (*types.MsgSendToEthNftResponse, error) {
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	if err := m.Keeper.SendToEth(ctx, msg.DenomId, msg.TokenId, msg.EthAddress, sender); err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventTypeSendToETHNft,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
+			sdk.NewAttribute(types.AttributeKeyEthAddress, msg.EthAddress),
+			sdk.NewAttribute(types.AttributeKeyOwner, msg.Sender),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
+		),
+	})
+
+	return &types.MsgSendToEthNftResponse{}, nil
+}
