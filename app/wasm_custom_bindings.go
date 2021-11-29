@@ -47,22 +47,22 @@ func encodeNftMessage() wasmKeeper.CustomEncoder {
 		}
 
 		switch {
-		case nftCustomMsg.IssueDenomMsg != nil:
+		case nftCustomMsg.IssueDenom != nil:
 			issueDenomMsg := nftTypes.MsgIssueDenom{
-				Id:     nftCustomMsg.IssueDenomMsg.Id,
-				Name:   nftCustomMsg.IssueDenomMsg.Name,
-				Schema: nftCustomMsg.IssueDenomMsg.Schema,
-				Sender: nftCustomMsg.IssueDenomMsg.Sender,
+				Id:     nftCustomMsg.IssueDenom.Id,
+				Name:   nftCustomMsg.IssueDenom.Name,
+				Schema: nftCustomMsg.IssueDenom.Schema,
+				Sender: nftCustomMsg.IssueDenom.Sender,
 			}
 			return []sdk.Msg{&issueDenomMsg}, nil
-		case nftCustomMsg.MintNftMsg != nil:
+		case nftCustomMsg.MintNft != nil:
 			mintNftMsg := nftTypes.MsgMintNFT{
-				DenomId:   nftCustomMsg.MintNftMsg.DenomId,
-				Name:      nftCustomMsg.MintNftMsg.Name,
-				URI:       nftCustomMsg.MintNftMsg.URI,
-				Data:      nftCustomMsg.MintNftMsg.Data,
-				Sender:    nftCustomMsg.MintNftMsg.Sender,
-				Recipient: nftCustomMsg.MintNftMsg.Recipient,
+				DenomId:   nftCustomMsg.MintNft.DenomId,
+				Name:      nftCustomMsg.MintNft.Name,
+				URI:       nftCustomMsg.MintNft.URI,
+				Data:      nftCustomMsg.MintNft.Data,
+				Sender:    nftCustomMsg.MintNft.Sender,
+				Recipient: nftCustomMsg.MintNft.Recipient,
 			}
 			return []sdk.Msg{&mintNftMsg}, nil
 		default:
@@ -95,14 +95,14 @@ func performCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 }
 
 type nftCustomMsg struct {
-	IssueDenomMsg *IssueDenom `json:"issueDenomMsg,omitempty"`
-	MintNftMsg    *MintNft    `json:"mintNftMsg,omitempty"`
+	IssueDenom *Denom   `json:"issue_denom,omitempty"`
+	MintNft    *MintNft `json:"mint_nft,omitempty"`
 }
 
 type nftCustomQuery struct {
 	Ping        *struct{}   `json:"ping,omitempty"`
 	Capitalized *Text       `json:"capitalized,omitempty"`
-	QueryDenom  *QueryDenom `json:"querydenom,omitempty"`
+	QueryDenom  *QueryDenom `json:"queryDenom,omitempty"`
 }
 
 type Text struct {
@@ -114,7 +114,7 @@ type customQueryResponse struct {
 	Msg string `json:"msg"`
 }
 
-type IssueDenom struct {
+type Denom struct {
 	Id     string `json:"id"`
 	Name   string `json:"name"`
 	Schema string `json:"schema"`
