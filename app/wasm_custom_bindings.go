@@ -80,45 +80,56 @@ func performCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 		}
 
 		switch {
-		case custom.QueryDenom != nil:
-			msg := nftTypes.QueryDenomRequest{
-				DenomId: custom.QueryDenom.DenomId,
-			}
-			denom, err := keeper.GetDenom(ctx, msg.DenomId)
+		// TODO: Discuss with Megi about the return result for a query
+		// - should we a shared infrastructure or define new response specifacally for custom runtime call ?
+		// like the below two examples
+		case custom.QueryDenomById != nil:
+			denom, err := keeper.GetDenom(ctx, custom.QueryDenomById.DenomId)
 			if err != nil {
 				return nil, err
 			}
-			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
+			result, err := json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
+			return result, err
+		case custom.QueryDenomByIdTest != nil:
+			denom, err := keeper.GetDenom(ctx, custom.QueryDenomByIdTest.DenomId)
+			if err != nil {
+				return nil, err
+			}
+			result, err := json.Marshal(QueryDenomResponseTest{
+				Id:      denom.Id,
+				Name:    denom.Name,
+				Schema:  denom.Schema,
+				Creator: denom.Creator,
+			})
+			return result, err
 		}
+
 		return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Unknown Custom query variant")
 	}
 }
 
 type nftCustomMsg struct {
-	IssueDenom *Denom   `json:"issue_denom,omitempty"`
-	MintNft    *MintNft `json:"mint_nft,omitempty"`
+	IssueDenom *IssueDenomRequest `json:"issue_denom,omitempty"`
+	MintNft    *MintNft           `json:"mint_nft,omitempty"`
 }
 
 type nftCustomQuery struct {
-	Ping        *struct{}   `json:"ping,omitempty"`
-	Capitalized *Text       `json:"capitalized,omitempty"`
-	QueryDenom  *QueryDenom `json:"queryDenom,omitempty"`
+	QueryDenomById     *QueryDenomById `json:"query_denom_by_id,omitempty"`
+	QueryDenomByIdTest *QueryDenomById `json:"query_denom_by_id_test,omitempty"`
 }
 
-type Text struct {
-	Text string `json:"text"`
-}
-
-// this is from the go code back to the contract (capitalized or ping)
-type customQueryResponse struct {
-	Msg string `json:"msg"`
-}
-
-type Denom struct {
+type IssueDenomRequest struct {
 	Id     string `json:"id"`
 	Name   string `json:"name"`
-	Schema string `json:"schema"`
+	Schema string `json:"schema,omitempty"`
 	Sender string `json:"sender"`
+}
+
+type QueryDenomResponseTest struct {
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	Schema  string `json:"schema"`
+	Creator string `json:"creator"`
 }
 
 type MintNft struct {
@@ -130,6 +141,6 @@ type MintNft struct {
 	Recipient string `json:"recipient"`
 }
 
-type QueryDenom struct {
-	DenomId string `json:"denomId"`
+type QueryDenomById struct {
+	DenomId string `json:"denom_id"`
 }
