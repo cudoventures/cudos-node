@@ -87,6 +87,7 @@ func GetCmdQuerySupply() *cobra.Command {
 }
 
 // GetCmdQueryOwner queries all the NFTs owned by an account
+// todo: change the name of this to something like QueryAllNFTsOfOwner..
 func GetCmdQueryOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "owner [address]",
@@ -269,6 +270,7 @@ func GetCmdQueryDenomByName() *cobra.Command {
 }
 
 // GetCmdQueryNFT queries a single NFTs from a collection
+// todo: rename this to QueryNFT in the Use:
 func GetCmdQueryNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "token [denom-id] [token-id]",

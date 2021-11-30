@@ -55,16 +55,64 @@ func encodeNftMessage() wasmKeeper.CustomEncoder {
 				Sender: nftCustomMsg.IssueDenom.Sender,
 			}
 			return []sdk.Msg{&issueDenomMsg}, nil
-		case nftCustomMsg.MintNft != nil:
+		case nftCustomMsg.MintNFT != nil:
 			mintNftMsg := nftTypes.MsgMintNFT{
-				DenomId:   nftCustomMsg.MintNft.DenomId,
-				Name:      nftCustomMsg.MintNft.Name,
-				URI:       nftCustomMsg.MintNft.URI,
-				Data:      nftCustomMsg.MintNft.Data,
-				Sender:    nftCustomMsg.MintNft.Sender,
-				Recipient: nftCustomMsg.MintNft.Recipient,
+				DenomId:   nftCustomMsg.MintNFT.DenomId,
+				Name:      nftCustomMsg.MintNFT.Name,
+				URI:       nftCustomMsg.MintNFT.URI,
+				Data:      nftCustomMsg.MintNFT.Data,
+				Sender:    nftCustomMsg.MintNFT.Sender,
+				Recipient: nftCustomMsg.MintNFT.Recipient,
 			}
 			return []sdk.Msg{&mintNftMsg}, nil
+		case nftCustomMsg.EditNFT != nil:
+			editNftMsg := nftTypes.MsgEditNFT{
+				DenomId: nftCustomMsg.EditNFT.DenomId,
+				Name:    nftCustomMsg.EditNFT.Name,
+				URI:     nftCustomMsg.EditNFT.URI,
+				Data:    nftCustomMsg.EditNFT.Data,
+				Sender:  nftCustomMsg.EditNFT.Sender,
+			}
+			return []sdk.Msg{&editNftMsg}, nil
+		case nftCustomMsg.TransferNFT != nil:
+			transferNftMsg := nftTypes.MsgTransferNft{
+				TokenId: nftCustomMsg.TransferNFT.TokenId,
+				DenomId: nftCustomMsg.TransferNFT.DenomId,
+				From:    nftCustomMsg.TransferNFT.From,
+				To:      nftCustomMsg.TransferNFT.To,
+				Sender:  nftCustomMsg.TransferNFT.Sender,
+			}
+			return []sdk.Msg{&transferNftMsg}, nil
+		case nftCustomMsg.BurnNft != nil:
+			burnNftMsg := nftTypes.MsgBurnNFT{
+				Id:      nftCustomMsg.BurnNft.TokenId,
+				DenomId: nftCustomMsg.BurnNft.DenomId,
+				Sender:  nftCustomMsg.BurnNft.Sender,
+			}
+			return []sdk.Msg{&burnNftMsg}, nil
+		case nftCustomMsg.ApproveNft != nil:
+			approveNftMsg := nftTypes.MsgApproveNft{
+				Id:              nftCustomMsg.ApproveNft.TokenId,
+				DenomId:         nftCustomMsg.ApproveNft.DenomId,
+				Sender:          nftCustomMsg.ApproveNft.Sender,
+				ApprovedAddress: nftCustomMsg.ApproveNft.ApprovedAddress,
+			}
+			return []sdk.Msg{&approveNftMsg}, nil
+		case nftCustomMsg.ApproveAll != nil:
+			approveNftMsg := nftTypes.MsgApproveAllNft{
+				Operator: nftCustomMsg.ApproveAll.ApprovedOperator,
+				Sender:   nftCustomMsg.ApproveAll.Sender,
+				Approved: nftCustomMsg.ApproveAll.Approved,
+			}
+			return []sdk.Msg{&approveNftMsg}, nil
+		case nftCustomMsg.RevokeApproval != nil:
+			approveNftMsg := nftTypes.MsgRevokeNft{
+				AddressToRevoke: nftCustomMsg.RevokeApproval.AddressToRevoke,
+				DenomId:         nftCustomMsg.RevokeApproval.DenomId,
+				TokenId:         nftCustomMsg.RevokeApproval.TokenId,
+				Sender:          nftCustomMsg.RevokeApproval.Sender,
+			}
+			return []sdk.Msg{&approveNftMsg}, nil
 		default:
 			return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Unknown custom nft message variant")
 		}
@@ -80,42 +128,97 @@ func performCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 		}
 
 		switch {
-		// TODO: Discuss with Megi about the return result for a query
-		// - should we a shared infrastructure or define new response specifacally for custom runtime call ?
-		// like the below two examples
 		case custom.QueryDenomById != nil:
 			denom, err := keeper.GetDenom(ctx, custom.QueryDenomById.DenomId)
 			if err != nil {
 				return nil, err
 			}
-			result, err := json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
-			return result, err
-		case custom.QueryDenomByIdTest != nil:
-			denom, err := keeper.GetDenom(ctx, custom.QueryDenomByIdTest.DenomId)
+			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
+		case custom.QueryDenomByName != nil:
+			denom, err := keeper.GetDenomByName(ctx, custom.QueryDenomByName.DenomName)
 			if err != nil {
 				return nil, err
 			}
-			result, err := json.Marshal(QueryDenomResponseTest{
-				Id:      denom.Id,
-				Name:    denom.Name,
-				Schema:  denom.Schema,
-				Creator: denom.Creator,
-			})
-			return result, err
-		}
+			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
+		case custom.QueryDenoms != nil:
+			denoms := keeper.GetDenoms(ctx)
+			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms})
+		case custom.QueryCollection != nil:
+			collection, err := keeper.GetCollection(ctx, custom.QueryCollection.DenomId)
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(nftTypes.QueryCollectionResponse{Collection: &collection})
+		case custom.QuerySupply != nil:
+			totalSupply := keeper.GetTotalSupply(ctx, custom.QueryCollection.DenomId)
+			return json.Marshal(nftTypes.QuerySupplyResponse{Amount: totalSupply})
+		case custom.QueryOwner != nil:
+			if len(custom.QueryOwner.Address) > 0 {
+				ownerAddress, err := sdk.AccAddressFromBech32(custom.QueryOwner.Address)
+				if err != nil {
+					return nil, err
+				}
+				owner, err := keeper.GetOwner(ctx, ownerAddress, custom.QueryOwner.DenomId)
+				if err != nil {
+					return nil, err
+				}
+				return json.Marshal(nftTypes.QueryOwnerResponse{Owner: &owner})
+			}
+			return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Owner address is empty!")
+		case custom.QueryToken != nil:
+			nft, err := keeper.GetBaseNFT(ctx, custom.QueryToken.DenomId, custom.QueryToken.TokenId)
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(nftTypes.QueryNFTResponse{NFT: &nft})
+		case custom.QueryApprovals != nil:
+			approvedAddressesForNft, err := keeper.GetNFTApprovedAddresses(ctx, custom.QueryApprovals.DenomId, custom.QueryApprovals.TokenId)
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(nftTypes.QueryApprovalsNFTResponse{ApprovedAddresses: approvedAddressesForNft})
+		case custom.QueryApprovedForAll != nil:
+			if len(custom.QueryApprovedForAll.OwnerAddress) > 0 && len(custom.QueryApprovedForAll.OperatorAddress) > 0 {
+				ownerAddress, err := sdk.AccAddressFromBech32(custom.QueryApprovedForAll.OwnerAddress)
+				if err != nil {
+					return nil, err
+				}
 
+				operatorAddress, err := sdk.AccAddressFromBech32(custom.QueryApprovedForAll.OperatorAddress)
+				if err != nil {
+					return nil, err
+				}
+
+				isApproved := keeper.IsApprovedOperator(ctx, ownerAddress, operatorAddress)
+				return json.Marshal(nftTypes.QueryApprovalsIsApprovedForAllResponse{IsApproved: isApproved})
+			}
+
+		}
 		return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Unknown Custom query variant")
 	}
 }
 
 type nftCustomMsg struct {
-	IssueDenom *IssueDenomRequest `json:"issue_denom,omitempty"`
-	MintNft    *MintNft           `json:"mint_nft,omitempty"`
+	IssueDenom     *IssueDenomRequest     `json:"issue_denom,omitempty"`
+	MintNFT        *MintNftRequest        `json:"mint_nft,omitempty"`
+	EditNFT        *EditNftRequest        `json:"edit_nft,omitempty"`
+	TransferNFT    *TransferNftRequest    `json:"transfer_nft,omitempty"`
+	BurnNft        *BurnNftRequest        `json:"burn_nft,omitempty"`
+	ApproveNft     *ApproveNftRequest     `json:"approve_nft,omitempty"`
+	ApproveAll     *ApproveAllRequest     `json:"approve_all,omitempty"`
+	RevokeApproval *RevokeApprovalRequest `json:"revoke_approval,omitempty"`
 }
 
 type nftCustomQuery struct {
-	QueryDenomById     *QueryDenomById `json:"query_denom_by_id,omitempty"`
-	QueryDenomByIdTest *QueryDenomById `json:"query_denom_by_id_test,omitempty"`
+	QueryDenomById      *QueryDenomById      `json:"query_denom_by_id,omitempty"`
+	QueryDenomByName    *QueryDenomByName    `json:"query_denom_by_name,omitempty"`
+	QueryDenoms         *QueryAllDenoms      `json:"query_denoms,omitempty"`
+	QueryCollection     *QueryCollection     `json:"query_collection,omitempty"`
+	QuerySupply         *QuerySupply         `json:"query_supply,omitempty"`
+	QueryOwner          *QueryOwner          `json:"query_owner,omitempty"`
+	QueryToken          *QueryToken          `json:"query_token,omitempty"`
+	QueryApprovals      *QueryApprovals      `json:"query_approvals,omitempty"`
+	QueryApprovedForAll *QueryApprovedForAll `json:"query_approved_for_all,omitempty"`
 }
 
 type IssueDenomRequest struct {
@@ -125,14 +228,7 @@ type IssueDenomRequest struct {
 	Sender string `json:"sender"`
 }
 
-type QueryDenomResponseTest struct {
-	Id      string `json:"id"`
-	Name    string `json:"name"`
-	Schema  string `json:"schema"`
-	Creator string `json:"creator"`
-}
-
-type MintNft struct {
+type MintNftRequest struct {
 	DenomId   string `json:"denomId"`
 	Name      string `json:"Name"`
 	URI       string `json:"uri"`
@@ -141,6 +237,83 @@ type MintNft struct {
 	Recipient string `json:"recipient"`
 }
 
+type EditNftRequest struct {
+	DenomId string `json:"denomId"`
+	Name    string `json:"Name"`
+	URI     string `json:"uri"`
+	Data    string `json:"data"`
+	Sender  string `json:"sender"`
+}
+
+type TransferNftRequest struct {
+	TokenId string `json:"token_id"`
+	DenomId string `json:"denom_id"`
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Sender  string `json:"sender"`
+}
+
+type BurnNftRequest struct {
+	DenomId string `json:"denom_id"`
+	TokenId string `json:"token_id"`
+	Sender  string `json:"sender"`
+}
+
+type ApproveNftRequest struct {
+	TokenId         string `json:"token_id"`
+	DenomId         string `json:"denom_id"`
+	ApprovedAddress string `json:"approved_address"`
+	Sender          string `json:"sender"`
+}
+
+type ApproveAllRequest struct {
+	ApprovedOperator string `json:"approved_operator"`
+	Approved         bool   `json:"approved"`
+	Sender           string `json:"sender"`
+}
+
+type RevokeApprovalRequest struct {
+	AddressToRevoke string `json:"address_to_revoke"`
+	DenomId         string `json:"denom_id"`
+	TokenId         string `json:"token_id"`
+	Sender          string `json:"sender"`
+}
+
 type QueryDenomById struct {
 	DenomId string `json:"denom_id"`
+}
+
+type QueryDenomByName struct {
+	DenomName string `json:"denom_name"`
+}
+
+type QueryAllDenoms struct {
+}
+
+type QueryCollection struct {
+	DenomId string `json:"denom_id"`
+}
+
+type QuerySupply struct {
+	DenomId string `json:"denom_id"`
+}
+
+type QueryOwner struct {
+	Address string `json:"address"`
+	DenomId string `json:"denom_id"`
+}
+
+type QueryToken struct {
+	DenomId string `json:"denom_id"`
+	TokenId string `json:"token_id"`
+}
+
+type QueryApprovals struct {
+	DenomId string `json:"denom_id"`
+	TokenId string `json:"token_id"`
+}
+
+type QueryApprovedForAll struct {
+	OwnerAddress    string `json:"owner_address"`
+	OperatorAddress string `json:"operator_address"`
 }

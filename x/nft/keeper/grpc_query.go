@@ -153,17 +153,11 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 func (k Keeper) GetApprovalsNFT(c context.Context, request *types.QueryApprovalsNFTRequest) (*types.QueryApprovalsNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	nft, err := k.GetBaseNFT(ctx, request.DenomId, request.TokenId)
+	approvedAddresses, err := k.GetNFTApprovedAddresses(ctx, request.DenomId, request.TokenId)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, err
 	}
-
-	if nft.ApprovedAddresses == nil {
-		return &types.QueryApprovalsNFTResponse{},
-			sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved addresses for NFT %s from collection %s", request.TokenId, request.DenomId)
-	}
-
-	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: nft.ApprovedAddresses}, nil
+	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: approvedAddresses}, nil
 }
 
 func (k Keeper) QueryApprovalsIsApprovedForAll(c context.Context, request *types.QueryApprovalsIsApprovedForAllRequest) (*types.QueryApprovalsIsApprovedForAllResponse, error) {

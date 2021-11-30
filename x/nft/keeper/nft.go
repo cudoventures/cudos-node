@@ -105,3 +105,18 @@ func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft exported.NFT) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyNFT(denomID, nft.GetID()))
 }
+
+// GetNFTApprovedAddresses returns the approved addresses for the nft
+func (k Keeper) GetNFTApprovedAddresses(ctx sdk.Context, denomID, tokenID string) (approvedAddresses map[string]bool, err error) {
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", tokenID, denomID)
+	}
+
+	if nft.ApprovedAddresses == nil {
+		return nil,
+			sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved addresses for NFT %s from collection %s", tokenID, denomID)
+	}
+
+	return nft.ApprovedAddresses, nil
+}
