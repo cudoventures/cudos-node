@@ -71,11 +71,11 @@ func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
 
 // NewMsgTransferNft is a constructor function for MsgSetName
 func NewMsgTransferNft(
-	tokenID, denomID, from, to, msgSender string,
+	denomID, tokenID, from, to, msgSender string,
 ) *MsgTransferNft {
 	return &MsgTransferNft{
-		TokenId: tokenID,
 		DenomId: denomID,
+		TokenId: tokenID,
 		From:    from,
 		To:      to,
 		Sender:  msgSender,

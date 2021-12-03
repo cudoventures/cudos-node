@@ -244,8 +244,8 @@ func GetCmdTransferNft() *cobra.Command {
 			msgSender := clientCtx.GetFromAddress().String()
 
 			msg := types.NewMsgTransferNft(
-				tokenId,
 				denomId,
+				tokenId,
 				from,
 				to,
 				msgSender,

@@ -147,7 +147,7 @@ message QueryApprovalsNFTRequest {
 
 // QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
 message QueryApprovalsNFTResponse {
-    map<string, bool> ApprovedAddresses = 1 [ (gogoproto.customname) = "ApprovedAddresses" ];
+    map<string, bool> ApprovedAddresses = 1 [ (gogoproto.customname) = "ApprovedAddresses", (gogoproto.jsontag) = "approved_addresses" ];
 }
 
 // QueryApprovalsIsApprovedForAllRequest is the request type for the Query/NFT RPC method
@@ -158,6 +158,6 @@ message QueryApprovalsIsApprovedForAllRequest {
 
 // QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
 message QueryApprovalsIsApprovedForAllResponse {
-    bool isApproved = 1;
+    bool isApproved = 1 [ (gogoproto.jsontag) = "is_approved" ];
 }
 

@@ -133,8 +133,8 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		vars := mux.Vars(r)
 		// create the message
 		msg := types.NewMsgTransferNft(
-			vars[RestParamTokenID],
 			vars[RestParamDenomID],
+			vars[RestParamTokenID],
 			req.From,
 			req.To,
 			req.BaseReq.From)

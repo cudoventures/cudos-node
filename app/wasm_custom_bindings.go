@@ -67,6 +67,7 @@ func encodeNftMessage() wasmKeeper.CustomEncoder {
 			return []sdk.Msg{&mintNftMsg}, nil
 		case nftCustomMsg.EditNFT != nil:
 			editNftMsg := nftTypes.MsgEditNFT{
+				Id:      nftCustomMsg.EditNFT.TokenId,
 				DenomId: nftCustomMsg.EditNFT.DenomId,
 				Name:    nftCustomMsg.EditNFT.Name,
 				URI:     nftCustomMsg.EditNFT.URI,
@@ -76,8 +77,8 @@ func encodeNftMessage() wasmKeeper.CustomEncoder {
 			return []sdk.Msg{&editNftMsg}, nil
 		case nftCustomMsg.TransferNFT != nil:
 			transferNftMsg := nftTypes.MsgTransferNft{
-				TokenId: nftCustomMsg.TransferNFT.TokenId,
 				DenomId: nftCustomMsg.TransferNFT.DenomId,
+				TokenId: nftCustomMsg.TransferNFT.TokenId,
 				From:    nftCustomMsg.TransferNFT.From,
 				To:      nftCustomMsg.TransferNFT.To,
 				Sender:  nftCustomMsg.TransferNFT.Sender,
@@ -142,7 +143,7 @@ func performCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
 		case custom.QueryDenoms != nil:
 			denoms := keeper.GetDenoms(ctx)
-			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms})
+			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms}.Pagination.NextKey)
 		case custom.QueryCollection != nil:
 			collection, err := keeper.GetCollection(ctx, custom.QueryCollection.DenomId)
 			if err != nil {
@@ -224,13 +225,13 @@ type nftCustomQuery struct {
 type IssueDenomRequest struct {
 	Id     string `json:"id"`
 	Name   string `json:"name"`
-	Schema string `json:"schema,omitempty"`
+	Schema string `json:"schema"`
 	Sender string `json:"sender"`
 }
 
 type MintNftRequest struct {
-	DenomId   string `json:"denomId"`
-	Name      string `json:"Name"`
+	DenomId   string `json:"denom_id"`
+	Name      string `json:"name"`
 	URI       string `json:"uri"`
 	Data      string `json:"data"`
 	Sender    string `json:"sender"`
@@ -238,8 +239,9 @@ type MintNftRequest struct {
 }
 
 type EditNftRequest struct {
-	DenomId string `json:"denomId"`
-	Name    string `json:"Name"`
+	DenomId string `json:"denom_id"`
+	TokenId string `json:"token_id"`
+	Name    string `json:"name"`
 	URI     string `json:"uri"`
 	Data    string `json:"data"`
 	Sender  string `json:"sender"`
