@@ -9,7 +9,7 @@ replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20
 require (
 	github.com/CosmWasm/wasmd v0.17.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
-	github.com/cosmos/cosmos-sdk v0.44.4
+	github.com/cosmos/cosmos-sdk v0.44.5
 	github.com/cosmos/ibc-go v1.2.3
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/glog v1.0.0 // indirect
