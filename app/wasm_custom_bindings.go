@@ -47,73 +47,73 @@ func encodeNftMessage() wasmKeeper.CustomEncoder {
 		}
 
 		switch {
-		case nftCustomMsg.IssueDenom != nil:
-			issueDenomMsg := nftTypes.MsgIssueDenom{
-				Id:     nftCustomMsg.IssueDenom.Id,
-				Name:   nftCustomMsg.IssueDenom.Name,
-				Schema: nftCustomMsg.IssueDenom.Schema,
-				Sender: nftCustomMsg.IssueDenom.Sender,
-			}
-			return []sdk.Msg{&issueDenomMsg}, nil
-		case nftCustomMsg.MintNFT != nil:
-			mintNftMsg := nftTypes.MsgMintNFT{
-				DenomId:   nftCustomMsg.MintNFT.DenomId,
-				Name:      nftCustomMsg.MintNFT.Name,
-				URI:       nftCustomMsg.MintNFT.URI,
-				Data:      nftCustomMsg.MintNFT.Data,
-				Sender:    nftCustomMsg.MintNFT.Sender,
-				Recipient: nftCustomMsg.MintNFT.Recipient,
-			}
-			return []sdk.Msg{&mintNftMsg}, nil
-		case nftCustomMsg.EditNFT != nil:
-			editNftMsg := nftTypes.MsgEditNFT{
-				Id:      nftCustomMsg.EditNFT.TokenId,
-				DenomId: nftCustomMsg.EditNFT.DenomId,
-				Name:    nftCustomMsg.EditNFT.Name,
-				URI:     nftCustomMsg.EditNFT.URI,
-				Data:    nftCustomMsg.EditNFT.Data,
-				Sender:  nftCustomMsg.EditNFT.Sender,
-			}
-			return []sdk.Msg{&editNftMsg}, nil
-		case nftCustomMsg.TransferNFT != nil:
-			transferNftMsg := nftTypes.MsgTransferNft{
-				DenomId: nftCustomMsg.TransferNFT.DenomId,
-				TokenId: nftCustomMsg.TransferNFT.TokenId,
-				From:    nftCustomMsg.TransferNFT.From,
-				To:      nftCustomMsg.TransferNFT.To,
-				Sender:  nftCustomMsg.TransferNFT.Sender,
-			}
-			return []sdk.Msg{&transferNftMsg}, nil
-		case nftCustomMsg.BurnNft != nil:
-			burnNftMsg := nftTypes.MsgBurnNFT{
-				Id:      nftCustomMsg.BurnNft.TokenId,
-				DenomId: nftCustomMsg.BurnNft.DenomId,
-				Sender:  nftCustomMsg.BurnNft.Sender,
-			}
-			return []sdk.Msg{&burnNftMsg}, nil
-		case nftCustomMsg.ApproveNft != nil:
-			approveNftMsg := nftTypes.MsgApproveNft{
-				Id:              nftCustomMsg.ApproveNft.TokenId,
-				DenomId:         nftCustomMsg.ApproveNft.DenomId,
-				Sender:          nftCustomMsg.ApproveNft.Sender,
-				ApprovedAddress: nftCustomMsg.ApproveNft.ApprovedAddress,
-			}
-			return []sdk.Msg{&approveNftMsg}, nil
-		case nftCustomMsg.ApproveAll != nil:
-			approveNftMsg := nftTypes.MsgApproveAllNft{
-				Operator: nftCustomMsg.ApproveAll.ApprovedOperator,
-				Sender:   nftCustomMsg.ApproveAll.Sender,
-				Approved: nftCustomMsg.ApproveAll.Approved,
-			}
-			return []sdk.Msg{&approveNftMsg}, nil
-		case nftCustomMsg.RevokeApproval != nil:
-			approveNftMsg := nftTypes.MsgRevokeNft{
-				AddressToRevoke: nftCustomMsg.RevokeApproval.AddressToRevoke,
-				DenomId:         nftCustomMsg.RevokeApproval.DenomId,
-				TokenId:         nftCustomMsg.RevokeApproval.TokenId,
-				Sender:          nftCustomMsg.RevokeApproval.Sender,
-			}
-			return []sdk.Msg{&approveNftMsg}, nil
+		case nftCustomMsg.IssueDenomMsg != nil:
+			issueDenomMsg := nftTypes.NewMsgIssueDenom(
+				nftCustomMsg.IssueDenomMsg.Id,
+				nftCustomMsg.IssueDenomMsg.Name,
+				nftCustomMsg.IssueDenomMsg.Schema,
+				nftCustomMsg.IssueDenomMsg.Sender,
+				nftCustomMsg.IssueDenomMsg.ContractAddressSigner)
+			return []sdk.Msg{issueDenomMsg}, nil
+		case nftCustomMsg.MintNftMsg != nil:
+			mintNftMsg := nftTypes.NewMsgMintNFT(
+				nftCustomMsg.MintNftMsg.DenomId,
+				nftCustomMsg.MintNftMsg.Name,
+				nftCustomMsg.MintNftMsg.URI,
+				nftCustomMsg.MintNftMsg.Data,
+				nftCustomMsg.MintNftMsg.Sender,
+				nftCustomMsg.MintNftMsg.Recipient,
+				nftCustomMsg.MintNftMsg.ContractAddressSigner)
+			return []sdk.Msg{mintNftMsg}, nil
+		case nftCustomMsg.EditNftMsg != nil:
+			editNftMsg := nftTypes.NewMsgEditNFT(
+				nftCustomMsg.EditNftMsg.TokenId,
+				nftCustomMsg.EditNftMsg.DenomId,
+				nftCustomMsg.EditNftMsg.Name,
+				nftCustomMsg.EditNftMsg.URI,
+				nftCustomMsg.EditNftMsg.Data,
+				nftCustomMsg.EditNftMsg.Sender,
+				nftCustomMsg.EditNftMsg.ContractAddressSigner)
+			return []sdk.Msg{editNftMsg}, nil
+		case nftCustomMsg.TransferNftMsg != nil:
+			transferNftMsg := nftTypes.NewMsgTransferNft(
+				nftCustomMsg.TransferNftMsg.DenomId,
+				nftCustomMsg.TransferNftMsg.TokenId,
+				nftCustomMsg.TransferNftMsg.From,
+				nftCustomMsg.TransferNftMsg.To,
+				nftCustomMsg.TransferNftMsg.Sender,
+				nftCustomMsg.TransferNftMsg.ContractAddressSigner)
+			return []sdk.Msg{transferNftMsg}, nil
+		case nftCustomMsg.BurnNftMsg != nil:
+			burnNftMsg := nftTypes.NewMsgBurnNFT(
+				nftCustomMsg.BurnNftMsg.Sender,
+				nftCustomMsg.BurnNftMsg.TokenId,
+				nftCustomMsg.BurnNftMsg.DenomId,
+				nftCustomMsg.BurnNftMsg.ContractAddressSigner)
+			return []sdk.Msg{burnNftMsg}, nil
+		case nftCustomMsg.ApproveNftMsg != nil:
+			approveNftMsg := nftTypes.NewMsgApproveNft(
+				nftCustomMsg.ApproveNftMsg.TokenId,
+				nftCustomMsg.ApproveNftMsg.DenomId,
+				nftCustomMsg.ApproveNftMsg.Sender,
+				nftCustomMsg.ApproveNftMsg.ApprovedAddress,
+				nftCustomMsg.ApproveNftMsg.ContractAddressSigner)
+			return []sdk.Msg{approveNftMsg}, nil
+		case nftCustomMsg.ApproveAllMsg != nil:
+			approveNftMsg := nftTypes.NewMsgApproveAllNft(
+				nftCustomMsg.ApproveAllMsg.ApprovedOperator,
+				nftCustomMsg.ApproveAllMsg.Sender,
+				nftCustomMsg.ApproveAllMsg.ContractAddressSigner,
+				nftCustomMsg.ApproveAllMsg.Approved)
+			return []sdk.Msg{approveNftMsg}, nil
+		case nftCustomMsg.RevokeApprovalMsg != nil:
+			approveNftMsg := nftTypes.NewMsgRevokeNft(
+				nftCustomMsg.RevokeApprovalMsg.AddressToRevoke,
+				nftCustomMsg.RevokeApprovalMsg.Sender,
+				nftCustomMsg.RevokeApprovalMsg.DenomId,
+				nftCustomMsg.RevokeApprovalMsg.TokenId,
+				nftCustomMsg.RevokeApprovalMsg.ContractAddressSigner)
+			return []sdk.Msg{approveNftMsg}, nil
 		default:
 			return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Unknown custom nft message variant")
 		}
@@ -200,14 +200,14 @@ func performCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 }
 
 type nftCustomMsg struct {
-	IssueDenom     *IssueDenomRequest     `json:"issue_denom,omitempty"`
-	MintNFT        *MintNftRequest        `json:"mint_nft,omitempty"`
-	EditNFT        *EditNftRequest        `json:"edit_nft,omitempty"`
-	TransferNFT    *TransferNftRequest    `json:"transfer_nft,omitempty"`
-	BurnNft        *BurnNftRequest        `json:"burn_nft,omitempty"`
-	ApproveNft     *ApproveNftRequest     `json:"approve_nft,omitempty"`
-	ApproveAll     *ApproveAllRequest     `json:"approve_all,omitempty"`
-	RevokeApproval *RevokeApprovalRequest `json:"revoke_approval,omitempty"`
+	IssueDenomMsg     *IssueDenomRequest     `json:"issue_denom_msg,omitempty"`
+	MintNftMsg        *MintNftRequest        `json:"mint_nft_msg,omitempty"`
+	EditNftMsg        *EditNftRequest        `json:"edit_nft_msg,omitempty"`
+	TransferNftMsg    *TransferNftRequest    `json:"transfer_nft_msg,omitempty"`
+	BurnNftMsg        *BurnNftRequest        `json:"burn_nft_msg,omitempty"`
+	ApproveNftMsg     *ApproveNftRequest     `json:"approve_nft_msg,omitempty"`
+	ApproveAllMsg     *ApproveAllRequest     `json:"approve_all_msg,omitempty"`
+	RevokeApprovalMsg *RevokeApprovalRequest `json:"revoke_approval_msg,omitempty"`
 }
 
 type nftCustomQuery struct {
@@ -223,62 +223,70 @@ type nftCustomQuery struct {
 }
 
 type IssueDenomRequest struct {
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	Schema string `json:"schema"`
-	Sender string `json:"sender"`
+	Id                    string `json:"id"`
+	Name                  string `json:"name"`
+	Schema                string `json:"schema"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type MintNftRequest struct {
-	DenomId   string `json:"denom_id"`
-	Name      string `json:"name"`
-	URI       string `json:"uri"`
-	Data      string `json:"data"`
-	Sender    string `json:"sender"`
-	Recipient string `json:"recipient"`
+	DenomId               string `json:"denom_id"`
+	Name                  string `json:"name"`
+	URI                   string `json:"uri"`
+	Data                  string `json:"data"`
+	Sender                string `json:"sender"`
+	Recipient             string `json:"recipient"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type EditNftRequest struct {
-	DenomId string `json:"denom_id"`
-	TokenId string `json:"token_id"`
-	Name    string `json:"name"`
-	URI     string `json:"uri"`
-	Data    string `json:"data"`
-	Sender  string `json:"sender"`
+	DenomId               string `json:"denom_id"`
+	TokenId               string `json:"token_id"`
+	Name                  string `json:"name"`
+	URI                   string `json:"uri"`
+	Data                  string `json:"data"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type TransferNftRequest struct {
-	TokenId string `json:"token_id"`
-	DenomId string `json:"denom_id"`
-	From    string `json:"from"`
-	To      string `json:"to"`
-	Sender  string `json:"sender"`
+	TokenId               string `json:"token_id"`
+	DenomId               string `json:"denom_id"`
+	From                  string `json:"from"`
+	To                    string `json:"to"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type BurnNftRequest struct {
-	DenomId string `json:"denom_id"`
-	TokenId string `json:"token_id"`
-	Sender  string `json:"sender"`
+	DenomId               string `json:"denom_id"`
+	TokenId               string `json:"token_id"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type ApproveNftRequest struct {
-	TokenId         string `json:"token_id"`
-	DenomId         string `json:"denom_id"`
-	ApprovedAddress string `json:"approved_address"`
-	Sender          string `json:"sender"`
+	TokenId               string `json:"token_id"`
+	DenomId               string `json:"denom_id"`
+	ApprovedAddress       string `json:"approved_address"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type ApproveAllRequest struct {
-	ApprovedOperator string `json:"approved_operator"`
-	Approved         bool   `json:"approved"`
-	Sender           string `json:"sender"`
+	ApprovedOperator      string `json:"approved_operator"`
+	Approved              bool   `json:"approved"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type RevokeApprovalRequest struct {
-	AddressToRevoke string `json:"address_to_revoke"`
-	DenomId         string `json:"denom_id"`
-	TokenId         string `json:"token_id"`
-	Sender          string `json:"sender"`
+	AddressToRevoke       string `json:"address_to_revoke"`
+	DenomId               string `json:"denom_id"`
+	TokenId               string `json:"token_id"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type QueryDenomById struct {

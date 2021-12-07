@@ -126,6 +126,7 @@ func SimulateMsgTransferNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 			ownerAddr.String(),
 			recipientAccount.Address.String(),
 			ownerAddr.String(),
+			"",
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)
@@ -185,6 +186,7 @@ func SimulateMsgEditNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			simtypes.RandStringOfLength(r, 45), // tokenURI
 			simtypes.RandStringOfLength(r, 10), // tokenData
 			ownerAddr.String(),
+			"",
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)
@@ -240,6 +242,7 @@ func SimulateMsgMintNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			simtypes.RandStringOfLength(r, 10), // tokenData
 			randomSender.Address.String(),      // sender
 			randomRecipient.Address.String(),   // recipient
+			"",
 		)
 
 		account := ak.GetAccount(ctx, randomSender.Address)
@@ -291,7 +294,7 @@ func SimulateMsgBurnNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeBurnNFT, err.Error()), nil, err
 		}
 
-		msg := types.NewMsgBurnNFT(ownerAddr.String(), nftID, denom)
+		msg := types.NewMsgBurnNFT(ownerAddr.String(), nftID, denom, "")
 
 		account := ak.GetAccount(ctx, ownerAddr)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -355,6 +358,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			denomId,
 			denomName,
 			"schema",
+			"",
 		)
 		account := ak.GetAccount(ctx, sender.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())

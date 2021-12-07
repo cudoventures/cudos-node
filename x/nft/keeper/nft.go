@@ -29,7 +29,7 @@ func (k Keeper) GetBaseNFT(ctx sdk.Context, denomID, tokenID string) (nft types.
 
 	bz := store.Get(types.KeyNFT(denomID, tokenID))
 	if bz == nil {
-		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: %s", denomID)
+		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: denomId: %s, tokenId: %s", denomID, tokenID)
 	}
 
 	var baseNFT types.BaseNFT

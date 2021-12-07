@@ -31,7 +31,6 @@ type issueDenomReq struct {
 
 type mintNFTReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`
-	Owner     string       `json:"owner"`
 	Recipient string       `json:"recipient"`
 	DenomID   string       `json:"denom_id"`
 	Name      string       `json:"name"`
@@ -41,7 +40,6 @@ type mintNFTReq struct {
 
 type editNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
-	Owner   string       `json:"owner"`
 	Name    string       `json:"name"`
 	URI     string       `json:"uri"`
 	Data    string       `json:"data"`
@@ -57,19 +55,22 @@ type transferNFTReq struct {
 }
 
 type approveNFTReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	Owner     string       `json:"owner"`
-	ToAddress string       `json:"recipient"`
-	Expires   string       `json:"expires"`
+	DenomId          string       `json:"denom_id"`
+	TokenId          string       `json:"token_id"`
+	AddressToApprove string       `json:"address_to_approve"`
+	BaseReq          rest.BaseReq `json:"base_req"`
+	ToAddress        string       `json:"recipient"`
 }
 
 type revokeNFTReq struct {
-	BaseReq   rest.BaseReq `json:"base_req"`
-	Owner     string       `json:"owner"`
-	Recipient string       `json:"recipient"`
+	BaseReq         rest.BaseReq `json:"base_req"`
+	AddressToRevoke string       `json:"address_to_revoke"`
+	DenomId         string       `json:"denom_id"`
+	TokenId         string       `json:"token_id"`
 }
 
 type burnNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
-	Owner   string       `json:"owner"`
+	denomId string       `json:"denom_id"`
+	tokenId string       `json:"token_id"`
 }
