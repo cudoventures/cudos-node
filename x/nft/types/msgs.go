@@ -7,13 +7,14 @@ import (
 
 // constant used to indicate that some field should not be updated
 const (
-	TypeMsgIssueDenom  = "issue_denom"
-	TypeMsgTransferNft = "transfer_nft"
-	TypeMsgEditNFT     = "edit_nft"
-	TypeMsgMintNFT     = "mint_nft"
-	TypeMsgBurnNFT     = "burn_nft"
-	TypeMsgApproveNft  = "approve_nft"
-	TypeMsgRevokeNft   = "revoke_nft"
+	TypeMsgIssueDenom    = "issue_denom"
+	TypeMsgTransferNft   = "transfer_nft"
+	TypeMsgEditNFT       = "edit_nft"
+	TypeMsgMintNFT       = "mint_nft"
+	TypeMsgBurnNFT       = "burn_nft"
+	TypeMsgApproveNft    = "approve_nft"
+	TypeMsgRevokeNft     = "revoke_nft"
+	TypeMsgApproveAllNft = "approve_all"
 )
 
 var (
@@ -24,6 +25,7 @@ var (
 	_ sdk.Msg = &MsgBurnNFT{}
 	_ sdk.Msg = &MsgApproveNft{}
 	_ sdk.Msg = &MsgRevokeNft{}
+	_ sdk.Msg = &MsgApproveAllNft{}
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
@@ -166,7 +168,7 @@ func NewMsgApproveAllNft(operator, sender, contractAddressSigner string, approve
 func (msg MsgApproveAllNft) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveNft }
+func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveAllNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgApproveAllNft) ValidateBasic() error {

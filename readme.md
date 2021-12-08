@@ -570,3 +570,351 @@ type Denom struct {
 	EventTypeMintNFT       = "mint_nft"
 	EventTypeBurnNFT       = "burn_nft"
 ```
+
+## API Endpoints
+> default API local url: localhost:1317
+
+All the requests/response below are used as an example, for the full capabilities and parameters, consult the full command specifications
+
+### Transactions:
+
+### Issue Denom : POST
+http://localhost:1317/nft/nfts/denoms/issue
+
+Request:
+```json
+{
+  "owner": "test",
+  "id": "testdenom",
+  "name": "testname",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response: 
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgIssueDenom",
+        "value": {
+          "id": "testdenom",
+          "name": "testname",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Mint NFT : POST
+http://localhost:1317/nft/nfts/mint
+
+Request:
+```json
+{
+  "denom_id": "testdenom",
+  "name": "testTokenName",
+  "uri": "testuri",
+  "data": "testdata",
+  "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgMintNFT",
+        "value": {
+          "denom_id": "testdenom",
+          "name": "testTokenName",
+          "uri": "testuri",
+          "data": "testdata",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Edit NFT : PUT
+http://localhost:1317/nft/nfts/edit/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "uri": "testuri",
+  "data": "testdata",
+  "name": "testname",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgEditNFT",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "name": "testname",
+          "uri": "testuri",
+          "data": "testdata",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Transfer NFT : POST
+http://localhost:1317/nft/nfts/transfer/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "from": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "to": "cudos18vpe7dfn6038ceae0ndlxdyuvgafrk2y6klzkx",
+  "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgTransferNft",
+        "value": {
+          "denom_id": "testdenom",
+          "token_id": "1",
+          "from": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "to": "cudos18vpe7dfn6038ceae0ndlxdyuvgafrk2y6klzkx",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Approve NFT : POST
+http://localhost:1317/nft/nfts/approve/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "address_to_approve": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgApproveNft",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "approvedAddress": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Revoke NFT : POST
+http://localhost:1317/nft/nfts/revoke/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "address_to_revoke": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgRevokeNft",
+        "value": {
+          "addressToRevoke": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "denom_id": "testdenom",
+          "token_id": "1",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+
+### Burn NFT : POST
+http://localhost:1317/nft/nfts/revoke/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgBurnNFT",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Approve All : POST
+http://localhost:1317/nft/nfts/revoke/approveAll
+
+Request:
+```json
+{
+  "approved": true,
+  "approved_operator": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgApproveAllNft",
+        "value": {
+          "operator": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "approved": true
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```

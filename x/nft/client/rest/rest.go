@@ -23,7 +23,6 @@ const (
 
 type issueDenomReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
-	Owner   string       `json:"owner"`
 	ID      string       `json:"id"`
 	Name    string       `json:"name"`
 	Schema  string       `json:"schema"`
@@ -49,9 +48,6 @@ type transferNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	From    string       `json:"from"`
 	To      string       `json:"to"`
-	Name    string       `json:"name"`
-	URI     string       `json:"uri"`
-	Data    string       `json:"data"`
 }
 
 type approveNFTReq struct {
@@ -59,7 +55,6 @@ type approveNFTReq struct {
 	TokenId          string       `json:"token_id"`
 	AddressToApprove string       `json:"address_to_approve"`
 	BaseReq          rest.BaseReq `json:"base_req"`
-	ToAddress        string       `json:"recipient"`
 }
 
 type revokeNFTReq struct {
@@ -73,4 +68,10 @@ type burnNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	denomId string       `json:"denom_id"`
 	tokenId string       `json:"token_id"`
+}
+
+type approveAllRequest struct {
+	BaseReq          rest.BaseReq `json:"base_req"`
+	ApprovedOperator string       `json:"approved_operator"`
+	Approved         bool         `json:"approved"`
 }
