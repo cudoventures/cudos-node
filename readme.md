@@ -180,6 +180,10 @@ The module gives the user the ability to either write(via transaction) or read(v
 | [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
 | [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
 
+
+## Usage from inside a CosmWasm smart contract
+You can check how to use the module from a rust smart contract in the [`cudos-cosmwasm-bindings`](https://github.com/CudoVentures/cudos-cosmwasm-bindings)
+
 ## Full commands info:
 
 ### Transaction commands
