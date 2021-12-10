@@ -8,9 +8,9 @@ import (
 )
 
 // RegisterHandlers registers the NFT REST routes.
-func RegisterHandlers(cliCtx client.Context, r *mux.Router, queryRoute string) {
-	registerQueryRoutes(cliCtx, r, queryRoute)
-	registerTxRoutes(cliCtx, r, queryRoute)
+func RegisterHandlers(cliCtx client.Context, r *mux.Router) {
+	registerQueryRoutes(cliCtx, r)
+	registerTxRoutes(cliCtx, r)
 }
 
 const (
@@ -18,7 +18,6 @@ const (
 	RestParamDenomName = "denom-name"
 	RestParamTokenID   = "token-id"
 	RestParamOwner     = "owner"
-	RestParamMessage   = "msg"
 )
 
 type issueDenomReq struct {
@@ -66,12 +65,17 @@ type revokeNFTReq struct {
 
 type burnNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
-	denomId string       `json:"denom_id"`
-	tokenId string       `json:"token_id"`
+	DnomId  string       `json:"denom_id"`
+	TokenId string       `json:"token_id"`
 }
 
 type approveAllRequest struct {
 	BaseReq          rest.BaseReq `json:"base_req"`
 	ApprovedOperator string       `json:"approved_operator"`
 	Approved         bool         `json:"approved"`
+}
+
+type queryIsApprovedForAllRequest struct {
+	Owner    string
+	Operator string
 }

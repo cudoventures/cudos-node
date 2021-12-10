@@ -14,7 +14,7 @@ import (
 	"cudos.org/cudos-node/x/nft/types"
 )
 
-func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	// Issue a denom
 	r.HandleFunc("/nft/nfts/denoms/issue", issueDenomHandlerFn(cliCtx)).Methods("POST")
 	// Mint an NFT
