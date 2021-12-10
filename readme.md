@@ -421,12 +421,12 @@ $ cudos-noded query nft supply <denom-id>
 
 ### `owner`
 
-> Get the NFTs owned by an account address.
+> Get the NFTs owned by an account address for a given denom.
 
 - arguments:
   - `address`: `The address of the owner.` `required:true`
 - flags:
-  - `--denom-id`: `The id of the denom` `required:true`
+  - `--denom-id`: `The id of the denom` `required:false`
   
 **Example:**
 ``` bash
@@ -915,6 +915,127 @@ Response:
     "signatures": [],
     "memo": "",
     "timeout_height": "0"
+  }
+}
+```
+
+### Queries:
+
+### Query Denom By Id : GET
+http://localhost:1317/nft/denoms/{{denomId}}
+
+Response:
+```json
+{
+  "height": "4774",
+  "result": {
+    "denom": {
+      "id": "testdenom",
+      "name": "TESTDENOM",
+      "schema": "testschema",
+      "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+
+### Query Denom By Name: GET
+http://localhost:1317/nft/denoms/name/{{denomName}}
+
+Response:
+```json
+{
+  "height": "4994",
+  "result": {
+    "denom": {
+      "id": "testdenom1",
+      "name": "testDenomNewName",
+      "schema": "testschema",
+      "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+
+### Query All Denoms: GET
+http://localhost:1317/nft/denoms/
+> TODO: Must add pagination support to request and handle in the node
+
+Response:
+```json
+{
+  "height": "5061",
+  "result": {
+    "denoms": [
+      {
+        "id": "testdenom",
+        "name": "TESTDENOM",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      },
+      {
+        "id": "testdenom1",
+        "name": "testDenomNewName",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      }
+    ],
+    "pagination": {
+      "total": "2"
+    }
+  }
+}
+```
+
+
+
+### Query Collection for a Denom: GET
+http://localhost:1317/nft/collection/{{denomId}}
+> TODO: Must add pagination support to request and handle in the node
+
+Response:
+```json
+{
+  "height": "5189",
+  "result": {
+    "collection": {
+      "denom": {
+        "id": "testdenom",
+        "name": "TESTDENOM",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      },
+      "nfts": [
+        {
+          "id": "1",
+          "name": "testtoken",
+          "uri": "",
+          "data": "testData",
+          "owner": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4"
+        }
+      ]
+    },
+    "pagination": {
+      "total": "1"
+    }
+  }
+}
+```
+
+### Query Supply for a Denom : GET
+> Gets the total NFT for a given denomId
+
+
+http://{{cudos-node-localhost}}/nft/collections/supply/{{denomId}}
+ 
+> TODO: Must add pagination support to request and handle in the node
+
+Response:
+```json
+{
+  "height": "5221",
+  "result": {
+    "amount": "1"
   }
 }
 ```

@@ -41,10 +41,10 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/%s/collections/{%s}", types.ModuleName, RestParamDenomID), queryCollection(cliCtx)).Methods("GET")
 
 	// Get the total supply of a collection or owner
-	r.HandleFunc(fmt.Sprintf("/%s/collections/{%s}/supply", types.ModuleName, RestParamDenomID), querySupply(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/collections/supply/{%s}", types.ModuleName, RestParamDenomID), querySupply(cliCtx)).Methods("GET")
 
 	// Get the collections of NFTs owned by an address
-	r.HandleFunc(fmt.Sprintf("/%s/owners/{%s}", types.ModuleName, RestParamOwner), queryOwner(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/owners/{%s}/{%s}", types.ModuleName, RestParamOwner, RestParamDenomID), queryOwner(cliCtx)).Methods("GET")
 
 	// Query a single NFT
 	r.HandleFunc(fmt.Sprintf("/%s/nfts/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryNFT(cliCtx)).Methods("GET")
@@ -120,9 +120,8 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		denomID := r.FormValue(RestParamDenomID)
-		if err := types.ValidateDenomID(denomID); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-		}
+
+		//TODO: 1. test with different denoms for the same user 2. Handle the optinal variable in the query string - denomId
 
 		request := types.QueryOwnerRequest{
 			DenomId: denomID,
@@ -202,7 +201,7 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		var collectionResponse types.QueryCollectionRequest
+		var collectionResponse types.QueryCollectionResponse
 		cliCtx.Codec.MustUnmarshal(res, &collectionResponse)
 
 		cliCtx = cliCtx.WithHeight(height)
@@ -318,7 +317,7 @@ func queryDenoms(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		var denomsResponse types.QueryDenomResponse
+		var denomsResponse types.QueryDenomsResponse
 		cliCtx.Codec.MustUnmarshal(res, &denomsResponse)
 
 		cliCtx = cliCtx.WithHeight(height)
