@@ -121,8 +121,6 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 
 		denomID := r.FormValue(RestParamDenomID)
 
-		//TODO: 1. test with different denoms for the same user 2. Handle the optinal variable in the query string - denomId
-
 		request := types.QueryOwnerRequest{
 			DenomId: denomID,
 			Owner:   ownerStr,
@@ -221,6 +219,7 @@ func queryDenom(cliCtx client.Context) http.HandlerFunc {
 		denomID := mux.Vars(r)[RestParamDenomID]
 		if err := types.ValidateDenomID(denomID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryDenomRequest{DenomId: denomID}
@@ -236,6 +235,7 @@ func queryDenom(cliCtx client.Context) http.HandlerFunc {
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		var denomResponse types.QueryDenomResponse
@@ -332,11 +332,13 @@ func queryNFT(cliCtx client.Context) http.HandlerFunc {
 		denomID := vars[RestParamDenomID]
 		if err := types.ValidateDenomID(denomID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		tokenID := vars[RestParamTokenID]
 		if err := types.ValidateTokenID(tokenID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryNFTRequest{
@@ -390,7 +392,8 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 			DenomId: denomID,
 			TokenId: tokenID,
 		}
-		bz, err := cliCtx.LegacyAmino.MarshalJSON(request)
+
+		bz, err := request.Marshal()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

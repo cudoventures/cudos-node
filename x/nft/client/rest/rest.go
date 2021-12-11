@@ -76,6 +76,6 @@ type approveAllRequest struct {
 }
 
 type queryIsApprovedForAllRequest struct {
-	Owner    string
-	Operator string
+	Owner    string `json:"owner"`
+	Operator string `json:"operator"`
 }

@@ -1023,10 +1023,10 @@ Response:
 ```
 
 ### Query Supply for a Denom : GET
-> Gets the total NFT for a given denomId
+> Gets the total NFT count for a given denomId
 
 
-http://{{cudos-node-localhost}}/nft/collections/supply/{{denomId}}
+http://localhost:1317/nft/collections/supply/{{denomId}}
  
 > TODO: Must add pagination support to request and handle in the node
 
@@ -1036,6 +1036,120 @@ Response:
   "height": "5221",
   "result": {
     "amount": "1"
+  }
+}
+```
+
+### Query Owner  GET
+> Gets the NFTs for a given Owner ( Optional denomId )
+
+
+http://localhost:1317/nft/owners/{{ownerAddress}}/{denomId}
+
+To query for all NFTs regardless of denom:  http://localhost:1317/nft/owners/{{ownerAddress}}/all
+
+> TODO: Must add pagination support to request and handle in the node
+
+Response:
+```json
+{
+  "height": "10001",
+  "result": {
+    "owner": {
+      "address": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4",
+      "id_collections": [
+        {
+          "denom_id": "testdenom",
+          "token_ids": [
+            "1"
+          ]
+        }
+      ]
+    },
+    "pagination": {
+      "total": "1"
+    }
+  }
+}
+```
+
+### Query NFT : GET
+> Gets the NFT by a given denomId and tokenId
+
+http://localhost:1317/nft/nfts/{{denomId}}/{{tokenId}}
+
+Response:
+```json
+{
+  "height": "10001",
+  "result": {
+    "nft": {
+      "id": "1",
+      "name": "testtoken",
+      "uri": "",
+      "data": "testData",
+      "owner": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4"
+    }
+  }
+}
+```
+
+Response with approved addresses:
+```json
+{
+    "height": "161",
+    "result": {
+        "nft": {
+            "id": "1",
+            "name": "testtoken",
+            "uri": "",
+            "data": "testData",
+            "owner": "cudos17najx40kq4f6yrslw6ggr5qm4meqs8p72jhv2f",
+            "approved_addresses": {
+                "cudos1yg8et80vfyjetyafqcpr8geyp2ypmnd3rk54z2": true
+            }
+        }
+    }
+}
+```
+
+### Query Approvals NFT : GET
+> Gets the approvals for a NFT
+
+http://localhost:1317/nft/approvals/{{denomId}}/{{tokenId}}
+
+Response:
+```json
+{
+  "height": "238",
+  "result": {
+    "approved_addresses": {
+      "cudos1yg8et80vfyjetyafqcpr8geyp2ypmnd3rk54z2": true,
+      "cudos1y43rjgknmk2hv3cpcu007crucwsgrv4n4rhmcs": true
+    }
+  }
+}
+```
+
+### Query IsApprovedForAll : POST
+> Gets the approvals for a NFT
+
+http://localhost:1317/nft/isApprovedForAll
+
+Request:
+```json
+{
+        "owner": "cudos1y43rjgknmk2hv3cpcu007crucwsgrv4n4rhmcs",
+        "operator": "cudos17najx40kq4f6yrslw6ggr5qm4meqs8p72jhv2f"
+}
+```
+
+Response:
+```json
+{
+  "height": "409",
+  "result": {
+    "is_approved": true
   }
 }
 ```
