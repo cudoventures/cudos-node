@@ -33,20 +33,18 @@ echo "$contractBalanceBank"
 # STORE IN THE NODE
 RES=$(echo "123123123" |  CUDOS_NODED tx wasm store cw_escrow.wasm --from wasm-poweruser8 --gas auto --gas-adjustment 1.3 --keyring-backend os --chain-id MyLocalCudosNetwok -y)
 echo "Store TX Result: $RES"
-# ASSERT SUCCESSFULL DEPLOYMENT
+# ASSERT SUCCESSFUL STORING
 CODE_ID=$(echo "$RES" | jq -r '.logs[0].events[-1].attributes[-1].value')
 echo "CODE_ID: $CODE_ID" # CODE_ID value must be a positive integer
-
 if [ "$CODE_ID" -lt 1 ]; then # CODE_ID value must be a positive integer
     printf '%s\n' "Failed to store the smart contract on the chain. Check result below for a detailed error info" >&2 # write error message to stderr
     printf '%s\n' "Failed Transaction: ""$RES"" " >&2 # write error message to stderr
 fi
 
-# instantiate contract and verify
-INIT=$(jq -n --arg sender $(CUDOS_NODED keys show -a wasm-poweruser) --arg receiver $(CUDOS_NODED keys show -a wasm-receiver) '{"arbiter":$sender,"recipient":$receiver}')
-CUDOS_NODED tx wasm instantiate "$CODE_ID" "$INIT" \
-    --from wasm-poweruser --amount=5000acudos  --label "example escrow" --gas auto --gas-adjustment 1.3 --chain-id MyLocalCudosNetwok -y
-
+# INIT THE CONTRACT
+INIT=$(jq -n --arg sender "$wasmPowerUserAddress" --arg receiver "$wasmReceiverUserAddress" '{"arbiter":$sender,"recipient":$receiver}')
+RES=$(echo "123123123" | CUDOS_NODED tx wasm instantiate "$CODE_ID" "$INIT" \
+    --from wasm-poweruser10 --amount=5000acudos  --label "example escrow" --gas auto --gas-adjustment 1.3 --chain-id MyLocalCudosNetwok -y --keyring-backend os)
 
 CUDOS_NODED query wasm list-contract-by-code "$CODE_ID"
 CONTRACT=$(CUDOS_NODED query wasm list-contract-by-code "$CODE_ID" --output json | jq -r '.contracts[0]')
@@ -57,13 +55,15 @@ if [ "$CONTRACT" == "" ];then
     exit 1
 fi
 
-contractBalanceWasm=$(CUDOS_NODED query wasm contract "$CONTRACT")
 contractBalanceBank=$(CUDOS_NODED query bank balances  "$CONTRACT")
-# assert the contract has balance of 5000acudos
-if [ "$contractBalanceWasm" != "5000acudos" ] || [ "$contractBalanceBank" != "5000acudos" ];then
+echo "$contractBalanceBank"
+
+# ASSERT the contract has balance of 5000acudos
+if [[ ! $contractBalanceBank =~ "5000"  ]];then
     printf '%s\n' "Something went wrong, the balance of the contract should 5000, check if it was deployed and initialized successfully" >&2 # write error message to stderr
     exit 1
 fi
+
 
 # execute fails if wrong person
 APPROVE='{"approve":{"quantity":[{"amount":"5000","denom":"acudos"}]}}'
