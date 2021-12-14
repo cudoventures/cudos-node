@@ -4,6 +4,10 @@ go 1.15
 
 replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
 
+replace github.com/cosmos/ibc-go/modules => ../ibc-go/modules
+
+replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
+
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
 require (
@@ -27,7 +31,7 @@ require (
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tidwall/gjson v1.6.7
 	google.golang.org/genproto v0.0.0-20210903162649-d08c68adba83
-	google.golang.org/grpc v1.40.0
+	google.golang.org/grpc v1.42.0
 
 )
 

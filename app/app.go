@@ -90,7 +90,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
 	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"cudos.org/cudos-node/x/cudoMint"
@@ -322,6 +321,7 @@ func New(
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	app.CapabilityKeeper.Seal()
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -350,10 +350,6 @@ func New(
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-
-	// app.UpgradeKeeper.SetUpgradeHandler("val", func(ctx sdk.Context, plan upgradetypes.Plan, a module.VersionMap) (module.VersionMap, error) {
-	// 	return a, nil
-	// })
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -515,8 +511,15 @@ func New(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
-		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, cudoMinttypes.ModuleName,
+		capabilitytypes.ModuleName,
+		upgradetypes.ModuleName,
+		minttypes.ModuleName,
+		distrtypes.ModuleName,
+		slashingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		stakingtypes.ModuleName,
+		ibchost.ModuleName,
+		cudoMinttypes.ModuleName,
 		gravitytypes.ModuleName,
 	)
 
@@ -582,17 +585,6 @@ func New(
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
 		}
-
-		// Initialize and seal the capability keeper so all persistent capabilities
-		// are loaded in-memory and prevent any further modules from creating scoped
-		// sub-keepers.
-		// This must be done during creation of baseapp rather than in InitChain so
-		// that in-memory capabilities get regenerated on app restart.
-		// Note that since this reads from the store, we can only perform it when
-		// `loadLatest` is set to true.
-		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
-		app.CapabilityKeeper.InitMemStore(ctx)
-		app.CapabilityKeeper.Seal()
 	}
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
