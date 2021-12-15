@@ -121,7 +121,7 @@ func KeyDenomName(name string) []byte {
 	return append(key, []byte(name)...)
 }
 
-// KeyDenomSymbol gets the storeKey by the denom name
+// KeyDenomSymbol gets the storeKey by the symbol
 func KeyDenomSymbol(name string) []byte {
 	key := append(PrefixDenomSymbol, delimiter...)
 	return append(key, []byte(name)...)

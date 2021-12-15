@@ -14,7 +14,7 @@ var (
 	ErrInvalidTokenID      = sdkerrors.Register(ModuleName, 10, "invalid nft id")
 	ErrInvalidTokenURI     = sdkerrors.Register(ModuleName, 11, "invalid nft uri")
 	ErrInvalidDenomName    = sdkerrors.Register(ModuleName, 12, "invalid denom name")
-	ErrInvalidDenomSymbol  = sdkerrors.Register(ModuleName, 12, "invalid denom symbol")
 	ErrNoApprovedAddresses = sdkerrors.Register(ModuleName, 13, "no approved addresses!")
 	ErrNotFoundNFT         = sdkerrors.Register(ModuleName, 14, "nft not found")
+	ErrInvalidDenomSymbol  = sdkerrors.Register(ModuleName, 15, "invalid denom symbol")
 )

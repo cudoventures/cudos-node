@@ -31,6 +31,12 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 				return nil, err
 			}
 			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
+		case custom.QueryDenomBySymbol != nil:
+			denom, err := keeper.GetDenomBySymbol(ctx, custom.QueryDenomBySymbol.Symbol)
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
 		case custom.QueryDenoms != nil:
 			denoms := keeper.GetDenoms(ctx)
 			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms}.Pagination.NextKey)
@@ -92,6 +98,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 type nftCustomQuery struct {
 	QueryDenomById      *QueryDenomById      `json:"query_denom_by_id,omitempty"`
 	QueryDenomByName    *QueryDenomByName    `json:"query_denom_by_name,omitempty"`
+	QueryDenomBySymbol  *QueryDenomBySymbol  `json:"query_denom_by_symbol,omitempty"`
 	QueryDenoms         *QueryAllDenoms      `json:"query_denoms,omitempty"`
 	QueryCollection     *QueryCollection     `json:"query_collection,omitempty"`
 	QuerySupply         *QuerySupply         `json:"query_supply,omitempty"`
@@ -107,6 +114,10 @@ type QueryDenomById struct {
 
 type QueryDenomByName struct {
 	DenomName string `json:"denom_name"`
+}
+
+type QueryDenomBySymbol struct {
+	Symbol string `json:"denom_symbol"`
 }
 
 type QueryAllDenoms struct {

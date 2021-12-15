@@ -42,8 +42,8 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
-	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Name))
-	store.Set(types.KeyDenomSymbol(denom.Symbol), []byte(denom.Symbol))
+	store.Set(types.KeyDenomName(denom.Name), bz)
+	store.Set(types.KeyDenomSymbol(denom.Symbol), bz)
 	return nil
 }
 
@@ -65,19 +65,26 @@ func (k Keeper) GetDenomByName(ctx sdk.Context, name string) (denom types.Denom,
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeyDenomName(name))
-	denomID := string(bz)
+	if len(bz) == 0 {
+		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom name: %s", name)
+	}
 
-	return k.GetDenom(ctx, denomID)
+	k.cdc.MustUnmarshal(bz, &denom)
+	return denom, nil
+
 }
 
-// GetDenomBySymbol returns the denom by symbol // TODO: Test if name and symbol works
+// GetDenomBySymbol returns the denom by symbol
 func (k Keeper) GetDenomBySymbol(ctx sdk.Context, symbol string) (denom types.Denom, err error) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeyDenomSymbol(symbol))
-	denomID := string(bz)
+	if len(bz) == 0 {
+		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom symbol: %s", symbol)
+	}
 
-	return k.GetDenom(ctx, denomID)
+	k.cdc.MustUnmarshal(bz, &denom)
+	return denom, nil
 }
 
 // GetDenoms returns all the denoms

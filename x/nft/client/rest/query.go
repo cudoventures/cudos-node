@@ -15,16 +15,17 @@ import (
 )
 
 const (
-	QueryGlobalRoutePrefix = "cudosnode.cudosnode.nft.Query"
-	QuerySupplyRoute       = "Supply"
-	QueryOwnerRoute        = "Owner"
-	QueryCollectionRoute   = "Collection"
-	QueryDenomsRoute       = "Denoms"
-	QueryDenomRoute        = "Denom"
-	QueryDenomByNameRoute  = "DenomByName"
-	QueryNFTRoute          = "NFT"
-	QueryApprovalsNFTRoute = "GetApprovalsNFT"
-	QueryIsApprovedForAll  = "QueryApprovalsIsApprovedForAll"
+	QueryGlobalRoutePrefix  = "cudosnode.cudosnode.nft.Query"
+	QuerySupplyRoute        = "Supply"
+	QueryOwnerRoute         = "Owner"
+	QueryCollectionRoute    = "Collection"
+	QueryDenomsRoute        = "Denoms"
+	QueryDenomRoute         = "Denom"
+	QueryDenomByNameRoute   = "DenomByName"
+	QueryDenomBySymbolRoute = "DenomBySymbol"
+	QueryNFTRoute           = "NFT"
+	QueryApprovalsNFTRoute  = "GetApprovalsNFT"
+	QueryIsApprovedForAll   = "QueryApprovalsIsApprovedForAll"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -33,6 +34,9 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 
 	// Query the denom by name
 	r.HandleFunc(fmt.Sprintf("/%s/denoms/name/{%s}", types.ModuleName, RestParamDenomName), queryDenomByName(cliCtx)).Methods("GET")
+
+	// Query the denom by symbol
+	r.HandleFunc(fmt.Sprintf("/%s/denoms/symbol/{%s}", types.ModuleName, RestParamDenomSymbol), queryDenoBySymbol(cliCtx)).Methods("GET")
 
 	// Query all denoms
 	r.HandleFunc(fmt.Sprintf("/%s/denoms", types.ModuleName), queryDenoms(cliCtx)).Methods("GET")
@@ -282,6 +286,45 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 
 		cliCtx = cliCtx.WithHeight(height)
 		rest.PostProcessResponse(w, cliCtx, denomByNameResponse)
+	}
+}
+
+// nolint: dupl
+func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// nolint: govet
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		denomSymbol := mux.Vars(r)[RestParamDenomSymbol]
+		if err := types.ValidateDenomSymbol(denomSymbol); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		request := types.QueryDenomBySymbolRequest{Symbol: denomSymbol}
+		bz, err := request.Marshal()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryDenomBySymbolRoute)
+		res, height, err := cliCtx.QueryWithData(
+			queryPath, bz,
+		)
+
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		var denomBySymbolResponse types.QueryDenomBySymbolResponse
+		cliCtx.Codec.MustUnmarshal(res, &denomBySymbolResponse)
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, denomBySymbolResponse)
 	}
 }
 
