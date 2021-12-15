@@ -172,6 +172,7 @@ The module gives the user the ability to either write(via transaction) or read(v
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
 | [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
+| [`denom-by-symbol`](#denom-by-symbol)                             | Queries for a  [`denomination`](#Denom) by denomination symbol                                                                  |
 | [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
 | [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#Collections).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
@@ -374,6 +375,22 @@ $ cudos-noded query nft denom <denomId>
 ``` bash
 $ cudos-noded query nft denom <denomName>
 ```
+
+### `denom-by-symbol`
+
+> Query the denom by the specified denom symbol.
+
+- arguments:
+  - `symbol` `string` `The denom symbol to search for` `required: true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft denom <symbol>
+```
+
 
 ### `denoms`
 
@@ -956,6 +973,24 @@ Response:
       "name": "testDenomNewName",
       "schema": "testschema",
       "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+### Query Denom By Symbol: GET
+http://localhost:1317/nft/denoms/symbol/{{symbol}}
+
+Response:
+```json
+{
+  "height": "23",
+  "result": {
+    "denom": {
+      "id": "testdenom",
+      "name": "testName",
+      "schema": "",
+      "creator": "cudos1wye475erldt37cgj3kf4j35w24emhh0cdddg7z",
+      "symbol": "testSymbol"
     }
   }
 }
