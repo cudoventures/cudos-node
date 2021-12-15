@@ -70,6 +70,11 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			symbol, err := cmd.Flags().GetString(FlagDenomSymbol)
+			if err != nil {
+				return err
+			}
+
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
 				schema = string(optionsContent)
@@ -81,6 +86,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				schema,
 				clientCtx.GetFromAddress().String(),
 				"",
+				symbol,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

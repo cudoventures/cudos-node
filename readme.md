@@ -196,6 +196,7 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
   - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
 - flags: 
   - `--name` `string` `The unique name of the denom.` `required: true`
+  - `--symbol` `string` `The unique symbol of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
@@ -204,7 +205,7 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --symbol=<denom-symbol> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### `mint`
@@ -553,6 +554,7 @@ type IDCollection struct {
 type Denom struct {
 	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
 	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
 	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
@@ -587,6 +589,7 @@ Request:
   "owner": "test",
   "id": "testdenom",
   "name": "testname",
+  "symbol": "testDenomSymbol",
   "base_req": {
     "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
     "chain_id":"cudos-network"
@@ -605,6 +608,7 @@ Response:
         "value": {
           "id": "testdenom",
           "name": "testname",
+          "test_denom_symbol": "testDenomSymbol",
           "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
         }
       }

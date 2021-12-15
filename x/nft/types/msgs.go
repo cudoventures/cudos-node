@@ -29,13 +29,14 @@ var (
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
-func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner string) *MsgIssueDenom {
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender:                sender,
 		Id:                    denomID,
 		Name:                  denomName,
 		Schema:                schema,
 		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from a contract, in other cases its empty string
+		Symbol:                symbol,
 	}
 }
 
@@ -54,7 +55,16 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
-	return ValidateDenomName(msg.Name)
+
+	if err := ValidateDenomName(msg.Name); err != nil {
+		return err
+	}
+
+	if err := ValidateDenomSymbol(msg.Symbol); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetSignBytes Implements Msg.

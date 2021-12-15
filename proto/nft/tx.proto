@@ -42,6 +42,7 @@ message MsgIssueDenom {
     string schema = 3;
     string sender = 4;
     string contractAddressSigner = 5;
+    string symbol = 6;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.

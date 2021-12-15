@@ -342,6 +342,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 
 		denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		denomName := strings.ToLower(simtypes.RandStringOfLength(r, 10))
+		denomSymbol := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		sender, _ := simtypes.RandomAcc(r, accs)
 
 		if err := types.ValidateDenomID(denomId); err != nil {
@@ -359,6 +360,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			denomName,
 			"schema",
 			"",
+			denomSymbol,
 		)
 		account := ak.GetAccount(ctx, sender.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())

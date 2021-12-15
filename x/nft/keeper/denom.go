@@ -19,6 +19,12 @@ func (k Keeper) HasDenomNm(ctx sdk.Context, name string) bool {
 	return store.Has(types.KeyDenomName(name))
 }
 
+// HasDenomSymbol returns whether the specified denom symbol exists
+func (k Keeper) HasDenomSymbol(ctx sdk.Context, name string) bool {
+	store := ctx.KVStore(k.storeKey)
+	return store.Has(types.KeyDenomSymbol(name))
+}
+
 // SetDenom is responsible for saving the definition of denom
 func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	if k.HasDenomID(ctx, denom.Id) {
@@ -29,10 +35,15 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denomName %s has already exists", denom.Name)
 	}
 
+	if k.HasDenomSymbol(ctx, denom.Symbol) {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denomSymbol %s has already exists", denom.Symbol)
+	}
+
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&denom)
 	store.Set(types.KeyDenomID(denom.Id), bz)
-	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Id))
+	store.Set(types.KeyDenomName(denom.Name), []byte(denom.Name))
+	store.Set(types.KeyDenomSymbol(denom.Symbol), []byte(denom.Symbol))
 	return nil
 }
 
@@ -54,6 +65,16 @@ func (k Keeper) GetDenomByName(ctx sdk.Context, name string) (denom types.Denom,
 	store := ctx.KVStore(k.storeKey)
 
 	bz := store.Get(types.KeyDenomName(name))
+	denomID := string(bz)
+
+	return k.GetDenom(ctx, denomID)
+}
+
+// GetDenomBySymbol returns the denom by symbol // TODO: Test if name and symbol works
+func (k Keeper) GetDenomBySymbol(ctx sdk.Context, symbol string) (denom types.Denom, err error) {
+	store := ctx.KVStore(k.storeKey)
+
+	bz := store.Get(types.KeyDenomSymbol(symbol))
 	denomID := string(bz)
 
 	return k.GetDenom(ctx, denomID)

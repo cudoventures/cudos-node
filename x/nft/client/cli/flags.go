@@ -11,9 +11,10 @@ const (
 	FlagRecipient = "recipient"
 	FlagOwner     = "owner"
 
-	FlagDenomName = "name"
-	FlagDenomID   = "denom-id"
-	FlagSchema    = "schema"
+	FlagDenomName   = "name"
+	FlagDenomID     = "denom-id"
+	FlagSchema      = "schema"
+	FlagDenomSymbol = "denom-symbol"
 )
 
 var (
