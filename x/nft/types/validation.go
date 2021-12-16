@@ -43,6 +43,15 @@ func ValidateDenomName(denomName string) error {
 	return nil
 }
 
+// ValidateDenomSymbol verifies whether the  parameters are legal
+func ValidateDenomSymbol(symbol string) error {
+	symbol = strings.TrimSpace(symbol)
+	if len(symbol) == 0 {
+		return sdkerrors.Wrapf(ErrInvalidDenomName, "denom name(%s) can not be space", symbol)
+	}
+	return nil
+}
+
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
 

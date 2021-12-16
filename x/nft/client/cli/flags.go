@@ -11,9 +11,10 @@ const (
 	FlagRecipient = "recipient"
 	FlagOwner     = "owner"
 
-	FlagDenomName = "name"
-	FlagDenomID   = "denom-id"
-	FlagSchema    = "schema"
+	FlagDenomName   = "name"
+	FlagDenomID     = "denom-id"
+	FlagSchema      = "schema"
+	FlagDenomSymbol = "symbol"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 func init() {
 	FsIssueDenom.String(FlagSchema, "", "Denom data structure definition")
 	FsIssueDenom.String(FlagDenomName, "", "The name of the denom")
+	FsIssueDenom.String(FlagDenomSymbol, "", "The symbol of the denom")
 
 	FsMintNFT.String(FlagTokenURI, "", "URI for supplemental off-chain tokenData (should return a JSON object)")
 	FsMintNFT.String(FlagRecipient, "", "Receiver of the nft, if not filled, the default is the sender of the transaction")

@@ -49,6 +49,7 @@ func GetCmdIssueDenom() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft issue <denom-id> "+
 				"--name=<denom-name> "+
+				"--symbol=<symbol-name> "+
 				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
@@ -70,6 +71,11 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			symbol, err := cmd.Flags().GetString(FlagDenomSymbol)
+			if err != nil {
+				return err
+			}
+
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
 				schema = string(optionsContent)
@@ -81,6 +87,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				schema,
 				clientCtx.GetFromAddress().String(),
 				"",
+				symbol,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

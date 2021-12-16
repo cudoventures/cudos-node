@@ -46,8 +46,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema string, creator sdk.AccAddress) error {
-	return k.SetDenom(ctx, types.NewDenom(id, name, schema, creator))
+func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema, symbol string, creator sdk.AccAddress) error {
+	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, creator))
 }
 
 // MintNFTUnverified mints an NFT without verifying if the owner is the creator of denom
@@ -203,16 +203,6 @@ func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, sender sdk
 		"Approve failed - could not authorize (%s)! Sender address (%s) is neither owner or approved for denomId (%s) / tokenId (%s)! ", approvedAddress, sender, denomID, tokenID)
 }
 
-// Todo: check if we need this to be private. For example, right now its defined in the keeper
-// if it is accessible from there - it means all the check are bypassed ??
-func approveNFT(nft types.BaseNFT, approvedAddress sdk.AccAddress) {
-	if nft.ApprovedAddresses == nil {
-		nft.ApprovedAddresses = map[string]bool{approvedAddress.String(): true}
-	} else {
-		nft.ApprovedAddresses[approvedAddress.String()] = true
-	}
-}
-
 func (k Keeper) AddApprovalForAll(ctx sdk.Context, sender sdk.AccAddress, operatorAddressToBeAdded sdk.AccAddress, approved bool) error {
 	if sender.Equals(operatorAddressToBeAdded) {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "ApproveAll failed! Sender address (%s) is the same as operator (%s)! ", sender, operatorAddressToBeAdded)
@@ -237,20 +227,4 @@ func (k Keeper) RevokeApproval(ctx sdk.Context, denomID, tokenID string, sender,
 
 	return sdkerrors.Wrapf(types.ErrUnauthorized,
 		"Approve failed - could not revoke access for (%s)! Sender address (%s) is neither owner or approved for denomId (%s) / tokenId (%s)! ", addressToRevoke, sender, denomID, tokenID)
-}
-
-// Todo: check if we need this to be private. For example, right now its defined in the keeper
-// if it is accessible from there - it means all the check are bypassed ??
-func revokeApprovalNFT(nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) error {
-	if nft.ApprovedAddresses == nil {
-		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
-	}
-
-	_, ok := nft.ApprovedAddresses[approvedAddress.String()]
-	if ok {
-		delete(nft.ApprovedAddresses, approvedAddress.String())
-	} else {
-		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", approvedAddress.String(), denomID, nft.GetID())
-	}
-	return nil
 }

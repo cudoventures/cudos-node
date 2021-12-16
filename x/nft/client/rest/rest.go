@@ -14,10 +14,11 @@ func RegisterHandlers(cliCtx client.Context, r *mux.Router) {
 }
 
 const (
-	RestParamDenomID   = "denom-id"
-	RestParamDenomName = "denom-name"
-	RestParamTokenID   = "token-id"
-	RestParamOwner     = "owner"
+	RestParamDenomID     = "denom-id"
+	RestParamDenomName   = "denom-name"
+	RestParamDenomSymbol = "denom-symbol"
+	RestParamTokenID     = "token-id"
+	RestParamOwner       = "owner"
 )
 
 type issueDenomReq struct {
@@ -25,6 +26,7 @@ type issueDenomReq struct {
 	ID      string       `json:"id"`
 	Name    string       `json:"name"`
 	Schema  string       `json:"schema"`
+	Symbol  string       `json:"symbol"`
 }
 
 type mintNFTReq struct {

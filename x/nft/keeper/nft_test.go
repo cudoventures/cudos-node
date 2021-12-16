@@ -6,7 +6,7 @@ import (
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldCorrectly_ReturnNFT() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, denomNm, tokenURI, tokenData, address, address2)
@@ -25,7 +25,7 @@ func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldErr_WhenNFTNotFound() 
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFTs_CorrectlyReturns_CollectionOfNFTs() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
@@ -47,7 +47,7 @@ func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsFalse_WhenNFTDoesNotE
 }
 
 func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsCorrect_WhenNFTDoesExist() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
@@ -59,7 +59,7 @@ func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsCorrect_WhenNFTDoesEx
 
 func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
@@ -78,7 +78,7 @@ func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
@@ -105,7 +105,7 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() 
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenUserHasNoApprovedAddresses() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)
@@ -121,7 +121,7 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_When
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenApprovedAddressIsNotFound() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID2, tokenNm, tokenURI, tokenData, address, address2)

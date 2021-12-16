@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 	queryCmd.AddCommand(
 		GetCmdQueryDenom(),
 		GetCmdQueryDenomByName(),
+		GetCmdQueryDenomBySymbol(),
 		GetCmdQueryDenoms(),
 		GetCmdQueryCollection(),
 		GetCmdQuerySupply(),
@@ -257,6 +258,40 @@ func GetCmdQueryDenomByName() *cobra.Command {
 			resp, err := queryClient.DenomByName(
 				context.Background(),
 				&types.QueryDenomByNameRequest{DenomName: args[0]},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp.Denom)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryDenomBySymbol queries the specified denom by symbol
+func GetCmdQueryDenomBySymbol() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "denom-by-symbol [symbol]",
+		Long:    "Query the denom by the specified symbol.",
+		Example: fmt.Sprintf("$ %s query nft denom <symbol>", version.AppName),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if err := types.ValidateDenomSymbol(args[0]); err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.DenomBySymbol(
+				context.Background(),
+				&types.QueryDenomBySymbolRequest{Symbol: args[0]},
 			)
 			if err != nil {
 				return err

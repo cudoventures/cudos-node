@@ -35,6 +35,12 @@ service Query {
         option (google.api.http).get = "/cudosnode/nft/denoms/name/{denom_name}";
     }
 
+    // DenomByName queries the definition of a given denom by name
+    rpc DenomBySymbol(QueryDenomBySymbolRequest) returns (QueryDenomBySymbolResponse) {
+        option (google.api.http).get = "/cudosnode/nft/denoms/name/{symbol}";
+    }
+
+
     // Denoms queries all the denoms
     rpc Denoms(QueryDenomsRequest) returns (QueryDenomsResponse) {
         option (google.api.http).get = "/cudosnode/nft/denoms";
@@ -110,8 +116,19 @@ message QueryDenomByNameRequest {
     string denom_name = 1 [ (gogoproto.moretags) = "yaml:\"denom_name\"" ];
 }
 
+// QueryDenomBySymbolRequest is the request type for the Query/DenomBySymbol RPC method
+message QueryDenomBySymbolRequest {
+    string symbol = 1 [ (gogoproto.moretags) = "yaml:\"symbol\"" ];
+}
+
+
 // QueryDenomByNameResponse is the response type for the Query/DenomByName RPC method
 message QueryDenomByNameResponse {
+    Denom denom = 1;
+}
+
+// QueryDenomByNameResponse is the response type for the Query/DenomByName RPC method
+message QueryDenomBySymbolResponse {
     Denom denom = 1;
 }
 

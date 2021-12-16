@@ -34,6 +34,7 @@ var (
 	PrefixDenomName               = []byte{0x05} // key for denom name of the nft
 	PrefixApprovedAddresses       = []byte{0x06} // key for globally approved operator addresses
 	PrefixCollectionTotalNftCount = []byte{0x07} // key for total nft count
+	PrefixDenomSymbol             = []byte{0x08} // key for denom name of the nft
 
 	delimiter = []byte("/")
 )
@@ -117,6 +118,12 @@ func KeyDenomID(id string) []byte {
 // KeyDenomName gets the storeKey by the denom name
 func KeyDenomName(name string) []byte {
 	key := append(PrefixDenomName, delimiter...)
+	return append(key, []byte(name)...)
+}
+
+// KeyDenomSymbol gets the storeKey by the symbol
+func KeyDenomSymbol(name string) []byte {
+	key := append(PrefixDenomSymbol, delimiter...)
 	return append(key, []byte(name)...)
 }
 

@@ -172,6 +172,7 @@ The module gives the user the ability to either write(via transaction) or read(v
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
 | [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
+| [`denom-by-symbol`](#denom-by-symbol)                             | Queries for a  [`denomination`](#Denom) by denomination symbol                                                                  |
 | [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
 | [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#Collections).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
@@ -196,6 +197,7 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
   - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
 - flags: 
   - `--name` `string` `The unique name of the denom.` `required: true`
+  - `--symbol` `string` `The unique symbol of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
@@ -204,7 +206,7 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --symbol=<denom-symbol> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### `mint`
@@ -373,6 +375,22 @@ $ cudos-noded query nft denom <denomId>
 ``` bash
 $ cudos-noded query nft denom <denomName>
 ```
+
+### `denom-by-symbol`
+
+> Query the denom by the specified denom symbol.
+
+- arguments:
+  - `symbol` `string` `The denom symbol to search for` `required: true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft denom <symbol>
+```
+
 
 ### `denoms`
 
@@ -553,6 +571,7 @@ type IDCollection struct {
 type Denom struct {
 	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
 	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
 	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
@@ -587,6 +606,7 @@ Request:
   "owner": "test",
   "id": "testdenom",
   "name": "testname",
+  "symbol": "testDenomSymbol",
   "base_req": {
     "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
     "chain_id":"cudos-network"
@@ -605,6 +625,7 @@ Response:
         "value": {
           "id": "testdenom",
           "name": "testname",
+          "test_denom_symbol": "testDenomSymbol",
           "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
         }
       }
@@ -952,6 +973,24 @@ Response:
       "name": "testDenomNewName",
       "schema": "testschema",
       "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+### Query Denom By Symbol: GET
+http://localhost:1317/nft/denoms/symbol/{{symbol}}
+
+Response:
+```json
+{
+  "height": "23",
+  "result": {
+    "denom": {
+      "id": "testdenom",
+      "name": "testName",
+      "schema": "",
+      "creator": "cudos1wye475erldt37cgj3kf4j35w24emhh0cdddg7z",
+      "symbol": "testSymbol"
     }
   }
 }
