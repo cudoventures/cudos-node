@@ -2,7 +2,6 @@ package rest
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -39,16 +38,16 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/%s/denoms/symbol/{%s}", types.ModuleName, RestParamDenomSymbol), queryDenoBySymbol(cliCtx)).Methods("GET")
 
 	// Query all denoms
-	r.HandleFunc(fmt.Sprintf("/%s/denoms", types.ModuleName), queryDenoms(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/denoms", types.ModuleName), queryDenoms(cliCtx)).Methods("POST")
 
 	// Get all the NFTs from a given collection
-	r.HandleFunc(fmt.Sprintf("/%s/collections/{%s}", types.ModuleName, RestParamDenomID), queryCollection(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/collections", types.ModuleName), queryCollection(cliCtx)).Methods("POST")
 
 	// Get the total supply of a collection or owner
 	r.HandleFunc(fmt.Sprintf("/%s/collections/supply/{%s}", types.ModuleName, RestParamDenomID), querySupply(cliCtx)).Methods("GET")
 
 	// Get the collections of NFTs owned by an address
-	r.HandleFunc(fmt.Sprintf("/%s/owners/{%s}/{%s}", types.ModuleName, RestParamOwner, RestParamDenomID), queryOwner(cliCtx)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/owners", types.ModuleName), queryOwner(cliCtx)).Methods("POST")
 
 	// Query a single NFT
 	r.HandleFunc(fmt.Sprintf("/%s/nfts/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryNFT(cliCtx)).Methods("GET")
@@ -62,6 +61,7 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 
 func querySupply(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		denomID := mux.Vars(r)[RestParamDenomID]
 		err := types.ValidateDenomID(denomID)
 		if err != nil {
@@ -82,6 +82,7 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 			DenomId: denomID,
 			Owner:   ownerStr,
 		}
+
 		bz, err := request.Marshal()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -113,28 +114,29 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 
 func queryOwner(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		var req queryOwnerRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		if err := types.ValidateDenomID(req.DenomId); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
 		var _ sdk.AccAddress
-		ownerStr := mux.Vars(r)[RestParamOwner]
-		if len(ownerStr) > 0 {
-			_, err := sdk.AccAddressFromBech32(ownerStr)
+		if len(req.OwnerAddress) > 0 {
+			_, err := sdk.AccAddressFromBech32(req.OwnerAddress)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 		}
-
-		denomID := r.FormValue(RestParamDenomID)
-
 		request := types.QueryOwnerRequest{
-			DenomId: denomID,
-			Owner:   ownerStr,
-			Pagination: &query.PageRequest{ // TODO: Support pagination
-				Key:        nil,
-				Offset:     0,
-				Limit:      0,
-				CountTotal: false,
-				Reverse:    false,
-			},
+			DenomId:    req.DenomId,
+			Owner:      req.OwnerAddress,
+			Pagination: &req.Pagination,
 		}
 
 		bz, err := request.Marshal()
@@ -168,21 +170,22 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 
 func queryCollection(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		denomID := mux.Vars(r)[RestParamDenomID]
-		if err := types.ValidateDenomID(denomID); err != nil {
+
+		var req queryCollectionRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		if err := types.ValidateDenomID(req.DenomId); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 
 		request := types.QueryCollectionRequest{
-			DenomId: denomID,
-			Pagination: &query.PageRequest{ // TODO: Support pagination
-				Key:        nil,
-				Offset:     0,
-				Limit:      0,
-				CountTotal: false,
-				Reverse:    false,
-			},
+			DenomId:    req.DenomId,
+			Pagination: &req.Pagination,
 		}
+
 		bz, err := request.Marshal()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -336,15 +339,16 @@ func queryDenoms(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		request := types.QueryDenomsRequest{
-			Pagination: &query.PageRequest{ // TODO: Support pagination
-				Key:        nil,
-				Offset:     0,
-				Limit:      0,
-				CountTotal: false,
-				Reverse:    false,
-			},
+		var req queryDenomsRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
 		}
+
+		request := types.QueryDenomsRequest{
+			Pagination: &req.Pagination,
+		}
+
 		bz, err := request.Marshal()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

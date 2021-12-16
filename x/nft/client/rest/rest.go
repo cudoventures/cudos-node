@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/gorilla/mux"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -80,4 +81,19 @@ type approveAllRequest struct {
 type queryIsApprovedForAllRequest struct {
 	Owner    string `json:"owner"`
 	Operator string `json:"operator"`
+}
+
+type queryDenomsRequest struct {
+	Pagination query.PageRequest `json:"pagination"`
+}
+
+type queryCollectionRequest struct {
+	DenomId    string            `json:"denom_id"`
+	Pagination query.PageRequest `json:"pagination"`
+}
+
+type queryOwnerRequest struct {
+	DenomId      string            `json:"denom_id"`
+	OwnerAddress string            `json:"owner_address"`
+	Pagination   query.PageRequest `json:"pagination"`
 }
