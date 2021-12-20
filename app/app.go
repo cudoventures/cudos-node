@@ -517,6 +517,8 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
+	// NOTE: Gravity module must occur before genutils so that the pool are propertly initiallized
+	// before gextxs
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -528,13 +530,13 @@ func New(
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
+		gravitytypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
 		cudoMinttypes.ModuleName,
-		gravitytypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		nftmoduletypes.ModuleName,
 	)
