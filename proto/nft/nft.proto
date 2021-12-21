@@ -10,22 +10,23 @@ option (gogoproto.goproto_getters_all) = false;
 message BaseNFT {
     option (gogoproto.equal) = true;
 
-    string id = 1;
+    string id = 1 ;
     string name = 2;
-    string uri = 3 [ (gogoproto.customname) = "URI" ];
-    string data = 4;
+    string uri = 3 [ (gogoproto.customname) = "URI", (gogoproto.jsontag) = "uri" ];
+    string data = 4 [(gogoproto.jsontag) = "data"];
     string owner = 5;
-    map<string, bool> approvedAddresses = 6;
+    map<string, bool> approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
 }
 
 // Denom defines a type of NFT
 message Denom {
     option (gogoproto.equal) = true;
 
-    string id = 1;
-    string name = 2;
-    string schema = 3;
-    string creator = 4;
+    string id = 1  [(gogoproto.jsontag) = "id"];
+    string name = 2 [(gogoproto.jsontag) = "name"];
+    string schema = 3 [(gogoproto.jsontag) = "schema"];
+    string creator = 4 [(gogoproto.jsontag) = "creator"];
+    string symbol = 5 [(gogoproto.jsontag) = "symbol"];
 }
 
 // IDCollection defines a type of collection with specified ID

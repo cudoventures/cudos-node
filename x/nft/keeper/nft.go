@@ -29,7 +29,7 @@ func (k Keeper) GetBaseNFT(ctx sdk.Context, denomID, tokenID string) (nft types.
 
 	bz := store.Get(types.KeyNFT(denomID, tokenID))
 	if bz == nil {
-		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: %s", denomID)
+		return types.BaseNFT{}, sdkerrors.Wrapf(types.ErrNotFoundNFT, "not found NFT: denomId: %s, tokenId: %s", denomID, tokenID)
 	}
 
 	var baseNFT types.BaseNFT
@@ -104,4 +104,19 @@ func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, addressToR
 func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft exported.NFT) {
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyNFT(denomID, nft.GetID()))
+}
+
+// GetNFTApprovedAddresses returns the approved addresses for the nft
+func (k Keeper) GetNFTApprovedAddresses(ctx sdk.Context, denomID, tokenID string) (approvedAddresses map[string]bool, err error) {
+	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", tokenID, denomID)
+	}
+
+	if nft.ApprovedAddresses == nil {
+		return nil,
+			sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved addresses for NFT %s from collection %s", tokenID, denomID)
+	}
+
+	return nft.ApprovedAddresses, nil
 }

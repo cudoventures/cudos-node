@@ -32,7 +32,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	if msg.Id == "" || msg.Name == "" {
 		return &types.MsgIssueDenomResponse{}, sdkerrors.Wrapf(types.ErrInvalidDenom, "DenomId or name cannot be empty!")
 	}
-	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, sender); err != nil {
+	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, msg.Symbol, sender); err != nil {
 		return nil, err
 	}
 

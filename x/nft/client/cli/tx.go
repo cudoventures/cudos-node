@@ -49,6 +49,7 @@ func GetCmdIssueDenom() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft issue <denom-id> "+
 				"--name=<denom-name> "+
+				"--symbol=<symbol-name> "+
 				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
@@ -70,6 +71,11 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			symbol, err := cmd.Flags().GetString(FlagDenomSymbol)
+			if err != nil {
+				return err
+			}
+
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
 				schema = string(optionsContent)
@@ -80,6 +86,8 @@ func GetCmdIssueDenom() *cobra.Command {
 				denomName,
 				schema,
 				clientCtx.GetFromAddress().String(),
+				"",
+				symbol,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -152,6 +160,7 @@ func GetCmdMintNFT() *cobra.Command {
 				tokenData,
 				sender,
 				recipient,
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -204,6 +213,7 @@ func GetCmdEditNFT() *cobra.Command {
 				tokenURI,
 				tokenData,
 				clientCtx.GetFromAddress().String(),
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -244,11 +254,12 @@ func GetCmdTransferNft() *cobra.Command {
 			msgSender := clientCtx.GetFromAddress().String()
 
 			msg := types.NewMsgTransferNft(
-				tokenId,
 				denomId,
+				tokenId,
 				from,
 				to,
 				msgSender,
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -296,6 +307,7 @@ func GetCmdApproveNft() *cobra.Command {
 				denomId,
 				sender,
 				approvedAddress,
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -338,6 +350,7 @@ func GetCmdApproveAllNFT() *cobra.Command {
 			msg := types.NewMsgApproveAllNft(
 				operator,
 				sender,
+				"",
 				approved,
 			)
 
@@ -387,6 +400,7 @@ func GetCmdRevokeNft() *cobra.Command {
 				sender,
 				denomId,
 				tokenId,
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -423,6 +437,7 @@ func GetCmdBurnNFT() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				args[1],
 				args[0],
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -26,6 +26,7 @@ func GetQueryCmd() *cobra.Command {
 	queryCmd.AddCommand(
 		GetCmdQueryDenom(),
 		GetCmdQueryDenomByName(),
+		GetCmdQueryDenomBySymbol(),
 		GetCmdQueryDenoms(),
 		GetCmdQueryCollection(),
 		GetCmdQuerySupply(),
@@ -87,6 +88,7 @@ func GetCmdQuerySupply() *cobra.Command {
 }
 
 // GetCmdQueryOwner queries all the NFTs owned by an account
+// todo: change the name of this to something like QueryAllNFTsOfOwner..
 func GetCmdQueryOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "owner [address]",
@@ -268,7 +270,42 @@ func GetCmdQueryDenomByName() *cobra.Command {
 	return cmd
 }
 
+// GetCmdQueryDenomBySymbol queries the specified denom by symbol
+func GetCmdQueryDenomBySymbol() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "denom-by-symbol [symbol]",
+		Long:    "Query the denom by the specified symbol.",
+		Example: fmt.Sprintf("$ %s query nft denom <symbol>", version.AppName),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if err := types.ValidateDenomSymbol(args[0]); err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.DenomBySymbol(
+				context.Background(),
+				&types.QueryDenomBySymbolRequest{Symbol: args[0]},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp.Denom)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
 // GetCmdQueryNFT queries a single NFTs from a collection
+// todo: rename this to QueryNFT in the Use:
 func GetCmdQueryNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "token [denom-id] [token-id]",

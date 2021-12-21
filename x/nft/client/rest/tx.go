@@ -14,21 +14,23 @@ import (
 	"cudos.org/cudos-node/x/nft/types"
 )
 
-func registerTxRoutes(cliCtx client.Context, r *mux.Router, queryRoute string) {
+func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	// Issue a denom
 	r.HandleFunc("/nft/nfts/denoms/issue", issueDenomHandlerFn(cliCtx)).Methods("POST")
 	// Mint an NFT
 	r.HandleFunc("/nft/nfts/mint", mintNFTHandlerFn(cliCtx)).Methods("POST")
 	// Update an NFT
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}", RestParamDenomID, RestParamTokenID), editNFTHandlerFn(cliCtx)).Methods("PUT")
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/edit/{%s}/{%s}", RestParamDenomID, RestParamTokenID), editNFTHandlerFn(cliCtx)).Methods("PUT")
 	// Transfer an NFT to an address
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/transfer", RestParamDenomID, RestParamTokenID), transferNFTHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/transfer/{%s}/{%s}", RestParamDenomID, RestParamTokenID), transferNFTHandlerFn(cliCtx)).Methods("POST")
 	// Approve NFT transfers for address
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/approve", RestParamDenomID, RestParamTokenID, RestParamMessage), approveNFTHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/approve/{%s}/{%s}", RestParamDenomID, RestParamTokenID), approveNFTHandlerFn(cliCtx)).Methods("POST")
 	// Revoke NFT transfers for address
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/revoke", RestParamDenomID, RestParamTokenID, RestParamMessage), revokeNFTHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/revoke/{%s}/{%s}", RestParamDenomID, RestParamTokenID), revokeNFTHandlerFn(cliCtx)).Methods("POST")
 	// Burn an NFT
-	r.HandleFunc(fmt.Sprintf("/nft/nfts/{%s}/{%s}/burn", RestParamDenomID, RestParamTokenID), burnNFTHandlerFn(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/burn/{%s}/{%s}", RestParamDenomID, RestParamTokenID), burnNFTHandlerFn(cliCtx)).Methods("POST")
+	// Approve All for address
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/approveAll"), approveAll(cliCtx)).Methods("POST")
 }
 
 func issueDenomHandlerFn(cliCtx client.Context) http.HandlerFunc {
@@ -44,7 +46,7 @@ func issueDenomHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		// create the message
-		msg := types.NewMsgIssueDenom(req.ID, req.Name, req.Schema, req.Owner)
+		msg := types.NewMsgIssueDenom(req.ID, req.Name, req.Schema, req.BaseReq.From, "", req.Symbol)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -66,7 +68,8 @@ func mintNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		if req.Recipient == "" {
-			req.Recipient = req.Owner
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "no recipient specified")
+			return
 		}
 		// create the message
 		msg := types.NewMsgMintNFT(
@@ -74,11 +77,12 @@ func mintNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			req.Name,
 			req.URI,
 			req.Data,
-			req.Owner,
+			req.BaseReq.From,
 			req.Recipient,
+			"",
 		)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if err2 := msg.ValidateBasic(); err2 != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err2.Error())
 			return
 		}
 		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, msg)
@@ -104,7 +108,9 @@ func editNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			vars[RestParamDenomID],
 			req.Name,
 			req.URI,
-			req.Data, req.Owner,
+			req.Data,
+			req.BaseReq.From,
+			"",
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -133,11 +139,12 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		vars := mux.Vars(r)
 		// create the message
 		msg := types.NewMsgTransferNft(
-			vars[RestParamTokenID],
 			vars[RestParamDenomID],
+			vars[RestParamTokenID],
 			req.From,
 			req.To,
-			req.BaseReq.From)
+			req.BaseReq.From,
+			"")
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -157,7 +164,7 @@ func approveNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.ToAddress); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.AddressToApprove); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -169,8 +176,9 @@ func approveNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		msg := types.NewMsgApproveNft(
 			tokenId,
 			denomId,
-			req.Owner,
-			req.ToAddress,
+			req.BaseReq.From,
+			req.AddressToApprove,
+			"",
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -191,7 +199,7 @@ func revokeNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
-		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+		if _, err := sdk.AccAddressFromBech32(req.AddressToRevoke); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -199,10 +207,11 @@ func revokeNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 		vars := mux.Vars(r)
 		// create the message
 		msg := types.NewMsgRevokeNft(
-			vars[RestParamTokenID],
+			req.AddressToRevoke,
+			req.BaseReq.From,
 			vars[RestParamDenomID],
-			req.Owner,
-			req.Recipient,
+			vars[RestParamTokenID],
+			"",
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -228,9 +237,37 @@ func burnNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 
 		// create the message
 		msg := types.NewMsgBurnNFT(
-			req.Owner,
+			req.BaseReq.From,
 			vars[RestParamTokenID],
 			vars[RestParamDenomID],
+			"",
+		)
+		if err := msg.ValidateBasic(); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, msg)
+	}
+}
+
+func approveAll(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req approveAllRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		// create the message
+		msg := types.NewMsgApproveAllNft(
+			req.ApprovedOperator,
+			req.BaseReq.From,
+			"",
+			req.Approved,
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

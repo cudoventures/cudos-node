@@ -172,6 +172,7 @@ The module gives the user the ability to either write(via transaction) or read(v
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
 | [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
+| [`denom-by-symbol`](#denom-by-symbol)                             | Queries for a  [`denomination`](#Denom) by denomination symbol                                                                  |
 | [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
 | [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#Collections).                                                                                                 |
 | [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
@@ -179,6 +180,10 @@ The module gives the user the ability to either write(via transaction) or read(v
 | [`token`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#Collections).
 | [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
 | [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
+
+
+## Usage from inside a CosmWasm smart contract
+You can check how to use the module from a rust smart contract in the [`cudos-cosmwasm-bindings`](https://github.com/CudoVentures/cudos-cosmwasm-bindings)
 
 ## Full commands info:
 
@@ -192,6 +197,7 @@ The module gives the user the ability to either write(via transaction) or read(v
   - `denom-id` `string` `Unique Id that identifies the denom. Must be all lowercase` `required: true`
 - flags: 
   - `--name` `string` `The unique name of the denom.` `required: true`
+  - `--symbol` `string` `The unique symbol of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
@@ -200,7 +206,7 @@ The module gives the user the ability to either write(via transaction) or read(v
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --symbol=<denom-symbol> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### `mint`
@@ -370,6 +376,22 @@ $ cudos-noded query nft denom <denomId>
 $ cudos-noded query nft denom <denomName>
 ```
 
+### `denom-by-symbol`
+
+> Query the denom by the specified denom symbol.
+
+- arguments:
+  - `symbol` `string` `The denom symbol to search for` `required: true`
+- flags:
+  - none
+
+**Example:**
+
+``` bash
+$ cudos-noded query nft denom <symbol>
+```
+
+
 ### `denoms`
 
 > Query all denominations of all collections of NFTs.
@@ -417,12 +439,12 @@ $ cudos-noded query nft supply <denom-id>
 
 ### `owner`
 
-> Get the NFTs owned by an account address.
+> Get the NFTs owned by an account address for a given denom.
 
 - arguments:
   - `address`: `The address of the owner.` `required:true`
 - flags:
-  - `--denom-id`: `The id of the denom` `required:true`
+  - `--denom-id`: `The id of the denom` `required:false`
   
 **Example:**
 ``` bash
@@ -549,6 +571,7 @@ type IDCollection struct {
 type Denom struct {
 	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
 	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
 	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
 }
@@ -565,4 +588,643 @@ type Denom struct {
 	EventTypeEditNFT       = "edit_nft"
 	EventTypeMintNFT       = "mint_nft"
 	EventTypeBurnNFT       = "burn_nft"
+```
+
+## API Endpoints
+> default API local url: localhost:1317
+
+All the requests/response below are used as an example, for the full capabilities and parameters, consult the full command specifications
+
+### Transactions:
+
+### Issue Denom : POST
+http://localhost:1317/nft/nfts/denoms/issue
+
+Request:
+```json
+{
+  "owner": "test",
+  "id": "testdenom",
+  "name": "testname",
+  "symbol": "testDenomSymbol",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response: 
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgIssueDenom",
+        "value": {
+          "id": "testdenom",
+          "name": "testname",
+          "test_denom_symbol": "testDenomSymbol",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Mint NFT : POST
+http://localhost:1317/nft/nfts/mint
+
+Request:
+```json
+{
+  "denom_id": "testdenom",
+  "name": "testTokenName",
+  "uri": "testuri",
+  "data": "testdata",
+  "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgMintNFT",
+        "value": {
+          "denom_id": "testdenom",
+          "name": "testTokenName",
+          "uri": "testuri",
+          "data": "testdata",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Edit NFT : PUT
+http://localhost:1317/nft/nfts/edit/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "uri": "testuri",
+  "data": "testdata",
+  "name": "testname",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgEditNFT",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "name": "testname",
+          "uri": "testuri",
+          "data": "testdata",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Transfer NFT : POST
+http://localhost:1317/nft/nfts/transfer/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "from": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "to": "cudos18vpe7dfn6038ceae0ndlxdyuvgafrk2y6klzkx",
+  "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgTransferNft",
+        "value": {
+          "denom_id": "testdenom",
+          "token_id": "1",
+          "from": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "to": "cudos18vpe7dfn6038ceae0ndlxdyuvgafrk2y6klzkx",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Approve NFT : POST
+http://localhost:1317/nft/nfts/approve/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "address_to_approve": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgApproveNft",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "approvedAddress": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Revoke NFT : POST
+http://localhost:1317/nft/nfts/revoke/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "address_to_revoke": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgRevokeNft",
+        "value": {
+          "addressToRevoke": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "denom_id": "testdenom",
+          "token_id": "1",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+
+### Burn NFT : POST
+http://localhost:1317/nft/nfts/revoke/{denomId}/{tokenId}
+
+Request:
+```json
+{
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgBurnNFT",
+        "value": {
+          "id": "1",
+          "denom_id": "testdenom",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Approve All : POST
+http://localhost:1317/nft/nfts/revoke/approveAll
+
+Request:
+```json
+{
+  "approved": true,
+  "approved_operator": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cudos.org/cudos-node/nft/MsgApproveAllNft",
+        "value": {
+          "operator": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+          "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+          "approved": true
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [],
+    "memo": "",
+    "timeout_height": "0"
+  }
+}
+```
+
+### Queries:
+
+### Query Denom By Id : GET
+http://localhost:1317/nft/denoms/{{denomId}}
+
+Response:
+```json
+{
+  "height": "4774",
+  "result": {
+    "denom": {
+      "id": "testdenom",
+      "name": "TESTDENOM",
+      "schema": "testschema",
+      "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+
+### Query Denom By Name: GET
+http://localhost:1317/nft/denoms/name/{{denomName}}
+
+Response:
+```json
+{
+  "height": "4994",
+  "result": {
+    "denom": {
+      "id": "testdenom1",
+      "name": "testDenomNewName",
+      "schema": "testschema",
+      "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+    }
+  }
+}
+```
+### Query Denom By Symbol: GET
+http://localhost:1317/nft/denoms/symbol/{{symbol}}
+
+Response:
+```json
+{
+  "height": "23",
+  "result": {
+    "denom": {
+      "id": "testdenom",
+      "name": "testName",
+      "schema": "",
+      "creator": "cudos1wye475erldt37cgj3kf4j35w24emhh0cdddg7z",
+      "symbol": "testSymbol"
+    }
+  }
+}
+```
+
+### Query All Denoms: POST
+http://localhost:1317/nft/denoms/
+
+Request:
+```json
+{}
+```
+
+Optional pagination:
+```json
+{ 
+    "pagination": {
+        "offset": "0",
+        "limit":  "5",
+        "count_total": true
+    }
+}
+```
+
+Response:
+```json
+{
+  "height": "5061",
+  "result": {
+    "denoms": [
+      {
+        "id": "testdenom",
+        "name": "TESTDENOM",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      },
+      {
+        "id": "testdenom1",
+        "name": "testDenomNewName",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      }
+    ],
+    "pagination": {
+      "total": "2"
+    }
+  }
+}
+```
+
+
+
+### Query Collection for a Denom: POST
+http://localhost:1317/nft/collection/{{denomId}}
+
+Request: Pagination is optional
+```json
+  {
+  "denom_id": "testdenom",
+  "pagination": {
+    "offset": "0",
+    "limit":  "5",
+    "count_total": true
+  }
+}
+```
+
+
+Response:
+```json
+{
+  "height": "5189",
+  "result": {
+    "collection": {
+      "denom": {
+        "id": "testdenom",
+        "name": "TESTDENOM",
+        "schema": "testschema",
+        "creator": "cudos13kkzjnz9t30dtkcevcvk2n2xu2n8mnzxuwnuur"
+      },
+      "nfts": [
+        {
+          "id": "1",
+          "name": "testtoken",
+          "uri": "",
+          "data": "testData",
+          "owner": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4"
+        }
+      ]
+    },
+    "pagination": {
+      "total": "1"
+    }
+  }
+}
+```
+
+### Query Supply for a Denom : GET
+> Gets the total NFT count for a given denomId
+
+
+http://localhost:1317/nft/collections/supply/{{denomId}}
+ 
+> TODO: Must add pagination support to request and handle in the node
+
+Response:
+```json
+{
+  "height": "5221",
+  "result": {
+    "amount": "1"
+  }
+}
+```
+
+### Query Owner  GET
+> Gets the NFTs for a given Owner ( Optional denomId )
+
+
+http://localhost:1317/nft/owners/{{ownerAddress}}/{denomId}
+Request:
+
+```json
+{
+    "denom_id": "testdenom",
+    "owner_address": "cudos1s6ncz2gyy0cgzzk5yctjx7yx7tyjzxnmnx9xlj",
+    "pagination": {
+        "offset": "1",
+        "limit":  "5",
+        "count_total": true
+    }
+}
+```
+
+Response:
+```json
+{
+  "height": "10001",
+  "result": {
+    "owner": {
+      "address": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4",
+      "id_collections": [
+        {
+          "denom_id": "testdenom",
+          "token_ids": [
+            "1"
+          ]
+        }
+      ]
+    },
+    "pagination": {
+      "total": "1"
+    }
+  }
+}
+```
+
+### Query NFT : GET
+> Gets the NFT by a given denomId and tokenId
+
+http://localhost:1317/nft/nfts/{{denomId}}/{{tokenId}}
+
+Response:
+```json
+{
+  "height": "10001",
+  "result": {
+    "nft": {
+      "id": "1",
+      "name": "testtoken",
+      "uri": "",
+      "data": "testData",
+      "owner": "cudos1ztwjs6cp8t369l6ckgv5fg8vzleqn3qdkycll4"
+    }
+  }
+}
+```
+
+Response with approved addresses:
+```json
+{
+    "height": "161",
+    "result": {
+        "nft": {
+            "id": "1",
+            "name": "testtoken",
+            "uri": "",
+            "data": "testData",
+            "owner": "cudos17najx40kq4f6yrslw6ggr5qm4meqs8p72jhv2f",
+            "approved_addresses": {
+                "cudos1yg8et80vfyjetyafqcpr8geyp2ypmnd3rk54z2": true
+            }
+        }
+    }
+}
+```
+
+### Query Approvals NFT : GET
+> Gets the approvals for a NFT
+
+http://localhost:1317/nft/approvals/{{denomId}}/{{tokenId}}
+
+Response:
+```json
+{
+  "height": "238",
+  "result": {
+    "approved_addresses": {
+      "cudos1yg8et80vfyjetyafqcpr8geyp2ypmnd3rk54z2": true,
+      "cudos1y43rjgknmk2hv3cpcu007crucwsgrv4n4rhmcs": true
+    }
+  }
+}
+```
+
+### Query IsApprovedForAll : POST
+> Gets the approvals for a NFT
+
+http://localhost:1317/nft/isApprovedForAll
+
+Request:
+```json
+{
+        "owner": "cudos1y43rjgknmk2hv3cpcu007crucwsgrv4n4rhmcs",
+        "operator": "cudos17najx40kq4f6yrslw6ggr5qm4meqs8p72jhv2f"
+}
+```
+
+Response:
+```json
+{
+  "height": "409",
+  "result": {
+    "is_approved": true
+  }
+}
 ```

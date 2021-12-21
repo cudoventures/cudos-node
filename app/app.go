@@ -372,10 +372,20 @@ func New(
 	if err != nil {
 		panic("error while reading wasm config: " + err.Error())
 	}
+
+	app.NftKeeper = *nftmodulekeeper.NewKeeper(
+		appCodec,
+		keys[nftmoduletypes.StoreKey],
+		keys[nftmoduletypes.MemStoreKey],
+	)
+
+	supportedFeatures := "staking,stargate"
+	customEncoderOptions := GetCustomMsgEncodersOptions()
+	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
+	wasmOpts := append(customEncoderOptions, customQueryOptions...)
+
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "staking,stargate"
-	var wasmOpts []wasm.Option
 	app.wasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -440,11 +450,6 @@ func New(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.NftKeeper = *nftmodulekeeper.NewKeeper(
-		appCodec,
-		keys[nftmoduletypes.StoreKey],
-		keys[nftmoduletypes.MemStoreKey],
-	)
 	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
