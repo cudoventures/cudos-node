@@ -996,9 +996,24 @@ Response:
 }
 ```
 
-### Query All Denoms: GET
+### Query All Denoms: POST
 http://localhost:1317/nft/denoms/
-> TODO: Must add pagination support to request and handle in the node
+
+Request:
+```json
+{}
+```
+
+Optional pagination:
+```json
+{ 
+    "pagination": {
+        "offset": "0",
+        "limit":  "5",
+        "count_total": true
+    }
+}
+```
 
 Response:
 ```json
@@ -1028,9 +1043,21 @@ Response:
 
 
 
-### Query Collection for a Denom: GET
+### Query Collection for a Denom: POST
 http://localhost:1317/nft/collection/{{denomId}}
-> TODO: Must add pagination support to request and handle in the node
+
+Request: Pagination is optional
+```json
+  {
+  "denom_id": "testdenom",
+  "pagination": {
+    "offset": "0",
+    "limit":  "5",
+    "count_total": true
+  }
+}
+```
+
 
 Response:
 ```json
@@ -1084,10 +1111,19 @@ Response:
 
 
 http://localhost:1317/nft/owners/{{ownerAddress}}/{denomId}
+Request:
 
-To query for all NFTs regardless of denom:  http://localhost:1317/nft/owners/{{ownerAddress}}/all
-
-> TODO: Must add pagination support to request and handle in the node
+```json
+{
+    "denom_id": "testdenom",
+    "owner_address": "cudos1s6ncz2gyy0cgzzk5yctjx7yx7tyjzxnmnx9xlj",
+    "pagination": {
+        "offset": "1",
+        "limit":  "5",
+        "count_total": true
+    }
+}
+```
 
 Response:
 ```json
