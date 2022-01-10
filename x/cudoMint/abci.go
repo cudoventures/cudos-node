@@ -10,8 +10,29 @@ import (
 )
 
 // Minting based on the formula f(t)=358 - 53 * t + 1.8 * t^2, where t is number of years passed since the release = 150mil, 7 sec - 150mils/(7)
+
+/*
+Minting is done on steps. The step is calculated in normalizeBlockHeightInc function. All blocks have the same steps.
+
+The step, with 14400 blocker per day, is 0.000000190154557620. This value has 18 decimal digits precision.
+It is calculated by dividing 10 (~years) at total number of blocks. This could lead to an infinity number of decimals which results in precision loss by rounding up to the 18th decimal digit.
+
+The calculation of how many tokens should be minted is done in the calculateMintedCoins function.
+It returns a decimal multiplied by the 10^24.
+Having in mind that the decimal that is multiplied has 18 decimal digits precision, the multiplication olaways results in a number without any decimal digits.
+That's why minter.MintRemainder is always zero => we do not need to add it to the mintAmountDec
+
+In the calculateMintedCoins function, the actual calculation is done by solving an integration in range [A; B].
+We ensure that the max argument pass to the integral is no larger than FinalNormTimePassed.
+This solves the problem with the precision loss that is aggregated in the accumulator (minter.NormTimePassed)
+
+
+minter.NormTimePassed holds the current step as accumulator. Each block it is incremented by the step. Thus resulting in no loss in precision because minter.NormTimePassed = blockNumber * step, which is number that has no more than 18 decimal digits.
+*/
+
 var (
 	// based on the assumption that we have 1 block per 5 seconds
+	// if actual blocks are generated at slower rate then the network will mint tokens more than 3652 days (~10 years)
 	denom               = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
 	totalDays           = sdk.NewInt(3652) // Hardcoded to 10 years
 	FinalNormTimePassed = sdk.NewDec(10)
@@ -31,8 +52,8 @@ func calculateIntegral(t sdk.Dec) sdk.Dec {
 }
 
 func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
-	prevStep := calculateIntegral(minter.NormTimePassed)
-	nextStep := calculateIntegral(minter.NormTimePassed.Add(increment))
+	prevStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
+	nextStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed.Add(increment), FinalNormTimePassed))
 	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to acudos
 }
 
