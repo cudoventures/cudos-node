@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"cudos.org/cudos-node/x/nft/exported"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 var _ exported.NFT = BaseNFT{}

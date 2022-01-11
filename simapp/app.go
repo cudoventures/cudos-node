@@ -17,9 +17,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"cudos.org/cudos-node/x/admin"
-	adminkeeper "cudos.org/cudos-node/x/admin/keeper"
-	admintypes "cudos.org/cudos-node/x/admin/types"
+	"github.com/CudoVentures/cudos-node/x/admin"
+	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
+	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -94,12 +94,12 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"cudos.org/cudos-node/x/cudoMint"
-	cudoMintkeeper "cudos.org/cudos-node/x/cudoMint/keeper"
-	cudoMinttypes "cudos.org/cudos-node/x/cudoMint/types"
-	nftmodule "cudos.org/cudos-node/x/nft"
-	nftmodulekeeper "cudos.org/cudos-node/x/nft/keeper"
-	nftmoduletypes "cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/cudoMint"
+	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
+	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
@@ -117,7 +117,7 @@ var (
 	ProposalsEnabled = "false"
 	// If set to non-empty string it must be comma-separated list of values that are all a subset
 	// of "EnableAllProposals" (takes precedence over ProposalsEnabled)
-	// https://cudos.org/cudos-node/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
+	// https://github.com/CudoVentures/cudos-node/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
 	EnableSpecificProposals = ""
 )
 

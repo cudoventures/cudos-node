@@ -1,12 +1,10 @@
-module cudos.org/cudos-node
+module github.com/CudoVentures/cudos-node
 
 go 1.15
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220111095234-c32d4907af44
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
-
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.44.5-cudos
 
 require (
 	github.com/CosmWasm/wasmd v0.17.0

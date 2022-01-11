@@ -3,7 +3,7 @@ package cudosnode.cudosnode.nft;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "cudos.org/cudos-node/x/nft/types";
+option go_package = "github.com/CudoVentures/cudos-node/x/nft/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // BaseNFT defines a non-fungible token

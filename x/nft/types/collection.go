@@ -1,7 +1,7 @@
 package types
 
 import (
-	"cudos.org/cudos-node/x/nft/exported"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 // NewCollection creates a new NFT Collection

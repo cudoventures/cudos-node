@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 
-	"cudos.org/cudos-node/x/nft/exported"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 var (
@@ -29,17 +29,17 @@ func init() {
 // (Amino is still needed for Ledger at the moment)
 // nolint: staticcheck
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgIssueDenom{}, "cudos.org/cudos-node/nft/MsgIssueDenom", nil)
-	cdc.RegisterConcrete(&MsgTransferNft{}, "cudos.org/cudos-node/nft/MsgTransferNft", nil)
-	cdc.RegisterConcrete(&MsgApproveNft{}, "cudos.org/cudos-node/nft/MsgApproveNft", nil)
-	cdc.RegisterConcrete(&MsgApproveAllNft{}, "cudos.org/cudos-node/nft/MsgApproveAllNft", nil)
-	cdc.RegisterConcrete(&MsgRevokeNft{}, "cudos.org/cudos-node/nft/MsgRevokeNft", nil)
-	cdc.RegisterConcrete(&MsgEditNFT{}, "cudos.org/cudos-node/nft/MsgEditNFT", nil)
-	cdc.RegisterConcrete(&MsgMintNFT{}, "cudos.org/cudos-node/nft/MsgMintNFT", nil)
-	cdc.RegisterConcrete(&MsgBurnNFT{}, "cudos.org/cudos-node/nft/MsgBurnNFT", nil)
+	cdc.RegisterConcrete(&MsgIssueDenom{}, "github.com/CudoVentures/cudos-node/nft/MsgIssueDenom", nil)
+	cdc.RegisterConcrete(&MsgTransferNft{}, "github.com/CudoVentures/cudos-node/nft/MsgTransferNft", nil)
+	cdc.RegisterConcrete(&MsgApproveNft{}, "github.com/CudoVentures/cudos-node/nft/MsgApproveNft", nil)
+	cdc.RegisterConcrete(&MsgApproveAllNft{}, "github.com/CudoVentures/cudos-node/nft/MsgApproveAllNft", nil)
+	cdc.RegisterConcrete(&MsgRevokeNft{}, "github.com/CudoVentures/cudos-node/nft/MsgRevokeNft", nil)
+	cdc.RegisterConcrete(&MsgEditNFT{}, "github.com/CudoVentures/cudos-node/nft/MsgEditNFT", nil)
+	cdc.RegisterConcrete(&MsgMintNFT{}, "github.com/CudoVentures/cudos-node/nft/MsgMintNFT", nil)
+	cdc.RegisterConcrete(&MsgBurnNFT{}, "github.com/CudoVentures/cudos-node/nft/MsgBurnNFT", nil)
 
 	cdc.RegisterInterface((*exported.NFT)(nil), nil)
-	cdc.RegisterConcrete(&BaseNFT{}, "cudos.org/cudos-node/nft/BaseNFT", nil)
+	cdc.RegisterConcrete(&BaseNFT{}, "github.com/CudoVentures/cudos-node/nft/BaseNFT", nil)
 }
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {

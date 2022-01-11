@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"cudos.org/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetOwners_ReturnsCorrect_Owners() {

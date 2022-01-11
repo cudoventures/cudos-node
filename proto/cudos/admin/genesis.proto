@@ -4,7 +4,7 @@ package cudosnode.cudosnode.admin;
 
 // this line is used by starport scaffolding # genesis/proto/import
 
-option go_package = "cudos.org/cudos-node/x/admin/types";
+option go_package = "github.com/CudoVentures/cudos-node/x/admin/types";
 
 // GenesisState defines the capability module's genesis state.
 message GenesisState {

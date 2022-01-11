@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/assert"
 )
 

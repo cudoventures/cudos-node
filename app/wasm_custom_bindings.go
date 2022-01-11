@@ -1,10 +1,10 @@
 package app
 
 import (
-	nftCustomBindings "cudos.org/cudos-node/x/nft/custom-bindings"
-	nftKeeper "cudos.org/cudos-node/x/nft/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	nftCustomBindings "github.com/CudoVentures/cudos-node/x/nft/custom-bindings"
+	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 )
 
 func GetCustomMsgEncodersOptions() []wasmKeeper.Option {

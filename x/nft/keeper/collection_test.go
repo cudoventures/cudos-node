@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	"cudos.org/cudos-node/x/nft/keeper"
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestSetCollection_Correctly_MintsNFTsFromCollection() {

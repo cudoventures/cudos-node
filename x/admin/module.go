@@ -12,10 +12,10 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"cudos.org/cudos-node/x/admin/client/cli"
-	"cudos.org/cudos-node/x/admin/client/rest"
-	"cudos.org/cudos-node/x/admin/keeper"
-	"cudos.org/cudos-node/x/admin/types"
+	"github.com/CudoVentures/cudos-node/x/admin/client/cli"
+	"github.com/CudoVentures/cudos-node/x/admin/client/rest"
+	"github.com/CudoVentures/cudos-node/x/admin/keeper"
+	"github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"

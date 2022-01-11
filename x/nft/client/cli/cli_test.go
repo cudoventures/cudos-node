@@ -14,10 +14,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"cudos.org/cudos-node/simapp"
-	nftcli "cudos.org/cudos-node/x/nft/client/cli"
-	nfttestutil "cudos.org/cudos-node/x/nft/client/testutil"
-	nfttypes "cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/simapp"
+	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
+	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type IntegrationTestSuite struct {

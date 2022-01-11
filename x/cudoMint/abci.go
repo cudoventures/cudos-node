@@ -3,8 +3,8 @@ package cudoMint
 import (
 	"time"
 
-	"cudos.org/cudos-node/x/cudoMint/keeper"
-	"cudos.org/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

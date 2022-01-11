@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"cudos.org/cudos-node/x/nft/exported"
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // GetNFT set a specific NFT in the store from its index

@@ -621,7 +621,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgIssueDenom",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgIssueDenom",
         "value": {
           "id": "testdenom",
           "name": "testname",
@@ -666,7 +666,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgMintNFT",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgMintNFT",
         "value": {
           "denom_id": "testdenom",
           "name": "testTokenName",
@@ -711,7 +711,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgEditNFT",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgEditNFT",
         "value": {
           "id": "1",
           "denom_id": "testdenom",
@@ -756,7 +756,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgTransferNft",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgTransferNft",
         "value": {
           "denom_id": "testdenom",
           "token_id": "1",
@@ -798,7 +798,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgApproveNft",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgApproveNft",
         "value": {
           "id": "1",
           "denom_id": "testdenom",
@@ -839,7 +839,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgRevokeNft",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgRevokeNft",
         "value": {
           "addressToRevoke": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
           "denom_id": "testdenom",
@@ -880,7 +880,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgBurnNFT",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgBurnNFT",
         "value": {
           "id": "1",
           "denom_id": "testdenom",
@@ -921,7 +921,7 @@ Response:
   "value": {
     "msg": [
       {
-        "type": "cudos.org/cudos-node/nft/MsgApproveAllNft",
+        "type": "github.com/CudoVentures/cudos-node/nft/MsgApproveAllNft",
         "value": {
           "operator": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
           "sender": "cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",

@@ -2,7 +2,8 @@ package keeper_test
 
 import (
 	gocontext "context"
-	"cudos.org/cudos-node/x/nft/types"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestSupplyReturnsCorrect() {

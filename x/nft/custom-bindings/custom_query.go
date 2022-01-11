@@ -1,11 +1,12 @@
 package custom_bindings
 
 import (
-	nftKeeper "cudos.org/cudos-node/x/nft/keeper"
-	nftTypes "cudos.org/cudos-node/x/nft/types"
 	"encoding/json"
+
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
+	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )

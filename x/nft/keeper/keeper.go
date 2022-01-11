@@ -2,10 +2,11 @@ package keeper
 
 import (
 	"fmt"
-	"github.com/tendermint/tendermint/libs/log"
 	"strconv"
 
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -42,7 +43,7 @@ func NewKeeper(
 
 // Logger returns a module-specific logger.
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("cudos.org/cudos-node/%s", types.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("github.com/CudoVentures/cudos-node/%s", types.ModuleName))
 }
 
 // IssueDenom issues a denom according to the given params

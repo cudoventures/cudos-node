@@ -9,7 +9,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
-	"cudos.org/cudos-node/app/params"
+	"github.com/CudoVentures/cudos-node/app/params"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
 	"github.com/spf13/cast"
@@ -19,7 +19,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	"cudos.org/cudos-node/app"
+	"github.com/CudoVentures/cudos-node/app"
 	gravitycmd "github.com/althea-net/cosmos-gravity-bridge/module/cmd/gravity/cmd"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"

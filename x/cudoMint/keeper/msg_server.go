@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"cudos.org/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 type msgServer struct {

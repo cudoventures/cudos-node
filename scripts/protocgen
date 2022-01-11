@@ -25,6 +25,6 @@ done
 
 
 # move proto files to the right places
-cp -r cudos.org/cudos-node/* ./
+cp -r github.com/CudoVentures/cudos-node/* ./
 rm -rf github.com
 
