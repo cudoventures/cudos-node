@@ -6,6 +6,8 @@ replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVen
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220111092913-4117cd46b688
+
 require (
 	github.com/CosmWasm/wasmd v0.17.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
