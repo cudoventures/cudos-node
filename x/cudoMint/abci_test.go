@@ -1,10 +1,11 @@
 package cudoMint
 
 import (
-	"cudos.org/cudos-node/x/cudoMint/types"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
+
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestCalculateMintedCoins(t *testing.T) {

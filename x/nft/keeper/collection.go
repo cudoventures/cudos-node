@@ -9,8 +9,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"cudos.org/cudos-node/x/nft/exported"
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // SetGenesisCollection saves all NFTs and returns an error if there already exists or any one of the owner's bech32

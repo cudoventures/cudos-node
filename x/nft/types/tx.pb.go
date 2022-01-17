@@ -30,10 +30,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
 type MsgIssueDenom struct {
-	Id     string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name   string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Schema string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-	Sender string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+	Id                    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name                  string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Schema                string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
+	Sender                string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,5,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
+	Symbol                string `protobuf:"bytes,6,opt,name=symbol,proto3" json:"symbol,omitempty"`
 }
 
 func (m *MsgIssueDenom) Reset()         { *m = MsgIssueDenom{} }
@@ -108,11 +110,12 @@ var xxx_messageInfo_MsgIssueDenomResponse proto.InternalMessageInfo
 
 // MsgTransferNft defines an SDK message for transferring an NFT to recipient.
 type MsgTransferNft struct {
-	TokenId string `protobuf:"bytes,1,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
-	DenomId string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	From    string `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
-	To      string `protobuf:"bytes,4,opt,name=to,proto3" json:"to,omitempty"`
-	Sender  string `protobuf:"bytes,5,opt,name=sender,proto3" json:"sender,omitempty"`
+	DenomId               string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	TokenId               string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
+	From                  string `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
+	To                    string `protobuf:"bytes,4,opt,name=to,proto3" json:"to,omitempty"`
+	Sender                string `protobuf:"bytes,5,opt,name=sender,proto3" json:"sender,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,6,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgTransferNft) Reset()         { *m = MsgTransferNft{} }
@@ -187,10 +190,11 @@ var xxx_messageInfo_MsgTransferNftResponse proto.InternalMessageInfo
 
 // MsgApproveNft defines an SDK message for granted approval.
 type MsgApproveNft struct {
-	Id              string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	DenomId         string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	Sender          string `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
-	ApprovedAddress string `protobuf:"bytes,4,opt,name=approvedAddress,proto3" json:"approvedAddress,omitempty"`
+	Id                    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	DenomId               string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	Sender                string `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
+	ApprovedAddress       string `protobuf:"bytes,4,opt,name=approvedAddress,proto3" json:"approvedAddress,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,5,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgApproveNft) Reset()         { *m = MsgApproveNft{} }
@@ -264,9 +268,10 @@ func (m *MsgApproveNftResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgApproveNftResponse proto.InternalMessageInfo
 
 type MsgApproveAllNft struct {
-	Operator string `protobuf:"bytes,1,opt,name=operator,proto3" json:"operator,omitempty"`
-	Sender   string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
-	Approved bool   `protobuf:"varint,3,opt,name=approved,proto3" json:"approved,omitempty"`
+	Operator              string `protobuf:"bytes,1,opt,name=operator,proto3" json:"operator,omitempty"`
+	Sender                string `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
+	Approved              bool   `protobuf:"varint,3,opt,name=approved,proto3" json:"approved,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,4,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgApproveAllNft) Reset()         { *m = MsgApproveAllNft{} }
@@ -341,10 +346,11 @@ var xxx_messageInfo_MsgApproveAllNftResponse proto.InternalMessageInfo
 
 // MsgRevokeNft defines an SDK message for transferring an NFT to recipient.
 type MsgRevokeNft struct {
-	AddressToRevoke string `protobuf:"bytes,1,opt,name=addressToRevoke,proto3" json:"addressToRevoke,omitempty"`
-	DenomId         string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	TokenId         string `protobuf:"bytes,3,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" yaml:"denom_id"`
-	Sender          string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+	AddressToRevoke       string `protobuf:"bytes,1,opt,name=addressToRevoke,proto3" json:"addressToRevoke,omitempty"`
+	DenomId               string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	TokenId               string `protobuf:"bytes,3,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" yaml:"denom_id"`
+	Sender                string `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,5,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgRevokeNft) Reset()         { *m = MsgRevokeNft{} }
@@ -419,12 +425,13 @@ var xxx_messageInfo_MsgRevokeNftResponse proto.InternalMessageInfo
 
 // MsgEditNFT defines an SDK message for editing a nft.
 type MsgEditNFT struct {
-	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	DenomId string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	Name    string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	URI     string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
-	Data    string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
-	Sender  string `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
+	Id                    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	DenomId               string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	Name                  string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	URI                   string `protobuf:"bytes,4,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data                  string `protobuf:"bytes,5,opt,name=data,proto3" json:"data,omitempty"`
+	Sender                string `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,7,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgEditNFT) Reset()         { *m = MsgEditNFT{} }
@@ -499,12 +506,13 @@ var xxx_messageInfo_MsgEditNFTResponse proto.InternalMessageInfo
 
 // MsgMintNFT defines an SDK message for creating a new NFT.
 type MsgMintNFT struct {
-	DenomId   string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	Name      string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	URI       string `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
-	Data      string `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
-	Sender    string `protobuf:"bytes,5,opt,name=sender,proto3" json:"sender,omitempty"`
-	Recipient string `protobuf:"bytes,6,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	DenomId               string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	Name                  string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	URI                   string `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data                  string `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	Sender                string `protobuf:"bytes,5,opt,name=sender,proto3" json:"sender,omitempty"`
+	Recipient             string `protobuf:"bytes,6,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,7,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgMintNFT) Reset()         { *m = MsgMintNFT{} }
@@ -579,9 +587,10 @@ var xxx_messageInfo_MsgMintNFTResponse proto.InternalMessageInfo
 
 // MsgBurnNFT defines an SDK message for burning a NFT.
 type MsgBurnNFT struct {
-	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	DenomId string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
-	Sender  string `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
+	Id                    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	DenomId               string `protobuf:"bytes,2,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	Sender                string `protobuf:"bytes,3,opt,name=sender,proto3" json:"sender,omitempty"`
+	ContractAddressSigner string `protobuf:"bytes,4,opt,name=contractAddressSigner,proto3" json:"contractAddressSigner,omitempty"`
 }
 
 func (m *MsgBurnNFT) Reset()         { *m = MsgBurnNFT{} }
@@ -676,52 +685,56 @@ func init() {
 func init() { proto.RegisterFile("nft/tx.proto", fileDescriptor_09d30374d974e015) }
 
 var fileDescriptor_09d30374d974e015 = []byte{
-	// 718 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0x3f, 0x6f, 0xd3, 0x4e,
-	0x18, 0xc7, 0xe3, 0x38, 0xbf, 0x24, 0x7d, 0x7e, 0xfd, 0x83, 0x8e, 0xd2, 0xa6, 0x16, 0x72, 0xab,
-	0x20, 0xa0, 0x08, 0xd5, 0x11, 0xb0, 0x75, 0x40, 0x6a, 0x04, 0x48, 0x19, 0xd2, 0xc1, 0x2a, 0x0b,
-	0x0c, 0xc8, 0xf4, 0x2e, 0xae, 0x69, 0xe3, 0xb3, 0xee, 0x9c, 0xaa, 0x7d, 0x17, 0x6c, 0x4c, 0x48,
-	0x48, 0xcc, 0xac, 0x2c, 0xbc, 0x81, 0x8e, 0x1d, 0x99, 0x2a, 0x48, 0x17, 0x66, 0x5e, 0x01, 0xf2,
-	0xf9, 0x6c, 0x9f, 0xd3, 0xf6, 0x94, 0x0a, 0xb6, 0xbb, 0xc7, 0xdf, 0xbb, 0xe7, 0xf3, 0xbd, 0x7b,
-	0xee, 0x49, 0x60, 0x36, 0x1c, 0xc4, 0x9d, 0xf8, 0xc8, 0x89, 0x18, 0x8d, 0x29, 0x5a, 0xde, 0x1d,
-	0x61, 0xca, 0x43, 0x8a, 0x89, 0x53, 0x8c, 0xc2, 0x41, 0x6c, 0x2d, 0xfa, 0xd4, 0xa7, 0x42, 0xd3,
-	0x49, 0x46, 0xa9, 0xbc, 0x1d, 0xc0, 0x5c, 0x9f, 0xfb, 0x3d, 0xce, 0x47, 0xe4, 0x19, 0x09, 0xe9,
-	0x10, 0xcd, 0x43, 0x35, 0xc0, 0x2d, 0x63, 0xcd, 0x58, 0x9f, 0x71, 0xab, 0x01, 0x46, 0x08, 0x6a,
-	0xa1, 0x37, 0x24, 0xad, 0xaa, 0x88, 0x88, 0x31, 0x5a, 0x82, 0x3a, 0xdf, 0xdd, 0x23, 0x43, 0xaf,
-	0x65, 0x8a, 0xa8, 0x9c, 0x89, 0x38, 0x09, 0x31, 0x61, 0xad, 0x9a, 0x8c, 0x8b, 0xd9, 0x66, 0xed,
-	0xd7, 0xa7, 0x55, 0xa3, 0xbd, 0x0c, 0xb7, 0x4a, 0xa9, 0x5c, 0xc2, 0x23, 0x1a, 0x72, 0xd2, 0xfe,
-	0x68, 0xc0, 0x7c, 0x9f, 0xfb, 0x3b, 0xcc, 0x0b, 0xf9, 0x80, 0xb0, 0xed, 0x41, 0x8c, 0x56, 0xa0,
-	0x19, 0xd3, 0x7d, 0x12, 0xbe, 0xc9, 0x59, 0x1a, 0x62, 0xde, 0xc3, 0xc8, 0x81, 0x26, 0x4e, 0x96,
-	0x27, 0x9f, 0x04, 0x54, 0xf7, 0xe6, 0xef, 0xb3, 0xd5, 0x85, 0x63, 0x6f, 0x78, 0xb0, 0xd9, 0xce,
-	0xbe, 0xb4, 0xdd, 0x86, 0x18, 0xf6, 0x84, 0x81, 0x01, 0xa3, 0x43, 0x89, 0x2a, 0xc6, 0x89, 0xc9,
-	0x98, 0x4a, 0xc8, 0x6a, 0x4c, 0x15, 0xf0, 0xff, 0x2e, 0x01, 0x6f, 0xc1, 0x52, 0x19, 0x2f, 0x27,
-	0xff, 0x60, 0x88, 0xe3, 0xdb, 0x8a, 0x22, 0x46, 0x0f, 0x49, 0x02, 0x3e, 0x79, 0x7c, 0xd7, 0xa5,
-	0x2d, 0x48, 0x4c, 0x95, 0x04, 0xad, 0xc3, 0x82, 0x97, 0x66, 0xc1, 0x5b, 0x18, 0x33, 0xc2, 0xb9,
-	0xc4, 0x9f, 0x0c, 0x97, 0x0e, 0xbb, 0x00, 0xcb, 0x91, 0xf7, 0xe0, 0x46, 0xf1, 0x61, 0xeb, 0xe0,
-	0x20, 0x81, 0xb6, 0xa0, 0x49, 0x23, 0xc2, 0xbc, 0x98, 0x32, 0x89, 0x9e, 0xcf, 0x15, 0xa0, 0x6a,
-	0x09, 0xc8, 0x82, 0x66, 0x96, 0x59, 0xa0, 0x36, 0xdd, 0x7c, 0x2e, 0x11, 0x2c, 0x68, 0x4d, 0x66,
-	0xca, 0x29, 0xbe, 0x1a, 0x30, 0xdb, 0xe7, 0xbe, 0x4b, 0x0e, 0xe9, 0xbe, 0x38, 0xb7, 0xc4, 0x5f,
-	0x6a, 0x60, 0x87, 0xa6, 0x51, 0x49, 0x32, 0x19, 0xbe, 0xf6, 0x89, 0x3a, 0x4a, 0x29, 0x99, 0x1a,
-	0x7d, 0x56, 0x5f, 0xfa, 0x22, 0x5e, 0x82, 0x45, 0x95, 0x3b, 0x37, 0xf4, 0xc5, 0x00, 0xe8, 0x73,
-	0xff, 0x39, 0x0e, 0xe2, 0xed, 0x17, 0x3b, 0x7f, 0x5d, 0x06, 0xd9, 0xab, 0x33, 0x95, 0x57, 0xb7,
-	0x02, 0xe6, 0x88, 0x05, 0x29, 0x55, 0xb7, 0x31, 0x3e, 0x5b, 0x35, 0x5f, 0xba, 0x3d, 0x37, 0x89,
-	0x25, 0x72, 0xec, 0xc5, 0x9e, 0xac, 0x5e, 0x31, 0x56, 0x7c, 0xd4, 0x2f, 0xf1, 0xb1, 0x08, 0xa8,
-	0xc0, 0xcd, 0x5d, 0x7c, 0x4b, 0x5d, 0xf4, 0x83, 0x50, 0xb8, 0x50, 0xa9, 0x8d, 0x6b, 0x50, 0x57,
-	0x2f, 0x52, 0x9b, 0x1a, 0xea, 0xda, 0xa5, 0xd4, 0xa5, 0x97, 0x88, 0x6e, 0xc3, 0x0c, 0x23, 0xbb,
-	0x41, 0x14, 0x90, 0x30, 0x96, 0x86, 0x8a, 0x40, 0xc9, 0x93, 0x84, 0xcf, 0x3d, 0xbd, 0x13, 0x96,
-	0xba, 0x23, 0x16, 0xfe, 0x8b, 0x8b, 0xb9, 0xe2, 0x7d, 0x96, 0x08, 0x64, 0xae, 0x8c, 0xe0, 0xf1,
-	0xe7, 0x3a, 0x98, 0x7d, 0xee, 0x23, 0x0c, 0xa0, 0x34, 0xda, 0x7b, 0xce, 0x15, 0x9d, 0xda, 0x29,
-	0x75, 0x49, 0xcb, 0x99, 0x4e, 0x97, 0x65, 0x43, 0xaf, 0xa1, 0x91, 0xdd, 0xdf, 0x1d, 0xdd, 0x52,
-	0x29, 0xb2, 0x1e, 0x4e, 0x21, 0x52, 0x37, 0xcf, 0x4a, 0x5c, 0xbb, 0xb9, 0x14, 0xe9, 0x37, 0x9f,
-	0xa8, 0x3e, 0xe4, 0xc3, 0xff, 0xea, 0x6f, 0xc0, 0x7d, 0xdd, 0x5a, 0x45, 0x68, 0x75, 0xa6, 0x14,
-	0xe6, 0x89, 0x30, 0x80, 0xd2, 0xb2, 0xb5, 0x17, 0x51, 0xe8, 0xf4, 0x17, 0x71, 0xb1, 0xd3, 0xa2,
-	0x21, 0xcc, 0x95, 0xdb, 0xec, 0x83, 0x29, 0x36, 0x48, 0xa5, 0xd6, 0xa3, 0xa9, 0xa5, 0x79, 0x3a,
-	0x0f, 0x66, 0x8a, 0x76, 0x7a, 0x57, 0xb7, 0x3e, 0x97, 0x59, 0x1b, 0x53, 0xc9, 0xd4, 0xdb, 0xcf,
-	0xde, 0x91, 0xf6, 0xf6, 0xa5, 0x48, 0x7f, 0xfb, 0x13, 0xaf, 0xa4, 0xfb, 0xf4, 0xe4, 0xa7, 0x5d,
-	0x39, 0x19, 0xdb, 0xc6, 0xe9, 0xd8, 0x36, 0x7e, 0x8c, 0x6d, 0xe3, 0xfd, 0xb9, 0x5d, 0x39, 0x3d,
-	0xb7, 0x2b, 0xdf, 0xcf, 0xed, 0xca, 0xab, 0x35, 0xb1, 0xde, 0xa1, 0xcc, 0xef, 0x88, 0xd1, 0x46,
-	0xb2, 0x55, 0xe7, 0xa8, 0x23, 0xfe, 0xfb, 0x1c, 0x47, 0x84, 0xbf, 0xad, 0x8b, 0x3f, 0x34, 0x4f,
-	0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0x73, 0xa6, 0x56, 0x41, 0x0f, 0x09, 0x00, 0x00,
+	// 777 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0xc7, 0xe3, 0x38, 0x4d, 0xd2, 0xa1, 0x1f, 0xc8, 0xf4, 0xc3, 0xb5, 0x50, 0x5a, 0x05, 0x01,
+	0x45, 0xa8, 0x8e, 0xf8, 0x38, 0xf5, 0x80, 0xd4, 0x08, 0x90, 0x72, 0x48, 0x0f, 0xa1, 0x5c, 0xe0,
+	0x80, 0xdc, 0x78, 0x63, 0xac, 0x26, 0xbb, 0xd6, 0xee, 0xa6, 0x6a, 0xdf, 0x82, 0x27, 0x40, 0x95,
+	0x78, 0x08, 0x5e, 0xa1, 0x17, 0xa4, 0x4a, 0x5c, 0x38, 0x55, 0x90, 0x5c, 0x38, 0x70, 0x81, 0x27,
+	0x40, 0x5e, 0xaf, 0xbf, 0x42, 0xeb, 0xba, 0xb4, 0xb7, 0xdd, 0xf1, 0x7f, 0x67, 0xe7, 0x37, 0xb3,
+	0xbb, 0x63, 0x98, 0xc1, 0x3d, 0xde, 0xe0, 0x07, 0xa6, 0x47, 0x09, 0x27, 0xda, 0x72, 0x77, 0x68,
+	0x13, 0x86, 0x89, 0x8d, 0xcc, 0x78, 0x84, 0x7b, 0xdc, 0x58, 0x70, 0x88, 0x43, 0x84, 0xa6, 0xe1,
+	0x8f, 0x02, 0x79, 0xfd, 0xb3, 0x02, 0xb3, 0x6d, 0xe6, 0xb4, 0x18, 0x1b, 0xa2, 0xe7, 0x08, 0x93,
+	0x81, 0x36, 0x07, 0x45, 0xd7, 0xd6, 0x95, 0x35, 0x65, 0x7d, 0xba, 0x53, 0x74, 0x6d, 0x4d, 0x83,
+	0x12, 0xb6, 0x06, 0x48, 0x2f, 0x0a, 0x8b, 0x18, 0x6b, 0x4b, 0x50, 0x66, 0xdd, 0xf7, 0x68, 0x60,
+	0xe9, 0xaa, 0xb0, 0xca, 0x99, 0xb0, 0x23, 0x6c, 0x23, 0xaa, 0x97, 0xa4, 0x5d, 0xcc, 0xb4, 0xa7,
+	0xb0, 0xd8, 0x25, 0x98, 0x53, 0xab, 0xcb, 0xb7, 0x6c, 0x9b, 0x22, 0xc6, 0x5e, 0xb9, 0x0e, 0x46,
+	0x54, 0x9f, 0x12, 0xb2, 0xb3, 0x3f, 0x0a, 0x6f, 0x87, 0x83, 0x5d, 0xd2, 0xd7, 0xcb, 0xd2, 0x9b,
+	0x98, 0x6d, 0x96, 0x7e, 0x1e, 0xad, 0x2a, 0xf5, 0x65, 0x58, 0x4c, 0x05, 0xde, 0x41, 0xcc, 0x23,
+	0x98, 0xa1, 0xfa, 0x57, 0x05, 0xe6, 0xda, 0xcc, 0xd9, 0xa1, 0x16, 0x66, 0x3d, 0x44, 0xb7, 0x7b,
+	0x5c, 0x33, 0xa1, 0x6a, 0xfb, 0x9a, 0x77, 0x21, 0x59, 0xf3, 0xd6, 0x9f, 0xd3, 0xd5, 0xf9, 0x43,
+	0x6b, 0xd0, 0xdf, 0xac, 0x87, 0x5f, 0xea, 0x9d, 0x8a, 0x18, 0xb6, 0x6c, 0x6d, 0x05, 0xaa, 0x9c,
+	0xec, 0x21, 0xec, 0xeb, 0x03, 0xee, 0x8a, 0x98, 0xb7, 0x44, 0x3a, 0x7a, 0x94, 0x0c, 0x24, 0xb8,
+	0x18, 0xfb, 0x29, 0xe3, 0x44, 0x22, 0x17, 0x39, 0x49, 0xa4, 0x61, 0x2a, 0x5f, 0x1a, 0xca, 0x19,
+	0x69, 0x90, 0xb8, 0x3a, 0x2c, 0xa5, 0xa1, 0x22, 0xde, 0x2f, 0x41, 0x09, 0xb7, 0x3c, 0x8f, 0x92,
+	0x7d, 0xe4, 0xe3, 0x4e, 0x96, 0x30, 0x89, 0x5f, 0xcc, 0x81, 0x1f, 0xc7, 0xaf, 0xa6, 0xe2, 0x5f,
+	0x87, 0x79, 0x2b, 0xd8, 0xc5, 0x96, 0x21, 0x4a, 0xe8, 0x49, 0xf3, 0xff, 0x15, 0x3c, 0x55, 0xd8,
+	0x18, 0x27, 0x02, 0xfd, 0xa8, 0xc0, 0xcd, 0xf8, 0xcb, 0x56, 0xbf, 0xef, 0xb3, 0x1a, 0x50, 0x25,
+	0x1e, 0xa2, 0x16, 0x27, 0x54, 0x12, 0x47, 0xf3, 0x04, 0x47, 0x31, 0xc5, 0x61, 0x40, 0x35, 0x0c,
+	0x58, 0x10, 0x56, 0x3b, 0xd1, 0xfc, 0xfc, 0xc8, 0x4b, 0x17, 0x47, 0x6e, 0x80, 0x3e, 0x19, 0x5f,
+	0x14, 0xfc, 0x2f, 0x05, 0x66, 0xda, 0xcc, 0xe9, 0xa0, 0x7d, 0xb2, 0x27, 0x8a, 0xe4, 0x27, 0x33,
+	0xf0, 0xb1, 0x43, 0x02, 0xab, 0x8c, 0x7f, 0xd2, 0x7c, 0xe9, 0xf2, 0x99, 0x89, 0xd3, 0xab, 0x66,
+	0xe8, 0xc3, 0x23, 0x7d, 0xad, 0xb7, 0x56, 0xa6, 0x62, 0x09, 0x16, 0x92, 0xb4, 0x51, 0x1a, 0xc6,
+	0x0a, 0x40, 0x9b, 0x39, 0x2f, 0x6c, 0x97, 0x6f, 0xbf, 0xdc, 0xb9, 0xf2, 0x49, 0x0d, 0x1f, 0x27,
+	0x35, 0xf1, 0x38, 0xad, 0x80, 0x3a, 0xa4, 0x6e, 0xc0, 0xd2, 0xac, 0x8c, 0x4e, 0x57, 0xd5, 0xd7,
+	0x9d, 0x56, 0xc7, 0xb7, 0xf9, 0x72, 0xdb, 0xe2, 0x96, 0x04, 0x10, 0xe3, 0x04, 0x7d, 0x39, 0x1f,
+	0x7d, 0xe5, 0x62, 0xfa, 0x05, 0xd0, 0x62, 0xc8, 0x88, 0xfd, 0x77, 0xc0, 0xde, 0x76, 0xb1, 0x60,
+	0xbf, 0xec, 0xa3, 0x74, 0xd6, 0x43, 0x2c, 0x59, 0xd5, 0x0c, 0xd6, 0xd2, 0x99, 0xac, 0xe9, 0x87,
+	0xe9, 0x36, 0x4c, 0x53, 0xd4, 0x75, 0x3d, 0x17, 0x61, 0x2e, 0xd3, 0x10, 0x1b, 0xae, 0x21, 0x13,
+	0x12, 0x39, 0xca, 0xc4, 0x51, 0x90, 0x89, 0xe6, 0x90, 0xe2, 0xeb, 0x38, 0x05, 0xe7, 0xbd, 0x57,
+	0x57, 0xb9, 0xcb, 0x41, 0xe0, 0x32, 0xc2, 0x30, 0xf0, 0xc7, 0x9f, 0xca, 0xa0, 0xb6, 0x99, 0xa3,
+	0xd9, 0x00, 0x89, 0x96, 0x79, 0xcf, 0x3c, 0xa7, 0xe9, 0x9a, 0xa9, 0x0e, 0x65, 0x98, 0xf9, 0x74,
+	0xe1, 0x6e, 0xda, 0x5b, 0xa8, 0x84, 0x87, 0xe5, 0x4e, 0xd6, 0x52, 0x29, 0x32, 0x1e, 0xe6, 0x10,
+	0x25, 0x9d, 0x87, 0xb7, 0x30, 0xd3, 0xb9, 0x14, 0x65, 0x3b, 0x9f, 0x38, 0xea, 0x9a, 0x03, 0x37,
+	0x92, 0xfd, 0xf7, 0x7e, 0xd6, 0xda, 0x84, 0xd0, 0x68, 0xe4, 0x14, 0x46, 0x1b, 0xd9, 0x00, 0x89,
+	0xc6, 0x97, 0x59, 0x88, 0x58, 0x97, 0x5d, 0x88, 0x7f, 0x3b, 0x8f, 0x36, 0x80, 0xd9, 0x74, 0xd7,
+	0x79, 0x90, 0xc3, 0x41, 0x20, 0x35, 0x1e, 0xe5, 0x96, 0x46, 0xdb, 0x59, 0x30, 0x1d, 0xf7, 0x89,
+	0xbb, 0x59, 0xeb, 0x23, 0x99, 0xb1, 0x91, 0x4b, 0x96, 0xac, 0x7e, 0x78, 0xfb, 0x32, 0xab, 0x2f,
+	0x45, 0xd9, 0xd5, 0x9f, 0xb8, 0x25, 0xcd, 0x67, 0xc7, 0x3f, 0x6a, 0x85, 0xe3, 0x51, 0x4d, 0x39,
+	0x19, 0xd5, 0x94, 0xef, 0xa3, 0x9a, 0xf2, 0x61, 0x5c, 0x2b, 0x9c, 0x8c, 0x6b, 0x85, 0x6f, 0xe3,
+	0x5a, 0xe1, 0xcd, 0x9a, 0x58, 0x6f, 0x12, 0xea, 0x34, 0xc4, 0x68, 0xc3, 0x77, 0xd5, 0x38, 0x68,
+	0x88, 0xdf, 0xd8, 0x43, 0x0f, 0xb1, 0xdd, 0xb2, 0xf8, 0x37, 0x7d, 0xf2, 0x37, 0x00, 0x00, 0xff,
+	0xff, 0xe1, 0xd2, 0x7c, 0x55, 0xda, 0x0a, 0x00, 0x00,
 }
 
 func (this *MsgIssueDenom) Equal(that interface{}) bool {
@@ -755,6 +768,12 @@ func (this *MsgIssueDenom) Equal(that interface{}) bool {
 	if this.Sender != that1.Sender {
 		return false
 	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
+		return false
+	}
+	if this.Symbol != that1.Symbol {
+		return false
+	}
 	return true
 }
 func (this *MsgTransferNft) Equal(that interface{}) bool {
@@ -776,10 +795,10 @@ func (this *MsgTransferNft) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.TokenId != that1.TokenId {
+	if this.DenomId != that1.DenomId {
 		return false
 	}
-	if this.DenomId != that1.DenomId {
+	if this.TokenId != that1.TokenId {
 		return false
 	}
 	if this.From != that1.From {
@@ -789,6 +808,9 @@ func (this *MsgTransferNft) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Sender != that1.Sender {
+		return false
+	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
 		return false
 	}
 	return true
@@ -824,6 +846,9 @@ func (this *MsgApproveNft) Equal(that interface{}) bool {
 	if this.ApprovedAddress != that1.ApprovedAddress {
 		return false
 	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
+		return false
+	}
 	return true
 }
 func (this *MsgApproveAllNft) Equal(that interface{}) bool {
@@ -852,6 +877,9 @@ func (this *MsgApproveAllNft) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Approved != that1.Approved {
+		return false
+	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
 		return false
 	}
 	return true
@@ -885,6 +913,9 @@ func (this *MsgRevokeNft) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Sender != that1.Sender {
+		return false
+	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
 		return false
 	}
 	return true
@@ -926,6 +957,9 @@ func (this *MsgEditNFT) Equal(that interface{}) bool {
 	if this.Sender != that1.Sender {
 		return false
 	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
+		return false
+	}
 	return true
 }
 func (this *MsgMintNFT) Equal(that interface{}) bool {
@@ -965,6 +999,9 @@ func (this *MsgMintNFT) Equal(that interface{}) bool {
 	if this.Recipient != that1.Recipient {
 		return false
 	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
+		return false
+	}
 	return true
 }
 func (this *MsgBurnNFT) Equal(that interface{}) bool {
@@ -993,6 +1030,9 @@ func (this *MsgBurnNFT) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Sender != that1.Sender {
+		return false
+	}
+	if this.ContractAddressSigner != that1.ContractAddressSigner {
 		return false
 	}
 	return true
@@ -1366,6 +1406,20 @@ func (m *MsgIssueDenom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Symbol) > 0 {
+		i -= len(m.Symbol)
+		copy(dAtA[i:], m.Symbol)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Symbol)))
+		i--
+		dAtA[i] = 0x32
+	}
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -1440,6 +1494,13 @@ func (m *MsgTransferNft) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x32
+	}
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -1461,17 +1522,17 @@ func (m *MsgTransferNft) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.DenomId)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.TokenId) > 0 {
 		i -= len(m.TokenId)
 		copy(dAtA[i:], m.TokenId)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.TokenId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.DenomId) > 0 {
+		i -= len(m.DenomId)
+		copy(dAtA[i:], m.DenomId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DenomId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1521,6 +1582,13 @@ func (m *MsgApproveNft) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.ApprovedAddress) > 0 {
 		i -= len(m.ApprovedAddress)
 		copy(dAtA[i:], m.ApprovedAddress)
@@ -1595,6 +1663,13 @@ func (m *MsgApproveAllNft) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if m.Approved {
 		i--
 		if m.Approved {
@@ -1665,6 +1740,13 @@ func (m *MsgRevokeNft) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x2a
+	}
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -1739,6 +1821,13 @@ func (m *MsgEditNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -1827,6 +1916,13 @@ func (m *MsgMintNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x3a
+	}
 	if len(m.Recipient) > 0 {
 		i -= len(m.Recipient)
 		copy(dAtA[i:], m.Recipient)
@@ -1915,6 +2011,13 @@ func (m *MsgBurnNFT) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ContractAddressSigner) > 0 {
+		i -= len(m.ContractAddressSigner)
+		copy(dAtA[i:], m.ContractAddressSigner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ContractAddressSigner)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Sender) > 0 {
 		i -= len(m.Sender)
 		copy(dAtA[i:], m.Sender)
@@ -1995,6 +2098,14 @@ func (m *MsgIssueDenom) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.ContractAddressSigner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Symbol)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -2013,11 +2124,11 @@ func (m *MsgTransferNft) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.TokenId)
+	l = len(m.DenomId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.DenomId)
+	l = len(m.TokenId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2030,6 +2141,10 @@ func (m *MsgTransferNft) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Sender)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ContractAddressSigner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2067,6 +2182,10 @@ func (m *MsgApproveNft) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.ContractAddressSigner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -2095,6 +2214,10 @@ func (m *MsgApproveAllNft) Size() (n int) {
 	}
 	if m.Approved {
 		n += 2
+	}
+	l = len(m.ContractAddressSigner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -2127,6 +2250,10 @@ func (m *MsgRevokeNft) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Sender)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ContractAddressSigner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2172,6 +2299,10 @@ func (m *MsgEditNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.ContractAddressSigner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -2214,6 +2345,10 @@ func (m *MsgMintNFT) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.ContractAddressSigner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
@@ -2241,6 +2376,10 @@ func (m *MsgBurnNFT) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Sender)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.ContractAddressSigner)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2419,6 +2558,70 @@ func (m *MsgIssueDenom) Unmarshal(dAtA []byte) error {
 			}
 			m.Sender = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Symbol", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Symbol = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2527,38 +2730,6 @@ func (m *MsgTransferNft) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.TokenId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
 			}
 			var stringLen uint64
@@ -2588,6 +2759,38 @@ func (m *MsgTransferNft) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.DenomId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TokenId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TokenId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -2684,6 +2887,38 @@ func (m *MsgTransferNft) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Sender = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2919,6 +3154,38 @@ func (m *MsgApproveNft) Unmarshal(dAtA []byte) error {
 			}
 			m.ApprovedAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -3109,6 +3376,38 @@ func (m *MsgApproveAllNft) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Approved = bool(v != 0)
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -3342,6 +3641,38 @@ func (m *MsgRevokeNft) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Sender = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3641,6 +3972,38 @@ func (m *MsgEditNFT) Unmarshal(dAtA []byte) error {
 			}
 			m.Sender = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -3939,6 +4302,38 @@ func (m *MsgMintNFT) Unmarshal(dAtA []byte) error {
 			}
 			m.Recipient = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -4140,6 +4535,38 @@ func (m *MsgBurnNFT) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Sender = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ContractAddressSigner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ContractAddressSigner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

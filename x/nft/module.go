@@ -2,11 +2,12 @@ package nft
 
 import (
 	"context"
-	"cudos.org/cudos-node/x/nft/simulation"
 	"encoding/json"
 	"fmt"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"math/rand"
+
+	"github.com/CudoVentures/cudos-node/x/nft/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -20,10 +21,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"cudos.org/cudos-node/x/nft/client/cli"
-	"cudos.org/cudos-node/x/nft/client/rest"
-	"cudos.org/cudos-node/x/nft/keeper"
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/client/cli"
+	"github.com/CudoVentures/cudos-node/x/nft/client/rest"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	// this line is used by starport scaffolding # ibc/module/import
 )
 
@@ -80,7 +81,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 
 // RegisterRESTRoutes registers the capability module's REST service handlers.
 func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rest.RegisterHandlers(clientCtx, rtr, types.RouterKey)
+	rest.RegisterHandlers(clientCtx, rtr)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.

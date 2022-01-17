@@ -14,10 +14,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"cudos.org/cudos-node/simapp"
-	nftcli "cudos.org/cudos-node/x/nft/client/cli"
-	nfttestutil "cudos.org/cudos-node/x/nft/client/testutil"
-	nfttypes "cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/simapp"
+	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
+	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type IntegrationTestSuite struct {
@@ -60,12 +60,14 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenURI := "uri"
 	tokenData := "data"
 	denomName := "name"
+	denomSymbol := "symbol"
 	denom := "denom"
 	schema := "schema"
 
 	//------test GetCmdIssueDenom()-------------
 	args := []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagDenomName, denomName),
+		fmt.Sprintf("--%s=%s", nftcli.FlagDenomSymbol, denomSymbol),
 		fmt.Sprintf("--%s=%s", nftcli.FlagSchema, schema),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -91,6 +93,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	denomItem := respType.(*nfttypes.Denom)
 	s.Require().Equal(denomName, denomItem.Name)
+	s.Require().Equal(denomSymbol, denomItem.Symbol)
 	s.Require().Equal(schema, denomItem.Schema)
 
 	//------test GetCmdQueryDenoms()-------------

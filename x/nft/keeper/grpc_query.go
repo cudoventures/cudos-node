@@ -11,7 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 var _ types.QueryServer = Keeper{}
@@ -112,6 +112,17 @@ func (k Keeper) DenomByName(c context.Context, request *types.QueryDenomByNameRe
 	return &types.QueryDenomByNameResponse{Denom: &denomObject}, nil
 }
 
+func (k Keeper) DenomBySymbol(c context.Context, request *types.QueryDenomBySymbolRequest) (*types.QueryDenomBySymbolResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	denomObject, err := k.GetDenomBySymbol(ctx, request.Symbol)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryDenomBySymbolResponse{Denom: &denomObject}, nil
+}
+
 func (k Keeper) Denoms(c context.Context, req *types.QueryDenomsRequest) (*types.QueryDenomsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
@@ -153,17 +164,11 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 func (k Keeper) GetApprovalsNFT(c context.Context, request *types.QueryApprovalsNFTRequest) (*types.QueryApprovalsNFTResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	nft, err := k.GetBaseNFT(ctx, request.DenomId, request.TokenId)
+	approvedAddresses, err := k.GetNFTApprovedAddresses(ctx, request.DenomId, request.TokenId)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", request.TokenId, request.DenomId)
+		return nil, err
 	}
-
-	if nft.ApprovedAddresses == nil {
-		return &types.QueryApprovalsNFTResponse{},
-			sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved addresses for NFT %s from collection %s", request.TokenId, request.DenomId)
-	}
-
-	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: nft.ApprovedAddresses}, nil
+	return &types.QueryApprovalsNFTResponse{ApprovedAddresses: approvedAddresses}, nil
 }
 
 func (k Keeper) QueryApprovalsIsApprovedForAll(c context.Context, request *types.QueryApprovalsIsApprovedForAllRequest) (*types.QueryApprovalsIsApprovedForAllResponse, error) {

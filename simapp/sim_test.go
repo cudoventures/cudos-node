@@ -32,8 +32,8 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"cudos.org/cudos-node/simapp/helpers"
-	nfttypes "cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/simapp/helpers"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // Get flags every time the simulator is run

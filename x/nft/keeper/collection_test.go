@@ -1,12 +1,12 @@
 package keeper_test
 
 import (
-	"cudos.org/cudos-node/x/nft/keeper"
-	"cudos.org/cudos-node/x/nft/types"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestSetCollection_Correctly_MintsNFTsFromCollection() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
 	nft := types.NewBaseNFT("", tokenNm, address, tokenURI, tokenData)
 	nft2 := types.NewBaseNFT("", tokenNm, address, tokenURI, tokenData)
@@ -35,7 +35,7 @@ func (suite *IntegrationTestKeeperSuite) TestSetCollection_Correctly_MintsNFTsFr
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetCollection_Returns_ValidCollection() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -51,9 +51,9 @@ func (suite *IntegrationTestKeeperSuite) TestGetCollection_Returns_ValidCollecti
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetSupply() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
-	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address)
+	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, denomSymbol2, address)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)

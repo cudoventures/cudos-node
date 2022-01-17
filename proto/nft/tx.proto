@@ -3,7 +3,7 @@ package cudosnode.cudosnode.nft;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "cudos.org/cudos-node/x/nft/types";
+option go_package = "github.com/CudoVentures/cudos-node/x/nft/types";
 option (gogoproto.goproto_getters_all) = false;
 
 // Msg defines the NFT Msg service.
@@ -41,6 +41,8 @@ message MsgIssueDenom {
     string name = 2;
     string schema = 3;
     string sender = 4;
+    string contractAddressSigner = 5;
+    string symbol = 6;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.
@@ -50,11 +52,12 @@ message MsgIssueDenomResponse {}
 message MsgTransferNft {
     option (gogoproto.equal) = true;
 
-    string token_id = 1;
-    string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    string token_id = 2;
     string from = 3;
     string to = 4;
     string sender = 5;
+    string contractAddressSigner = 6;
 }
 
 // MsgTransferNftResponse defines the Msg/TransferNft response type.
@@ -68,6 +71,7 @@ message MsgApproveNft {
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 3;
     string approvedAddress = 4;
+    string contractAddressSigner = 5;
 }
 
 // MsgApproveNft defines the Msg/Approve response type.
@@ -79,6 +83,7 @@ message MsgApproveAllNft {
     string  operator = 1;
     string  sender = 2;
     bool  approved = 3;
+    string contractAddressSigner = 4;
 
 }
 
@@ -94,6 +99,7 @@ message MsgRevokeNft {
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string token_id = 3 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 4;
+    string contractAddressSigner = 5;
 }
 
 // MsgRevokeNftResponse defines the Msg/RevokeNft response type.
@@ -109,6 +115,8 @@ message MsgEditNFT {
     string uri = 4 [ (gogoproto.customname) = "URI" ];
     string data = 5;
     string sender = 6;
+    string contractAddressSigner = 7;
+
 }
 
 // MsgEditNFTResponse defines the Msg/EditNFT response type.
@@ -124,6 +132,7 @@ message MsgMintNFT {
     string data = 4;
     string sender = 5;
     string recipient = 6;
+    string contractAddressSigner = 7;
 }
 
 // MsgMintNFTResponse defines the Msg/MintNFT response type.
@@ -136,6 +145,7 @@ message MsgBurnNFT {
     string id = 1;
     string denom_id = 2 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
     string sender = 3;
+    string contractAddressSigner = 4;
 }
 
 // MsgBurnNFTResponse defines the Msg/BurnNFT response type.

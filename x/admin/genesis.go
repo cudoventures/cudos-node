@@ -1,8 +1,8 @@
 package admin
 
 import (
-	"cudos.org/cudos-node/x/admin/keeper"
-	"cudos.org/cudos-node/x/admin/types"
+	"github.com/CudoVentures/cudos-node/x/admin/keeper"
+	"github.com/CudoVentures/cudos-node/x/admin/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

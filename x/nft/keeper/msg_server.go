@@ -2,11 +2,12 @@ package keeper
 
 import (
 	"context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 
-	"cudos.org/cudos-node/x/nft/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type msgServer struct {
@@ -32,7 +33,7 @@ func (m msgServer) IssueDenom(goCtx context.Context, msg *types.MsgIssueDenom) (
 	if msg.Id == "" || msg.Name == "" {
 		return &types.MsgIssueDenomResponse{}, sdkerrors.Wrapf(types.ErrInvalidDenom, "DenomId or name cannot be empty!")
 	}
-	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, sender); err != nil {
+	if err := m.Keeper.IssueDenom(ctx, msg.Id, msg.Name, msg.Schema, msg.Symbol, sender); err != nil {
 		return nil, err
 	}
 

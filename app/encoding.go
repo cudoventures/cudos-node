@@ -1,7 +1,7 @@
 package app
 
 import (
-	"cudos.org/cudos-node/app/params"
+	"github.com/CudoVentures/cudos-node/app/params"
 	"github.com/cosmos/cosmos-sdk/std"
 )
 

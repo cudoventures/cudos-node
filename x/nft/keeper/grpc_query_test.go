@@ -2,11 +2,12 @@ package keeper_test
 
 import (
 	gocontext "context"
-	"cudos.org/cudos-node/x/nft/types"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestSupplyReturnsCorrect() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -22,7 +23,7 @@ func (suite *IntegrationTestKeeperSuite) TestSupplyReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestOwner_ReturnsCorrect() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	tokenID, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -40,7 +41,7 @@ func (suite *IntegrationTestKeeperSuite) TestOwner_ReturnsCorrect() {
 
 func (suite *IntegrationTestKeeperSuite) TestCollection_ReturnsCorrect() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -57,7 +58,7 @@ func (suite *IntegrationTestKeeperSuite) TestCollection_ReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestDenom_ReturnsCorrect() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -73,7 +74,7 @@ func (suite *IntegrationTestKeeperSuite) TestDenom_ReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestDenoms_ReturnsCorrectCollection() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -88,7 +89,7 @@ func (suite *IntegrationTestKeeperSuite) TestDenoms_ReturnsCorrectCollection() {
 
 func (suite *IntegrationTestKeeperSuite) TestNFT_ReturnsCorrect() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)
@@ -105,7 +106,7 @@ func (suite *IntegrationTestKeeperSuite) TestNFT_ReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestGetApprovalsNFT_Correctly_ReturnsApprovals() {
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
 	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)

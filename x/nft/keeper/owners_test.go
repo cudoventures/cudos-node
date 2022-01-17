@@ -1,15 +1,15 @@
 package keeper_test
 
 import (
-	"cudos.org/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetOwners_ReturnsCorrect_Owners() {
 
-	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, address2)
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)
 
-	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, address)
+	err = suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm2, schema, denomSymbol2, address)
 	suite.NoError(err)
 
 	_, err = suite.keeper.MintNFT(suite.ctx, denomID, tokenNm, tokenURI, tokenData, address2, address)

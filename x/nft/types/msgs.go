@@ -7,13 +7,14 @@ import (
 
 // constant used to indicate that some field should not be updated
 const (
-	TypeMsgIssueDenom  = "issue_denom"
-	TypeMsgTransferNft = "transfer_nft"
-	TypeMsgEditNFT     = "edit_nft"
-	TypeMsgMintNFT     = "mint_nft"
-	TypeMsgBurnNFT     = "burn_nft"
-	TypeMsgApproveNft  = "approve_nft"
-	TypeMsgRevokeNft   = "revoke_nft"
+	TypeMsgIssueDenom    = "issue_denom"
+	TypeMsgTransferNft   = "transfer_nft"
+	TypeMsgEditNFT       = "edit_nft"
+	TypeMsgMintNFT       = "mint_nft"
+	TypeMsgBurnNFT       = "burn_nft"
+	TypeMsgApproveNft    = "approve_nft"
+	TypeMsgRevokeNft     = "revoke_nft"
+	TypeMsgApproveAllNft = "approve_all"
 )
 
 var (
@@ -24,15 +25,18 @@ var (
 	_ sdk.Msg = &MsgBurnNFT{}
 	_ sdk.Msg = &MsgApproveNft{}
 	_ sdk.Msg = &MsgRevokeNft{}
+	_ sdk.Msg = &MsgApproveAllNft{}
 )
 
-// NewMsgIssueDenom is a constructor function for MsgSetName
-func NewMsgIssueDenom(denomID, denomName, schema, sender string) *MsgIssueDenom {
+// NewMsgIssueDenom is a constructor function for MsgIssueDenom
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol string) *MsgIssueDenom {
 	return &MsgIssueDenom{
-		Sender: sender,
-		Id:     denomID,
-		Name:   denomName,
-		Schema: schema,
+		Sender:                sender,
+		Id:                    denomID,
+		Name:                  denomName,
+		Schema:                schema,
+		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from a contract, in other cases its empty string
+		Symbol:                symbol,
 	}
 }
 
@@ -51,7 +55,16 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
-	return ValidateDenomName(msg.Name)
+
+	if err := ValidateDenomName(msg.Name); err != nil {
+		return err
+	}
+
+	if err := ValidateDenomSymbol(msg.Symbol); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetSignBytes Implements Msg.
@@ -62,23 +75,37 @@ func (msg MsgIssueDenom) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
+
 }
 
-// NewMsgTransferNft is a constructor function for MsgSetName
+// NewMsgTransferNft is a constructor function for MsgTransferNft
 func NewMsgTransferNft(
-	tokenID, denomID, from, to, msgSender string,
+	denomID, tokenID, from, to, msgSender, contractAddressSigner string,
 ) *MsgTransferNft {
 	return &MsgTransferNft{
-		TokenId: tokenID,
-		DenomId: denomID,
-		From:    from,
-		To:      to,
-		Sender:  msgSender,
+		DenomId:               denomID,
+		TokenId:               tokenID,
+		From:                  from,
+		To:                    to,
+		Sender:                msgSender,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -117,20 +144,33 @@ func (msg MsgTransferNft) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgTransferNft) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
-// NewMsgApproveAllNft NewMsgApproveNft is a constructor function for MsgSetName
-func NewMsgApproveAllNft(operator, sender string, approved bool,
+// NewMsgApproveAllNft NewMsgApproveNft is a constructor function for MsgApproveAllNft
+func NewMsgApproveAllNft(operator, sender, contractAddressSigner string, approved bool,
 ) *MsgApproveAllNft {
 	return &MsgApproveAllNft{
-		Operator: operator,
-		Sender:   sender,
-		Approved: approved,
+		Operator:              operator,
+		Sender:                sender,
+		Approved:              approved,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -138,7 +178,7 @@ func NewMsgApproveAllNft(operator, sender string, approved bool,
 func (msg MsgApproveAllNft) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveNft }
+func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveAllNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgApproveAllNft) ValidateBasic() error {
@@ -162,21 +202,34 @@ func (msg MsgApproveAllNft) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgApproveAllNft) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
-// NewMsgApproveNft is a constructor function for MsgSetName
-func NewMsgApproveNft(tokenID, denomID, sender, approvedAddress string,
+// NewMsgApproveNft is a constructor function for MsgApproveNft
+func NewMsgApproveNft(tokenID, denomID, sender, approvedAddress, contractAddressSigner string,
 ) *MsgApproveNft {
 	return &MsgApproveNft{
-		Id:              tokenID,
-		DenomId:         denomID,
-		Sender:          sender,
-		ApprovedAddress: approvedAddress,
+		Id:                    tokenID,
+		DenomId:               denomID,
+		Sender:                sender,
+		ApprovedAddress:       approvedAddress,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -211,22 +264,35 @@ func (msg MsgApproveNft) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgApproveNft) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
-// NewMsgRevokeNft is a constructor function for MsgSetName
+// NewMsgRevokeNft is a constructor function for MsgRevokeNft
 func NewMsgRevokeNft(
-	addressToApprove, sender, denomId, tokenId string,
+	addressToRevoke, sender, denomId, tokenId, contractAddressSigner string,
 ) *MsgRevokeNft {
 	return &MsgRevokeNft{
-		AddressToRevoke: addressToApprove,
-		Sender:          sender,
-		DenomId:         denomId,
-		TokenId:         tokenId,
+		AddressToRevoke:       addressToRevoke,
+		Sender:                sender,
+		DenomId:               denomId,
+		TokenId:               tokenId,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -261,24 +327,37 @@ func (msg MsgRevokeNft) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgRevokeNft) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
 // NewMsgEditNFT is a constructor function for MsgSetName
 func NewMsgEditNFT(
-	tokenID, denomID, tokenName, tokenURI, tokenData, sender string,
+	tokenID, denomID, tokenName, tokenURI, tokenData, sender, contractAddressSigner string,
 ) *MsgEditNFT {
 	return &MsgEditNFT{
-		Id:      tokenID,
-		DenomId: denomID,
-		Name:    tokenName,
-		URI:     tokenURI,
-		Data:    tokenData,
-		Sender:  sender,
+		Id:                    tokenID,
+		DenomId:               denomID,
+		Name:                  tokenName,
+		URI:                   tokenURI,
+		Data:                  tokenData,
+		Sender:                sender,
+		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from and is signed by a contract, in other cases its empty string
 	}
 }
 
@@ -312,23 +391,41 @@ func (msg MsgEditNFT) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgEditNFT) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	// this order is important
+	// always check first if the request is signed by a contract
+	// the wasmd module requires that only the contract address is the signer
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
+	// if no contract address - it was issued directly by the user via CLI/REST
+	// so the sender is the signer
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
 // NewMsgMintNFT is a constructor function for MsgMintNFT
-func NewMsgMintNFT(denomID, tokenName, tokenURI, tokenData, sender, recipient string,
+func NewMsgMintNFT(denomID, tokenName, tokenURI, tokenData, sender, recipient, contractAddressSigner string,
 ) *MsgMintNFT {
 	return &MsgMintNFT{
-		DenomId:   denomID,
-		Name:      tokenName,
-		URI:       tokenURI,
-		Data:      tokenData,
-		Sender:    sender,
-		Recipient: recipient,
+		DenomId:               denomID,
+		Name:                  tokenName,
+		URI:                   tokenURI,
+		Data:                  tokenData,
+		Sender:                sender,
+		Recipient:             recipient,
+		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from a contract, in other cases it should be an empty string
 	}
 }
 
@@ -364,19 +461,32 @@ func (msg MsgMintNFT) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgMintNFT) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }
 
 // NewMsgBurnNFT is a constructor function for MsgBurnNFT
-func NewMsgBurnNFT(sender, tokenID, denomID string) *MsgBurnNFT {
+func NewMsgBurnNFT(sender, tokenID, denomID, contractAddressSigner string) *MsgBurnNFT {
 	return &MsgBurnNFT{
-		Sender:  sender,
-		Id:      tokenID,
-		DenomId: denomID,
+		Sender:                sender,
+		Id:                    tokenID,
+		DenomId:               denomID,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -405,9 +515,21 @@ func (msg MsgBurnNFT) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }

@@ -1,8 +1,8 @@
 package cudoMint
 
 import (
-	"cudos.org/cudos-node/x/cudoMint/keeper"
-	"cudos.org/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
