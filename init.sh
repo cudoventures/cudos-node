@@ -9,6 +9,7 @@ MONIKER="cudos-root-node"
 CHAIN_ID="cudos-network"
 TIMEOUT_COMMIT="5s"   #5s originally
 KEYPASSWD='123123123' #at least 8 characters
+KEYRING='--keyring-backend=test'
 
 MIN_SELF_DELEGATION="1" # minimum tokens sto stake multiplyer by 1 000 000 for validator01
 
@@ -111,31 +112,31 @@ cat "${CUDOS_HOME}/config/genesis.json" | jq --arg BANK_NAME "$BANK_NAME" '.app_
 cat "${CUDOS_HOME}/config/genesis.json" | jq --arg DENOM_METADATA_DESC "$DENOM_METADATA_DESC" --arg DENOM1 "$DENOM1" --arg EXP1 "$EXP1" --arg ALIAS1 "$ALIAS1" --arg DENOM2 "$DENOM2" --arg EXP2 "$EXP2" --arg ALIAS2 "$ALIAS2" --arg DENOM3 "$DENOM3" --arg EXP3 "$EXP3" --arg ALIAS3 "$ALIAS3" --arg DENOM4 "$DENOM4" --arg EXP4 "$EXP4" --arg ALIAS4 "$ALIAS4" --arg DENOM5 "$DENOM5" --arg EXP5 "$EXP5" --arg ALIAS5 "$ALIAS5" --arg DENOM6 "$DENOM6" --arg EXP6 "$EXP6" --arg ALIAS6 "$ALIAS6" --arg DENOM7 "$DENOM7" --arg EXP7 "$EXP7" --arg BASE "$BASE" --arg DISPLAY "$DISPLAY" '.app_state.bank.denom_metadata[0].description=$DENOM_METADATA_DESC | .app_state.bank.denom_metadata[0].denom_units[0].denom=$DENOM1 | .app_state.bank.denom_metadata[0].denom_units[0].exponent=$EXP1 | .app_state.bank.denom_metadata[0].denom_units[0].aliases[0]=$ALIAS1 | .app_state.bank.denom_metadata[0].denom_units[1].denom=$DENOM2 | .app_state.bank.denom_metadata[0].denom_units[1].exponent=$EXP2 | .app_state.bank.denom_metadata[0].denom_units[1].aliases[0]=$ALIAS2 | .app_state.bank.denom_metadata[0].denom_units[2].denom=$DENOM3 | .app_state.bank.denom_metadata[0].denom_units[2].exponent=$EXP3 | .app_state.bank.denom_metadata[0].denom_units[2].aliases[0]=$ALIAS3 | .app_state.bank.denom_metadata[0].denom_units[3].denom=$DENOM4 | .app_state.bank.denom_metadata[0].denom_units[3].exponent=$EXP4 | .app_state.bank.denom_metadata[0].denom_units[3].aliases[0]=$ALIAS4 | .app_state.bank.denom_metadata[0].denom_units[4].denom=$DENOM5 | .app_state.bank.denom_metadata[0].denom_units[4].exponent=$EXP5 | .app_state.bank.denom_metadata[0].denom_units[4].aliases[0]=$ALIAS5 | .app_state.bank.denom_metadata[0].denom_units[5].denom=$DENOM6 | .app_state.bank.denom_metadata[0].denom_units[5].exponent=$EXP6 | .app_state.bank.denom_metadata[0].denom_units[5].aliases[0]=$ALIAS6 | .app_state.bank.denom_metadata[0].denom_units[6].denom=$DENOM7 | .app_state.bank.denom_metadata[0].denom_units[6].exponent=$EXP7 | .app_state.bank.denom_metadata[0].base=$BASE | .app_state.bank.denom_metadata[0].display=$DISPLAY' >"${CUDOS_HOME}/config/tmp_genesis.json" && mv "${CUDOS_HOME}/config/tmp_genesis.json" "${CUDOS_HOME}/config/genesis.json"
 
 # add a new key entry from which to make validator
-cudos-noded keys add root-validator-01 --keyring-backend=test
-ROOT_VALIDATOR_01_ADDRESS=$(cudos-noded keys show root-validator-01 -a)
+cudos-noded keys add root-validator-01 $KEYRING
+ROOT_VALIDATOR_01_ADDRESS=$(cudos-noded keys show root-validator-01 -a $KEYRING)
 
-cudos-noded keys add validator-02 --keyring-backend=test
-VALIDATOR_02_ADDRESS=$(cudos-noded keys show validator-02 -a)
-cudos-noded keys add validator-03 --keyring-backend=test
-VALIDATOR_03_ADDRESS=$(cudos-noded keys show validator-03 -a)
+cudos-noded keys add validator-02 $KEYRING
+VALIDATOR_02_ADDRESS=$(cudos-noded keys show validator-02 -a $KEYRING)
+cudos-noded keys add validator-03 $KEYRING
+VALIDATOR_03_ADDRESS=$(cudos-noded keys show validator-03 -a $KEYRING)
 
-cudos-noded keys add private-sale-offer --keyring-backend=test
-PRIVATE_SALE_OFFER_ADDRESS=$(cudos-noded keys show private-sale-offer -a)
+cudos-noded keys add private-sale-offer $KEYRING
+PRIVATE_SALE_OFFER_ADDRESS=$(cudos-noded keys show private-sale-offer -a $KEYRING)
 
 # create validators
 cudos-noded add-genesis-account $ROOT_VALIDATOR_01_ADDRESS "300100000000000000000000100000${BOND_DENOM},1cudosAdmin"
 cudos-noded add-genesis-account $VALIDATOR_02_ADDRESS "300100000000000000100000${BOND_DENOM},1cudosAdmin"
 cudos-noded add-genesis-account $VALIDATOR_03_ADDRESS "300100000000000000100000${BOND_DENOM},1cudosAdmin"
-cudos-noded gentx root-validator-01 "3001000000000000000000000${BOND_DENOM}" "0x9fdE6D55dDa637806DbF016a03B6970613630333" "cudos1g6wvv0fk2q5m2xh0yk2app0ewp6f6aum7v2j7y" --chain-id $CHAIN_ID
+cudos-noded gentx root-validator-01 "3001000000000000000000000${BOND_DENOM}" "0x9fdE6D55dDa637806DbF016a03B6970613630333" "cudos1g6wvv0fk2q5m2xh0yk2app0ewp6f6aum7v2j7y" --chain-id $CHAIN_ID $KEYRING
 
 # test validator creation on genesis
-cudos-noded keys add genesis-validator --keyring-backend=test
-GENESIS_VALIDATOR_ADDRESS=$(cudos-noded keys show genesis-validator -a)
+cudos-noded keys add genesis-validator $KEYRING
+GENESIS_VALIDATOR_ADDRESS=$(cudos-noded keys show genesis-validator -a $KEYRING)
 cudos-noded add-genesis-account $GENESIS_VALIDATOR_ADDRESS "3009152921504606846975000000${BOND_DENOM}"
 
 # add faucet account
-cudos-noded keys add faucet --keyring-backend=test
-FAUCET_ADDRESS=$(cudos-noded keys show faucet -a)
+cudos-noded keys add faucet $KEYRING
+FAUCET_ADDRESS=$(cudos-noded keys show faucet -a $KEYRING)
 cudos-noded add-genesis-account $FAUCET_ADDRESS "3001000000000000000000000000${BOND_DENOM}"
 
 #cudos-noded gentx buidler-moniker '100000000000000000000acudos' --chain-id 'cudos-network' \
