@@ -47,7 +47,7 @@ func ValidateDenomName(denomName string) error {
 func ValidateDenomSymbol(symbol string) error {
 	symbol = strings.TrimSpace(symbol)
 	if len(symbol) == 0 {
-		return sdkerrors.Wrapf(ErrInvalidDenomName, "denom name(%s) can not be space", symbol)
+		return sdkerrors.Wrapf(ErrInvalidDenomSymbol, "denom symbol(%s) can not be space", symbol)
 	}
 	return nil
 }
