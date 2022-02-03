@@ -14,7 +14,7 @@ all: install
 
 install: go.sum
 		@echo "--> Installing cudos-noded"
-		@go install -mod=readonly $(BUILD_FLAGS) ./cmd/cudos-noded
+		@go install -mod=readonly $(BUILD_FLAGS) -tags "ledger" ./cmd/cudos-noded
 
 go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
