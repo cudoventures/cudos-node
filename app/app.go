@@ -103,7 +103,6 @@ import (
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
 const Name = "cudos-node"
@@ -605,14 +604,16 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	if ctx.BlockHeight() == 1 {
-		amount, _ := sdkTypes.NewIntFromString("10000000000000000000000000000")
-		coins := sdk.Coins{sdk.NewCoin("acudos", amount)}
 
-		if err := app.BankKeeper.MintCoins(ctx, "gravity", coins); err != nil {
-			panic(err)
-		}
-	}
+	//old way of initializing gravity module account with funds
+	// if ctx.BlockHeight() == 1 {
+	// 	amount, _ := sdkTypes.NewIntFromString("10000000000000000000000000000")
+	// 	coins := sdk.Coins{sdk.NewCoin("acudos", amount)}
+
+	// 	if err := app.BankKeeper.MintCoins(ctx, "gravity", coins); err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 	acc := app.AccountKeeper.GetModuleAccount(ctx, "gravity")
 	coin := app.BankKeeper.GetBalance(ctx, acc.GetAddress(), "acudos")
