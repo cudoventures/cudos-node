@@ -9,6 +9,9 @@ replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20
 
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220111092913-4117cd46b688
 
+// replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
+replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
 require (
 	github.com/CosmWasm/wasmd v0.17.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
