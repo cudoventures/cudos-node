@@ -57,6 +57,12 @@ func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
 	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to acudos
 }
 
+func logMintingInfo(ctx sdk.Context, k keeper.Keeper, minter types.Minter) {
+	mintedSoFar := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed)).Mul(sdk.NewDec(10).Power(24))
+	total := calculateIntegral(FinalNormTimePassed).Mul(sdk.NewDec(10).Power(24))
+	k.Logger(ctx).Info("CudosMint module", "minted_so_far", mintedSoFar.BigInt().String()+"acudos", "left", total.Sub(mintedSoFar).BigInt().String()+"acudos", "total", total.BigInt().String()+"acudos")
+}
+
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
@@ -88,6 +94,8 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	if mintedCoin.Amount.IsInt64() {
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(mintedCoin.Amount.Int64()), "minted_tokens")
 	}
+
+	logMintingInfo(ctx, k, minter)
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
