@@ -155,31 +155,32 @@ The module gives the user the ability to either write(via transaction) or read(v
 ### The following commands are available (click on them for further info)
 
 #### Transaction
-| Command                                               | Description                                                                                                                            |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`issue`](#issue)                           | Issues a new [`denomination`](#Denom) to the specified owner                                                   |
-| [`mint`](#mint)                             | Mints a new [`NFT`](#NFT) in a given denomination to the specified owner                                                                       |
-| [`edit`](#edit)             | Edits an already existing [`NFT`](#NFT)  |
-| [`transfer`](#transfer)                        | Transfers an existing NFT from one owner to another                                                                                                   |
-| [`burn`](#burn)                  | Burns the specified [`NFT`](#NFT) . Only the owner can burn the NFT                                                                                        |
-| [`approve`](#approve)                        |  Adds an approved operator that can transfer the [`NFT`](#NFT)                                                                                                |
-| [`revoke`](#revoke)                 | Removes an approved operated for the [`NFT`](#NFT)
-| [`approveAll`](#approveall)                 | Approves an operator on user level - the operator can transfer all of the user tokens
+| Command                             | Description                                                                           |
+| ----------------------------------- | ------------------------------------------------------------------------------------- |
+| [`issue`](#issue)                   | Issues a new [`denomination`](#Denom) to the specified owner                          |
+| [`mint`](#mint)                     | Mints a new [`NFT`](#NFT) in a given denomination to the specified owner              |
+| [`edit`](#edit)                     | Edits an already existing [`NFT`](#NFT)                                               |
+| [`transfer`](#transfer)             | Transfers an existing NFT from one owner to another                                   |
+| [`transfer-denom`](#transfer-denom) | Transfers an existing NFT classification from one owner to another                    |
+| [`burn`](#burn)                     | Burns the specified [`NFT`](#NFT) . Only the owner can burn the NFT                   |
+| [`approve`](#approve)               | Adds an approved operator that can transfer the [`NFT`](#NFT)                         |
+| [`revoke`](#revoke)                 | Removes an approved operated for the [`NFT`](#NFT)                                    |
+| [`approveAll`](#approveall)         | Approves an operator on user level - the operator can transfer all of the user tokens |
 
 #### Query
 
-| Command                                               | Description                                                                                                                            |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| [`denom`](#denom)                           | Queries for a [`denomination`](#Denom) by denomination Id                                                  |
-| [`denom-by-name`](#denom-by-name)                             | Queries for a  [`denomination`](#Denom) by denomination name                                                                  |
-| [`denom-by-symbol`](#denom-by-symbol)                             | Queries for a  [`denomination`](#Denom) by denomination symbol                                                                  |
-| [`denoms`](#denoms)             | Query for all denominations of all collections of NFTs  |
-| [`collection`](#collection)                        | Get all the NFTs from a given [`collection`](#Collections).                                                                                                 |
-| [`supply`](#supply)                  | Returns the total supply of a collection or owner of NFTs.                                                                                       |
-| [`owner`](#owner)                        |  Queries for the [`owner`](#Owners) and returns the NFTs owned by an account address.                                                                                               |
-| [`token`](#token)                 | Query a single [`NFT`](#NFT) from a [`collection`](#Collections).
-| [`approvals`](#approvals)                 | Get the approved addresses for the [`NFT`](#NFT)
-| [`isApprovedForAll`](#isapprovedforall)                 | Gets whether the address is approved for all
+| Command                                 | Description                                                                          |
+| --------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`denom`](#denom)                       | Queries for a [`denomination`](#Denom) by denomination Id                            |
+| [`denom-by-name`](#denom-by-name)       | Queries for a  [`denomination`](#Denom) by denomination name                         |
+| [`denom-by-symbol`](#denom-by-symbol)   | Queries for a  [`denomination`](#Denom) by denomination symbol                       |
+| [`denoms`](#denoms)                     | Query for all denominations of all collections of NFTs                               |
+| [`collection`](#collection)             | Get all the NFTs from a given [`collection`](#Collections).                          |
+| [`supply`](#supply)                     | Returns the total supply of a collection or owner of NFTs.                           |
+| [`owner`](#owner)                       | Queries for the [`owner`](#Owners) and returns the NFTs owned by an account address. |
+| [`token`](#token)                       | Query a single [`NFT`](#NFT) from a [`collection`](#Collections).                    |
+| [`approvals`](#approvals)               | Get the approved addresses for the [`NFT`](#NFT)                                     |
+| [`isApprovedForAll`](#isapprovedforall) | Gets whether the address is approved for all                                         |
 
 
 ## Usage from inside a CosmWasm smart contract
@@ -286,6 +287,24 @@ $ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<ch
 
 ``` bash
 $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee> 
+```
+
+### `transfer-denom`
+
+> Transfers the ownership of the NFT classification to others. The sender must be the owner.
+
+- arguments:
+  - `recipient` `string` `The address of the new NFT classification owner` `required: true`
+  - `denom-id` `string` `The denomId of the transferred NFT classification` `required: true`
+- flags:
+  - `--from` `string` `The address that is requesting the transfer of the NFT collection. Must be the owner.` `required: true`
+  - `--chain-id` `string` `The name of the network.` `required: true`
+  - `--fees` `string` `The specified fee for the operation` `required: true`
+
+**Example:**
+
+``` bash
+$ cudos-noded tx nft transfer-denom <recipient> <denom-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
 ```
 
 ### `approve`
@@ -582,6 +601,7 @@ type Denom struct {
 ```go
 	EventTypeIssueDenom    = "issue_denom"
 	EventTypeTransferNft   = "transfer_nft"
+    EventTypeTransferDenom = "transfer_denom"
 	EventTypeApproveNft    = "approve_nft"
 	EventTypeApproveAllNft = "approve_all_nft"
 	EventTypeRevokeNft     = "revoke_nft"
