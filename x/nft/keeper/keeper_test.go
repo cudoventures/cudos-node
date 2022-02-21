@@ -432,6 +432,22 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldCorrectly_Revo
 	assert.Equal(suite.T(), isApproved, false)
 }
 
+func (suite *IntegrationTestKeeperSuite) TestTransferDenom() {
+
+	// invalid owner
+	err := suite.keeper.TransferDenomOwner(suite.ctx, denomID, address3, address)
+	suite.Error(err)
+
+	// right
+	err = suite.keeper.TransferDenomOwner(suite.ctx, denomID, address, address3)
+	suite.NoError(err)
+
+	denom, _ := suite.keeper.GetDenom(suite.ctx, denomID)
+
+	// denom.Creator should equal to address3 after transfer
+	suite.Equal(denom.Creator, address3.String())
+}
+
 func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldError_WhenDenomIdDoesNotExist() {
 	err := suite.keeper.BurnNFT(suite.ctx, denomID, "1234", address)
 	suite.ErrorIs(err, types.ErrInvalidDenom)
