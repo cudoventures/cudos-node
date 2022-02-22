@@ -60,7 +60,7 @@ func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
 func logMintingInfo(ctx sdk.Context, k keeper.Keeper, minter types.Minter) {
 	mintedSoFar := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed)).Mul(sdk.NewDec(10).Power(24))
 	total := calculateIntegral(FinalNormTimePassed).Mul(sdk.NewDec(10).Power(24))
-	k.Logger(ctx).Info("CudosMint module", "minted_so_far", mintedSoFar.TruncateInt().String()+"acudos", "left", total.Sub(mintedSoFar).TruncateInt().String()+"acudos", "total", total.TruncateInt().String()+"acudos")
+	k.Logger(ctx).Info("CudosMint module", "minted_so_far", mintedSoFar.TruncateInt().String()+denom, "left", total.Sub(mintedSoFar).TruncateInt().String()+denom, "total", total.TruncateInt().String()+denom)
 }
 
 // BeginBlocker mints new tokens for the previous block.

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -28,7 +29,7 @@ func NewParams(
 // DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		BlocksPerDay: sdk.NewInt(14400), // assuming 6 second block times
+		BlocksPerDay: sdk.NewInt(17280), // assuming 5 second block times
 	}
 }
 
