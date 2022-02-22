@@ -2,6 +2,7 @@ package custom_bindings
 
 import (
 	"encoding/json"
+
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
@@ -60,6 +61,14 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 				nftCustomMsg.TransferNftMsg.Sender,
 				nftCustomMsg.TransferNftMsg.ContractAddressSigner)
 			return []sdk.Msg{transferNftMsg}, nil
+
+		case nftCustomMsg.TransferDenomMsg != nil:
+			TransferDenomMsg := nftTypes.NewMsgTransferDenom(
+				nftCustomMsg.TransferDenomMsg.DenomId,
+				nftCustomMsg.TransferDenomMsg.From,
+				nftCustomMsg.TransferDenomMsg.Recipient)
+			return []sdk.Msg{TransferDenomMsg}, nil
+
 		case nftCustomMsg.BurnNftMsg != nil:
 			burnNftMsg := nftTypes.NewMsgBurnNFT(
 				nftCustomMsg.BurnNftMsg.Sender,
@@ -101,6 +110,7 @@ type nftCustomMsg struct {
 	MintNftMsg        *MintNftRequest        `json:"mint_nft_msg,omitempty"`
 	EditNftMsg        *EditNftRequest        `json:"edit_nft_msg,omitempty"`
 	TransferNftMsg    *TransferNftRequest    `json:"transfer_nft_msg,omitempty"`
+	TransferDenomMsg  *TransferDenomRequest  `json:"transfer_denom_msg,omitempty"`
 	BurnNftMsg        *BurnNftRequest        `json:"burn_nft_msg,omitempty"`
 	ApproveNftMsg     *ApproveNftRequest     `json:"approve_nft_msg,omitempty"`
 	ApproveAllMsg     *ApproveAllRequest     `json:"approve_all_msg,omitempty"`
@@ -145,6 +155,11 @@ type TransferNftRequest struct {
 	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
+type TransferDenomRequest struct {
+	Recipient string `json:"recipient"`
+	DenomId   string `json:"denom_id"`
+	From      string `json:"from"`
+}
 type BurnNftRequest struct {
 	DenomId               string `json:"denom_id"`
 	TokenId               string `json:"token_id"`

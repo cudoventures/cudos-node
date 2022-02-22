@@ -797,6 +797,47 @@ Response:
 }
 ```
 
+### Transfer Denom : POST
+http://localhost:1317/nft/nfts/denoms/transfer/{denomId}
+
+Request:
+```json
+{
+  "recipient": "cudos1s609vqsnwxpm2t4scjq70770kph7uaz53lg89v",
+  "denom-id": "testdenom",
+  "base_req": {
+    "from":"cudos1qy7a8qvmqtqrscz7rf9l3xlllm0l6x3xnmarze",
+    "chain_id":"cudos-network"
+  }
+}
+```
+
+Response:
+```json
+{
+    "type": "cosmos-sdk/StdTx",
+    "value": {
+        "msg": [
+            {
+                "type": "github.com/CudoVentures/cudos-node/nft/MsgTransferDenom",
+                "value": {
+                    "id": "whathever",
+                    "sender": "cudos1detu83m7rd9ygvuzg3mee53sgwdae852ve5xav",
+                    "recipient": "cudos1xlvmmvvmwvkcugkmjxc06du8qs2vrw337w5jda"
+                }
+            }
+        ],
+        "fee": {
+            "amount": [],
+            "gas": "200000"
+        },
+        "signatures": [],
+        "memo": "",
+        "timeout_height": "0"
+    }
+}
+```
+
 ### Approve NFT : POST
 http://localhost:1317/nft/nfts/approve/{denomId}/{tokenId}
 

@@ -23,6 +23,8 @@ func registerTxRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/edit/{%s}/{%s}", RestParamDenomID, RestParamTokenID), editNFTHandlerFn(cliCtx)).Methods("PUT")
 	// Transfer an NFT to an address
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/transfer/{%s}/{%s}", RestParamDenomID, RestParamTokenID), transferNFTHandlerFn(cliCtx)).Methods("POST")
+	// Transfer an NFT Collection to an address
+	r.HandleFunc(fmt.Sprintf("/nft/nfts/denoms/transfer/{%s}", RestParamDenomID), transferDenomHandlerFn(cliCtx)).Methods("POST")
 	// Approve NFT transfers for address
 	r.HandleFunc(fmt.Sprintf("/nft/nfts/approve/{%s}/{%s}", RestParamDenomID, RestParamTokenID), approveNFTHandlerFn(cliCtx)).Methods("POST")
 	// Revoke NFT transfers for address
@@ -145,6 +147,37 @@ func transferNFTHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			req.To,
 			req.BaseReq.From,
 			"")
+		if err := msg.ValidateBasic(); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		tx.WriteGeneratedTxResponse(cliCtx, w, req.BaseReq, msg)
+	}
+}
+
+func transferDenomHandlerFn(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req transferDenomReq
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+		if _, err := sdk.AccAddressFromBech32(req.Recipient); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		vars := mux.Vars(r)
+		// create the message
+		msg := types.NewMsgTransferDenom(
+			vars[RestParamDenomID],
+			req.BaseReq.From,
+			req.Recipient,
+		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

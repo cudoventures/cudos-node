@@ -433,9 +433,11 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldCorrectly_Revo
 }
 
 func (suite *IntegrationTestKeeperSuite) TestTransferDenom() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address)
+	suite.NoError(err)
 
 	// invalid owner
-	err := suite.keeper.TransferDenomOwner(suite.ctx, denomID, address3, address)
+	err = suite.keeper.TransferDenomOwner(suite.ctx, denomID, address3, address2)
 	suite.Error(err)
 
 	// right
