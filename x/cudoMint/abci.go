@@ -14,7 +14,7 @@ import (
 /*
 Minting is done on steps. The step is calculated in normalizeBlockHeightInc function. All blocks have the same steps.
 
-The step, with 14400 blocker per day, is 0.000000190154557620. This value has 18 decimal digits precision.
+The step, with 17280 blocker per day, is 0.000000158462131350. This value has 18 decimal digits precision.
 It is calculated by dividing 10 (~years) at total number of blocks. This could lead to an infinity number of decimals which results in precision loss by rounding up to the 18th decimal digit.
 
 The calculation of how many tokens should be minted is done in the calculateMintedCoins function.
@@ -33,11 +33,12 @@ minter.NormTimePassed holds the current step as accumulator. Each block it is in
 var (
 	// based on the assumption that we have 1 block per 5 seconds
 	// if actual blocks are generated at slower rate then the network will mint tokens more than 3652 days (~10 years)
-	denom               = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
-	totalDays           = sdk.NewInt(3652) // Hardcoded to 10 years
-	FinalNormTimePassed = sdk.NewDec(10)
-	zeroPointSix        = sdk.MustNewDecFromStr("0.6")
-	twentySixPointFive  = sdk.MustNewDecFromStr("26.5")
+	denom                 = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
+	totalDays             = sdk.NewInt(3652) // Hardcoded to 10 years
+	InitialNormTimePassed = sdk.NewDecWithPrec(315, 3)
+	FinalNormTimePassed   = sdk.NewDec(10)
+	zeroPointSix          = sdk.MustNewDecFromStr("0.6")
+	twentySixPointFive    = sdk.MustNewDecFromStr("26.5")
 )
 
 // Normalize block height incrementation
@@ -47,19 +48,34 @@ func normalizeBlockHeightInc(blocksPerDay sdk.Int) sdk.Dec {
 }
 
 // Integral of f(t) is 0,6 * t^3  - 26.5 * t^2 + 358 * t
+// The function extrema is ~10.48 so after that the function is decreasing
 func calculateIntegral(t sdk.Dec) sdk.Dec {
 	return (zeroPointSix.Mul(t.Power(3))).Sub(twentySixPointFive.Mul(t.Power(2))).Add(sdk.NewDec(358).Mul(t))
 }
 
+func calculateIntegralInNorm(t sdk.Dec) sdk.Dec {
+	if t.LT(InitialNormTimePassed) {
+		return sdk.NewDec(0)
+	}
+
+	if t.GT(FinalNormTimePassed) {
+		return calculateIntegral(FinalNormTimePassed)
+	}
+
+	integralUpperbound := calculateIntegral(t)
+	integralLowerbound := calculateIntegral(InitialNormTimePassed)
+	return integralUpperbound.Sub(integralLowerbound)
+}
+
 func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
-	prevStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
-	nextStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed.Add(increment), FinalNormTimePassed))
+	prevStep := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
+	nextStep := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed.Add(increment), FinalNormTimePassed))
 	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to acudos
 }
 
 func logMintingInfo(ctx sdk.Context, k keeper.Keeper, minter types.Minter) {
-	mintedSoFar := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed)).Mul(sdk.NewDec(10).Power(24))
-	total := calculateIntegral(FinalNormTimePassed).Mul(sdk.NewDec(10).Power(24))
+	mintedSoFar := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed)).Mul(sdk.NewDec(10).Power(24))
+	total := calculateIntegralInNorm(FinalNormTimePassed).Mul(sdk.NewDec(10).Power(24))
 	k.Logger(ctx).Info("CudosMint module", "minted_so_far", mintedSoFar.TruncateInt().String()+denom, "left", total.Sub(mintedSoFar).TruncateInt().String()+denom, "total", total.TruncateInt().String()+denom)
 }
 
