@@ -361,6 +361,7 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 			denomId,
 			denom.Creator,
 			recipient.Address.String(),
+			"",
 		)
 
 		spendable := bk.SpendableCoins(ctx, owner.Address)

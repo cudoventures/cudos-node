@@ -537,11 +537,12 @@ func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgTransferDenom is a constructor function for msgTransferDenom
-func NewMsgTransferDenom(denomId, sender, recipient string) *MsgTransferDenom {
+func NewMsgTransferDenom(denomId, sender, recipient, contractAddressSigner string) *MsgTransferDenom {
 	return &MsgTransferDenom{
-		Id:        denomId,
-		Sender:    sender,
-		Recipient: recipient,
+		Id:                    denomId,
+		Sender:                sender,
+		Recipient:             recipient,
+		ContractAddressSigner: contractAddressSigner,
 	}
 }
 
@@ -573,9 +574,21 @@ func (msg MsgTransferDenom) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
 	from, err := sdk.AccAddressFromBech32(msg.Sender)
 	if err != nil {
 		panic(err)
 	}
-	return []sdk.AccAddress{from}
+	signers = append(signers, from)
+	return signers
 }

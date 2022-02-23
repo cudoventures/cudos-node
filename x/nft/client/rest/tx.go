@@ -177,6 +177,7 @@ func transferDenomHandlerFn(cliCtx client.Context) http.HandlerFunc {
 			vars[RestParamDenomID],
 			req.BaseReq.From,
 			req.Recipient,
+			"",
 		)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

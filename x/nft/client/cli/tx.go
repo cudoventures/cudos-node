@@ -477,6 +477,7 @@ func GetCmdTransferDenom() *cobra.Command {
 				args[1],
 				clientCtx.GetFromAddress().String(),
 				args[0],
+				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

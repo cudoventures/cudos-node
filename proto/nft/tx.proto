@@ -160,6 +160,7 @@ message MsgTransferDenom {
     string id = 1;
     string sender = 2;
     string recipient = 3;
+    string contractAddressSigner = 4;
 }
 
 // MsgTransferDenomResponse defines the Msg/TransferDenom response type.

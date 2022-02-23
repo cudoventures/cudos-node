@@ -65,8 +65,9 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 		case nftCustomMsg.TransferDenomMsg != nil:
 			TransferDenomMsg := nftTypes.NewMsgTransferDenom(
 				nftCustomMsg.TransferDenomMsg.DenomId,
-				nftCustomMsg.TransferDenomMsg.From,
-				nftCustomMsg.TransferDenomMsg.Recipient)
+				nftCustomMsg.TransferDenomMsg.Sender,
+				nftCustomMsg.TransferDenomMsg.To,
+				nftCustomMsg.TransferDenomMsg.ContractAddressSigner)
 			return []sdk.Msg{TransferDenomMsg}, nil
 
 		case nftCustomMsg.BurnNftMsg != nil:
@@ -156,9 +157,10 @@ type TransferNftRequest struct {
 }
 
 type TransferDenomRequest struct {
-	Recipient string `json:"recipient"`
-	DenomId   string `json:"denom_id"`
-	From      string `json:"from"`
+	To                    string `json:"to"`
+	DenomId               string `json:"denom_id"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
 }
 type BurnNftRequest struct {
 	DenomId               string `json:"denom_id"`
