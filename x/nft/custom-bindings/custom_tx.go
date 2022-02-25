@@ -121,7 +121,7 @@ type nftCustomMsg struct {
 type IssueDenomRequest struct {
 	Id                    string `json:"id"`
 	Name                  string `json:"name"`
-	Schema                string `json:"schema"`
+	Schema                string `json:"schema,omitempty"`
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 	Symbol                string `json:"symbol"`
