@@ -118,20 +118,20 @@ type IssueDenomRequest struct {
 
 type MintNftRequest struct {
 	DenomId               string `json:"denom_id"`
-	Name                  string `json:"name"`
-	URI                   string `json:"uri"`
-	Data                  string `json:"data"`
+	Name                  string `json:"name,omitempty"`
+	URI                   string `json:"uri,omitempty"`
+	Data                  string `json:"data,omitempty"`
 	Sender                string `json:"sender"`
-	Recipient             string `json:"recipient"`
+	Recipient             string `json:"recipient,omitempty"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
 type EditNftRequest struct {
 	DenomId               string `json:"denom_id"`
 	TokenId               string `json:"token_id"`
-	Name                  string `json:"name"`
-	URI                   string `json:"uri"`
-	Data                  string `json:"data"`
+	Name                  string `json:"name,omitempty"`
+	URI                   string `json:"uri,omitempty"`
+	Data                  string `json:"data,omitempty"`
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 }

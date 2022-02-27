@@ -134,7 +134,7 @@ type QuerySupply struct {
 
 type QueryOwner struct {
 	Address string `json:"address"`
-	DenomId string `json:"denom_id"`
+	DenomId string `json:"denom_id,omitempty"`
 }
 
 type QueryToken struct {
