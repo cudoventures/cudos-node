@@ -516,7 +516,7 @@ $ cudos-noded query nft approvals <denomId> <tokenId>
 **Example:**
 
 ``` bash
-$ cudos-noded query nft approvals <owner> <operator>
+$ cudos-noded query nft isApprovedForAll <owner> <operator>
 ```
 
 ## Object types:
