@@ -71,7 +71,7 @@ message QuerySupplyRequest {
 
 // QuerySupplyResponse is the response type for the Query/Supply RPC method
 message QuerySupplyResponse {
-    uint64 amount = 1;
+    uint64 amount = 1 [(gogoproto.jsontag) = "amount"]; // DO NOT TOUCH Please, or zero values for amount will broke when Marshalled!
 }
 
 // QueryOwnerRequest is the request type for the Query/Owner RPC method
