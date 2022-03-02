@@ -49,6 +49,15 @@ func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
+func (s *IntegrationTestSuite) isApprovedAddress(nft *nfttypes.BaseNFT, sender *sdk.AccAddress) bool {
+	for _, address := range nft.ApprovedAddresses {
+		if address == sender.String() {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *IntegrationTestSuite) TestNft() {
 	val := s.network.Validators[0]
 	val2 := s.network.Validators[1]
@@ -272,14 +281,14 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	nftItem = respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(nftItem.ApprovedAddresses[approvedAddress.String()], true)
+	s.Require().Equal(s.isApprovedAddress(nftItem, &approvedAddress), true)
 
 	respType = proto.Message(&nfttypes.QueryApprovalsNFTResponse{})
 	bz, err = nfttestutil.QueryIsApprovedNFT(val.ClientCtx, denomID, tokenID2)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	isApprovedNft := respType.(*nfttypes.QueryApprovalsNFTResponse)
-	s.Require().Equal(isApprovedNft.ApprovedAddresses[approvedAddress.String()], true)
+	s.Assert().Contains(val.ClientCtx, isApprovedNft.ApprovedAddresses, approvedAddress.String())
 
 	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
 

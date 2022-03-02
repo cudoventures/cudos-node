@@ -73,7 +73,7 @@ func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
 	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
 
-	assert.Equal(suite.T(), true, nft.ApprovedAddresses[address3.String()])
+	assert.Equal(suite.T(), true, suite.isApprovedAddress(&nft, &address3))
 }
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() {
@@ -92,7 +92,7 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() 
 
 	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 	suite.NoError(err)
-	assert.Equal(suite.T(), nft.ApprovedAddresses[address2.String()], true)
+	assert.Equal(suite.T(), suite.isApprovedAddress(&nft, &address2), true)
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
 

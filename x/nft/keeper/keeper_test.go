@@ -80,6 +80,15 @@ func TestKeeperSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestKeeperSuite))
 }
 
+func (suite *IntegrationTestKeeperSuite) isApprovedAddress(nft *types.BaseNFT, sender *sdk.AccAddress) bool {
+	for _, address := range nft.ApprovedAddresses {
+		if address == sender.String() {
+			return true
+		}
+	}
+	return false
+}
+
 func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomIdAlreadyExists() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address)
 	suite.NoError(err)
@@ -370,7 +379,7 @@ func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldCorrectly_AddAddr
 	suite.NoError(err)
 
 	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved := nft.ApprovedAddresses[address2.String()]
+	isApproved := suite.isApprovedAddress(&nft, &address2)
 	assert.Equal(suite.T(), isApproved, true)
 }
 
@@ -422,13 +431,13 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldCorrectly_Revo
 	suite.NoError(err)
 
 	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved := nft.ApprovedAddresses[address2.String()]
+	isApproved := suite.isApprovedAddress(&nft, &address2)
 	assert.Equal(suite.T(), isApproved, true)
 
 	err = suite.keeper.RevokeApproval(suite.ctx, denomID, tokenId, address, address2)
 
 	nft, _ = suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved = nft.ApprovedAddresses[address2.String()]
+	isApproved = suite.isApprovedAddress(&nft, &address2)
 	assert.Equal(suite.T(), isApproved, false)
 }
 
