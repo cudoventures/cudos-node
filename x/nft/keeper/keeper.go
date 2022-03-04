@@ -149,7 +149,7 @@ func (k Keeper) TransferOwner(ctx sdk.Context, denomID, tokenID string, from, to
 	}
 
 	if sender.Equals(nft.GetOwner()) || // if the owner is requesting the transfer
-		(nft.ApprovedAddresses != nil && k.isApprovedAddress(&nft, sender.String())) || // or if the sender is approved for the nft
+		(nft.ApprovedAddresses != nil && k.IsApprovedAddress(&nft, sender.String())) || // or if the sender is approved for the nft
 		k.IsApprovedOperator(ctx, from, sender) { // or if the sender is part of approveAll of user
 		transferNFT(ctx, denomID, tokenID, from, to, nft, k)
 		return nil

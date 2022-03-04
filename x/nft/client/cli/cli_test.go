@@ -17,12 +17,13 @@ import (
 	"github.com/CudoVentures/cudos-node/simapp"
 	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
 	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
+	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
-
+	keeper  nftKeeper.Keeper
 	cfg     network.Config
 	network *network.Network
 }
@@ -47,15 +48,6 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
-}
-
-func (s *IntegrationTestSuite) isApprovedAddress(nft *nfttypes.BaseNFT, sender *sdk.AccAddress) bool {
-	for _, address := range nft.ApprovedAddresses {
-		if address == sender.String() {
-			return true
-		}
-	}
-	return false
 }
 
 func (s *IntegrationTestSuite) TestNft() {
@@ -281,7 +273,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	nftItem = respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(s.isApprovedAddress(nftItem, &approvedAddress), true)
+	s.Require().Equal(s.keeper.IsApprovedAddress(nftItem, approvedAddress.String()), true)
 
 	respType = proto.Message(&nfttypes.QueryApprovalsNFTResponse{})
 	bz, err = nfttestutil.QueryIsApprovedNFT(val.ClientCtx, denomID, tokenID2)

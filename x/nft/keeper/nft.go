@@ -8,7 +8,7 @@ import (
 	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
-func (k Keeper) isApprovedAddress(nft *types.BaseNFT, sender string) bool {
+func (k Keeper) IsApprovedAddress(nft *types.BaseNFT, sender string) bool {
 	for _, address := range nft.ApprovedAddresses {
 		if sender == address {
 			return true
@@ -98,6 +98,7 @@ func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, addressToR
 		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 	}
 
+	// Searching for the given address and removing it if found by reslicing the array (shifts all elements at the right of the deleted index by one to the left )
 	for i, address := range nft.ApprovedAddresses {
 		if address == addressToRevoke.String() {
 			nft.ApprovedAddresses = append(nft.ApprovedAddresses[:i], nft.ApprovedAddresses[i+1:]...)
