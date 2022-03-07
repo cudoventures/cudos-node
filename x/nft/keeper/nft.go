@@ -8,6 +8,15 @@ import (
 	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
+func (k Keeper) IsApprovedAddress(nft *types.BaseNFT, sender string) bool {
+	for _, address := range nft.ApprovedAddresses {
+		if sender == address {
+			return true
+		}
+	}
+	return false
+}
+
 // GetNFT set a specific NFT in the store from its index
 func (k Keeper) GetNFT(ctx sdk.Context, denomID, tokenID string) (nft exported.NFT, err error) {
 	store := ctx.KVStore(k.storeKey)
@@ -76,9 +85,9 @@ func (k Keeper) setNFT(ctx sdk.Context, denomID string, nft types.BaseNFT) {
 
 func (k Keeper) ApproveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress sdk.AccAddress, denomID string) {
 	if nft.ApprovedAddresses == nil {
-		nft.ApprovedAddresses = map[string]bool{approvedAddress.String(): true}
+		nft.ApprovedAddresses = []string{approvedAddress.String()}
 	} else {
-		nft.ApprovedAddresses[approvedAddress.String()] = true
+		nft.ApprovedAddresses = append(nft.ApprovedAddresses, approvedAddress.String())
 	}
 	k.setNFT(ctx, denomID, nft)
 }
@@ -89,15 +98,15 @@ func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, addressToR
 		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 	}
 
-	_, ok := nft.ApprovedAddresses[addressToRevoke.String()]
-	if ok {
-		delete(nft.ApprovedAddresses, addressToRevoke.String())
-	} else {
-		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
+	// Searching for the given address and removing it if found by reslicing the array (shifts all elements at the right of the deleted index by one to the left )
+	for i, address := range nft.ApprovedAddresses {
+		if address == addressToRevoke.String() {
+			nft.ApprovedAddresses = append(nft.ApprovedAddresses[:i], nft.ApprovedAddresses[i+1:]...)
+			k.setNFT(ctx, denomID, nft)
+			return nil
+		}
 	}
-
-	k.setNFT(ctx, denomID, nft)
-	return nil
+	return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 }
 
 // deleteNFT deletes an existing NFT from store
@@ -107,7 +116,7 @@ func (k Keeper) deleteNFT(ctx sdk.Context, denomID string, nft exported.NFT) {
 }
 
 // GetNFTApprovedAddresses returns the approved addresses for the nft
-func (k Keeper) GetNFTApprovedAddresses(ctx sdk.Context, denomID, tokenID string) (approvedAddresses map[string]bool, err error) {
+func (k Keeper) GetNFTApprovedAddresses(ctx sdk.Context, denomID, tokenID string) (approvedAddresses []string, err error) {
 	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return nil, sdkerrors.Wrapf(types.ErrUnknownNFT, "invalid NFT %s from collection %s", tokenID, denomID)

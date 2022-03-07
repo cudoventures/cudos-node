@@ -437,6 +437,10 @@ func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
+
+	if msg.Name == "" {
+		return sdkerrors.Wrapf(ErrInvalidNftName, "name field cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}

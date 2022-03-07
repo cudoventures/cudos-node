@@ -17,12 +17,13 @@ import (
 	"github.com/CudoVentures/cudos-node/simapp"
 	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
 	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
+	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
-
+	keeper  nftKeeper.Keeper
 	cfg     network.Config
 	network *network.Network
 }
@@ -72,7 +73,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType := proto.Message(&sdk.TxResponse{})
@@ -114,7 +114,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -175,7 +174,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -205,7 +203,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -240,7 +237,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -256,7 +252,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -272,14 +267,14 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	nftItem = respType.(*nfttypes.BaseNFT)
-	s.Require().Equal(nftItem.ApprovedAddresses[approvedAddress.String()], true)
+	s.Require().Equal(s.keeper.IsApprovedAddress(nftItem, approvedAddress.String()), true)
 
 	respType = proto.Message(&nfttypes.QueryApprovalsNFTResponse{})
 	bz, err = nfttestutil.QueryIsApprovedNFT(val.ClientCtx, denomID, tokenID2)
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	isApprovedNft := respType.(*nfttypes.QueryApprovalsNFTResponse)
-	s.Require().Equal(isApprovedNft.ApprovedAddresses[approvedAddress.String()], true)
+	s.Assert().Contains(val.ClientCtx, isApprovedNft.ApprovedAddresses, approvedAddress.String())
 
 	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
 
@@ -287,7 +282,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -314,7 +308,6 @@ func (s *IntegrationTestSuite) TestNft() {
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
 	respType = proto.Message(&sdk.TxResponse{})
@@ -336,7 +329,6 @@ func (s *IntegrationTestSuite) TestNft() {
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 	respType = proto.Message(&sdk.TxResponse{})
 	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenId, args...)

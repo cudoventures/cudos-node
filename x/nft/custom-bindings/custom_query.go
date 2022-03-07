@@ -40,7 +40,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			return json.Marshal(nftTypes.QueryDenomResponse{Denom: &denom})
 		case custom.QueryDenoms != nil:
 			denoms := keeper.GetDenoms(ctx)
-			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms}.Pagination.NextKey)
+			return json.Marshal(nftTypes.QueryDenomsResponse{Denoms: denoms})
 		case custom.QueryCollection != nil:
 			collection, err := keeper.GetCollection(ctx, custom.QueryCollection.DenomId)
 			if err != nil {
@@ -48,7 +48,11 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			}
 			return json.Marshal(nftTypes.QueryCollectionResponse{Collection: &collection})
 		case custom.QuerySupply != nil:
-			totalSupply := keeper.GetTotalSupply(ctx, custom.QueryCollection.DenomId)
+			denom, err := keeper.GetDenom(ctx, custom.QuerySupply.DenomId) // Otherwise queries for non-existing denom ID's will return 0, instead of erro.
+			if err != nil {
+				return nil, err
+			}
+			totalSupply := keeper.GetTotalSupply(ctx, denom.Id)
 			return json.Marshal(nftTypes.QuerySupplyResponse{Amount: totalSupply})
 		case custom.QueryOwner != nil:
 			if len(custom.QueryOwner.Address) > 0 {
@@ -134,7 +138,7 @@ type QuerySupply struct {
 
 type QueryOwner struct {
 	Address string `json:"address"`
-	DenomId string `json:"denom_id"`
+	DenomId string `json:"denom_id,omitempty"`
 }
 
 type QueryToken struct {

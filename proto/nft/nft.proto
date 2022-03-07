@@ -15,7 +15,7 @@ message BaseNFT {
     string uri = 3 [ (gogoproto.customname) = "URI", (gogoproto.jsontag) = "uri" ];
     string data = 4 [(gogoproto.jsontag) = "data"];
     string owner = 5;
-    map<string, bool> approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
+    repeated string approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
 }
 
 // Denom defines a type of NFT

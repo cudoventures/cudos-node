@@ -2,6 +2,7 @@ package custom_bindings
 
 import (
 	"encoding/json"
+
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
@@ -110,7 +111,7 @@ type nftCustomMsg struct {
 type IssueDenomRequest struct {
 	Id                    string `json:"id"`
 	Name                  string `json:"name"`
-	Schema                string `json:"schema"`
+	Schema                string `json:"schema,omitempty"`
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 	Symbol                string `json:"symbol"`
@@ -119,8 +120,8 @@ type IssueDenomRequest struct {
 type MintNftRequest struct {
 	DenomId               string `json:"denom_id"`
 	Name                  string `json:"name"`
-	URI                   string `json:"uri"`
-	Data                  string `json:"data"`
+	URI                   string `json:"uri,omitempty"`
+	Data                  string `json:"data,omitempty"`
 	Sender                string `json:"sender"`
 	Recipient             string `json:"recipient"`
 	ContractAddressSigner string `json:"contract_address_signer"`
@@ -129,9 +130,9 @@ type MintNftRequest struct {
 type EditNftRequest struct {
 	DenomId               string `json:"denom_id"`
 	TokenId               string `json:"token_id"`
-	Name                  string `json:"name"`
-	URI                   string `json:"uri"`
-	Data                  string `json:"data"`
+	Name                  string `json:"name,omitempty"`
+	URI                   string `json:"uri,omitempty"`
+	Data                  string `json:"data,omitempty"`
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 }

@@ -53,7 +53,7 @@ func (bnft BaseNFT) GetData() string {
 }
 
 // GetApprovedAddresses return the Data of BaseNFT
-func (bnft BaseNFT) GetApprovedAddresses() map[string]bool {
+func (bnft BaseNFT) GetApprovedAddresses() []string {
 	return bnft.ApprovedAddresses
 }
 
