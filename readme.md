@@ -201,12 +201,11 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --symbol=<denom-symbol> --schema=<schema-content or path to schema.json> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --symbol=<denom-symbol> --schema=<schema-content or path to schema.json> --chain-id=<chain-id>
 ```
 
 ### `mint`
@@ -221,12 +220,11 @@ $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --sy
     - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
     - `--uri` `string` `The URI of the NFT.` `required: false`
     - `--chain-id` `string` `The name of the network.` `required: true`
-    - `--fees` `string` ` The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<key-name> --uri=<uri> --chain-id=<chain-id>
 
 ```
 
@@ -241,12 +239,11 @@ $ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id>
 ```
 
 ### `burn`
@@ -259,12 +256,11 @@ $ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> -
 - flags:
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id>
 ```
 
 ### `transfer`
@@ -280,12 +276,11 @@ $ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<ch
   - `--from` `string` `The address that is requesting the transfer of the NFT. Can be either an address or alias to that address. must be either the owner, approved address on NFT or globally approved operator.` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id> --fees=<fee> 
+$ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-name> --uri=<uri> --chain-id=<chain-id>
 ```
 
 ### `approve`
@@ -299,12 +294,11 @@ $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-nam
 - flags:
   - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key-name> --chain-id=<chain-id>
 ```
 
 ### `revoke`
@@ -318,12 +312,11 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
 - flags:
   - `--from` `string` `The address that is requesting the removal of approval. Can be either an address or alias to that address. Must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `Тhe specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> --from=<key-name> --chain-id=<chain-id>
 ```
 
 ### `approveAll`
@@ -336,12 +329,11 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
 - flags:
   - `--from` `string` `The address that is requesting the approval. The approved address will be able to handle the transfers of --from assets. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
   - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
 ``` bash
-$ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id> --fees=<fee>
+$ cudos-noded tx nft approveAll <operator> <true/false> --from=<key-name> --chain-id=<chain-id>
 ```
 
 ### Query commands
@@ -631,7 +623,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -678,7 +669,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -723,7 +713,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -767,7 +756,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -808,7 +796,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -849,7 +836,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -889,7 +875,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
@@ -930,7 +915,6 @@ Response:
       }
     ],
     "fee": {
-      "amount": [],
       "gas": "200000"
     },
     "signatures": [],
