@@ -22,10 +22,6 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 		}
 
 		switch {
-		// There seems to be no validation for the messages - they are directly passed to the keepers
-		// with possibly populated but invalid data
-		// we have to implement 	if err := msg.ValidateBasic(); err != nil for them
-		// and throw if the params are invalid
 		case nftCustomMsg.IssueDenomMsg != nil:
 			issueDenomMsg := nftTypes.NewMsgIssueDenom(
 				nftCustomMsg.IssueDenomMsg.Id,
