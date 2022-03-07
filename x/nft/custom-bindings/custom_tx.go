@@ -2,6 +2,7 @@ package custom_bindings
 
 import (
 	"encoding/json"
+
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
@@ -21,6 +22,10 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 		}
 
 		switch {
+		// There seems to be no validation for the messages - they are directly passed to the keepers
+		// with possibly populated but invalid data
+		// we have to implement 	if err := msg.ValidateBasic(); err != nil for them
+		// and throw if the params are invalid
 		case nftCustomMsg.IssueDenomMsg != nil:
 			issueDenomMsg := nftTypes.NewMsgIssueDenom(
 				nftCustomMsg.IssueDenomMsg.Id,
@@ -118,11 +123,11 @@ type IssueDenomRequest struct {
 
 type MintNftRequest struct {
 	DenomId               string `json:"denom_id"`
-	Name                  string `json:"name,omitempty"`
+	Name                  string `json:"name"`
 	URI                   string `json:"uri,omitempty"`
 	Data                  string `json:"data,omitempty"`
 	Sender                string `json:"sender"`
-	Recipient             string `json:"recipient,omitempty"`
+	Recipient             string `json:"recipient"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 }
 
