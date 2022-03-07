@@ -214,12 +214,14 @@ $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --sy
 
 - arguments:
     - `denom-id` `string` `The denomId that this NFT will be associated` `required: true`
-    - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
+    - `--name` `string` `The name of the NFT.` `required: true`
+    - `--data` `string` `The data of the NFT.` `required: false`
     - `--from` `string` `The address that is minting the NFT. Must be denom creator. Can be either an address or alias to that address` `required: true`
     - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
     - `--uri` `string` `The URI of the NFT.` `required: false`
     - `--chain-id` `string` `The name of the network.` `required: true`
+ 
 
 **Example:**
 

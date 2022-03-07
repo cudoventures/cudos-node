@@ -17,4 +17,5 @@ var (
 	ErrNoApprovedAddresses = sdkerrors.Register(ModuleName, 13, "no approved addresses!")
 	ErrNotFoundNFT         = sdkerrors.Register(ModuleName, 14, "nft not found")
 	ErrInvalidDenomSymbol  = sdkerrors.Register(ModuleName, 15, "invalid denom symbol")
+	ErrInvalidNftName      = sdkerrors.Register(ModuleName, 16, "invalid nft name")
 )
