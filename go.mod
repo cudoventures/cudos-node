@@ -3,7 +3,7 @@ module github.com/CudoVentures/cudos-node
 go 1.15
 
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220301103012-bed2c064d7b9
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220303073357-4ef15125635f
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
@@ -20,7 +20,7 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.5.2
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/cosmos-proto v0.3.1
@@ -31,8 +31,8 @@ require (
 	github.com/tendermint/tendermint v0.34.14
 	github.com/tendermint/tm-db v0.6.4
 	github.com/tidwall/gjson v1.6.7
-	google.golang.org/genproto v0.0.0-20211129164237-f09f9a12af12
-	google.golang.org/grpc v1.42.0
+	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
+	google.golang.org/grpc v1.43.0
 
 )
 

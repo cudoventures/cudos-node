@@ -52,8 +52,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				"--symbol=<symbol-name> "+
 				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -111,8 +110,7 @@ func GetCmdMintNFT() *cobra.Command {
 				"--recipient=<recipient> "+
 				"--from=<key-name> "+
 				"--uri=<uri> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -183,8 +181,7 @@ func GetCmdEditNFT() *cobra.Command {
 			"$ %s tx nft edit <denom-id> <token-id> "+
 				"--from=<key-name> "+
 				"--uri=<uri> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),
@@ -236,8 +233,7 @@ func GetCmdTransferNft() *cobra.Command {
 			"$ %s tx nft transfer <from> <to> <denom-id> <token-id> "+
 				"--from=<key-name> "+
 				"--uri=<uri> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(4),
@@ -281,8 +277,7 @@ func GetCmdApproveNft() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft approve <approvedAddress> <denom-id> <token-id> "+
 				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(3),
@@ -329,8 +324,7 @@ func GetCmdApproveAllNFT() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft approveAll <operator> <true/false> "+
 				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),
@@ -374,8 +368,7 @@ func GetCmdRevokeNft() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft revoke <addressToRevoke> <denom-id> <token-id>"+
 				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(3),
@@ -422,8 +415,7 @@ func GetCmdBurnNFT() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft burn <denom-id> <token-id> "+
 				"--from=<key-name> "+
-				"--chain-id=<chain-id> "+
-				"--fees=<fee>",
+				"--chain-id=<chain-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),

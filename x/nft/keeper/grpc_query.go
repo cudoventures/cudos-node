@@ -22,7 +22,11 @@ func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*t
 	var supply uint64
 	switch {
 	case len(request.Owner) == 0 && len(request.DenomId) > 0:
-		supply = k.GetTotalSupply(ctx, request.DenomId)
+		denom, err := k.GetDenom(ctx, request.DenomId) // Otherwise queries for non-existing denom ID's will return 0, instead of error.
+		if err != nil {
+			return nil, err
+		}
+		supply = k.GetTotalSupply(ctx, denom.Id)
 	default:
 		owner, err := sdk.AccAddressFromBech32(request.Owner)
 		if err != nil {

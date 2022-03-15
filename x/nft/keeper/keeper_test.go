@@ -370,7 +370,7 @@ func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldCorrectly_AddAddr
 	suite.NoError(err)
 
 	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved := nft.ApprovedAddresses[address2.String()]
+	isApproved := suite.keeper.IsApprovedAddress(&nft, address2.String())
 	assert.Equal(suite.T(), isApproved, true)
 }
 
@@ -422,13 +422,13 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApproval_ShouldCorrectly_Revo
 	suite.NoError(err)
 
 	nft, _ := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved := nft.ApprovedAddresses[address2.String()]
+	isApproved := suite.keeper.IsApprovedAddress(&nft, address2.String())
 	assert.Equal(suite.T(), isApproved, true)
 
 	err = suite.keeper.RevokeApproval(suite.ctx, denomID, tokenId, address, address2)
 
 	nft, _ = suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
-	isApproved = nft.ApprovedAddresses[address2.String()]
+	isApproved = suite.keeper.IsApprovedAddress(&nft, address2.String())
 	assert.Equal(suite.T(), isApproved, false)
 }
 

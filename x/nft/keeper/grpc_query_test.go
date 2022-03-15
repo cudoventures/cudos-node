@@ -121,7 +121,7 @@ func (suite *IntegrationTestKeeperSuite) TestGetApprovalsNFT_Correctly_ReturnsAp
 	})
 
 	suite.NoError(err)
-	suite.Equal(response.ApprovedAddresses[address2.String()], true)
+	suite.Assert().Contains(suite.ctx, response.ApprovedAddresses, address2.String())
 }
 
 func (suite *IntegrationTestKeeperSuite) TestIsApprovedOperator_ReturnsTrue_WhenOperatorIsApproved() {
