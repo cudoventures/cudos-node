@@ -114,15 +114,15 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
     cudos-noded query bank balances $RECIPIENT --chain-id=cudos-network
 
 ## Create validator
-    cudos-noded tx staking create-validator --amount=1000stake \
-    --from=validator02 \
+    cudos-noded tx staking create-validator --amount=2000000000000000000000000acudos \
+    --from=val-2 \
     --pubkey=$(cudos-noded tendermint show-validator) \
-    --moniker=cudos-node-01 \
-    --chain-id=cudos-network \
+    --moniker=cudos-node-02 \
+    --chain-id=cudos-local-network \
     --commission-rate="0.10" \
     --commission-max-rate="0.20" \
     --commission-max-change-rate="0.01" \
-    --min-self-delegation="1" \
+    --min-self-delegation="2000000000000000000000000" \
     --gas="auto" \
     --gas-prices="2500acudos" \
     --gas-adjustment="1.80" \
