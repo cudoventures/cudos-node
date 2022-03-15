@@ -35,7 +35,7 @@ var (
 	// if actual blocks are generated at slower rate then the network will mint tokens more than 3652 days (~10 years)
 	denom                 = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
 	totalDays             = sdk.NewInt(3652) // Hardcoded to 10 years
-	InitialNormTimePassed = sdk.NewDecWithPrec(388, 3)
+	InitialNormTimePassed = sdk.NewDecWithPrec(9678829209, 10)
 	FinalNormTimePassed   = sdk.NewDec(10)
 	zeroPointSix          = sdk.MustNewDecFromStr("0.6")
 	twentySixPointFive    = sdk.MustNewDecFromStr("26.5")
@@ -53,29 +53,32 @@ func calculateIntegral(t sdk.Dec) sdk.Dec {
 	return (zeroPointSix.Mul(t.Power(3))).Sub(twentySixPointFive.Mul(t.Power(2))).Add(sdk.NewDec(358).Mul(t))
 }
 
-func calculateIntegralInNorm(t sdk.Dec) sdk.Dec {
-	if t.LT(InitialNormTimePassed) {
-		return sdk.NewDec(0)
-	}
+// func calculateIntegralInNorm(t sdk.Dec) sdk.Dec {
+// 	if t.LT(InitialNormTimePassed) {
+// 		return sdk.NewDec(0)
+// 	}
 
-	if t.GT(FinalNormTimePassed) {
-		return calculateIntegral(FinalNormTimePassed)
-	}
+// 	if t.GT(FinalNormTimePassed) {
+// 		return calculateIntegral(FinalNormTimePassed)
+// 	}
 
-	integralUpperbound := calculateIntegral(t)
-	integralLowerbound := calculateIntegral(InitialNormTimePassed)
-	return integralUpperbound.Sub(integralLowerbound)
-}
+// 	integralUpperbound := calculateIntegral(t)
+// 	integralLowerbound := calculateIntegral(InitialNormTimePassed)
+// 	return integralUpperbound.Sub(integralLowerbound)
+// }
 
 func calculateMintedCoins(minter types.Minter, increment sdk.Dec) sdk.Dec {
-	prevStep := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
-	nextStep := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed.Add(increment), FinalNormTimePassed))
+	prevStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
+	nextStep := calculateIntegral(sdk.MinDec(minter.NormTimePassed.Add(increment), FinalNormTimePassed))
 	return (nextStep.Sub(prevStep)).Mul(sdk.NewDec(10).Power(24)) // formula calculates in mil of cudos + converting to acudos
 }
 
 func logMintingInfo(ctx sdk.Context, k keeper.Keeper, minter types.Minter) {
-	mintedSoFar := calculateIntegralInNorm(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed)).Mul(sdk.NewDec(10).Power(24))
-	total := calculateIntegralInNorm(FinalNormTimePassed).Mul(sdk.NewDec(10).Power(24))
+	initiallySkipped := calculateIntegral(InitialNormTimePassed)
+	mintedSoFar := calculateIntegral(sdk.MinDec(minter.NormTimePassed, FinalNormTimePassed))
+	mintedSoFar = mintedSoFar.Sub(initiallySkipped).Mul(sdk.NewDec(10).Power(24))
+	total := calculateIntegral(FinalNormTimePassed)
+	total = total.Sub(initiallySkipped).Mul(sdk.NewDec(10).Power(24))
 	k.Logger(ctx).Info("CudosMint module", "minted_so_far", mintedSoFar.TruncateInt().String()+denom, "left", total.Sub(mintedSoFar).TruncateInt().String()+denom, "total", total.TruncateInt().String()+denom)
 }
 
