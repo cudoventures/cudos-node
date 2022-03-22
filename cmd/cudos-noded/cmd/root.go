@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -37,12 +36,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	stakingFlags "github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 )
 
 var ChainID string
-
-var minSelfDelegationValueLowerBoundString string = "2000000000000000000000000"
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
@@ -66,44 +62,15 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			flagMinSelfDelegation := cmd.Flags().Lookup(stakingFlags.FlagMinSelfDelegation)
-			if flagMinSelfDelegation != nil {
-				minSelfDelegationValueString, err := cmd.Flags().GetString(stakingFlags.FlagMinSelfDelegation)
-				if err != nil {
-					return fmt.Errorf("flag %s is not a valid number", stakingFlags.FlagMinSelfDelegation)
-				}
-				minSelfDelegationValueBigInt, ok := sdk.NewIntFromString(minSelfDelegationValueString)
-				if !ok {
-					return fmt.Errorf("flag %s is not a valid number", stakingFlags.FlagMinSelfDelegation)
-				}
-				minSelfDelegationValueLowerBoundBigInt, _ := sdk.NewIntFromString(minSelfDelegationValueLowerBoundString)
-				if minSelfDelegationValueBigInt.LT(minSelfDelegationValueLowerBoundBigInt) {
-					return fmt.Errorf("flag %s must be >= 2 000 000 000 000 000 000 000 000", stakingFlags.FlagMinSelfDelegation)
-				}
-			}
-
 			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
 		},
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
 	overwriteFlagDefaults(rootCmd, map[string]string{
-		flags.FlagChainID:                  ChainID,
-		flags.FlagKeyringBackend:           "os",
-		stakingFlags.FlagMinSelfDelegation: minSelfDelegationValueLowerBoundString,
+		flags.FlagChainID:        ChainID,
+		flags.FlagKeyringBackend: "os",
 	})
-
-	// flag := rootCmd.Flags().Lookup("long")
-	// fmt.Println(flag)
-
-	// rootCmd.PersistentPreRunE()
-
-	// value, err := rootCmd.Flags().GetString(flags.FlagKeyringBackend)
-	// if err != nil {
-	// 	panic(err)
-	// } else {
-	// 	fmt.Printf("Debug %s\n", value)
-	// }
 
 	return rootCmd, encodingConfig
 }
