@@ -5,10 +5,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"strconv"
 	"testing"
 	"time"
+
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	// minttypes "github.com/irisnet/irishub/x/cudosmint/types"
 
@@ -20,6 +21,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -98,6 +100,7 @@ func NewConfig() network.Config {
 	cfg.InterfaceRegistry = encCfg.InterfaceRegistry
 	cfg.AppConstructor = SimAppConstructor
 	cfg.GenesisState = NewDefaultGenesisState(cfg.Codec)
+	cfg.PatchGenesis = PatchGravityBridgeGenesis
 	return cfg
 }
 
@@ -457,5 +460,39 @@ type EmptyAppOptions struct{}
 
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(o string) interface{} {
+	return nil
+}
+
+func PatchGravityBridgeGenesis(cfg *network.Config, genBalances []banktypes.Balance, validators []*network.Validator) error {
+	if _, ok := cfg.GenesisState[gravitytypes.ModuleName]; !ok {
+		return nil
+	}
+
+	var gravityGenesis gravitytypes.GenesisState
+	cfg.Codec.MustUnmarshalJSON(cfg.GenesisState[gravitytypes.ModuleName], &gravityGenesis)
+
+	for i := range genBalances {
+		gravityGenesis.StaticValCosmosAddrs = append(gravityGenesis.StaticValCosmosAddrs, genBalances[i].Address)
+	}
+
+	baseEthAddress := "0x0000000000000000000000000000000000000000"
+
+	for i := range validators {
+		idxStr := strconv.Itoa(i)
+
+		gravityGenesis.DelegateKeys = append(gravityGenesis.DelegateKeys, &gravitytypes.MsgSetOrchestratorAddress{
+			Validator:    validators[i].ValAddress.String(),
+			Orchestrator: genBalances[i].Address,
+			EthAddress:   baseEthAddress[:len(baseEthAddress)-len(idxStr)] + idxStr,
+		})
+	}
+
+	gravityGenesisJSON, err := json.MarshalIndent(gravityGenesis, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	cfg.GenesisState[gravitytypes.ModuleName] = gravityGenesisJSON
+
 	return nil
 }
