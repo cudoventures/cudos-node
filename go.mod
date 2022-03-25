@@ -8,7 +8,7 @@ replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVen
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220322143015-0a40a92cb9bf
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220325153357-a7852e2c0607
 
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
