@@ -32,12 +32,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	cfg := simapp.NewConfig()
-	cfg.NumValidators = 2
+	cfg.NumValidators = 1
 
 	s.cfg = cfg
 	s.network = network.New(s.T(), cfg)
 
-	_, err := s.network.WaitForHeight(1)
+	_, err := s.network.WaitForHeight(3) // The network is fully initialized after 3 blocks
 	s.Require().NoError(err)
 }
 
@@ -52,7 +52,6 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) TestNft() {
 	val := s.network.Validators[0]
-	val2 := s.network.Validators[1]
 
 	// ---------------------------------------------------------------------------
 
@@ -65,6 +64,12 @@ func (s *IntegrationTestSuite) TestNft() {
 	denom := "denom"
 	schema := "schema"
 
+	gasArgs := []string{
+		fmt.Sprintf("--%s=%s", flags.FlagGas, flags.GasFlagAuto),
+		fmt.Sprintf("--%s=1.3", flags.FlagGasAdjustment),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1))).String()),
+	}
+
 	//------test GetCmdIssueDenom()-------------
 	args := []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagDenomName, denomName),
@@ -74,6 +79,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
 
 	respType := proto.Message(&sdk.TxResponse{})
 	expectedCode := uint32(0)
@@ -115,6 +122,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
 
 	respType = proto.Message(&sdk.TxResponse{})
 
@@ -176,6 +185,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
 
+	args = append(args, gasArgs...)
+
 	respType = proto.Message(&sdk.TxResponse{})
 
 	bz, err = nfttestutil.EditNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
@@ -204,6 +215,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
 
 	respType = proto.Message(&sdk.TxResponse{})
 
@@ -239,6 +252,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
 
+	args = append(args, gasArgs...)
+
 	respType = proto.Message(&sdk.TxResponse{})
 
 	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
@@ -253,6 +268,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
 
 	respType = proto.Message(&sdk.TxResponse{})
 
@@ -274,7 +291,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	isApprovedNft := respType.(*nfttypes.QueryApprovalsNFTResponse)
-	s.Assert().Contains(val.ClientCtx, isApprovedNft.ApprovedAddresses, approvedAddress.String())
+	s.Assert().Contains(isApprovedNft.ApprovedAddresses, approvedAddress.String())
 
 	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
 
@@ -283,6 +300,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
 
 	respType = proto.Message(&sdk.TxResponse{})
 
@@ -310,6 +329,8 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
 
+	args = append(args, gasArgs...)
+
 	respType = proto.Message(&sdk.TxResponse{})
 
 	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
@@ -330,10 +351,13 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
+
+	args = append(args, gasArgs...)
+
 	respType = proto.Message(&sdk.TxResponse{})
 	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenId, args...)
 	s.Require().NoError(err)
-	s.Require().NoError(val2.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
 	txResp = respType.(*sdk.TxResponse)
 	s.Require().Equal(expectedCode, txResp.Code)
 
