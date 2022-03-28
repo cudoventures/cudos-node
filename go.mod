@@ -10,6 +10,8 @@ replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20
 
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220325153357-a7852e2c0607
 
+replace github.com/tendermint/tendermint => github.com/osmosis-labs/tendermint v0.34.14-starving-waiters
+
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
