@@ -92,6 +92,7 @@ func Setup(isCheckTx bool) *SimApp {
 }
 
 func NewConfig() network.Config {
+	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
 	cfg := network.DefaultConfig()
 	encCfg := MakeTestEncodingConfig()
 	cfg.Codec = encCfg.Marshaler
