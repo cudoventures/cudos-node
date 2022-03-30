@@ -4,7 +4,7 @@ go 1.15
 
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220317074327-99aa0dce200c
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220330122910-7eb51937e1ca
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
