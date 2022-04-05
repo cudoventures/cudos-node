@@ -2,17 +2,17 @@ module github.com/CudoVentures/cudos-node
 
 go 1.15
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
+// replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
 
-// replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220405085532-36c54cf16c2e
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220405142935-34e51905d1ac
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
-// replace github.com/tendermint/tendermint => github.com/osmosis-labs/tendermint v0.34.14-starving-waiters
+replace github.com/tendermint/tendermint => github.com/osmosis-labs/tendermint v0.34.14-starving-waiters
 
-replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
+// replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
-// replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220405081548-3d8b3a6ececd
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220405081548-3d8b3a6ececd
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
