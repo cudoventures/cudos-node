@@ -12,7 +12,7 @@ replace github.com/tendermint/tendermint => github.com/osmosis-labs/tendermint v
 
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220405081548-3d8b3a6ececd
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220405142659-31ad22d7f5e7
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
