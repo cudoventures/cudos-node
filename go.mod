@@ -4,7 +4,7 @@ go 1.15
 
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220411110512-445f2a71933e
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220413120541-888b52e164b5
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
@@ -12,7 +12,7 @@ replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20
 
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220411110303-34c676cfb016
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220413115949-5f86bd3c94e9
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
