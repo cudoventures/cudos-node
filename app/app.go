@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/spf13/cast"
@@ -37,6 +37,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -527,9 +528,43 @@ func New(
 		ibchost.ModuleName,
 		cudoMinttypes.ModuleName,
 		gravitytypes.ModuleName,
+		authtypes.ModuleName,
+		paramstypes.ModuleName,
+		wasmtypes.ModuleName,
+		banktypes.ModuleName,
+		govtypes.ModuleName,
+		admintypes.ModuleName,
+		nftmoduletypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		genutiltypes.ModuleName,
+		vestingtypes.ModuleName,
+		crisistypes.ModuleName,
+		feegrant.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, gravitytypes.ModuleName)
+	app.mm.SetOrderEndBlockers(
+		capabilitytypes.ModuleName,
+		crisistypes.ModuleName,
+		govtypes.ModuleName,
+		distrtypes.ModuleName,
+		stakingtypes.ModuleName,
+		slashingtypes.ModuleName,
+		evidencetypes.ModuleName,
+		upgradetypes.ModuleName,
+		gravitytypes.ModuleName,
+		ibchost.ModuleName,
+		cudoMinttypes.ModuleName,
+		authtypes.ModuleName,
+		paramstypes.ModuleName,
+		wasmtypes.ModuleName,
+		banktypes.ModuleName,
+		admintypes.ModuleName,
+		nftmoduletypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		genutiltypes.ModuleName,
+		vestingtypes.ModuleName,
+		feegrant.ModuleName,
+	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -558,6 +593,10 @@ func New(
 		cudoMinttypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 		nftmoduletypes.ModuleName,
+		feegrant.ModuleName,
+		upgradetypes.ModuleName,
+		vestingtypes.ModuleName,
+		paramstypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

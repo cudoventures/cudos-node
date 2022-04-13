@@ -3,19 +3,21 @@ module github.com/CudoVentures/cudos-node
 go 1.15
 
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
+replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
+
+replace github.com/tendermint/tendermint => ../tendermint
 
 replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220411110512-445f2a71933e
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
 // replace github.com/tendermint/tendermint => github.com/osmosis-labs/tendermint v0.34.14-starving-waiters
-
-// replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
-
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220411110303-34c676cfb016
+// replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220412151516-8861fc428f2a
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
 require (
 	github.com/CosmWasm/wasmd v0.17.0
@@ -40,5 +42,3 @@ require (
 	google.golang.org/grpc v1.45.0
 
 )
-
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
