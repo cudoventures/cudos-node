@@ -15,7 +15,6 @@ This project uses the default blog project from starport. It's purpose is to pro
 ## Links:
  - https://docs.cosmos.network/master/modules/auth/
  - https://docs.cosmos.network/master/basics/accounts.html
- - https://docs.cosmos.network/master/modules/auth/05_vesting.html
 
 
 ## Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment.
@@ -43,9 +42,9 @@ Initialize the blockchain.
 
     cudos-noded init cudos-node --chain-id=cudos-node
 
-Creating accounts. Each account can have vesting balance as well.
+Creating accounts.
 
-    cudos-noded keys add validator01 --keyring-backend test --vesting-amount 500stake --vesting-end-time 1617615300
+    cudos-noded keys add validator01 --keyring-backend test 
 
 Add balance in the genesis block to an account.
 
