@@ -80,10 +80,10 @@ github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d h1:nalkkPQ
 github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d/go.mod h1:URdX5+vg25ts3aCh8H5IFZybJYKWhJHYMTnf+ULtoC4=
 github.com/CosmWasm/wasmvm v0.16.0 h1:87jyCTcCpuSx7a8s5ed9N/E/XV13XZflxa0/OplwSmA=
 github.com/CosmWasm/wasmvm v0.16.0/go.mod h1:Id107qllDJyJjVQQsKMOy2YYF98sqPJ2t+jX1QES40A=
-github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220420083804-0091a43e7158 h1:HyG1gQwrDQNGzDoMrJkRZktyF8dtDQEkdRf/wk/9izI=
-github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220420083804-0091a43e7158/go.mod h1:ztQGVlyBLnYkXSbuLSWKbjyE4Y4z12r4gSLOYQeaiBA=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220413115949-5f86bd3c94e9 h1:7dSaLXZT2HsQZlnLdAwjffxJK3mCYQ8m1EIhAsb3mCo=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220413115949-5f86bd3c94e9/go.mod h1:xkaQHdLk55zxd1C2sR6dKh53QVoBW0IWFsKv3nQKwtY=
+github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220421090858-e1dedbcb46fd h1:ak7Lmla0NAWecTnLBVqhzhH3t0IPOXIxC09G//SHKV4=
+github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220421090858-e1dedbcb46fd/go.mod h1:3aRxHhHoy3V8LeQJAQy+Sgs0KVJkDQP9LmFed0H6XbE=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220421090641-3a0d43edd09b h1:8nhAsoxkCZD0G4K2Q91TgLFUD8x/W4heUHAjj8zHygw=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220421090641-3a0d43edd09b/go.mod h1:xkaQHdLk55zxd1C2sR6dKh53QVoBW0IWFsKv3nQKwtY=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
