@@ -86,8 +86,8 @@ github.com/CosmWasm/wasmvm v1.0.0-beta10 h1:N99+PRcrh4FeDP1xQuJGaAsr+7U+TZAHKG8m
 github.com/CosmWasm/wasmvm v1.0.0-beta10/go.mod h1:y+yd9piV8KlrB7ISRZz1sDwH4UVm4Q9rEX9501dBNog=
 github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220414083540-8ee93062486d h1:JEx7/EAgP7WuLIZdaWVV+qYyDvSMt29ulw60byRB0mY=
 github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220414083540-8ee93062486d/go.mod h1:opUctt6VeCrJlcLnyVqDH/9YMN3533PoYijnUayqhf8=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220415151521-a4082bd94a2a h1:NRAJdHMo6xTrsvVFlD8hmEEuQltDuWotYqPomcb0V0g=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220415151521-a4082bd94a2a/go.mod h1:qYm5JEr0ZlbnmoP/Q3b+dYMOliHf4ddHirpILiwZzqg=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220426080008-f479113bf86a h1:7MB6oyGxOKs9+4FouCqn2u+K3Xr1PIC+QIWjDgZRB0s=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220426080008-f479113bf86a/go.mod h1:qYm5JEr0ZlbnmoP/Q3b+dYMOliHf4ddHirpILiwZzqg=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=

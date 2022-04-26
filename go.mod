@@ -8,7 +8,7 @@ go 1.15
 
 replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220414083540-8ee93062486d
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220415151521-a4082bd94a2a
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220426080008-f479113bf86a
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
