@@ -378,7 +378,7 @@ func New(
 		keys[nftmoduletypes.MemStoreKey],
 	)
 
-	supportedFeatures := "staking,stargate"
+	supportedFeatures := "iterator,staking,stargate"
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
 	wasmOpts := append(customEncoderOptions, customQueryOptions...)
