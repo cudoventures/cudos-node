@@ -99,7 +99,7 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() 
 	nft, err = suite.keeper.GetBaseNFT(suite.ctx, denomID2, tokenId)
 
 	suite.NoError(err)
-	assert.Equal(suite.T(), map[string]bool(nil), nft.ApprovedAddresses)
+	assert.Equal(suite.T(), []string([]string(nil)), nft.ApprovedAddresses)
 
 }
 
