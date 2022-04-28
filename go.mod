@@ -6,7 +6,7 @@ go 1.15
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 // replace github.com/tendermint/tendermint => ../tendermint
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220413120541-888b52e164b5
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220421090858-e1dedbcb46fd
 
 replace github.com/CosmWasm/wasmd => github.com/provenance-io/wasmd v0.17.1-0.20210812214331-ce3a93a9268d
 
