@@ -80,10 +80,10 @@ github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d h1:nalkkPQ
 github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d/go.mod h1:URdX5+vg25ts3aCh8H5IFZybJYKWhJHYMTnf+ULtoC4=
 github.com/CosmWasm/wasmvm v0.16.0 h1:87jyCTcCpuSx7a8s5ed9N/E/XV13XZflxa0/OplwSmA=
 github.com/CosmWasm/wasmvm v0.16.0/go.mod h1:Id107qllDJyJjVQQsKMOy2YYF98sqPJ2t+jX1QES40A=
-github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220421090858-e1dedbcb46fd h1:ak7Lmla0NAWecTnLBVqhzhH3t0IPOXIxC09G//SHKV4=
-github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220421090858-e1dedbcb46fd/go.mod h1:3aRxHhHoy3V8LeQJAQy+Sgs0KVJkDQP9LmFed0H6XbE=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220421090641-3a0d43edd09b h1:8nhAsoxkCZD0G4K2Q91TgLFUD8x/W4heUHAjj8zHygw=
-github.com/CudoVentures/cosmos-sdk v0.0.0-20220421090641-3a0d43edd09b/go.mod h1:xkaQHdLk55zxd1C2sR6dKh53QVoBW0IWFsKv3nQKwtY=
+github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220411110512-445f2a71933e h1:DZ5pBtKp8k/vYWxt/n1/J0GEGcOf0xxf+RIVYGCio9s=
+github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220411110512-445f2a71933e/go.mod h1:hSWecPDqvefpbDQzO59UxoIj2ZHPuZfsUUW/iFuQRLg=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220413132325-880c8279a0e6 h1:Yb/4hG/fDJ51cVgLemzhGsrDTbfb6KH3nfdFEYUxvyY=
+github.com/CudoVentures/cosmos-sdk v0.0.0-20220413132325-880c8279a0e6/go.mod h1:qYm5JEr0ZlbnmoP/Q3b+dYMOliHf4ddHirpILiwZzqg=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
@@ -1637,6 +1637,7 @@ google.golang.org/genproto v0.0.0-20211028162531-8db9c33dc351/go.mod h1:5CzLGKJ6
 google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20211206160659-862468c7d6e0/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
+google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 h1:zzNejm+EgrbLfDZ6lu9Uud2IVvHySPl8vQzf04laR5Q=
 google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/grpc v1.33.2 h1:EQyQC3sa8M+p6Ulc8yy9SWSS2GVwyRc83gAbG8lrl4o=
