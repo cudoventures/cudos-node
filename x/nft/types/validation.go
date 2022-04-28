@@ -80,10 +80,10 @@ func isUint64(v string) (bool, error) {
 		if val > 0 {
 			return true, nil
 		} else {
-			return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%d]", v, MaxTokenURILen)
+			return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%s]", v)
 		}
 	}
 
-	return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%d]", v, MaxTokenURILen)
+	return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%s]", v)
 
 }
