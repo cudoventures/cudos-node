@@ -77,16 +77,16 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	transfer "github.com/cosmos/ibc-go/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/modules/core"
-	ibcclient "github.com/cosmos/ibc-go/modules/core/02-client"
-	ibcclientclient "github.com/cosmos/ibc-go/modules/core/02-client/client"
-	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
+	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v2/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v2/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
@@ -380,7 +380,7 @@ func New(
 		keys[nftmoduletypes.MemStoreKey],
 	)
 
-	supportedFeatures := "staking,stargate"
+	supportedFeatures := "iterator,staking,stargate"
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
 	wasmOpts := append(customEncoderOptions, customQueryOptions...)
@@ -399,7 +399,6 @@ func New(
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
 		app.TransferKeeper,
-		app.Router(),
 		app.MsgServiceRouter(),
 		app.GRPCQueryRouter(),
 		wasmDir,
@@ -516,54 +515,50 @@ func New(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
-		capabilitytypes.ModuleName,
 		upgradetypes.ModuleName,
-		// minttypes.ModuleName,
+		capabilitytypes.ModuleName,
+		cudoMinttypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
 		stakingtypes.ModuleName,
-		ibchost.ModuleName,
-		cudoMinttypes.ModuleName,
-		gravitytypes.ModuleName,
 		authtypes.ModuleName,
-		paramstypes.ModuleName,
-		wasmtypes.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
+		crisistypes.ModuleName,
+		genutiltypes.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
+		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		nftmoduletypes.ModuleName,
+		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		genutiltypes.ModuleName,
-		vestingtypes.ModuleName,
-		crisistypes.ModuleName,
-		feegrant.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		capabilitytypes.ModuleName,
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
-		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
+		capabilitytypes.ModuleName,
+		authtypes.ModuleName,
+		banktypes.ModuleName,
+		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
+		cudoMinttypes.ModuleName,
+		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		gravitytypes.ModuleName,
-		ibchost.ModuleName,
-		cudoMinttypes.ModuleName,
-		authtypes.ModuleName,
-		paramstypes.ModuleName,
-		wasmtypes.ModuleName,
-		banktypes.ModuleName,
 		admintypes.ModuleName,
 		nftmoduletypes.ModuleName,
+		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
-		genutiltypes.ModuleName,
-		vestingtypes.ModuleName,
-		feegrant.ModuleName,
+		wasmtypes.ModuleName,
 	)
-
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
@@ -579,17 +574,19 @@ func New(
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
-		// minttypes.ModuleName,
+		cudoMinttypes.ModuleName,
 		crisistypes.ModuleName,
-		ibchost.ModuleName,
-		gravitytypes.ModuleName,
+
+		gravitytypes.ModuleName, //MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
+		feegrant.ModuleName,
+		paramstypes.ModuleName,
+		upgradetypes.ModuleName,
+		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
-		cudoMinttypes.ModuleName,
-		// this line is used by starport scaffolding # stargate/app/initGenesis
 		nftmoduletypes.ModuleName,
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
