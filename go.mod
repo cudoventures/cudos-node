@@ -5,6 +5,7 @@ go 1.15
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
 // replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 // replace github.com/tendermint/tendermint => ../tendermint
+// replace github.com/cosmos/ibc-go/v2 => ../ibc-go
 
 replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220428094152-9da8b0b1495c
 
