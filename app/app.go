@@ -178,6 +178,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		wasmtypes.ModuleName:           {authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
