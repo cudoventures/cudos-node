@@ -64,7 +64,7 @@ func (m *Minter) XXX_DiscardUnknown() {
 var xxx_messageInfo_Minter proto.InternalMessageInfo
 
 type Params struct {
-	BlocksPerDay github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=blocks_per_day,json=blocksPerDay,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"blocks_per_day"`
+	IncrementModifier github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=blocks_per_day,json=incrementModifier,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"blocks_per_day"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -194,9 +194,9 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	{
-		size := m.BlocksPerDay.Size()
+		size := m.IncrementModifier.Size()
 		i -= size
-		if _, err := m.BlocksPerDay.MarshalTo(dAtA[i:]); err != nil {
+		if _, err := m.IncrementModifier.MarshalTo(dAtA[i:]); err != nil {
 			return 0, err
 		}
 		i = encodeVarintMint(dAtA, i, uint64(size))
@@ -236,7 +236,7 @@ func (m *Params) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = m.BlocksPerDay.Size()
+	l = m.IncrementModifier.Size()
 	n += 1 + l + sovMint(uint64(l))
 	return n
 }
@@ -399,7 +399,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BlocksPerDay", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field IncrementModifier", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -427,7 +427,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.BlocksPerDay.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.IncrementModifier.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

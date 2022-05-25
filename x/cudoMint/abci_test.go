@@ -1,36 +1,31 @@
-package cudoMint
+package cudoMint_test
 
 import (
-	"fmt"
 	"testing"
 
+	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestCalculateMintedCoins(t *testing.T) {
-	blocksPerDay := sdk.NewInt(100)
-	minter := types.NewMinter(sdk.NewDec(0), sdk.NewDec(0))
-	totalBlocks := blocksPerDay.Mul(totalDays).Int64()
-	incr := normalizeBlockHeightInc(blocksPerDay)
-	mintedCoins := sdk.NewDec(0)
-	for i := int64(0); i < totalBlocks; i++ {
-		coins := calculateMintedCoins(minter, incr)
-		mintedCoins = mintedCoins.Add(coins)
-		minter.NormTimePassed = minter.NormTimePassed.Add(incr)
-		if i%10000 == 0 {
-			blocksPerDay = blocksPerDay.Add(sdk.NewInt(24))
-			fmt.Println(fmt.Sprintf("%v: Printed %v, Got total %v mil, norm time passed %v, blocks per day %v", i, coins, mintedCoins, minter.NormTimePassed, blocksPerDay))
-		}
-	}
-	fmt.Println(fmt.Sprintf("Got total %v mil, norm time passed %v", mintedCoins, minter.NormTimePassed))
-	expectedCoins := sdk.MustNewDecFromStr("1530000000000000000000000000.000000000000000000")
-	oneCudo := sdk.NewDec(10).Power(18)
-	if mintedCoins.Add(oneCudo).LT(expectedCoins) || mintedCoins.GT(expectedCoins) {
-		t.Errorf("Got unexpected amount of coins %v; wanted %v +/- epsilon", mintedCoins, expectedCoins)
-	}
-	if minter.NormTimePassed.Add(incr).LT(FinalNormTimePassed) || minter.NormTimePassed.GT(FinalNormTimePassed) {
-		t.Errorf("Got unexpected normalized time passed %v; wanted %v +/- epsilon", minter.NormTimePassed, FinalNormTimePassed)
+	app := simapp.Setup(false)
+
+	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
+	app.CudoMintKeeper.SetParams(ctx, types.NewParams(sdk.NewInt(10)))
+	totalBlocks := int64(100000)
+	for height := int64(1); height <= totalBlocks; height++ {
+		ctx = ctx.WithBlockHeight(height)
+		cudoMint.BeginBlocker(ctx, app.CudoMintKeeper)
 	}
 
+	expectedNormTimePassed, _ := sdk.NewDecFromStr("10.0003")
+	require.True(t, app.CudoMintKeeper.GetMinter(ctx).NormTimePassed.LT(expectedNormTimePassed))
+
+	expectedSupply, _ := sdk.NewIntFromString("1530000000000000000000000000")
+	require.Equal(t, expectedSupply.String(), app.BankKeeper.GetSupply(ctx, "acudos").Amount.String())
 }

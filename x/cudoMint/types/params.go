@@ -7,9 +7,9 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// BlocksPerDay Parameter store keys
+// IncrementModifier Parameter store keys
 var (
-	BlocksPerDay = []byte("BlocksPerDay")
+	IncrementModifier = []byte("IncrementModifier")
 )
 
 // ParamKeyTable ParamTable for minting module.
@@ -18,24 +18,24 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 func NewParams(
-	blocksPerDay sdk.Int,
+	incrementModifier sdk.Int,
 ) Params {
 
 	return Params{
-		BlocksPerDay: blocksPerDay,
+		IncrementModifier: incrementModifier,
 	}
 }
 
 // DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		BlocksPerDay: sdk.NewInt(17280), // assuming 5 second block times
+		IncrementModifier: sdk.NewInt(17280), // assuming 5 second block times
 	}
 }
 
 // Validate validate params
 func (p Params) Validate() error {
-	if err := validateBlocksPerDay(p.BlocksPerDay); err != nil {
+	if err := validateIncrementModifier(p.IncrementModifier); err != nil {
 		return err
 	}
 
@@ -46,11 +46,11 @@ func (p Params) Validate() error {
 // ParamSetPairs Implements params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(BlocksPerDay, &p.BlocksPerDay, validateBlocksPerDay),
+		paramtypes.NewParamSetPair(IncrementModifier, &p.IncrementModifier, validateIncrementModifier),
 	}
 }
 
-func validateBlocksPerDay(i interface{}) error {
+func validateIncrementModifier(i interface{}) error {
 	v, ok := i.(sdk.Int)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)

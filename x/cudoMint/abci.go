@@ -42,8 +42,8 @@ var (
 )
 
 // Normalize block height incrementation
-func normalizeBlockHeightInc(blocksPerDay sdk.Int) sdk.Dec {
-	totalBlocks := blocksPerDay.Mul(totalDays)
+func normalizeBlockHeightInc(incrementModifier sdk.Int) sdk.Dec {
+	totalBlocks := incrementModifier.Mul(totalDays)
 	return (sdk.NewDec(1).QuoInt(totalBlocks)).Mul(FinalNormTimePassed)
 }
 
@@ -92,7 +92,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		return
 	}
 
-	incr := normalizeBlockHeightInc(params.BlocksPerDay)
+	incr := normalizeBlockHeightInc(params.IncrementModifier)
 	mintAmountDec := calculateMintedCoins(minter, incr)
 	mintAmountInt := mintAmountDec.TruncateInt()
 	mintedCoin := sdk.NewCoin(denom, mintAmountInt)
