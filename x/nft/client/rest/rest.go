@@ -93,7 +93,7 @@ type queryCollectionRequest struct {
 }
 
 type queryOwnerRequest struct {
-	DenomId      string            `json:"denom_id"`
+	DenomId      string            `json:"denom_id,omitempty"`
 	OwnerAddress string            `json:"owner_address"`
 	Pagination   query.PageRequest `json:"pagination"`
 }
