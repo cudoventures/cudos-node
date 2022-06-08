@@ -35,7 +35,7 @@ var (
 	// if actual blocks are generated at slower rate then the network will mint tokens more than 3652 days (~10 years)
 	denom                 = "acudos"         // Hardcoded to the acudos currency. Its not changeable, because some of the math depends on the size of this denomination
 	totalDays             = sdk.NewInt(3652) // Hardcoded to 10 years
-	InitialNormTimePassed = sdk.NewDecWithPrec(9678829209, 10)
+	InitialNormTimePassed = sdk.NewDecWithPrec(53172694105988, 14)
 	FinalNormTimePassed   = sdk.NewDec(10)
 	zeroPointSix          = sdk.MustNewDecFromStr("0.6")
 	twentySixPointFive    = sdk.MustNewDecFromStr("26.5")
