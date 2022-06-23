@@ -121,8 +121,13 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		if err := types.ValidateDenomID(req.DenomId); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		// We want to check a particular DenomID only if such is provided,
+		// otherwise we skip the check in order to return all associated NFTs from all denoms.
+		if req.DenomId != "" {
+			if err := types.ValidateDenomID(req.DenomId); err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
 		}
 
 		var _ sdk.AccAddress
