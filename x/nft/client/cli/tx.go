@@ -44,8 +44,9 @@ func NewTxCmd() *cobra.Command {
 // GetCmdIssueDenom is the CLI command for an IssueDenom transaction
 func GetCmdIssueDenom() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "issue [denom-id]",
-		Long: "Issue a new denom.",
+		Use:   "issue [denom-id]",
+		Short: "Issue a new denom.",
+		Long:  "Issue a new denom.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft issue <denom-id> "+
 				"--name=<denom-name> "+
@@ -103,8 +104,9 @@ func GetCmdIssueDenom() *cobra.Command {
 // GetCmdMintNFT is the CLI command for a MintNFT transaction
 func GetCmdMintNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "mint [denom-id]",
-		Long: "Mint an NFT and set the owner to the recipient. Only the denom creator can mint a new NFT.",
+		Use:   "mint [denom-id]",
+		Short: "Mint a new NFT from a denom.",
+		Long:  "Mint a NFT and set the owner to the recipient. Only the denom creator can mint a new NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft mint <denom-id> "+
 				"--recipient=<recipient> "+
@@ -175,8 +177,9 @@ func GetCmdMintNFT() *cobra.Command {
 // GetCmdEditNFT is the CLI command for sending an MsgEditNFT transaction
 func GetCmdEditNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "edit [denom-id] [token-id]",
-		Long: "Edit the token data of an NFT.",
+		Use:   "edit [denom-id] [token-id]",
+		Long:  "Edit the token data of an NFT.",
+		Short: "Edit the token data of an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft edit <denom-id> <token-id> "+
 				"--from=<key-name> "+
@@ -227,8 +230,9 @@ func GetCmdEditNFT() *cobra.Command {
 // GetCmdTransferNft is the CLI command for sending a TransferNft transaction
 func GetCmdTransferNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "transfer [from] [to] [denom-id] [token-id]",
-		Long: "Transfer an NFT to a recipient.",
+		Use:   "transfer [from] [to] [denom-id] [token-id]",
+		Short: "Transfer a NFT to a recipient.",
+		Long:  "Transfer a NFT to a recipient.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft transfer <from> <to> <denom-id> <token-id> "+
 				"--from=<key-name> "+
@@ -272,8 +276,9 @@ func GetCmdTransferNft() *cobra.Command {
 // GetCmdApproveNft  is the CLI command for grants permission to spender to transfer or send the given token
 func GetCmdApproveNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "approve [approvedAddress][denom-id] [token-id] ",
-		Long: "Adds the to address to the approved list.",
+		Use:   "approve [approved-address][denom-id] [token-id] ",
+		Short: "Adds an address to the approved list.",
+		Long:  "Adds an address to the approved list of a NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft approve <approvedAddress> <denom-id> <token-id> "+
 				"--from=<key-name> "+
@@ -319,8 +324,9 @@ func GetCmdApproveNft() *cobra.Command {
 // GetCmdApproveAllNFT is the CLI command to add a valid address to the users approved list
 func GetCmdApproveAllNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "approveAll [operator] [approved]",
-		Long: "Adds operatorToBeApproved address to the globally approved list of sender.",
+		Use:   "approve-all [operator] [approved]",
+		Short: "Adds operator address to the globally approved list",
+		Long:  "Adds operatorToBeApproved address to the globally approved list of sender.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft approveAll <operator> <true/false> "+
 				"--from=<key-name> "+
@@ -363,8 +369,9 @@ func GetCmdApproveAllNFT() *cobra.Command {
 // GetCmdRevokeNft is the CLI command for ownership transfer of the token to contract account
 func GetCmdRevokeNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "revoke [addressToRevoke] [denom-id] [token-id]",
-		Long: "Revokes a previously granted permission to transfer the given an NFT.",
+		Use:   "revoke [addressToRevoke] [denom-id] [token-id]",
+		Short: "Revokes permition to transfer a NFT",
+		Long:  "Revokes a previously granted permission to transfer the given an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft revoke <addressToRevoke> <denom-id> <token-id>"+
 				"--from=<key-name> "+
@@ -410,8 +417,9 @@ func GetCmdRevokeNft() *cobra.Command {
 // GetCmdBurnNFT is the CLI command for sending a BurnNFT transaction
 func GetCmdBurnNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:  "burn [denom-id] [token-id]",
-		Long: "Burn an NFT.",
+		Use:   "burn [denom-id] [token-id]",
+		Short: "Burn an NFT.",
+		Long:  "Burn an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft burn <denom-id> <token-id> "+
 				"--from=<key-name> "+

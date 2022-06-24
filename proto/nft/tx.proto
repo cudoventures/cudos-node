@@ -91,7 +91,7 @@ message MsgApproveAllNft {
 message MsgApproveAllNftResponse {}
 
 
-// MsgRevokeNft defines an SDK message for transferring an NFT to recipient.
+// MsgRevokeNft defines an SDK message for revoking a previously granted permission to transfer the given an NFT.
 message MsgRevokeNft {
     option (gogoproto.equal) = true;
 

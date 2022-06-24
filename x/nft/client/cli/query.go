@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/spf13/cobra"
@@ -43,7 +44,8 @@ func GetQueryCmd() *cobra.Command {
 func GetCmdQuerySupply() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "supply [denom-id]",
-		Long:    "total supply of a collection or owner of NFTs.",
+		Short:   "Query total supply of denom",
+		Long:    "Query total supply of a collection or owner of NFTs.",
 		Example: fmt.Sprintf("$ %s query nft supply <denom-id>", version.AppName),
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -92,6 +94,7 @@ func GetCmdQuerySupply() *cobra.Command {
 func GetCmdQueryOwner() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "owner [address]",
+		Short:   "Query address NFT holdings",
 		Long:    "Get the NFTs owned by an account address.",
 		Example: fmt.Sprintf("$ %s query nft owner <address> --denom-id=<denom-id>", version.AppName),
 		Args:    cobra.ExactArgs(1),
@@ -136,6 +139,7 @@ func GetCmdQueryOwner() *cobra.Command {
 func GetCmdQueryCollection() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "collection [denom-id]",
+		Short:   "Query NFTs in a collection",
 		Long:    "Get all the NFTs from a given collection.",
 		Example: fmt.Sprintf("$ %s query nft collection <denom-id>", version.AppName),
 		Args:    cobra.ExactArgs(1),
@@ -177,6 +181,7 @@ func GetCmdQueryCollection() *cobra.Command {
 func GetCmdQueryDenoms() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "denoms",
+		Short:   "Query all denoms",
 		Long:    "Query all denominations of all collections of NFTs.",
 		Example: fmt.Sprintf("$ %s query nft denoms", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -206,6 +211,7 @@ func GetCmdQueryDenoms() *cobra.Command {
 func GetCmdQueryDenom() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "denom [denom-id]",
+		Short:   "Query a denom by Id",
 		Long:    "Query the denom by the specified denom id.",
 		Example: fmt.Sprintf("$ %s query nft denom <denom-id>", version.AppName),
 		Args:    cobra.ExactArgs(1),
@@ -240,6 +246,7 @@ func GetCmdQueryDenom() *cobra.Command {
 func GetCmdQueryDenomByName() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "denom-by-name [denom-name]",
+		Short:   "Query denom by name",
 		Long:    "Query the denom by the specified denom name.",
 		Example: fmt.Sprintf("$ %s query nft denom <denom-name>", version.AppName),
 		Args:    cobra.ExactArgs(1),
@@ -274,6 +281,7 @@ func GetCmdQueryDenomByName() *cobra.Command {
 func GetCmdQueryDenomBySymbol() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "denom-by-symbol [symbol]",
+		Short:   "Query denom by symbol",
 		Long:    "Query the denom by the specified symbol.",
 		Example: fmt.Sprintf("$ %s query nft denom <symbol>", version.AppName),
 		Args:    cobra.ExactArgs(1),
@@ -309,7 +317,8 @@ func GetCmdQueryDenomBySymbol() *cobra.Command {
 func GetCmdQueryNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "token [denom-id] [token-id]",
-		Long:    "Query a single NFT from a collection.",
+		Short:   "Query single NFT",
+		Long:    "Query a single NFT from a collection by denom id and token id.",
 		Example: fmt.Sprintf("$ %s query nft token <denom-id> <token-id>", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -348,7 +357,8 @@ func GetCmdQueryNFT() *cobra.Command {
 func GetCmdQueryApprovedNFT() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "approvals [denomId] [tokenId]",
-		Long:    "Get the approved addresses for the NFT",
+		Short:   "Query the approved addresses for a NFT.",
+		Long:    "Get the approved addresses for the NFT.",
 		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenId>", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -389,7 +399,8 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 // GetCmdQueryIsApprovedForAll queries if the operator address is authorized for owner address
 func GetCmdQueryIsApprovedForAll() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "isApprovedForAll [owner] [operator]",
+		Use:     "is-approved-for-all [owner] [operator]",
+		Short:   "Query if an address is approved operator",
 		Long:    "Query if an address is an authorized operator for another address",
 		Example: fmt.Sprintf("$ %s query nft isApprovedForAll <owner> <operator>", version.AppName),
 		Args:    cobra.ExactArgs(2),
