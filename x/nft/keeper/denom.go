@@ -120,3 +120,15 @@ func (k Keeper) IsDenomCreator(ctx sdk.Context, denomID string, address sdk.AccA
 
 	return denom, nil
 }
+
+// UpdateDenom is responsible for updating the definition of denom
+func (k Keeper) UpdateDenom(ctx sdk.Context, denom types.Denom) error {
+	if !k.HasDenomID(ctx, denom.Id) {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denomID %s not exists", denom.Id)
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&denom)
+	store.Set(types.KeyDenomID(denom.Id), bz)
+	return nil
+}

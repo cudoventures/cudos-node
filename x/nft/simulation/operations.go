@@ -99,10 +99,10 @@ func WeightedOperations(
 			weightBurn,
 			SimulateMsgBurnNFT(k, ak, bk),
 		),
-		// simulation.NewWeightedOperation(
-		// 	weightTransferDenom,
-		// 	SimulateMsgTransferDenom(k, ak, bk),
-		// ),
+		simulation.NewWeightedOperation(
+			weightTransferDenom,
+			SimulateMsgTransferDenom(k, ak, bk),
+		),
 	}
 }
 
@@ -326,6 +326,67 @@ func SimulateMsgBurnNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 
 		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditNFT, err.Error()), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+	}
+}
+
+// SimulateMsgTransferDenom simulates the transfer of an denom
+func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKeeper) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (
+		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
+	) {
+
+		denomId := getRandomDenom(ctx, k, r)
+		denom, err := k.GetDenom(ctx, denomId)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+
+		creator, err := sdk.AccAddressFromBech32(denom.Creator)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+		account := ak.GetAccount(ctx, creator)
+		owner, found := simtypes.FindAccount(accs, account.GetAddress())
+		if !found {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, "creator not found"), nil, nil
+		}
+
+		recipient, _ := simtypes.RandomAcc(r, accs)
+		msg := types.NewMsgTransferDenom(
+			denomId,
+			denom.Creator,
+			recipient.Address.String(),
+			"",
+		)
+
+		spendable := bk.SpendableCoins(ctx, owner.Address)
+		fees, err := simtypes.RandomFees(r, ctx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
+		}
+
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			owner.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+		}
+
+		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgTransferDenom, err.Error()), nil, err
 		}
 
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil

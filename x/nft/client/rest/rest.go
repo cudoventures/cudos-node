@@ -52,6 +52,12 @@ type transferNFTReq struct {
 	To      string       `json:"to"`
 }
 
+type transferDenomReq struct {
+	BaseReq   rest.BaseReq `json:"base_req"`
+	Recipient string       `json:"recipient"`
+	DenomId   string       `json:"denom_id"`
+}
+
 type approveNFTReq struct {
 	DenomId          string       `json:"denom_id"`
 	TokenId          string       `json:"token_id"`
