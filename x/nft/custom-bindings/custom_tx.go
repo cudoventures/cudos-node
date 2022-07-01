@@ -61,6 +61,13 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 				nftCustomMsg.TransferNftMsg.Sender,
 				nftCustomMsg.TransferNftMsg.ContractAddressSigner)
 			return []sdk.Msg{transferNftMsg}, nil
+		case nftCustomMsg.TransferDenomMsg != nil:
+			TransferDenomMsg := nftTypes.NewMsgTransferDenom(
+				nftCustomMsg.TransferDenomMsg.DenomId,
+				nftCustomMsg.TransferDenomMsg.Sender,
+				nftCustomMsg.TransferDenomMsg.To,
+				nftCustomMsg.TransferDenomMsg.ContractAddressSigner)
+			return []sdk.Msg{TransferDenomMsg}, nil
 		case nftCustomMsg.BurnNftMsg != nil:
 			burnNftMsg := nftTypes.NewMsgBurnNFT(
 				nftCustomMsg.BurnNftMsg.Sender,
@@ -102,6 +109,7 @@ type nftCustomMsg struct {
 	MintNftMsg        *MintNftRequest        `json:"mint_nft_msg,omitempty"`
 	EditNftMsg        *EditNftRequest        `json:"edit_nft_msg,omitempty"`
 	TransferNftMsg    *TransferNftRequest    `json:"transfer_nft_msg,omitempty"`
+	TransferDenomMsg  *TransferDenomRequest  `json:"transfer_denom_msg,omitempty"`
 	BurnNftMsg        *BurnNftRequest        `json:"burn_nft_msg,omitempty"`
 	ApproveNftMsg     *ApproveNftRequest     `json:"approve_nft_msg,omitempty"`
 	ApproveAllMsg     *ApproveAllRequest     `json:"approve_all_msg,omitempty"`
@@ -142,6 +150,13 @@ type TransferNftRequest struct {
 	DenomId               string `json:"denom_id"`
 	From                  string `json:"from"`
 	To                    string `json:"to"`
+	Sender                string `json:"sender"`
+	ContractAddressSigner string `json:"contract_address_signer"`
+}
+
+type TransferDenomRequest struct {
+	To                    string `json:"to"`
+	DenomId               string `json:"denom_id"`
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 }

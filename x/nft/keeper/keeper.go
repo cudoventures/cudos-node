@@ -166,6 +166,28 @@ func transferNFT(ctx sdk.Context, denomID string, tokenID string, from sdk.AccAd
 	k.swapOwner(ctx, denomID, tokenID, from, to)
 }
 
+// TransferDenomOwner transfers the ownership of the given denom to the new owner
+func (k Keeper) TransferDenomOwner(ctx sdk.Context, denomID string, srcOwner, dstOwner sdk.AccAddress) error {
+	denom, err := k.GetDenom(ctx, denomID)
+	if err != nil {
+		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
+	}
+
+	// authorize
+	if srcOwner.String() != denom.Creator {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to transfer denom %s", srcOwner.String(), denomID)
+	}
+
+	denom.Creator = dstOwner.String()
+
+	err = k.UpdateDenom(ctx, denom)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // BurnNFT deletes a specified NFT
 func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
 	if !k.HasDenomID(ctx, denomID) {

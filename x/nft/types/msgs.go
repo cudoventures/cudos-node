@@ -15,6 +15,7 @@ const (
 	TypeMsgApproveNft    = "approve_nft"
 	TypeMsgRevokeNft     = "revoke_nft"
 	TypeMsgApproveAllNft = "approve_all"
+	TypeMsgTransferDenom = "transfer_denom"
 )
 
 var (
@@ -26,6 +27,7 @@ var (
 	_ sdk.Msg = &MsgApproveNft{}
 	_ sdk.Msg = &MsgRevokeNft{}
 	_ sdk.Msg = &MsgApproveAllNft{}
+	_ sdk.Msg = &MsgTransferDenom{}
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
@@ -519,6 +521,63 @@ func (msg MsgBurnNFT) GetSignBytes() []byte {
 
 // GetSigners Implements Msg.
 func (msg MsgBurnNFT) GetSigners() []sdk.AccAddress {
+	var signers []sdk.AccAddress
+
+	if msg.ContractAddressSigner != "" {
+		contractAddressSigner, err := sdk.AccAddressFromBech32(msg.ContractAddressSigner)
+		if err != nil {
+			panic(err)
+		}
+		signers = append(signers, contractAddressSigner)
+		return signers
+	}
+
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	signers = append(signers, from)
+	return signers
+}
+
+// NewMsgTransferDenom is a constructor function for msgTransferDenom
+func NewMsgTransferDenom(denomId, sender, recipient, contractAddressSigner string) *MsgTransferDenom {
+	return &MsgTransferDenom{
+		Id:                    denomId,
+		Sender:                sender,
+		Recipient:             recipient,
+		ContractAddressSigner: contractAddressSigner,
+	}
+}
+
+// Route Implements Msg
+func (msg MsgTransferDenom) Route() string { return RouterKey }
+
+// Type Implements Msg
+func (msg MsgTransferDenom) Type() string { return TypeMsgTransferDenom }
+
+// ValidateBasic Implements Msg.
+func (msg MsgTransferDenom) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
+	}
+	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
+	}
+	if err := ValidateDenomID(msg.Id); err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetSignBytes Implements Msg.
+func (msg MsgTransferDenom) GetSignBytes() []byte {
+	bz := ModuleCdc.MustMarshalJSON(&msg)
+	return sdk.MustSortJSON(bz)
+}
+
+// GetSigners Implements Msg.
+func (msg MsgTransferDenom) GetSigners() []sdk.AccAddress {
 	var signers []sdk.AccAddress
 
 	if msg.ContractAddressSigner != "" {

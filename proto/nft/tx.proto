@@ -31,6 +31,9 @@ service Msg {
 
     // BurnNFT defines a method for burning a nft.
     rpc BurnNFT(MsgBurnNFT) returns (MsgBurnNFTResponse);
+
+    // TransferDenom defines a method for transferring a denom.
+    rpc TransferDenom(MsgTransferDenom) returns (MsgTransferDenomResponse);
 }
 
 // MsgIssueDenom defines an SDK message for creating a new denom.
@@ -150,3 +153,15 @@ message MsgBurnNFT {
 
 // MsgBurnNFTResponse defines the Msg/BurnNFT response type.
 message MsgBurnNFTResponse {}
+
+// MsgTransferDenom defines an SDK message for transferring an denom to recipient.
+message MsgTransferDenom {
+    option (gogoproto.equal) = true;
+    string id = 1;
+    string sender = 2;
+    string recipient = 3;
+    string contractAddressSigner = 4;
+}
+
+// MsgTransferDenomResponse defines the Msg/TransferDenom response type.
+message MsgTransferDenomResponse {}

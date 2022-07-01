@@ -367,4 +367,31 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(2), supplyResp.Amount)
+
+	//------test GetCmdTransferDenom()-------------
+	denomRecipient := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
+
+	args = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	respType = proto.Message(&sdk.TxResponse{})
+
+	bz, err = nfttestutil.TransferDenomExec(val.ClientCtx, from.String(), denomRecipient.String(), denomID, args...)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType), bz.String())
+	txResp = respType.(*sdk.TxResponse)
+	s.Require().Equal(expectedCode, txResp.Code)
+
+	respType = proto.Message(&nfttypes.Denom{})
+	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
+	s.Require().NoError(err)
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
+	denomItem2 := respType.(*nfttypes.Denom)
+	s.Require().Equal(denomRecipient.String(), denomItem2.Creator)
+	s.Require().Equal(denomName, denomItem2.Name)
+	s.Require().Equal(schema, denomItem2.Schema)
+	s.Require().Equal(denomSymbol, denomItem2.Symbol)
 }
