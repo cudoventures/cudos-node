@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -28,7 +29,7 @@ func ValidateMinter(minter Minter) error {
 			minter.MintRemainder.String())
 	} else if minter.NormTimePassed.IsNegative() {
 		return fmt.Errorf("mint parameter NormTimePassed should be positive, is %s",
-			minter.MintRemainder.String())
+			minter.NormTimePassed.String())
 	}
 
 	return nil

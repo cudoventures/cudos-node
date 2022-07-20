@@ -10,6 +10,7 @@ var (
 	EventTypeEditNFT       = "edit_nft"
 	EventTypeMintNFT       = "mint_nft"
 	EventTypeBurnNFT       = "burn_nft"
+	EventTypeTransferDenom = "transfer_denom"
 
 	AttributeValueCategory = ModuleName
 

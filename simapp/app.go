@@ -251,7 +251,7 @@ type SimApp struct {
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
-	cudoMintKeeper cudoMintkeeper.Keeper
+	CudoMintKeeper cudoMintkeeper.Keeper
 	GravityKeeper  gravitykeeper.Keeper
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
@@ -448,7 +448,7 @@ func NewSimApp(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
-	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
+	app.CudoMintKeeper = *cudoMintkeeper.NewKeeper(
 		appCodec,
 		keys[cudoMinttypes.StoreKey],
 		keys[cudoMinttypes.MemStoreKey],
@@ -457,7 +457,7 @@ func NewSimApp(
 		app.GetSubspace(cudoMinttypes.ModuleName),
 		authtypes.FeeCollectorName,
 	)
-	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
+	cudoMintModule := cudoMint.NewAppModule(appCodec, app.CudoMintKeeper)
 
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,

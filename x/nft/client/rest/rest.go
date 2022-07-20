@@ -52,6 +52,12 @@ type transferNFTReq struct {
 	To      string       `json:"to"`
 }
 
+type transferDenomReq struct {
+	BaseReq   rest.BaseReq `json:"base_req"`
+	Recipient string       `json:"recipient"`
+	DenomId   string       `json:"denom_id"`
+}
+
 type approveNFTReq struct {
 	DenomId          string       `json:"denom_id"`
 	TokenId          string       `json:"token_id"`
@@ -93,7 +99,7 @@ type queryCollectionRequest struct {
 }
 
 type queryOwnerRequest struct {
-	DenomId      string            `json:"denom_id"`
+	DenomId      string            `json:"denom_id,omitempty"`
 	OwnerAddress string            `json:"owner_address"`
 	Pagination   query.PageRequest `json:"pagination"`
 }

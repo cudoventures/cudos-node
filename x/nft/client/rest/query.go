@@ -55,10 +55,11 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	// Query approvals for NFT
 	r.HandleFunc(fmt.Sprintf("/%s/approvals/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryApprovalsNFT(cliCtx)).Methods("GET")
 
-	// Query is approved for all
+	// Query if an address is an authorized operator for another address
 	r.HandleFunc(fmt.Sprintf("/%s/isApprovedForAll", types.ModuleName), queryIsApprovedForAll(cliCtx)).Methods("POST")
 }
 
+// Get the total supply of a collection or owner
 func querySupply(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -112,6 +113,7 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Get the collections of NFTs owned by an address
 func queryOwner(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -121,8 +123,13 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		if err := types.ValidateDenomID(req.DenomId); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		// We want to check a particular DenomID only if such is provided,
+		// otherwise we skip the check in order to return all associated NFTs from all denoms.
+		if req.DenomId != "" {
+			if err := types.ValidateDenomID(req.DenomId); err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
 		}
 
 		var _ sdk.AccAddress
@@ -168,6 +175,7 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Get all the NFTs from a given collection
 func queryCollection(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -215,6 +223,7 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 }
 
 // nolint: dupl
+// query a denom by denom id
 func queryDenom(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// nolint: govet
@@ -254,6 +263,7 @@ func queryDenom(cliCtx client.Context) http.HandlerFunc {
 }
 
 // nolint: dupl
+// Query the denom by name
 func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// nolint: govet
@@ -293,6 +303,7 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 }
 
 // nolint: dupl
+// Query the denom by symbol
 func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// nolint: govet
@@ -331,6 +342,7 @@ func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Query all denoms
 func queryDenoms(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// nolint: govet
@@ -372,6 +384,7 @@ func queryDenoms(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Query a single NFT
 func queryNFT(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -421,6 +434,7 @@ func queryNFT(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Query approvals for NFT
 func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -469,6 +483,7 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 	}
 }
 
+// Query if an address is an authorized operator for another address
 func queryIsApprovedForAll(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req queryIsApprovedForAllRequest
