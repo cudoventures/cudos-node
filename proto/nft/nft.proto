@@ -2,6 +2,7 @@ syntax = "proto3";
 package cudosnode.cudosnode.nft;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/nft/types";
 option (gogoproto.goproto_getters_all) = false;
@@ -16,6 +17,8 @@ message BaseNFT {
     string data = 4 [(gogoproto.jsontag) = "data"];
     string owner = 5;
     repeated string approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
+    google.protobuf.Timestamp expiresOn = 7  [(gogoproto.stdtime) = true, (gogoproto.jsontag) = "expiresOn,omitempty" ];
+
 }
 
 // Denom defines a type of NFT
