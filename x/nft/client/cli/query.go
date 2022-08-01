@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -35,6 +36,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryNFT(),
 		GetCmdQueryApprovedNFT(),
 		GetCmdQueryIsApprovedForAll(),
+		GetCmdQueryNFTsByIds(),
 	)
 
 	return queryCmd
@@ -346,6 +348,50 @@ func GetCmdQueryNFT() *cobra.Command {
 				return err
 			}
 			return clientCtx.PrintProto(resp.NFT)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdQueryNFTsByIds queries for many NFTs from a collection by their specific ids
+func GetCmdQueryNFTsByIds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "token [denom-id] [token-id1,token-id2,token-id3..]",
+		Short:   "Query multiple NFTs by their ids",
+		Long:    "Query a multiple NFTs from a collection by denom id and a list of token ids.",
+		Example: fmt.Sprintf("$ %s query nft token <denom-id> <token-id1,token-id2-,token-id3>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if err := types.ValidateDenomID(args[0]); err != nil {
+				return err
+			}
+
+			// nolint: govet
+			tokenIdsArray := strings.Split(args[1], ",")
+
+			for _, element := range tokenIdsArray {
+				if err := types.ValidateTokenID(element); err != nil {
+					return err
+				}
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.NFTsByIds(context.Background(), &types.QueryNFTsByIdsRequest{
+				DenomId:  args[0],
+				TokenIds: tokenIdsArray,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp.Collection)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

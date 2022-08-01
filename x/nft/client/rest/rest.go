@@ -98,6 +98,11 @@ type queryCollectionRequest struct {
 	Pagination query.PageRequest `json:"pagination"`
 }
 
+type queryNFTsByIdsRequest struct {
+	DenomId  string   `json:"denom_id"`
+	TokenIds []string `json:"token_ids"`
+}
+
 type queryOwnerRequest struct {
 	DenomId      string            `json:"denom_id,omitempty"`
 	OwnerAddress string            `json:"owner_address"`

@@ -17,8 +17,14 @@ message BaseNFT {
     string data = 4 [(gogoproto.jsontag) = "data"];
     string owner = 5;
     repeated string approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
-    google.protobuf.Timestamp expiresOn = 7  [(gogoproto.stdtime) = true, (gogoproto.jsontag) = "expiresOn,omitempty" ];
 
+}
+
+message TokenisedNFT {
+    option (gogoproto.equal) = true;
+    BaseNFT baseNFT = 1;
+    string hash_rate_id = 2;
+    google.protobuf.Timestamp expiresOn = 3  [(gogoproto.stdtime) = true, (gogoproto.jsontag) = "expiresOn,omitempty" ];
 }
 
 // Denom defines a type of NFT

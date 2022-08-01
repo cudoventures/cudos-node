@@ -105,6 +105,8 @@ func (suite *IntegrationTestKeeperSuite) TestNFT_ReturnsCorrect() {
 	suite.Equal(response.NFT.Id, tokenId)
 }
 
+//TODO : Add test for QueryNFTsByIds
+
 func (suite *IntegrationTestKeeperSuite) TestGetApprovalsNFT_Correctly_ReturnsApprovals() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, address2)
 	suite.NoError(err)

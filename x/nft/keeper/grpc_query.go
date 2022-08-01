@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -163,6 +164,26 @@ func (k Keeper) NFT(c context.Context, request *types.QueryNFTRequest) (*types.Q
 	}
 
 	return &types.QueryNFTResponse{NFT: &baseNFT}, nil
+}
+
+func (k Keeper) NFTsByIds(c context.Context, request *types.QueryNFTsByIdsRequest) (*types.QueryNFTsByIdsResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	allNFTsFromCollection, err := k.GetCollection(ctx, request.DenomId)
+	var nftsToReturn []exported.NFT
+	result := types.NewCollection(allNFTsFromCollection.Denom, nftsToReturn)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, nftId := range request.GetTokenIds() {
+		for _, nftObject := range allNFTsFromCollection.NFTs {
+			if nftId == nftObject.Id {
+				result.NFTs = append(result.NFTs, nftObject)
+			}
+		}
+	}
+
+	return &types.QueryNFTsByIdsResponse{Collection: &result}, nil
 }
 
 func (k Keeper) GetApprovalsNFT(c context.Context, request *types.QueryApprovalsNFTRequest) (*types.QueryApprovalsNFTResponse, error) {

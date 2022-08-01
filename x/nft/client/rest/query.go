@@ -25,6 +25,7 @@ const (
 	QueryNFTRoute           = "NFT"
 	QueryApprovalsNFTRoute  = "GetApprovalsNFT"
 	QueryIsApprovedForAll   = "QueryApprovalsIsApprovedForAll"
+	QueryNFTsByIdsRoute     = "NFTsByIds"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -51,6 +52,9 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 
 	// Query a single NFT
 	r.HandleFunc(fmt.Sprintf("/%s/nfts/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryNFT(cliCtx)).Methods("GET")
+
+	// Query a multiple NFTs by IDs
+	r.HandleFunc(fmt.Sprintf("/%s/nfts/nftsByIds", types.ModuleName), queryNFTsByIds(cliCtx)).Methods("POST")
 
 	// Query approvals for NFT
 	r.HandleFunc(fmt.Sprintf("/%s/approvals/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryApprovalsNFT(cliCtx)).Methods("GET")
@@ -431,6 +435,59 @@ func queryNFT(cliCtx client.Context) http.HandlerFunc {
 
 		cliCtx = cliCtx.WithHeight(height)
 		rest.PostProcessResponse(w, cliCtx, nftResponse)
+	}
+}
+
+// Get all the NFTs by specific Ids from a given collection
+func queryNFTsByIds(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		var req queryNFTsByIdsRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		if err := types.ValidateDenomID(req.DenomId); err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
+		for _, id := range req.TokenIds {
+			if err := types.ValidateTokenID(id); err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}
+
+		request := types.QueryNFTsByIdsRequest{
+			DenomId:  req.DenomId,
+			TokenIds: req.TokenIds,
+		}
+
+		bz, err := request.Marshal()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// nolint: govet
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryNFTsByIdsRoute)
+		res, height, err := cliCtx.QueryWithData(
+			queryPath, bz,
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		var nftsByIdsResponse types.QueryNFTsByIdsResponse
+		cliCtx.Codec.MustUnmarshal(res, &nftsByIdsResponse)
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, nftsByIdsResponse)
 	}
 }
 
