@@ -358,7 +358,7 @@ func GetCmdQueryNFT() *cobra.Command {
 // GetCmdQueryNFTsByIds queries for many NFTs from a collection by their specific ids
 func GetCmdQueryNFTsByIds() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "token [denom-id] [token-id1,token-id2,token-id3..]",
+		Use:     "tokens [denom-id] [token-id1,token-id2,token-id3..]",
 		Short:   "Query multiple NFTs by their ids",
 		Long:    "Query a multiple NFTs from a collection by denom id and a list of token ids.",
 		Example: fmt.Sprintf("$ %s query nft token <denom-id> <token-id1,token-id2-,token-id3>", version.AppName),
