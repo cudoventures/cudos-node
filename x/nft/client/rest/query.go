@@ -54,7 +54,7 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/%s/nfts/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryNFT(cliCtx)).Methods("GET")
 
 	// Query a multiple NFTs by IDs
-	r.HandleFunc(fmt.Sprintf("/%s/nfts/nftsByIds", types.ModuleName), queryNFTsByIds(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s/nftsByIds", types.ModuleName), queryNFTsByIds(cliCtx)).Methods("POST")
 
 	// Query approvals for NFT
 	r.HandleFunc(fmt.Sprintf("/%s/approvals/{%s}/{%s}", types.ModuleName, RestParamDenomID, RestParamTokenID), queryApprovalsNFT(cliCtx)).Methods("GET")
