@@ -42,13 +42,11 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantmod "github.com/cosmos/cosmos-sdk/x/feegrant/module"
+
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -62,15 +60,19 @@ import (
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-
+	
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
+
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
+
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+	"github.com/cosmos/cosmos-sdk/x/group"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 const Name = "cudos-node"
@@ -155,6 +157,22 @@ func New(
 
 	// add keepers
 	app.AddKeepers(skipUpgradeHeights, homePath, appOpts)
+
+/****  Module Options ****/
+
+	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
+	// we prefer to be more strict in what arguments the modules expect.
+	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+
+	// NOTE: Any module instantiated in the module manager that is later modified
+	// must be passed by reference here.
+	gravityModule := gravity.NewAppModule(app.GravityKeeper, app.BankKeeper)
+
+	feegrantModule := feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry)
+
+	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
+
+	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 

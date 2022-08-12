@@ -86,6 +86,9 @@ import (
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+
+	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -147,6 +150,7 @@ var (
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
+		groupmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -220,7 +224,7 @@ type App struct {
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	NftKeeper nftmodulekeeper.Keeper
-
+	GroupKeeper groupkeeper.Keeper
 	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
