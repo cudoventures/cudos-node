@@ -105,6 +105,10 @@ import (
 	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
@@ -175,6 +179,7 @@ var (
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
+		marketplace.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -266,8 +271,9 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper   nftmodulekeeper.Keeper
-	GroupKeeper groupkeeper.Keeper
+	NftKeeper         nftmodulekeeper.Keeper
+	GroupKeeper       groupkeeper.Keeper
+	MarketplaceKeeper marketplacekeeper.Keeper
 
 	// the module manager
 	mm           *module.Manager
@@ -304,6 +310,7 @@ func New(
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 		group.StoreKey,
+		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -397,6 +404,15 @@ func New(
 		keys[nftmoduletypes.MemStoreKey],
 	)
 
+	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
+		appCodec,
+		keys[marketplacetypes.StoreKey],
+		keys[marketplacetypes.MemStoreKey],
+		app.GetSubspace(marketplacetypes.ModuleName),
+		app.BankKeeper,
+		app.NftKeeper,
+	)
+
 	supportedFeatures := "iterator,staking,stargate"
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
@@ -468,6 +484,7 @@ func New(
 	app.EvidenceKeeper = *evidenceKeeper
 
 	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
+	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
@@ -539,6 +556,7 @@ func New(
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
+		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
@@ -569,6 +587,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -594,6 +613,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -630,6 +650,7 @@ func New(
 		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
 		group.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -830,6 +851,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
+	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 
 	return paramsKeeper
 }

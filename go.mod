@@ -35,9 +35,12 @@ require (
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
 	github.com/tidwall/gjson v1.6.7
-	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd
-	google.golang.org/grpc v1.46.2
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
+	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d // indirect
+	google.golang.org/genproto v0.0.0-20220805133916-01dd62135a58
+	google.golang.org/grpc v1.48.0
+	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 
 )
