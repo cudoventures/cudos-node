@@ -18,4 +18,8 @@ var (
 	ErrNotFoundNFT         = sdkerrors.Register(ModuleName, 14, "nft not found")
 	ErrInvalidDenomSymbol  = sdkerrors.Register(ModuleName, 15, "invalid denom symbol")
 	ErrInvalidNftName      = sdkerrors.Register(ModuleName, 16, "invalid nft name")
+	ErrInvalidTraits       = sdkerrors.Register(ModuleName, 17, "invalid traits")
+	ErrAlreadySoftLocked   = sdkerrors.Register(ModuleName, 18, "already soft locked")
+	ErrNotSoftLocked       = sdkerrors.Register(ModuleName, 19, "not soft locked")
+	ErrNotOwnerOfSoftLock  = sdkerrors.Register(ModuleName, 20, "not owner of soft lock")
 )

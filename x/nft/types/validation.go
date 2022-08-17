@@ -52,6 +52,21 @@ func ValidateDenomSymbol(symbol string) error {
 	return nil
 }
 
+func ValidateDenomTraits(traits string) error {
+	traits = strings.TrimSpace(traits)
+	if traits == "" {
+		return nil
+	}
+
+	traitsList := strings.Split(traits, ",")
+	for _, trait := range traitsList {
+		if _, ok := DenomTraitsMap[trait]; !ok {
+			return sdkerrors.Wrapf(ErrInvalidTraits, "denom trait(%s) is not supported.", trait)
+		}
+	}
+	return nil
+}
+
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
 

@@ -31,7 +31,7 @@ var (
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
-func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol string) *MsgIssueDenom {
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender:                sender,
 		Id:                    denomID,
@@ -39,6 +39,7 @@ func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner,
 		Schema:                schema,
 		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from a contract, in other cases its empty string
 		Symbol:                symbol,
+		Traits:                traits,
 	}
 }
 
@@ -63,6 +64,10 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	}
 
 	if err := ValidateDenomSymbol(msg.Symbol); err != nil {
+		return err
+	}
+
+	if err := ValidateDenomTraits(msg.Traits); err != nil {
 		return err
 	}
 
