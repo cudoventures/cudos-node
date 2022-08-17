@@ -54,7 +54,8 @@ func GetCmdIssueDenom() *cobra.Command {
 				"--symbol=<symbol-name> "+
 				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
-				"--chain-id=<chain-id> ",
+				"--chain-id=<chain-id> "+
+				"--traits=<traits>",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -76,6 +77,10 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			traits, err := cmd.Flags().GetString(FlagTraits)
+			if err != nil {
+				return err
+			}
 
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
@@ -89,6 +94,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				"",
 				symbol,
+				traits,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

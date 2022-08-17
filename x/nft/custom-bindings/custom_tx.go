@@ -30,6 +30,7 @@ func EncodeNftMessage() wasmKeeper.CustomEncoder {
 				nftCustomMsg.IssueDenomMsg.Sender,
 				nftCustomMsg.IssueDenomMsg.ContractAddressSigner,
 				nftCustomMsg.IssueDenomMsg.Symbol,
+				nftCustomMsg.IssueDenomMsg.Traits,
 			)
 			return []sdk.Msg{issueDenomMsg}, nil
 		case nftCustomMsg.MintNftMsg != nil:
@@ -123,6 +124,7 @@ type IssueDenomRequest struct {
 	Sender                string `json:"sender"`
 	ContractAddressSigner string `json:"contract_address_signer"`
 	Symbol                string `json:"symbol"`
+	Traits                string `json:"traits"`
 }
 
 type MintNftRequest struct {

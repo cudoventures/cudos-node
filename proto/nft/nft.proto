@@ -27,6 +27,7 @@ message Denom {
     string schema = 3 [(gogoproto.jsontag) = "schema"];
     string creator = 4 [(gogoproto.jsontag) = "creator"];
     string symbol = 5 [(gogoproto.jsontag) = "symbol"];
+    string traits = 6 [(gogoproto.jsontag) = "traits"];
 }
 
 // IDCollection defines a type of collection with specified ID

@@ -28,6 +28,7 @@ type issueDenomReq struct {
 	Name    string       `json:"name"`
 	Schema  string       `json:"schema"`
 	Symbol  string       `json:"symbol"`
+	Traits  string       `json:"traits"`
 }
 
 type mintNFTReq struct {
