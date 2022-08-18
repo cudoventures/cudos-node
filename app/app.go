@@ -368,7 +368,18 @@ func New(
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
 	app.UpgradeKeeper.SetUpgradeHandler("privatetestnet04-v1.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		ss, ok := app.ParamsKeeper.GetSubspace(cudoMinttypes.ModuleName)
+		if ok {
+			bpd := ss.GetRaw(ctx, []byte("BlocksPerDay"))
+
+			bpdString := strings.ReplaceAll(string(bpd), "\"", "")
+
+			bpdInt, parseOk := sdk.NewIntFromString(bpdString)
+			if parseOk {
+				ss.Set(ctx, []byte("IncrementModifier"), bpdInt)
+			}
+		}
+		return fromVM, nil
 	})
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
