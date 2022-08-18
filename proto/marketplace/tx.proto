@@ -7,7 +7,18 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgPublishCollection {
+  string creator = 1;
+  string denomId = 2;
+  string firstSaleRoyalties = 3;
+  string resaleRoyalties = 4;
+}
+
+message MsgPublishCollectionResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
