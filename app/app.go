@@ -368,18 +368,11 @@ func New(
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
 	app.UpgradeKeeper.SetUpgradeHandler("privatetestnet04-v1.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ss, ok := app.ParamsKeeper.GetSubspace(cudoMinttypes.ModuleName)
-		if ok {
-			bpd := ss.GetRaw(ctx, []byte("BlocksPerDay"))
+		fromVM = app.mm.GetVersionMap()
+		delete(fromVM, "authz")
+		delete(fromVM, "group")
 
-			bpdString := strings.ReplaceAll(string(bpd), "\"", "")
-
-			bpdInt, parseOk := sdk.NewIntFromString(bpdString)
-			if parseOk {
-				ss.Set(ctx, []byte("IncrementModifier"), bpdInt)
-			}
-		}
-		return fromVM, nil
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
@@ -650,7 +643,7 @@ func New(
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	// app.mm.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
-	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterServices(app.configurator)
 
 	// initialize stores
 	app.MountKVStores(keys)
