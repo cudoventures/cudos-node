@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"fmt"
+	"strings"
+
 	paramsV1 "github.com/CudoVentures/cudos-node/x/cudoMint/legacy/v1"
 	paramsV2 "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,11 +22,19 @@ func NewMigrator(keeper Keeper) Migrator {
 // Migrate1to2 migrates from version 1 to 2.
 // change blocksPerDay to IncrementModifier
 func (m Migrator) Migrate1to2(ctx sdk.Context) error {
-	var oldParams paramsV1.Params
-	m.keeper.paramSpace.GetParamSet(ctx, &oldParams)
+	bpdByte := m.keeper.paramSpace.GetRaw(ctx, paramsV1.BlocksPerDay)
 
-	var newParams paramsV2.Params
-	newParams.IncrementModifier = oldParams.BlocksPerDay
+	bpdStr := strings.ReplaceAll(string(bpdByte), "\"", "")
 
-	m.keeper.paramSpace.SetParamSet(ctx, &newParams)
+	bpd, ok := sdk.NewIntFromString(bpdStr)
+
+	if ok {
+		newParams := paramsV2.Params{IncrementModifier: bpd}
+
+		m.keeper.paramSpace.SetParamSet(ctx, &newParams)
+
+		return nil
+	}
+
+	return fmt.Errorf("failed to parse. blocksperday = %v", bpdStr)
 }

@@ -371,7 +371,7 @@ func New(
 		fromVM = app.mm.GetVersionMap()
 		delete(fromVM, "authz")
 		delete(fromVM, "group")
-
+		fromVM[cudoMinttypes.ModuleName] = 1
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
