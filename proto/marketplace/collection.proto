@@ -1,0 +1,13 @@
+syntax = "proto3";
+package cudoventures.cudosnode.marketplace;
+
+option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
+
+message Collection {
+  uint64 id = 1;
+  string denomId = 2;
+  string firstSaleRoyalties = 3;
+  string resaleRoyalties = 4;
+  bool verified = 5;
+  string owner = 6;
+}

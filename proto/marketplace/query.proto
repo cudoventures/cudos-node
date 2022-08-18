@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "marketplace/params.proto";
+import "marketplace/collection.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -15,7 +16,17 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a Collection by id.
+	rpc Collection(QueryGetCollectionRequest) returns (QueryGetCollectionResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection/{id}";
+	}
+
+	// Queries a list of Collection items.
+	rpc CollectionAll(QueryAllCollectionRequest) returns (QueryAllCollectionResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +36,23 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetCollectionRequest {
+	uint64 id = 1;
+}
+
+message QueryGetCollectionResponse {
+	Collection Collection = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllCollectionRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllCollectionResponse {
+	repeated Collection Collection = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3
