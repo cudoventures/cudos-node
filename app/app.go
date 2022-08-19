@@ -842,6 +842,9 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
+	paramsKeeper.Subspace(authz.ModuleName)
+	paramsKeeper.Subspace(feegrant.ModuleName)
+	paramsKeeper.Subspace(group.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	// paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
