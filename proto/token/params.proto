@@ -1,0 +1,12 @@
+syntax = "proto3";
+package cudoventures.cudosnode.token;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
