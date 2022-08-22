@@ -17,7 +17,7 @@ func (k msgServer) BuyNft(goCtx context.Context, msg *types.MsgBuyNft) (*types.M
 	}
 
 	if err := k.Keeper.BuyNFT(ctx, msg.Id, buyer); err != nil {
-		return &types.MsgBuyNftResponse{}, nil
+		return &types.MsgBuyNftResponse{}, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{

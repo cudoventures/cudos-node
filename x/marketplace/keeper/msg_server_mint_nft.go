@@ -1,0 +1,43 @@
+package keeper
+
+import (
+	"context"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types.MsgMintNftResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	sender, err := sdk.AccAddressFromBech32(msg.Creator)
+	if err != nil {
+		return &types.MsgMintNftResponse{}, err
+	}
+
+	recipient, err := sdk.AccAddressFromBech32(msg.Recipient)
+	if err != nil {
+		return &types.MsgMintNftResponse{}, err
+	}
+
+	nftId, err := k.Keeper.MintNFT(ctx, msg.DenomId, msg.Price, msg.Name, msg.Uri, msg.Data, recipient, sender)
+	if err != nil {
+		return &types.MsgMintNftResponse{}, err
+	}
+
+	ctx.EventManager().EmitEvents(sdk.Events{
+		sdk.NewEvent(
+			types.EventMintNftType,
+			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyNftID, nftId),
+			sdk.NewAttribute(types.AttributeKeyBuyer, msg.Recipient),
+		),
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
+			sdk.NewAttribute(sdk.AttributeKeySender, msg.Creator),
+		),
+	})
+
+	return &types.MsgMintNftResponse{}, nil
+}

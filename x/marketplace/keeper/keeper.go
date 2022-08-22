@@ -119,12 +119,6 @@ func (k Keeper) PublishNFT(ctx sdk.Context, nft types.Nft) (uint64, error) {
 	return 0, nil
 }
 
-func (k Keeper) getCollectionByDenomID(ctx sdk.Context, denomID string) (types.Collection, bool) {
-	store := ctx.KVStore(k.storeKey)
-	collectionID := types.BytesToUint64(store.Get(types.KeyCollectionDenomID(denomID)))
-	return k.GetCollection(ctx, collectionID)
-}
-
 func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) error {
 	nft, found := k.GetNft(ctx, nftID)
 	if !found {
@@ -167,6 +161,35 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) erro
 	return nil
 }
 
+func (k Keeper) MintNFT(ctx sdk.Context, denomID, priceStr, name, uri, data string, recipient sdk.AccAddress, sender sdk.AccAddress) (string, error) {
+	denom, err := k.nftKeeper.GetDenom(ctx, denomID)
+	if err != nil {
+		return "", err
+	}
+
+	collection, found := k.getCollectionByDenomID(ctx, denomID)
+	if !found {
+		return "", sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection %s not published for sale", denomID)
+	}
+
+	price, err := sdk.ParseCoinNormalized(priceStr)
+	if err != nil {
+		return "", sdkerrors.Wrapf(types.ErrInvalidPrice, "invalid price (%s)", priceStr)
+	}
+
+	if err := k.distributeRoyalties(ctx, price, denom.Creator, collection.MintRoyalties); err != nil {
+		return "", err
+	}
+
+	return k.nftKeeper.MintNFT(ctx, denomID, name, uri, data, sender, recipient)
+}
+
+func (k Keeper) getCollectionByDenomID(ctx sdk.Context, denomID string) (types.Collection, bool) {
+	store := ctx.KVStore(k.storeKey)
+	collectionID := types.BytesToUint64(store.Get(types.KeyCollectionDenomID(denomID)))
+	return k.GetCollection(ctx, collectionID)
+}
+
 func getProportion(totalCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
 	return sdk.NewCoin(totalCoin.Denom, totalCoin.Amount.ToDec().Mul(ratio).TruncateInt())
 }
@@ -175,7 +198,11 @@ func (k Keeper) distributeRoyalties(ctx sdk.Context, price sdk.Coin, seller, roy
 
 	var totalPercentPaid float64
 
-	royaltiesList := strings.Split(royalties, ",")
+	splitFn := func(c rune) bool {
+		return c == ','
+	}
+
+	royaltiesList := strings.FieldsFunc(royalties, splitFn)
 
 	for _, royalty := range royaltiesList {
 		royaltyParts := strings.Split(royalty, ":")
@@ -195,7 +222,7 @@ func (k Keeper) distributeRoyalties(ctx sdk.Context, price sdk.Coin, seller, roy
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, royaltyReceiver, sdk.NewCoins(portion))
 	}
 
-	if totalPercentPaid < 100 {
+	if totalPercentPaid < 100.0 {
 		// TODO: Should we do calculation here or just send everything left in the module acc?
 		sellerAddr, err := sdk.AccAddressFromBech32(seller)
 		if err != nil {
