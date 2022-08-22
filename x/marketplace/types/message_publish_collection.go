@@ -9,12 +9,12 @@ const TypeMsgPublishCollection = "publish_collection"
 
 var _ sdk.Msg = &MsgPublishCollection{}
 
-func NewMsgPublishCollection(creator string, denomId string, firstSaleRoyalties, resaleRoyalties string) *MsgPublishCollection {
+func NewMsgPublishCollection(creator, denomId, mintRoyalties, resaleRoyalties string) *MsgPublishCollection {
 	return &MsgPublishCollection{
-		Creator:            creator,
-		DenomId:            denomId,
-		FirstSaleRoyalties: firstSaleRoyalties,
-		ResaleRoyalties:    resaleRoyalties,
+		Creator:         creator,
+		DenomId:         denomId,
+		MintRoyalties:   mintRoyalties,
+		ResaleRoyalties: resaleRoyalties,
 	}
 }
 
@@ -40,11 +40,17 @@ func (msg *MsgPublishCollection) GetSignBytes() []byte {
 }
 
 func (msg *MsgPublishCollection) ValidateBasic() error {
+	if msg.DenomId == "" {
+		return sdkerrors.Wrap(ErrEmptyDenomID, "empty denom id")
+	}
+
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
-	if err := ValidateRoyalties(msg.FirstSaleRoyalties); err != nil {
+
+	if err := ValidateRoyalties(msg.MintRoyalties); err != nil {
 		return err
 	}
+
 	return ValidateRoyalties(msg.ResaleRoyalties)
 }

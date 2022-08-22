@@ -47,8 +47,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema, symbol, traits string, creator sdk.AccAddress) error {
-	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, traits, creator))
+func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema, symbol, traits, minter string, creator sdk.AccAddress) error {
+	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, traits, minter, creator))
 }
 
 // MintNFTUnverified mints an NFT without verifying if the owner is the creator of denom
@@ -90,10 +90,15 @@ func (k Keeper) MintNFT(
 	tokenURI, tokenData string, sender, owner sdk.AccAddress,
 ) (string, error) {
 
-	_, err := k.IsDenomCreator(ctx, denomID, sender)
-	if err != nil {
+	denom, err := k.IsDenomCreator(ctx, denomID, sender)
+	if denom.Minter == "" && err != nil {
 		return "", err
 	}
+
+	if err := k.IsDenomMinter(denom, sender); err != nil {
+		return "", err
+	}
+
 	return k.MintNFTUnverified(ctx, denomID, tokenNm, tokenURI, tokenData, owner)
 }
 
@@ -102,6 +107,14 @@ func (k Keeper) EditNFT(
 	ctx sdk.Context, denomID, tokenID, tokenNm,
 	tokenURI, tokenData string, sender sdk.AccAddress,
 ) error {
+	if err := k.IsSoftLocked(ctx, denomID, tokenID); err != nil {
+		return err
+	}
+
+	if err := k.IsEditable(ctx, denomID); err != nil {
+		return err
+	}
+
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
@@ -134,6 +147,10 @@ func (k Keeper) EditNFT(
 
 // TransferOwner transfers the ownership of the given NFT to the new owner
 func (k Keeper) TransferOwner(ctx sdk.Context, denomID, tokenID string, from, to, sender sdk.AccAddress) error {
+	if err := k.IsSoftLocked(ctx, denomID, tokenID); err != nil {
+		return err
+	}
+
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
@@ -157,6 +174,13 @@ func (k Keeper) TransferOwner(ctx sdk.Context, denomID, tokenID string, from, to
 
 	return sdkerrors.Wrapf(types.ErrUnauthorized,
 		"Sender [%s] is neither owner or approved for transfer of denomId [%s] / tokenId [%s]", sender.String(), denomID, tokenID)
+}
+
+func (k Keeper) TransferNftInternal(ctx sdk.Context, denomID string, tokenID string, from sdk.AccAddress, to sdk.AccAddress, nft types.BaseNFT) {
+	nft.ApprovedAddresses = nil
+	nft.Owner = to.String()
+	k.setNFT(ctx, denomID, nft)
+	k.swapOwner(ctx, denomID, tokenID, from, to)
 }
 
 func transferNFT(ctx sdk.Context, denomID string, tokenID string, from sdk.AccAddress, to sdk.AccAddress, nft types.BaseNFT, k Keeper) {
@@ -190,6 +214,10 @@ func (k Keeper) TransferDenomOwner(ctx sdk.Context, denomID string, srcOwner, ds
 
 // BurnNFT deletes a specified NFT
 func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccAddress) error {
+	if err := k.IsSoftLocked(ctx, denomID, tokenID); err != nil {
+		return err
+	}
+
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}

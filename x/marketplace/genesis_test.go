@@ -23,6 +23,15 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		CollectionCount: 2,
+		NftList: []types.Nft{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		NftCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -36,5 +45,7 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.CollectionList, got.CollectionList)
 	require.Equal(t, genesisState.CollectionCount, got.CollectionCount)
+	require.ElementsMatch(t, genesisState.NftList, got.NftList)
+	require.Equal(t, genesisState.NftCount, got.NftCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

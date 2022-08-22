@@ -31,6 +31,15 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				CollectionCount: 2,
+				NftList: []types.Nft{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				NftCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -58,6 +67,32 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				CollectionCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated nft",
+			genState: &types.GenesisState{
+				NftList: []types.Nft{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid nft count",
+			genState: &types.GenesisState{
+				NftList: []types.Nft{
+					{
+						Id: 1,
+					},
+				},
+				NftCount: 0,
 			},
 			valid: false,
 		},

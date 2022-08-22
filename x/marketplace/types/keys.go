@@ -29,9 +29,20 @@ func Uint64ToBytes(value uint64) []byte {
 	return bValue
 }
 
+func BytesToUint64(value []byte) uint64 {
+	return binary.LittleEndian.Uint64(value)
+}
+
 func KeyCollectionDenomID(denomID string) []byte {
 	key := append(KeyPrefix(CollectionDenomIDKey), delimiter...)
-	return append(key, []byte(denomID)...)
+	return append(key, KeyPrefix(denomID)...)
+}
+
+func KeyNftDenomTokenID(denomID, tokenID string) []byte {
+	key := append(KeyPrefix(NftDenomTokenIDKey), delimiter...)
+	key = append(key, KeyPrefix(denomID)...)
+	key = append(key, delimiter...)
+	return append(key, KeyPrefix(tokenID)...)
 }
 
 var delimiter = []byte("/")
@@ -40,4 +51,10 @@ const (
 	CollectionKey        = "Collection-value-"
 	CollectionCountKey   = "Collection-count-"
 	CollectionDenomIDKey = "Collection-denom-id"
+)
+
+const (
+	NftKey             = "Nft-value-"
+	NftCountKey        = "Nft-count-"
+	NftDenomTokenIDKey = "Nft-denom-token-id-"
 )

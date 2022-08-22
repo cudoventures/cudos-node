@@ -168,3 +168,10 @@ func (k Keeper) SoftUnlockNFT(ctx sdk.Context, lockOwner, denomID, tokenID strin
 
 	return nil
 }
+
+func (k Keeper) IsSoftLocked(ctx sdk.Context, denomID, tokenID string) error {
+	if currentLockOwner := k.getSoftLockOwner(ctx, denomID, tokenID); currentLockOwner != "" {
+		return sdkerrors.Wrapf(types.ErrSoftLocked, "token id %s from denom with id %s is soft locked by %s", tokenID, denomID, currentLockOwner)
+	}
+	return nil
+}

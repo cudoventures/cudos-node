@@ -3,11 +3,10 @@ package cudoventures.cudosnode.marketplace;
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
-message Collection {
+message Nft {
   uint64 id = 1;
-  string denomId = 2;
-  string mintRoyalties = 3;
-  string resaleRoyalties = 4;
-  bool verified = 5;
-  string owner = 6;
+  string tokenId = 2; 
+  string denomId = 3; 
+  string price = 4;
+  string owner = 5;
 }
