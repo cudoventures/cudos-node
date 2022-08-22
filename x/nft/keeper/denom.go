@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -111,7 +113,7 @@ func (k Keeper) IsDenomCreator(ctx sdk.Context, denomID string, address sdk.AccA
 
 	creator, err := sdk.AccAddressFromBech32(denom.Creator)
 	if err != nil {
-		panic(err)
+		return types.Denom{}, err
 	}
 
 	if !creator.Equals(address) {
@@ -119,6 +121,35 @@ func (k Keeper) IsDenomCreator(ctx sdk.Context, denomID string, address sdk.AccA
 	}
 
 	return denom, nil
+}
+
+func (k Keeper) IsDenomMinter(denom types.Denom, address sdk.AccAddress) error {
+	minter, err := sdk.AccAddressFromBech32(denom.Minter)
+	if err != nil {
+		return err
+	}
+
+	if !minter.Equals(address) {
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the minter of %s", address, denom.Id)
+	}
+
+	return nil
+}
+
+func (k Keeper) IsEditable(ctx sdk.Context, denomID string) error {
+	denom, err := k.GetDenom(ctx, denomID)
+	if err != nil {
+		return err
+	}
+
+	traits := strings.Split(denom.Traits, ",")
+	for _, trait := range traits {
+		if types.DenomTraitsMapStrToType[trait] == types.NotEditable {
+			return sdkerrors.Wrapf(types.ErrNotEditable, "denom '%s' has not editable trait", denomID)
+		}
+	}
+
+	return nil
 }
 
 // UpdateDenom is responsible for updating the definition of denom

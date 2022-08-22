@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "marketplace/params.proto";
 import "marketplace/collection.proto";
+import "marketplace/nft.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -24,6 +25,16 @@ service Query {
 	// Queries a list of Collection items.
 	rpc CollectionAll(QueryAllCollectionRequest) returns (QueryAllCollectionResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection";
+	}
+
+// Queries a Nft by id.
+	rpc Nft(QueryGetNftRequest) returns (QueryGetNftResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/nft/{id}";
+	}
+
+	// Queries a list of Nft items.
+	rpc NftAll(QueryAllNftRequest) returns (QueryAllNftResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/nft";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -52,6 +63,23 @@ message QueryAllCollectionRequest {
 
 message QueryAllCollectionResponse {
 	repeated Collection Collection = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetNftRequest {
+	uint64 id = 1;
+}
+
+message QueryGetNftResponse {
+	Nft Nft = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllNftRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllNftResponse {
+	repeated Nft Nft = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

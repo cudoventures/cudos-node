@@ -13,12 +13,12 @@ import (
 
 func CmdPublishCollection() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "publish-collection [denom-id] [first-sale-royalties] [resale-royalties]",
+		Use:   "publish-collection [denom-id] [mint-royalties] [resale-royalties]",
 		Short: "Publish collection for sale",
 		Long:  "Publish collection for sale",
 		Example: fmt.Sprintf(
 			"$ %s tx marketplace publish-collection <denom-id> " +
-				"--first-sale-royalties=<first-sale-royalties> " +
+				"--mint-royalties=<mint-royalties> " +
 				"--resale-royalties=<resale-royalties> " +
 				version.AppName,
 		),
@@ -26,7 +26,7 @@ func CmdPublishCollection() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			denomID := args[0]
 
-			firstSaleRoyalties, err := cmd.Flags().GetString(FlagFirstSaleRoyalties)
+			mintRoyalties, err := cmd.Flags().GetString(FlagMintRoyalties)
 			if err != nil {
 				return err
 			}
@@ -44,7 +44,7 @@ func CmdPublishCollection() *cobra.Command {
 			msg := types.NewMsgPublishCollection(
 				clientCtx.GetFromAddress().String(),
 				denomID,
-				firstSaleRoyalties,
+				mintRoyalties,
 				resaleRoyalties,
 			)
 			if err := msg.ValidateBasic(); err != nil {

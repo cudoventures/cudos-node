@@ -8,24 +8,25 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (m msgServer) PublishCollection(goCtx context.Context, msg *types.MsgPublishCollection) (*types.MsgPublishCollectionResponse, error) {
+func (k msgServer) PublishNft(goCtx context.Context, msg *types.MsgPublishNft) (*types.MsgPublishNftResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	_, err := sdk.AccAddressFromBech32(msg.Creator)
-	if err != nil {
+	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return nil, err
 	}
 
-	collectionID, err := m.Keeper.PublishCollection(ctx, types.NewCollection(msg.DenomId, msg.MintRoyalties, msg.ResaleRoyalties, msg.Creator, false))
+	nftID, err := k.PublishNFT(ctx, types.NewNft(msg.TokenId, msg.DenomId, msg.Price, msg.Creator))
 	if err != nil {
-		return &types.MsgPublishCollectionResponse{}, err
+		return &types.MsgPublishNftResponse{}, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventPublishCollectionType,
-			sdk.NewAttribute(types.AttributeKeyCollectionID, strconv.FormatUint(collectionID, 10)),
+			types.EventPublishNftType,
+			sdk.NewAttribute(types.AttributeKeyNftID, strconv.FormatUint(nftID, 10)),
+			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
+			sdk.NewAttribute(types.AttributeKeyPrice, msg.Price),
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
 		),
 		sdk.NewEvent(
@@ -35,5 +36,5 @@ func (m msgServer) PublishCollection(goCtx context.Context, msg *types.MsgPublis
 		),
 	})
 
-	return &types.MsgPublishCollectionResponse{}, nil
+	return &types.MsgPublishNftResponse{}, nil
 }

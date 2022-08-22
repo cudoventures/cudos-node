@@ -22,4 +22,6 @@ var (
 	ErrAlreadySoftLocked   = sdkerrors.Register(ModuleName, 18, "already soft locked")
 	ErrNotSoftLocked       = sdkerrors.Register(ModuleName, 19, "not soft locked")
 	ErrNotOwnerOfSoftLock  = sdkerrors.Register(ModuleName, 20, "not owner of soft lock")
+	ErrSoftLocked          = sdkerrors.Register(ModuleName, 21, "soft locked")
+	ErrNotEditable         = sdkerrors.Register(ModuleName, 22, "not editable")
 )

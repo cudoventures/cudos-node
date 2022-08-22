@@ -9,12 +9,20 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPublishCollection{}, "marketplace/PublishCollection", nil)
+	cdc.RegisterConcrete(&MsgPublishNft{}, "marketplace/PublishNft", nil)
+	cdc.RegisterConcrete(&MsgBuyNft{}, "marketplace/BuyNft", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPublishCollection{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPublishNft{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgBuyNft{},
 	)
 	// this line is used by starport scaffolding # 3
 

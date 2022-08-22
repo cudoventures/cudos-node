@@ -1,11 +1,11 @@
 package types
 
-func NewCollection(denomId, firstSaleRoyalties, resaleRoyalties, owner string, verified bool) Collection {
+func NewCollection(denomId, mintRoyalties, resaleRoyalties, owner string, verified bool) Collection {
 	return Collection{
-		DenomId:            denomId,
-		FirstSaleRoyalties: firstSaleRoyalties,
-		ResaleRoyalties:    resaleRoyalties,
-		Verified:           verified,
-		Owner:              owner,
+		DenomId:         denomId,
+		MintRoyalties:   mintRoyalties,
+		ResaleRoyalties: resaleRoyalties,
+		Verified:        verified,
+		Owner:           owner,
 	}
 }

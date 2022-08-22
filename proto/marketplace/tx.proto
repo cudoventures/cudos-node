@@ -8,17 +8,37 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 // Msg defines the Msg service.
 service Msg {
       rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
+  rpc PublishNft(MsgPublishNft) returns (MsgPublishNftResponse);
+  rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgPublishCollection {
   string creator = 1;
   string denomId = 2;
-  string firstSaleRoyalties = 3;
+  string mintRoyalties = 3;
   string resaleRoyalties = 4;
 }
 
 message MsgPublishCollectionResponse {
+}
+
+message MsgPublishNft {
+  string creator = 1;
+  string tokenId = 2;
+  string denomId = 3;
+  string price = 4;
+}
+
+message MsgPublishNftResponse {
+}
+
+message MsgBuyNft {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgBuyNftResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

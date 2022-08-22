@@ -28,6 +28,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgPublishCollection int = 100
 
+	opWeightMsgPublishNft = "op_weight_msg_publish_nft"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgPublishNft int = 100
+
+	opWeightMsgBuyNft = "op_weight_msg_buy_nft"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgBuyNft int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -71,6 +79,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishCollection,
 		marketplacesimulation.SimulateMsgPublishCollection(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgPublishNft int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishNft, &weightMsgPublishNft, nil,
+		func(_ *rand.Rand) {
+			weightMsgPublishNft = defaultWeightMsgPublishNft
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgPublishNft,
+		marketplacesimulation.SimulateMsgPublishNft(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgBuyNft int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgBuyNft, &weightMsgBuyNft, nil,
+		func(_ *rand.Rand) {
+			weightMsgBuyNft = defaultWeightMsgBuyNft
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgBuyNft,
+		marketplacesimulation.SimulateMsgBuyNft(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

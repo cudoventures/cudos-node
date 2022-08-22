@@ -55,7 +55,8 @@ func GetCmdIssueDenom() *cobra.Command {
 				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
-				"--traits=<traits>",
+				"--traits=<traits>"+
+				"--minter=<minter>",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -81,6 +82,10 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			minter, err := cmd.Flags().GetString(FlagMinter)
+			if err != nil {
+				return err
+			}
 
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
@@ -95,6 +100,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				"",
 				symbol,
 				traits,
+				minter,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -5,7 +5,7 @@ import (
 )
 
 // NewDenom return a new denom
-func NewDenom(id, name, schema, symbol, traits string, creator sdk.AccAddress) Denom {
+func NewDenom(id, name, schema, symbol, traits, minter string, creator sdk.AccAddress) Denom {
 	return Denom{
 		Id:      id,
 		Name:    name,
@@ -13,5 +13,6 @@ func NewDenom(id, name, schema, symbol, traits string, creator sdk.AccAddress) D
 		Creator: creator.String(),
 		Symbol:  symbol,
 		Traits:  traits,
+		Minter:  minter,
 	}
 }

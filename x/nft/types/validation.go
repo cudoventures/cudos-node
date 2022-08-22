@@ -60,7 +60,7 @@ func ValidateDenomTraits(traits string) error {
 
 	traitsList := strings.Split(traits, ",")
 	for _, trait := range traitsList {
-		if _, ok := DenomTraitsMap[trait]; !ok {
+		if _, ok := DenomTraitsMapStrToType[trait]; !ok {
 			return sdkerrors.Wrapf(ErrInvalidTraits, "denom trait(%s) is not supported.", trait)
 		}
 	}
