@@ -17,4 +17,5 @@ var (
 	ErrInvalidPrice                   = sdkerrors.Register(ModuleName, 1106, "invalid price")
 	ErrNftNotFound                    = sdkerrors.Register(ModuleName, 1107, "nft not found")
 	ErrCannotBuyOwnNft                = sdkerrors.Register(ModuleName, 1108, "cannot buy own nft")
+	ErrCollectionNotFound             = sdkerrors.Register(ModuleName, 1109, "collection not published for sale")
 )

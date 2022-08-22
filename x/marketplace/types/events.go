@@ -4,6 +4,7 @@ var (
 	EventPublishCollectionType = "publish_collection"
 	EventPublishNftType        = "publish_nft"
 	EventBuyNftType            = "buy_nft"
+	EventMintNftType           = "mint_nft"
 
 	AttributeValueCategory = ModuleName
 

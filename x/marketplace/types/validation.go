@@ -10,13 +10,13 @@ import (
 
 // TODO: There is duplication of this logic in keeper.distributeRoyalties
 func ValidateRoyalties(royalties string) error {
-	if royalties == "" {
-		return nil
-	}
-
 	var totalPercent float64
 
-	royaltiesList := strings.Split(royalties, ",")
+	splitFn := func(c rune) bool {
+		return c == ','
+	}
+
+	royaltiesList := strings.FieldsFunc(royalties, splitFn)
 
 	for _, royalty := range royaltiesList {
 		royaltyParts := strings.Split(royalty, ":")
