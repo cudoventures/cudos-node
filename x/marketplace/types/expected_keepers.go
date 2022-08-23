@@ -17,6 +17,7 @@ type NftKeeper interface {
 	SoftLockNFT(ctx sdk.Context, lockOwner, denomID, tokenID string) error
 	SoftUnlockNFT(ctx sdk.Context, lockOwner, denomID, tokenID string) error
 	MintNFT(ctx sdk.Context, denomID string, tokenNm, tokenURI, tokenData string, sender, owner sdk.AccAddress) (string, error)
+	GetOwners(ctx sdk.Context) (owners nfttypes.Owners, err error)
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
@@ -29,4 +30,5 @@ type AccountKeeper interface {
 type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, formModule string, toAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoinsFromAccountToModule(ctx sdk.Context, fromAddr sdk.AccAddress, toModule string, amt sdk.Coins) error
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }

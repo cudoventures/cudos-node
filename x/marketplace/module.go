@@ -101,6 +101,7 @@ type AppModule struct {
 	keeper        keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	nftKeeper     types.NftKeeper
 }
 
 func NewAppModule(

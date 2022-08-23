@@ -26,11 +26,11 @@ var (
 const (
 	opWeightMsgPublishCollection = "op_weight_msg_publish_collection"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgPublishCollection int = 100
+	defaultWeightMsgPublishCollection int = 20
 
 	opWeightMsgPublishNft = "op_weight_msg_publish_nft"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgPublishNft int = 100
+	defaultWeightMsgPublishNft int = 20
 
 	opWeightMsgBuyNft = "op_weight_msg_buy_nft"
 	// TODO: Determine the simulation weight value
@@ -82,7 +82,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishCollection,
-		marketplacesimulation.SimulateMsgPublishCollection(am.accountKeeper, am.bankKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgPublishCollection(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
 	))
 
 	var weightMsgPublishNft int
@@ -93,7 +93,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishNft,
-		marketplacesimulation.SimulateMsgPublishNft(am.accountKeeper, am.bankKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgPublishNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
 	))
 
 	var weightMsgBuyNft int
@@ -104,7 +104,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgBuyNft,
-		marketplacesimulation.SimulateMsgBuyNft(am.accountKeeper, am.bankKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgBuyNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
 	))
 
 	var weightMsgMintNft int
@@ -115,7 +115,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMintNft,
-		marketplacesimulation.SimulateMsgMintNft(am.accountKeeper, am.bankKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgMintNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
