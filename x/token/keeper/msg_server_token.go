@@ -21,12 +21,10 @@ func (k msgServer) CreateToken(goCtx context.Context, msg *types.MsgCreateToken)
 	}
 
 	var token = types.Token{
-		Owner:    msg.Owner,
-		Denom:    msg.Denom,
-		Name:     msg.Name,
-		Decimals: msg.Decimals,
-		// todo handle initial balances (mint)
-		// InitialBalances: msg.InitialBalances,
+		Owner:      msg.Owner,
+		Denom:      msg.Denom,
+		Name:       msg.Name,
+		Decimals:   msg.Decimals,
 		MaxSupply:  msg.MaxSupply,
 		Allowances: []*types.Allowances{},
 	}
@@ -35,6 +33,23 @@ func (k msgServer) CreateToken(goCtx context.Context, msg *types.MsgCreateToken)
 		ctx,
 		token,
 	)
+
+	if len(msg.InitialBalances) > 0 {
+		// todo iterate through the balances and mint properly
+		coins := sdk.NewCoins(sdk.NewCoin(msg.Denom, sdk.NewInt(123)))
+		if err := k.bankKeeper.MintCoins(ctx, types.ModuleName, coins); err != nil {
+			return nil, err
+		}
+
+		addr, err := sdk.AccAddressFromBech32(msg.Owner)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addr, coins); err != nil {
+			return nil, err
+		}
+	}
 	return &types.MsgCreateTokenResponse{}, nil
 }
 

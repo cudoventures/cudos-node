@@ -15,9 +15,10 @@ import (
 
 func CmdCreateToken() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-token [denom] [name] [decimals] [initial-balances] [max-supply] [allowances]",
-		Short: "Create a new token",
-		Args:  cobra.ExactArgs(6),
+		// todo add example + initial-balances and max-supply should be optional flags
+		Use:   "create-token [denom] [name] [decimals] [initial-balances] [max-supply]",
+		Short: "Create a new fungible token",
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			// Get indexes
 			indexDenom := args[0]
@@ -30,7 +31,7 @@ func CmdCreateToken() *cobra.Command {
 			}
 
 			// todo currently it's single initialBalance, figure out array as single args
-			argInitialBalances := make([]*types.InitialBalance, 0)
+			argInitialBalances := []*types.InitialBalance{}
 			err = json.Unmarshal([]byte(args[3]), &argInitialBalances)
 			if err != nil {
 				return err
