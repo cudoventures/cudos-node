@@ -1,7 +1,6 @@
 syntax = "proto3";
 package cudoventures.cudosnode.token;
 
-import "gogoproto/gogo.proto";
 import "token/types.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
@@ -9,9 +8,6 @@ option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
 // Msg defines the Msg service.
 service Msg {
   rpc CreateToken(MsgCreateToken) returns (MsgCreateTokenResponse);
-  rpc UpdateToken(MsgUpdateToken) returns (MsgUpdateTokenResponse);
-  rpc DeleteToken(MsgDeleteToken) returns (MsgDeleteTokenResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateToken {
@@ -23,23 +19,3 @@ message MsgCreateToken {
   string owner = 6;
 }
 message MsgCreateTokenResponse {}
-
-message MsgUpdateToken {
-  string owner = 1;
-  string denom = 2;
-
-  string name = 3;
-  uint64 decimals = 4;
-  Balance initialBalances = 5;
-  string maxSupply = 6;
-  Allowances allowances = 7;
-}
-message MsgUpdateTokenResponse {}
-
-message MsgDeleteToken {
-  string owner = 1;
-  string denom = 2;
-}
-message MsgDeleteTokenResponse {}
-
-// this line is used by starport scaffolding # proto/tx/message

@@ -4,7 +4,6 @@ package cudoventures.cudosnode.token;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "token/params.proto";
 import "token/types.proto";
 // this line is used by starport scaffolding # 1
 
@@ -12,47 +11,30 @@ option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/CudoVentures/cudos-node/token/params";
-  }
-  // Queries a Token by index.
-  rpc Token(QueryGetTokenRequest) returns (QueryGetTokenResponse) {
+  // Queries a token by denom.
+  rpc TokenByDenom(QueryTokenByDenomRequest) returns (QueryTokenByDenomResponse) {
   	option (google.api.http).get = "/CudoVentures/cudos-node/token/token/{denom}";
   }
   
-  // Queries a list of Token items.
-  rpc TokenAll(QueryAllTokenRequest) returns (QueryAllTokenResponse) {
+  // Queries all available tokens.
+  rpc AllTokens(QueryAllTokensRequest) returns (QueryAllTokensResponse) {
   	option (google.api.http).get = "/CudoVentures/cudos-node/token/token";
   }
-
-// this line is used by starport scaffolding # 2
 }
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetTokenRequest {
+message QueryTokenByDenomRequest {
   string denom = 1;
 }
 
-message QueryGetTokenResponse {
+message QueryTokenByDenomResponse {
   Token token = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllTokenRequest {
+message QueryAllTokensRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAllTokenResponse {
-  repeated Token token = 1 [(gogoproto.nullable) = false];
+message QueryAllTokensResponse {
+  repeated Token tokens = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-
-// this line is used by starport scaffolding # 3

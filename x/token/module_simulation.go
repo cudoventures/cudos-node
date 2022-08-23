@@ -45,9 +45,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
-	tokenGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		TokenList: []types.Token{
+	tokenGenesis := GenesisState{
+		Tokens: []types.Token{
 			{
 				Owner: sample.AccAddress(),
 				Denom: "0",
@@ -90,30 +89,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgCreateToken,
 		tokensimulation.SimulateMsgCreateToken(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
-	var weightMsgUpdateToken int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateToken, &weightMsgUpdateToken, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateToken = defaultWeightMsgUpdateToken
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgUpdateToken,
-		tokensimulation.SimulateMsgUpdateToken(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgDeleteToken int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteToken, &weightMsgDeleteToken, nil,
-		func(_ *rand.Rand) {
-			weightMsgDeleteToken = defaultWeightMsgDeleteToken
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgDeleteToken,
-		tokensimulation.SimulateMsgDeleteToken(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
 }

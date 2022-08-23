@@ -14,6 +14,7 @@ import (
 
 	"github.com/CudoVentures/cudos-node/testutil/network"
 	"github.com/CudoVentures/cudos-node/testutil/nullify"
+	"github.com/CudoVentures/cudos-node/x/token"
 	"github.com/CudoVentures/cudos-node/x/token/client/cli"
 	"github.com/CudoVentures/cudos-node/x/token/types"
 )
@@ -24,7 +25,7 @@ var _ = strconv.IntSize
 func networkWithTokenObjects(t *testing.T, n int) (*network.Network, []types.Token) {
 	t.Helper()
 	cfg := network.DefaultConfig()
-	state := types.GenesisState{}
+	state := token.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
 	for i := 0; i < n; i++ {
@@ -32,12 +33,12 @@ func networkWithTokenObjects(t *testing.T, n int) (*network.Network, []types.Tok
 			Denom: strconv.Itoa(i),
 		}
 		nullify.Fill(&token)
-		state.TokenList = append(state.TokenList, token)
+		state.Tokens = append(state.Tokens, token)
 	}
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.TokenList
+	return network.New(t, cfg), state.Tokens
 }
 
 func TestShowToken(t *testing.T) {
@@ -75,14 +76,14 @@ func TestShowToken(t *testing.T) {
 				tc.idDenom,
 			}
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowToken(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdGetTokenByDenom(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
 				require.ErrorIs(t, stat.Err(), tc.err)
 			} else {
 				require.NoError(t, err)
-				var resp types.QueryGetTokenResponse
+				var resp types.QueryTokenByDenomResponse
 				require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 				require.NotNil(t, resp.Token)
 				require.Equal(t,
@@ -117,14 +118,14 @@ func TestListToken(t *testing.T) {
 		step := 2
 		for i := 0; i < len(objs); i += step {
 			args := request(nil, uint64(i), uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListToken(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdGetAllTokens(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllTokenResponse
+			var resp types.QueryAllTokensResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Token), step)
+			require.LessOrEqual(t, len(resp.Tokens), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Token),
+				nullify.Fill(resp.Tokens),
 			)
 		}
 	})
@@ -133,29 +134,29 @@ func TestListToken(t *testing.T) {
 		var next []byte
 		for i := 0; i < len(objs); i += step {
 			args := request(next, 0, uint64(step), false)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListToken(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdGetAllTokens(), args)
 			require.NoError(t, err)
-			var resp types.QueryAllTokenResponse
+			var resp types.QueryAllTokensResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Token), step)
+			require.LessOrEqual(t, len(resp.Tokens), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Token),
+				nullify.Fill(resp.Tokens),
 			)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
 		args := request(nil, 0, uint64(len(objs)), true)
-		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListToken(), args)
+		out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdGetAllTokens(), args)
 		require.NoError(t, err)
-		var resp types.QueryAllTokenResponse
+		var resp types.QueryAllTokensResponse
 		require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
 		require.NoError(t, err)
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.Token),
+			nullify.Fill(resp.Tokens),
 		)
 	})
 }

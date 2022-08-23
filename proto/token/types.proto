@@ -1,23 +1,11 @@
 syntax = "proto3";
 package cudoventures.cudosnode.token;
 
-import "gogoproto/gogo.proto";
-
 option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
-
-message Allowance {
-  string spender = 1; 
-  string amount = 2;
-}
-
-message Allowances {
-  string address = 1; 
-  repeated Allowance allowances = 2; 
-}
 
 message Balance {
   string address = 1;
-  string amount = 2;
+  uint64 amount = 2;
 }
 
 message Token {
@@ -25,6 +13,5 @@ message Token {
   string name = 2; 
   uint64 decimals = 3;
   uint64 maxSupply = 4;
-  repeated Allowances allowances = 5; 
-  string owner = 6;
+  string owner = 5;
 }

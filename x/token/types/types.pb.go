@@ -5,7 +5,6 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
@@ -23,120 +22,16 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Allowance struct {
-	Spender string `protobuf:"bytes,1,opt,name=spender,proto3" json:"spender,omitempty"`
-	Amount  string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
-}
-
-func (m *Allowance) Reset()         { *m = Allowance{} }
-func (m *Allowance) String() string { return proto.CompactTextString(m) }
-func (*Allowance) ProtoMessage()    {}
-func (*Allowance) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dbcee683d61d9b31, []int{0}
-}
-func (m *Allowance) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Allowance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Allowance.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Allowance) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Allowance.Merge(m, src)
-}
-func (m *Allowance) XXX_Size() int {
-	return m.Size()
-}
-func (m *Allowance) XXX_DiscardUnknown() {
-	xxx_messageInfo_Allowance.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Allowance proto.InternalMessageInfo
-
-func (m *Allowance) GetSpender() string {
-	if m != nil {
-		return m.Spender
-	}
-	return ""
-}
-
-func (m *Allowance) GetAmount() string {
-	if m != nil {
-		return m.Amount
-	}
-	return ""
-}
-
-type Allowances struct {
-	Address    string       `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Allowances []*Allowance `protobuf:"bytes,2,rep,name=allowances,proto3" json:"allowances,omitempty"`
-}
-
-func (m *Allowances) Reset()         { *m = Allowances{} }
-func (m *Allowances) String() string { return proto.CompactTextString(m) }
-func (*Allowances) ProtoMessage()    {}
-func (*Allowances) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dbcee683d61d9b31, []int{1}
-}
-func (m *Allowances) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Allowances) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Allowances.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Allowances) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Allowances.Merge(m, src)
-}
-func (m *Allowances) XXX_Size() int {
-	return m.Size()
-}
-func (m *Allowances) XXX_DiscardUnknown() {
-	xxx_messageInfo_Allowances.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Allowances proto.InternalMessageInfo
-
-func (m *Allowances) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *Allowances) GetAllowances() []*Allowance {
-	if m != nil {
-		return m.Allowances
-	}
-	return nil
-}
-
 type Balance struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Amount  string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount  uint64 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *Balance) Reset()         { *m = Balance{} }
 func (m *Balance) String() string { return proto.CompactTextString(m) }
 func (*Balance) ProtoMessage()    {}
 func (*Balance) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dbcee683d61d9b31, []int{2}
+	return fileDescriptor_dbcee683d61d9b31, []int{0}
 }
 func (m *Balance) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -172,27 +67,26 @@ func (m *Balance) GetAddress() string {
 	return ""
 }
 
-func (m *Balance) GetAmount() string {
+func (m *Balance) GetAmount() uint64 {
 	if m != nil {
 		return m.Amount
 	}
-	return ""
+	return 0
 }
 
 type Token struct {
-	Denom      string        `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
-	Name       string        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Decimals   uint64        `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
-	MaxSupply  uint64        `protobuf:"varint,4,opt,name=maxSupply,proto3" json:"maxSupply,omitempty"`
-	Allowances []*Allowances `protobuf:"bytes,5,rep,name=allowances,proto3" json:"allowances,omitempty"`
-	Owner      string        `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
+	Denom     string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	Name      string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Decimals  uint64 `protobuf:"varint,3,opt,name=decimals,proto3" json:"decimals,omitempty"`
+	MaxSupply uint64 `protobuf:"varint,4,opt,name=maxSupply,proto3" json:"maxSupply,omitempty"`
+	Owner     string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *Token) Reset()         { *m = Token{} }
 func (m *Token) String() string { return proto.CompactTextString(m) }
 func (*Token) ProtoMessage()    {}
 func (*Token) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dbcee683d61d9b31, []int{3}
+	return fileDescriptor_dbcee683d61d9b31, []int{1}
 }
 func (m *Token) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -249,13 +143,6 @@ func (m *Token) GetMaxSupply() uint64 {
 	return 0
 }
 
-func (m *Token) GetAllowances() []*Allowances {
-	if m != nil {
-		return m.Allowances
-	}
-	return nil
-}
-
 func (m *Token) GetOwner() string {
 	if m != nil {
 		return m.Owner
@@ -264,8 +151,6 @@ func (m *Token) GetOwner() string {
 }
 
 func init() {
-	proto.RegisterType((*Allowance)(nil), "cudoventures.cudosnode.token.Allowance")
-	proto.RegisterType((*Allowances)(nil), "cudoventures.cudosnode.token.Allowances")
 	proto.RegisterType((*Balance)(nil), "cudoventures.cudosnode.token.Balance")
 	proto.RegisterType((*Token)(nil), "cudoventures.cudosnode.token.Token")
 }
@@ -273,110 +158,24 @@ func init() {
 func init() { proto.RegisterFile("token/types.proto", fileDescriptor_dbcee683d61d9b31) }
 
 var fileDescriptor_dbcee683d61d9b31 = []byte{
-	// 340 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xbf, 0x4e, 0xf3, 0x30,
-	0x14, 0xc5, 0xeb, 0xfe, 0xfd, 0x7a, 0xbf, 0x09, 0xab, 0x42, 0x56, 0x55, 0x45, 0x55, 0x17, 0xb2,
-	0x90, 0x20, 0x18, 0x11, 0x03, 0x65, 0x00, 0x31, 0x16, 0xc4, 0xc0, 0xe6, 0xc6, 0x57, 0xa5, 0x22,
-	0xf1, 0x8d, 0xe2, 0x84, 0xb6, 0x6f, 0xc1, 0x63, 0x21, 0xb1, 0x74, 0x64, 0x44, 0xed, 0x8b, 0xa0,
-	0xb8, 0x69, 0x28, 0x43, 0x11, 0x9b, 0x8f, 0x7d, 0x7f, 0x3e, 0xe7, 0x48, 0x17, 0x0e, 0x52, 0x7a,
-	0x46, 0xed, 0xa7, 0x8b, 0x18, 0x8d, 0x17, 0x27, 0x94, 0x12, 0xef, 0x05, 0x99, 0xa2, 0x17, 0xd4,
-	0x69, 0x96, 0xa0, 0xf1, 0x72, 0x61, 0x34, 0x29, 0xf4, 0xec, 0x64, 0xb7, 0x33, 0xa1, 0x09, 0xd9,
-	0x41, 0x3f, 0x3f, 0x6d, 0x98, 0xc1, 0x05, 0xb4, 0x2f, 0xc3, 0x90, 0x66, 0x52, 0x07, 0xc8, 0x05,
-	0xb4, 0x4c, 0x8c, 0x5a, 0x61, 0x22, 0x58, 0x9f, 0xb9, 0xed, 0xd1, 0x56, 0xf2, 0x43, 0x68, 0xca,
-	0x88, 0x32, 0x9d, 0x8a, 0xaa, 0x7d, 0x28, 0xd4, 0x80, 0x00, 0x4a, 0xdc, 0xe4, 0xbc, 0x54, 0x2a,
-	0x41, 0x63, 0xb6, 0x7c, 0x21, 0xf9, 0x35, 0x80, 0x2c, 0xe7, 0x44, 0xb5, 0x5f, 0x73, 0xff, 0x9f,
-	0x1e, 0x79, 0xbf, 0xe5, 0xf5, 0xca, 0x7f, 0x47, 0x3b, 0xe8, 0xe0, 0x1c, 0x5a, 0x43, 0x19, 0x6e,
-	0xd3, 0xee, 0x71, 0xdb, 0x97, 0xf6, 0x9d, 0x41, 0xe3, 0x3e, 0xff, 0x9c, 0x77, 0xa0, 0xa1, 0x50,
-	0x53, 0x54, 0x90, 0x1b, 0xc1, 0x39, 0xd4, 0xb5, 0x8c, 0xb0, 0xa0, 0xec, 0x99, 0x77, 0xe1, 0x9f,
-	0xc2, 0x60, 0x1a, 0xc9, 0xd0, 0x88, 0x5a, 0x9f, 0xb9, 0xf5, 0x51, 0xa9, 0x79, 0x0f, 0xda, 0x91,
-	0x9c, 0xdf, 0x65, 0x71, 0x1c, 0x2e, 0x44, 0xdd, 0x3e, 0x7e, 0x5f, 0xf0, 0x9b, 0x1f, 0x9d, 0x1b,
-	0xb6, 0xb3, 0xfb, 0xc7, 0xce, 0x66, 0xb7, 0x74, 0x9e, 0x96, 0x66, 0x1a, 0x13, 0xd1, 0xdc, 0xa4,
-	0xb5, 0x62, 0x78, 0xfb, 0xb6, 0x72, 0xd8, 0x72, 0xe5, 0xb0, 0xcf, 0x95, 0xc3, 0x5e, 0xd7, 0x4e,
-	0x65, 0xb9, 0x76, 0x2a, 0x1f, 0x6b, 0xa7, 0xf2, 0x78, 0x32, 0x99, 0xa6, 0x4f, 0xd9, 0xd8, 0x0b,
-	0x28, 0xf2, 0xaf, 0x32, 0x45, 0x0f, 0x85, 0x9f, 0x6f, 0xfd, 0x8e, 0x73, 0x43, 0x7f, 0xee, 0xef,
-	0x2c, 0xd0, 0xb8, 0x69, 0xb7, 0xe1, 0xec, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x78, 0xe2, 0x20, 0xd1,
-	0x56, 0x02, 0x00, 0x00,
-}
-
-func (m *Allowance) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Allowance) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *Allowance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Amount) > 0 {
-		i -= len(m.Amount)
-		copy(dAtA[i:], m.Amount)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Amount)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Spender) > 0 {
-		i -= len(m.Spender)
-		copy(dAtA[i:], m.Spender)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Spender)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *Allowances) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Allowances) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *Allowances) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Allowances) > 0 {
-		for iNdEx := len(m.Allowances) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Allowances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintTypes(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x12
-		}
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
+	// 261 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x4c, 0x90, 0xbd, 0x4e, 0xc3, 0x30,
+	0x14, 0x85, 0x6b, 0x48, 0x5a, 0xe2, 0x0d, 0x0b, 0x21, 0x0b, 0x55, 0x56, 0xd5, 0xa9, 0x0b, 0x31,
+	0x12, 0x23, 0x5b, 0xd9, 0x18, 0x03, 0x62, 0x60, 0x73, 0xe3, 0x2b, 0xa8, 0x88, 0x7d, 0xa3, 0xd8,
+	0x86, 0x76, 0xe4, 0x0d, 0x78, 0x2c, 0xc6, 0x8e, 0x8c, 0x28, 0x79, 0x11, 0x14, 0x37, 0xfc, 0x6c,
+	0xfe, 0x6c, 0x9f, 0x73, 0xa4, 0x8f, 0x1e, 0x7b, 0x7c, 0x06, 0x2b, 0xfd, 0xb6, 0x06, 0x97, 0xd7,
+	0x0d, 0x7a, 0x64, 0xd3, 0x32, 0x68, 0x7c, 0x01, 0xeb, 0x43, 0x03, 0x2e, 0xef, 0xc1, 0x59, 0xd4,
+	0x90, 0xc7, 0x9f, 0xf3, 0x2b, 0x3a, 0x59, 0xaa, 0x4a, 0xd9, 0x12, 0x18, 0xa7, 0x13, 0xa5, 0x75,
+	0x03, 0xce, 0x71, 0x32, 0x23, 0x8b, 0xac, 0xf8, 0x41, 0x76, 0x4a, 0xc7, 0xca, 0x60, 0xb0, 0x9e,
+	0x1f, 0xcc, 0xc8, 0x22, 0x29, 0x06, 0x9a, 0xbf, 0x11, 0x9a, 0xde, 0xf5, 0x35, 0xec, 0x84, 0xa6,
+	0x1a, 0x2c, 0x9a, 0x21, 0xb9, 0x07, 0xc6, 0x68, 0x62, 0x95, 0x81, 0x98, 0xca, 0x8a, 0x78, 0x66,
+	0x67, 0xf4, 0x48, 0x43, 0xb9, 0x36, 0xaa, 0x72, 0xfc, 0x30, 0xb6, 0xfd, 0x32, 0x9b, 0xd2, 0xcc,
+	0xa8, 0xcd, 0x6d, 0xa8, 0xeb, 0x6a, 0xcb, 0x93, 0xf8, 0xf8, 0x77, 0xd1, 0x6f, 0xe0, 0xab, 0x85,
+	0x86, 0xa7, 0xfb, 0x8d, 0x08, 0xcb, 0x9b, 0x8f, 0x56, 0x90, 0x5d, 0x2b, 0xc8, 0x57, 0x2b, 0xc8,
+	0x7b, 0x27, 0x46, 0xbb, 0x4e, 0x8c, 0x3e, 0x3b, 0x31, 0x7a, 0xb8, 0x78, 0x5c, 0xfb, 0xa7, 0xb0,
+	0xca, 0x4b, 0x34, 0xf2, 0x3a, 0x68, 0xbc, 0x1f, 0x1c, 0xc8, 0xe8, 0xe0, 0xbc, 0x97, 0x20, 0x37,
+	0xf2, 0x9f, 0xb0, 0xd5, 0x38, 0x1a, 0xbb, 0xfc, 0x0e, 0x00, 0x00, 0xff, 0xff, 0xd0, 0x37, 0xb2,
+	0x14, 0x46, 0x01, 0x00, 0x00,
 }
 
 func (m *Balance) Marshal() (dAtA []byte, err error) {
@@ -399,12 +198,10 @@ func (m *Balance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Amount) > 0 {
-		i -= len(m.Amount)
-		copy(dAtA[i:], m.Amount)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Amount)))
+	if m.Amount != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.Amount))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x10
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
@@ -441,21 +238,7 @@ func (m *Token) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Owner)
 		i = encodeVarintTypes(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x32
-	}
-	if len(m.Allowances) > 0 {
-		for iNdEx := len(m.Allowances) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Allowances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintTypes(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x2a
-		}
+		dAtA[i] = 0x2a
 	}
 	if m.MaxSupply != 0 {
 		i = encodeVarintTypes(dAtA, i, uint64(m.MaxSupply))
@@ -495,42 +278,6 @@ func encodeVarintTypes(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Allowance) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Spender)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	l = len(m.Amount)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	return n
-}
-
-func (m *Allowances) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if len(m.Allowances) > 0 {
-		for _, e := range m.Allowances {
-			l = e.Size()
-			n += 1 + l + sovTypes(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *Balance) Size() (n int) {
 	if m == nil {
 		return 0
@@ -541,9 +288,8 @@ func (m *Balance) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
-	l = len(m.Amount)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
+	if m.Amount != 0 {
+		n += 1 + sovTypes(uint64(m.Amount))
 	}
 	return n
 }
@@ -568,12 +314,6 @@ func (m *Token) Size() (n int) {
 	if m.MaxSupply != 0 {
 		n += 1 + sovTypes(uint64(m.MaxSupply))
 	}
-	if len(m.Allowances) > 0 {
-		for _, e := range m.Allowances {
-			l = e.Size()
-			n += 1 + l + sovTypes(uint64(l))
-		}
-	}
 	l = len(m.Owner)
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
@@ -586,242 +326,6 @@ func sovTypes(x uint64) (n int) {
 }
 func sozTypes(x uint64) (n int) {
 	return sovTypes(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *Allowance) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Allowance: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Allowance: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Spender", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Spender = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *Allowances) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Allowances: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Allowances: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Allowances", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Allowances = append(m.Allowances, &Allowance{})
-			if err := m.Allowances[len(m.Allowances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *Balance) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -885,10 +389,10 @@ func (m *Balance) Unmarshal(dAtA []byte) error {
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
-			var stringLen uint64
+			m.Amount = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -898,24 +402,11 @@ func (m *Balance) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Amount |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Amount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])
@@ -1072,40 +563,6 @@ func (m *Token) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Allowances", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Allowances = append(m.Allowances, &Allowances{})
-			if err := m.Allowances[len(m.Allowances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}

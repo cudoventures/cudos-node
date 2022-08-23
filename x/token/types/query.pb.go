@@ -30,105 +30,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamsRequest is request type for the Query/Params RPC method.
-type QueryParamsRequest struct {
-}
-
-func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
-func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsRequest) ProtoMessage()    {}
-func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{0}
-}
-func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
-}
-func (m *QueryParamsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-type QueryParamsResponse struct {
-	// params holds all the parameters of this module.
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-}
-
-func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
-func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsResponse) ProtoMessage()    {}
-func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{1}
-}
-func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
-}
-func (m *QueryParamsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
-
-func (m *QueryParamsResponse) GetParams() Params {
-	if m != nil {
-		return m.Params
-	}
-	return Params{}
-}
-
-type QueryGetTokenRequest struct {
+type QueryTokenByDenomRequest struct {
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
-func (m *QueryGetTokenRequest) Reset()         { *m = QueryGetTokenRequest{} }
-func (m *QueryGetTokenRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGetTokenRequest) ProtoMessage()    {}
-func (*QueryGetTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{2}
+func (m *QueryTokenByDenomRequest) Reset()         { *m = QueryTokenByDenomRequest{} }
+func (m *QueryTokenByDenomRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenByDenomRequest) ProtoMessage()    {}
+func (*QueryTokenByDenomRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec043bcd18c4056e, []int{0}
 }
-func (m *QueryGetTokenRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenByDenomRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenByDenomRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetTokenRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenByDenomRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -138,41 +55,41 @@ func (m *QueryGetTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *QueryGetTokenRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetTokenRequest.Merge(m, src)
+func (m *QueryTokenByDenomRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenByDenomRequest.Merge(m, src)
 }
-func (m *QueryGetTokenRequest) XXX_Size() int {
+func (m *QueryTokenByDenomRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetTokenRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetTokenRequest.DiscardUnknown(m)
+func (m *QueryTokenByDenomRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenByDenomRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetTokenRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenByDenomRequest proto.InternalMessageInfo
 
-func (m *QueryGetTokenRequest) GetDenom() string {
+func (m *QueryTokenByDenomRequest) GetDenom() string {
 	if m != nil {
 		return m.Denom
 	}
 	return ""
 }
 
-type QueryGetTokenResponse struct {
+type QueryTokenByDenomResponse struct {
 	Token Token `protobuf:"bytes,1,opt,name=token,proto3" json:"token"`
 }
 
-func (m *QueryGetTokenResponse) Reset()         { *m = QueryGetTokenResponse{} }
-func (m *QueryGetTokenResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGetTokenResponse) ProtoMessage()    {}
-func (*QueryGetTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{3}
+func (m *QueryTokenByDenomResponse) Reset()         { *m = QueryTokenByDenomResponse{} }
+func (m *QueryTokenByDenomResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTokenByDenomResponse) ProtoMessage()    {}
+func (*QueryTokenByDenomResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec043bcd18c4056e, []int{1}
 }
-func (m *QueryGetTokenResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryTokenByDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGetTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryTokenByDenomResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGetTokenResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryTokenByDenomResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -182,41 +99,41 @@ func (m *QueryGetTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *QueryGetTokenResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGetTokenResponse.Merge(m, src)
+func (m *QueryTokenByDenomResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTokenByDenomResponse.Merge(m, src)
 }
-func (m *QueryGetTokenResponse) XXX_Size() int {
+func (m *QueryTokenByDenomResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGetTokenResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGetTokenResponse.DiscardUnknown(m)
+func (m *QueryTokenByDenomResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTokenByDenomResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGetTokenResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryTokenByDenomResponse proto.InternalMessageInfo
 
-func (m *QueryGetTokenResponse) GetToken() Token {
+func (m *QueryTokenByDenomResponse) GetToken() Token {
 	if m != nil {
 		return m.Token
 	}
 	return Token{}
 }
 
-type QueryAllTokenRequest struct {
+type QueryAllTokensRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllTokenRequest) Reset()         { *m = QueryAllTokenRequest{} }
-func (m *QueryAllTokenRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryAllTokenRequest) ProtoMessage()    {}
-func (*QueryAllTokenRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{4}
+func (m *QueryAllTokensRequest) Reset()         { *m = QueryAllTokensRequest{} }
+func (m *QueryAllTokensRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTokensRequest) ProtoMessage()    {}
+func (*QueryAllTokensRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec043bcd18c4056e, []int{2}
 }
-func (m *QueryAllTokenRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllTokensRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllTokensRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllTokenRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllTokensRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -226,42 +143,42 @@ func (m *QueryAllTokenRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *QueryAllTokenRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllTokenRequest.Merge(m, src)
+func (m *QueryAllTokensRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTokensRequest.Merge(m, src)
 }
-func (m *QueryAllTokenRequest) XXX_Size() int {
+func (m *QueryAllTokensRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllTokenRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllTokenRequest.DiscardUnknown(m)
+func (m *QueryAllTokensRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTokensRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllTokenRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllTokensRequest proto.InternalMessageInfo
 
-func (m *QueryAllTokenRequest) GetPagination() *query.PageRequest {
+func (m *QueryAllTokensRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-type QueryAllTokenResponse struct {
-	Token      []Token             `protobuf:"bytes,1,rep,name=token,proto3" json:"token"`
+type QueryAllTokensResponse struct {
+	Tokens     []Token             `protobuf:"bytes,1,rep,name=tokens,proto3" json:"tokens"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryAllTokenResponse) Reset()         { *m = QueryAllTokenResponse{} }
-func (m *QueryAllTokenResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryAllTokenResponse) ProtoMessage()    {}
-func (*QueryAllTokenResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec043bcd18c4056e, []int{5}
+func (m *QueryAllTokensResponse) Reset()         { *m = QueryAllTokensResponse{} }
+func (m *QueryAllTokensResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTokensResponse) ProtoMessage()    {}
+func (*QueryAllTokensResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec043bcd18c4056e, []int{3}
 }
-func (m *QueryAllTokenResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryAllTokensResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryAllTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryAllTokensResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryAllTokenResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryAllTokensResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -271,26 +188,26 @@ func (m *QueryAllTokenResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *QueryAllTokenResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryAllTokenResponse.Merge(m, src)
+func (m *QueryAllTokensResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTokensResponse.Merge(m, src)
 }
-func (m *QueryAllTokenResponse) XXX_Size() int {
+func (m *QueryAllTokensResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryAllTokenResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryAllTokenResponse.DiscardUnknown(m)
+func (m *QueryAllTokensResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTokensResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryAllTokenResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryAllTokensResponse proto.InternalMessageInfo
 
-func (m *QueryAllTokenResponse) GetToken() []Token {
+func (m *QueryAllTokensResponse) GetTokens() []Token {
 	if m != nil {
-		return m.Token
+		return m.Tokens
 	}
 	return nil
 }
 
-func (m *QueryAllTokenResponse) GetPagination() *query.PageResponse {
+func (m *QueryAllTokensResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -298,50 +215,45 @@ func (m *QueryAllTokenResponse) GetPagination() *query.PageResponse {
 }
 
 func init() {
-	proto.RegisterType((*QueryParamsRequest)(nil), "cudoventures.cudosnode.token.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "cudoventures.cudosnode.token.QueryParamsResponse")
-	proto.RegisterType((*QueryGetTokenRequest)(nil), "cudoventures.cudosnode.token.QueryGetTokenRequest")
-	proto.RegisterType((*QueryGetTokenResponse)(nil), "cudoventures.cudosnode.token.QueryGetTokenResponse")
-	proto.RegisterType((*QueryAllTokenRequest)(nil), "cudoventures.cudosnode.token.QueryAllTokenRequest")
-	proto.RegisterType((*QueryAllTokenResponse)(nil), "cudoventures.cudosnode.token.QueryAllTokenResponse")
+	proto.RegisterType((*QueryTokenByDenomRequest)(nil), "cudoventures.cudosnode.token.QueryTokenByDenomRequest")
+	proto.RegisterType((*QueryTokenByDenomResponse)(nil), "cudoventures.cudosnode.token.QueryTokenByDenomResponse")
+	proto.RegisterType((*QueryAllTokensRequest)(nil), "cudoventures.cudosnode.token.QueryAllTokensRequest")
+	proto.RegisterType((*QueryAllTokensResponse)(nil), "cudoventures.cudosnode.token.QueryAllTokensResponse")
 }
 
 func init() { proto.RegisterFile("token/query.proto", fileDescriptor_ec043bcd18c4056e) }
 
 var fileDescriptor_ec043bcd18c4056e = []byte{
-	// 501 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0x41, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0xad, 0x09, 0x3a, 0x9e, 0x1c, 0x23, 0x48, 0x28, 0xab, 0xac, 0xb5, 0x15, 0x49,
-	0x67, 0x9a, 0xd4, 0xbb, 0x34, 0x82, 0x05, 0x4f, 0x35, 0x88, 0xa8, 0x07, 0x61, 0x92, 0x0c, 0x6b,
-	0x70, 0x33, 0x6f, 0x9b, 0x99, 0x2d, 0x16, 0xf1, 0xe2, 0x27, 0x10, 0xbc, 0x7a, 0xe9, 0xc5, 0xcf,
-	0xd2, 0x63, 0xc1, 0x8b, 0x27, 0x91, 0xc4, 0x6f, 0xe0, 0x17, 0x90, 0x7d, 0xf3, 0xa4, 0x49, 0x8a,
-	0x69, 0xe2, 0x65, 0xd9, 0x99, 0xfd, 0xff, 0xff, 0xef, 0xb7, 0x6f, 0x1e, 0xc3, 0xaf, 0x79, 0x78,
-	0x6b, 0xac, 0x3a, 0xc8, 0xcd, 0xf0, 0x48, 0x66, 0x43, 0xf0, 0x20, 0xd6, 0xba, 0x79, 0x0f, 0x0e,
-	0x8d, 0xf5, 0xf9, 0xd0, 0x38, 0x59, 0x2c, 0x9c, 0x85, 0x9e, 0x91, 0xa8, 0xac, 0x55, 0x13, 0x48,
-	0x00, 0x85, 0xaa, 0x78, 0x0b, 0x9e, 0xda, 0x5a, 0x02, 0x90, 0xa4, 0x46, 0xe9, 0xac, 0xaf, 0xb4,
-	0xb5, 0xe0, 0xb5, 0xef, 0x83, 0x75, 0xf4, 0xf5, 0x7e, 0x17, 0xdc, 0x00, 0x9c, 0xea, 0x68, 0x67,
-	0x42, 0x29, 0x75, 0xd8, 0xe8, 0x18, 0xaf, 0x1b, 0x2a, 0xd3, 0x49, 0xdf, 0xa2, 0x98, 0xb4, 0x22,
-	0x00, 0x65, 0x7a, 0xa8, 0x07, 0x7f, 0xfd, 0x04, 0xe9, 0x8f, 0x32, 0x43, 0x5b, 0x71, 0x95, 0x8b,
-	0xa7, 0x45, 0xd0, 0x3e, 0xea, 0xda, 0xe6, 0x20, 0x37, 0xce, 0xc7, 0x2f, 0xf9, 0xf5, 0xa9, 0x5d,
-	0x97, 0x81, 0x75, 0x46, 0xb4, 0x78, 0x25, 0xe4, 0xdd, 0x64, 0xb7, 0xd9, 0xbd, 0xab, 0xcd, 0x75,
-	0x39, 0xef, 0x17, 0x65, 0x70, 0xb7, 0x2e, 0x9d, 0xfc, 0xb8, 0x55, 0x6a, 0x93, 0x33, 0xae, 0xf3,
-	0x2a, 0x46, 0xef, 0x19, 0xff, 0xac, 0x50, 0x51, 0x49, 0x51, 0xe5, 0xe5, 0x9e, 0xb1, 0x30, 0xc0,
-	0xe8, 0x2b, 0xed, 0xb0, 0x88, 0x5f, 0xf0, 0x1b, 0x33, 0x6a, 0x42, 0x79, 0xc8, 0xcb, 0x58, 0x84,
-	0x48, 0xee, 0xcc, 0x27, 0x41, 0x2f, 0x81, 0x04, 0x5f, 0xfc, 0x9a, 0x38, 0x76, 0xd3, 0x74, 0x8a,
-	0xe3, 0x31, 0xe7, 0x67, 0xbd, 0xa4, 0xf4, 0x0d, 0x19, 0x1a, 0x2f, 0x8b, 0xc6, 0xcb, 0x70, 0xc6,
-	0xd4, 0x78, 0xb9, 0xaf, 0x13, 0x43, 0xde, 0xf6, 0x84, 0x33, 0x3e, 0x66, 0x84, 0x7e, 0x56, 0xe0,
-	0x3c, 0xfa, 0xea, 0xff, 0xa0, 0x8b, 0xbd, 0x29, 0xc4, 0x15, 0x44, 0xdc, 0xbc, 0x10, 0x31, 0x54,
-	0x9f, 0x64, 0x6c, 0xfe, 0x5e, 0xe5, 0x65, 0x64, 0x14, 0x5f, 0x18, 0xaf, 0x84, 0xe3, 0x12, 0xdb,
-	0xf3, 0x79, 0xce, 0x4f, 0x4b, 0xad, 0xb1, 0x84, 0x23, 0x50, 0xc4, 0x5b, 0x1f, 0xbf, 0xfd, 0xfa,
-	0xbc, 0xb2, 0x29, 0xee, 0xaa, 0x47, 0x79, 0x0f, 0x9e, 0x93, 0x55, 0xa1, 0x75, 0xab, 0xf0, 0xaa,
-	0xc9, 0xf1, 0x15, 0x5f, 0x19, 0x2f, 0x63, 0x23, 0x44, 0x73, 0x81, 0x5a, 0x33, 0xa3, 0x55, 0xdb,
-	0x59, 0xca, 0x43, 0x84, 0x0f, 0x90, 0x50, 0x8a, 0xfa, 0x05, 0x84, 0xe1, 0xf9, 0x1e, 0xc7, 0xf5,
-	0x83, 0x38, 0x66, 0xfc, 0x32, 0xe6, 0xec, 0xa6, 0xe9, 0x42, 0xac, 0x33, 0xe3, 0xb7, 0x10, 0xeb,
-	0xec, 0x44, 0xc5, 0x75, 0x64, 0xdd, 0x10, 0xeb, 0x8b, 0xb0, 0xb6, 0x9e, 0x9c, 0x8c, 0x22, 0x76,
-	0x3a, 0x8a, 0xd8, 0xcf, 0x51, 0xc4, 0x3e, 0x8d, 0xa3, 0xd2, 0xe9, 0x38, 0x2a, 0x7d, 0x1f, 0x47,
-	0xa5, 0x57, 0xdb, 0x49, 0xdf, 0xbf, 0xc9, 0x3b, 0xb2, 0x0b, 0x83, 0x7f, 0x26, 0xbd, 0x53, 0x13,
-	0x97, 0x48, 0xa7, 0x82, 0xb7, 0xc8, 0xce, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x70, 0x79, 0x58,
-	0x45, 0xff, 0x04, 0x00, 0x00,
+	// 449 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0xcf, 0xaa, 0xd3, 0x40,
+	0x14, 0xc6, 0x33, 0xd5, 0x5e, 0xb8, 0xa3, 0x1b, 0x87, 0xab, 0xd4, 0x70, 0x89, 0x97, 0x28, 0x57,
+	0x91, 0x3a, 0xd3, 0x7f, 0xe8, 0x52, 0x5a, 0x45, 0xc1, 0x95, 0x06, 0x71, 0x21, 0x82, 0x24, 0xcd,
+	0x10, 0x83, 0xed, 0x9c, 0xb4, 0x33, 0x29, 0x16, 0x71, 0xe3, 0x13, 0x08, 0xbe, 0x42, 0x5f, 0xc1,
+	0x77, 0xe8, 0xb2, 0xe0, 0xc6, 0x95, 0x48, 0x2b, 0x3e, 0x87, 0x64, 0x66, 0xd4, 0x58, 0x6c, 0x6d,
+	0x37, 0x21, 0x87, 0x73, 0xbe, 0xef, 0xfc, 0xce, 0x99, 0x19, 0x7c, 0x41, 0xc1, 0x6b, 0x2e, 0xd8,
+	0x28, 0xe7, 0xe3, 0x29, 0xcd, 0xc6, 0xa0, 0x80, 0x1c, 0xf7, 0xf3, 0x18, 0x26, 0x5c, 0xa8, 0x7c,
+	0xcc, 0x25, 0x2d, 0x02, 0x29, 0x20, 0xe6, 0x54, 0x57, 0xba, 0x47, 0x09, 0x24, 0xa0, 0x0b, 0x59,
+	0xf1, 0x67, 0x34, 0xee, 0x71, 0x02, 0x90, 0x0c, 0x38, 0x0b, 0xb3, 0x94, 0x85, 0x42, 0x80, 0x0a,
+	0x55, 0x0a, 0x42, 0xda, 0xec, 0xcd, 0x3e, 0xc8, 0x21, 0x48, 0x16, 0x85, 0x92, 0x9b, 0x56, 0x6c,
+	0xd2, 0x8c, 0xb8, 0x0a, 0x9b, 0x2c, 0x0b, 0x93, 0x54, 0xe8, 0x62, 0x5b, 0x6b, 0x81, 0xd4, 0x34,
+	0xe3, 0x56, 0xee, 0x37, 0x70, 0xed, 0x49, 0x21, 0x7a, 0x5a, 0x64, 0x7a, 0xd3, 0xfb, 0x5c, 0xc0,
+	0x30, 0xe0, 0xa3, 0x9c, 0x4b, 0x45, 0x8e, 0x70, 0x35, 0x2e, 0xe2, 0x1a, 0x3a, 0x41, 0x37, 0x0e,
+	0x03, 0x13, 0xf8, 0x2f, 0xf0, 0xe5, 0x7f, 0x28, 0x64, 0x06, 0x42, 0x72, 0x72, 0x17, 0x57, 0x75,
+	0x0f, 0x2d, 0x39, 0xd7, 0xba, 0x4a, 0xb7, 0xcd, 0x4b, 0x8d, 0xc5, 0xd9, 0xf9, 0xd7, 0x2b, 0x4e,
+	0x60, 0x74, 0xfe, 0x4b, 0x7c, 0x51, 0xbb, 0x77, 0x07, 0x03, 0x9d, 0x95, 0xbf, 0x60, 0x1e, 0x60,
+	0xfc, 0x67, 0x1e, 0x6b, 0x7f, 0x4a, 0xcd, 0xf0, 0xb4, 0x18, 0x9e, 0x9a, 0x3d, 0xdb, 0xe1, 0xe9,
+	0xe3, 0x30, 0xe1, 0x56, 0x1b, 0x94, 0x94, 0xfe, 0x0c, 0xe1, 0x4b, 0xeb, 0x1d, 0x2c, 0x7c, 0x17,
+	0x1f, 0x68, 0x08, 0x59, 0x43, 0x27, 0x67, 0xf6, 0xa3, 0xb7, 0x42, 0xf2, 0xf0, 0x2f, 0xca, 0x8a,
+	0xa6, 0xbc, 0xfe, 0x5f, 0x4a, 0xd3, 0xbf, 0x8c, 0xd9, 0xfa, 0x51, 0xc1, 0x55, 0x8d, 0x49, 0x3e,
+	0x21, 0x7c, 0xbe, 0xbc, 0x6b, 0x72, 0x7b, 0x3b, 0xd6, 0xa6, 0xe3, 0x74, 0xef, 0xec, 0xad, 0x33,
+	0x5c, 0x7e, 0xe7, 0xfd, 0xe7, 0xef, 0x1f, 0x2b, 0x94, 0xd4, 0xd9, 0xbd, 0x3c, 0x86, 0x67, 0xd6,
+	0x80, 0x69, 0x83, 0x5b, 0x85, 0x03, 0xb3, 0xf7, 0x4a, 0x7f, 0xdf, 0xea, 0x6b, 0xf2, 0x8e, 0xcc,
+	0x10, 0x3e, 0xfc, 0xbd, 0x63, 0xd2, 0xde, 0xa1, 0xf9, 0xfa, 0x99, 0xbb, 0x9d, 0xfd, 0x44, 0x16,
+	0xb7, 0xae, 0x71, 0x4f, 0xc9, 0xb5, 0x5d, 0x70, 0x7b, 0x8f, 0xe6, 0x4b, 0x0f, 0x2d, 0x96, 0x1e,
+	0xfa, 0xb6, 0xf4, 0xd0, 0x87, 0x95, 0xe7, 0x2c, 0x56, 0x9e, 0xf3, 0x65, 0xe5, 0x39, 0xcf, 0x1b,
+	0x49, 0xaa, 0x5e, 0xe5, 0x11, 0xed, 0xc3, 0x70, 0xa3, 0xd3, 0x1b, 0x56, 0x7a, 0x52, 0xd1, 0x81,
+	0x7e, 0x53, 0xed, 0x9f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x4b, 0x87, 0x04, 0x68, 0xf9, 0x03, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -356,12 +268,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Parameters queries the parameters of the module.
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a Token by index.
-	Token(ctx context.Context, in *QueryGetTokenRequest, opts ...grpc.CallOption) (*QueryGetTokenResponse, error)
-	// Queries a list of Token items.
-	TokenAll(ctx context.Context, in *QueryAllTokenRequest, opts ...grpc.CallOption) (*QueryAllTokenResponse, error)
+	// Queries a token by denom.
+	TokenByDenom(ctx context.Context, in *QueryTokenByDenomRequest, opts ...grpc.CallOption) (*QueryTokenByDenomResponse, error)
+	// Queries all available tokens.
+	AllTokens(ctx context.Context, in *QueryAllTokensRequest, opts ...grpc.CallOption) (*QueryAllTokensResponse, error)
 }
 
 type queryClient struct {
@@ -372,27 +282,18 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
-	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/cudoventures.cudosnode.token.Query/Params", in, out, opts...)
+func (c *queryClient) TokenByDenom(ctx context.Context, in *QueryTokenByDenomRequest, opts ...grpc.CallOption) (*QueryTokenByDenomResponse, error) {
+	out := new(QueryTokenByDenomResponse)
+	err := c.cc.Invoke(ctx, "/cudoventures.cudosnode.token.Query/TokenByDenom", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) Token(ctx context.Context, in *QueryGetTokenRequest, opts ...grpc.CallOption) (*QueryGetTokenResponse, error) {
-	out := new(QueryGetTokenResponse)
-	err := c.cc.Invoke(ctx, "/cudoventures.cudosnode.token.Query/Token", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) TokenAll(ctx context.Context, in *QueryAllTokenRequest, opts ...grpc.CallOption) (*QueryAllTokenResponse, error) {
-	out := new(QueryAllTokenResponse)
-	err := c.cc.Invoke(ctx, "/cudoventures.cudosnode.token.Query/TokenAll", in, out, opts...)
+func (c *queryClient) AllTokens(ctx context.Context, in *QueryAllTokensRequest, opts ...grpc.CallOption) (*QueryAllTokensResponse, error) {
+	out := new(QueryAllTokensResponse)
+	err := c.cc.Invoke(ctx, "/cudoventures.cudosnode.token.Query/AllTokens", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -401,82 +302,59 @@ func (c *queryClient) TokenAll(ctx context.Context, in *QueryAllTokenRequest, op
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Parameters queries the parameters of the module.
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a Token by index.
-	Token(context.Context, *QueryGetTokenRequest) (*QueryGetTokenResponse, error)
-	// Queries a list of Token items.
-	TokenAll(context.Context, *QueryAllTokenRequest) (*QueryAllTokenResponse, error)
+	// Queries a token by denom.
+	TokenByDenom(context.Context, *QueryTokenByDenomRequest) (*QueryTokenByDenomResponse, error)
+	// Queries all available tokens.
+	AllTokens(context.Context, *QueryAllTokensRequest) (*QueryAllTokensResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+func (*UnimplementedQueryServer) TokenByDenom(ctx context.Context, req *QueryTokenByDenomRequest) (*QueryTokenByDenomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TokenByDenom not implemented")
 }
-func (*UnimplementedQueryServer) Token(ctx context.Context, req *QueryGetTokenRequest) (*QueryGetTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Token not implemented")
-}
-func (*UnimplementedQueryServer) TokenAll(ctx context.Context, req *QueryAllTokenRequest) (*QueryAllTokenResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TokenAll not implemented")
+func (*UnimplementedQueryServer) AllTokens(ctx context.Context, req *QueryAllTokensRequest) (*QueryAllTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllTokens not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryParamsRequest)
+func _Query_TokenByDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTokenByDenomRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
+		return srv.(QueryServer).TokenByDenom(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cudoventures.cudosnode.token.Query/Params",
+		FullMethod: "/cudoventures.cudosnode.token.Query/TokenByDenom",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
+		return srv.(QueryServer).TokenByDenom(ctx, req.(*QueryTokenByDenomRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Token_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGetTokenRequest)
+func _Query_AllTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllTokensRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Token(ctx, in)
+		return srv.(QueryServer).AllTokens(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cudoventures.cudosnode.token.Query/Token",
+		FullMethod: "/cudoventures.cudosnode.token.Query/AllTokens",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Token(ctx, req.(*QueryGetTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_TokenAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllTokenRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).TokenAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/cudoventures.cudosnode.token.Query/TokenAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).TokenAll(ctx, req.(*QueryAllTokenRequest))
+		return srv.(QueryServer).AllTokens(ctx, req.(*QueryAllTokensRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -486,23 +364,19 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
+			MethodName: "TokenByDenom",
+			Handler:    _Query_TokenByDenom_Handler,
 		},
 		{
-			MethodName: "Token",
-			Handler:    _Query_Token_Handler,
-		},
-		{
-			MethodName: "TokenAll",
-			Handler:    _Query_TokenAll_Handler,
+			MethodName: "AllTokens",
+			Handler:    _Query_AllTokens_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "token/query.proto",
 }
 
-func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenByDenomRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -512,68 +386,12 @@ func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenByDenomRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintQuery(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryGetTokenRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryGetTokenRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryGetTokenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenByDenomRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -588,7 +406,7 @@ func (m *QueryGetTokenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGetTokenResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryTokenByDenomResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -598,12 +416,12 @@ func (m *QueryGetTokenResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGetTokenResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryTokenByDenomResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGetTokenResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryTokenByDenomResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -621,7 +439,7 @@ func (m *QueryGetTokenResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllTokenRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllTokensRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -631,12 +449,12 @@ func (m *QueryAllTokenRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllTokenRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllTokensRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllTokenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllTokensRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -656,7 +474,7 @@ func (m *QueryAllTokenRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryAllTokenResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryAllTokensResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -666,12 +484,12 @@ func (m *QueryAllTokenResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryAllTokenResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryAllTokensResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryAllTokenResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryAllTokensResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -688,10 +506,10 @@ func (m *QueryAllTokenResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Token) > 0 {
-		for iNdEx := len(m.Token) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.Tokens) > 0 {
+		for iNdEx := len(m.Tokens) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Token[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.Tokens[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -716,27 +534,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryParamsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryParamsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = m.Params.Size()
-	n += 1 + l + sovQuery(uint64(l))
-	return n
-}
-
-func (m *QueryGetTokenRequest) Size() (n int) {
+func (m *QueryTokenByDenomRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -749,7 +547,7 @@ func (m *QueryGetTokenRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGetTokenResponse) Size() (n int) {
+func (m *QueryTokenByDenomResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -760,7 +558,7 @@ func (m *QueryGetTokenResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllTokenRequest) Size() (n int) {
+func (m *QueryAllTokensRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -773,14 +571,14 @@ func (m *QueryAllTokenRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryAllTokenResponse) Size() (n int) {
+func (m *QueryAllTokensResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Token) > 0 {
-		for _, e := range m.Token {
+	if len(m.Tokens) > 0 {
+		for _, e := range m.Tokens {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -798,7 +596,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenByDenomRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -821,149 +619,10 @@ func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenByDenomRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryGetTokenRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetTokenRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetTokenRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenByDenomRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1022,7 +681,7 @@ func (m *QueryGetTokenRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGetTokenResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryTokenByDenomResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1045,10 +704,10 @@ func (m *QueryGetTokenResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGetTokenResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryTokenByDenomResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGetTokenResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryTokenByDenomResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1108,7 +767,7 @@ func (m *QueryGetTokenResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllTokenRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryAllTokensRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1131,10 +790,10 @@ func (m *QueryAllTokenRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllTokenRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllTokensRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllTokenRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllTokensRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1197,7 +856,7 @@ func (m *QueryAllTokenRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryAllTokenResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryAllTokensResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1220,15 +879,15 @@ func (m *QueryAllTokenResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryAllTokenResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryAllTokensResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryAllTokenResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryAllTokensResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Token", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Tokens", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1255,8 +914,8 @@ func (m *QueryAllTokenResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Token = append(m.Token, Token{})
-			if err := m.Token[len(m.Token)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.Tokens = append(m.Tokens, Token{})
+			if err := m.Tokens[len(m.Tokens)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

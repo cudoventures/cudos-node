@@ -2,7 +2,6 @@ syntax = "proto3";
 package cudoventures.cudosnode.token;
 
 import "gogoproto/gogo.proto";
-import "token/params.proto";
 import "token/types.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
@@ -10,7 +9,5 @@ option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
 
 // GenesisState defines the token module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
-  repeated Token tokenList = 2 [(gogoproto.nullable) = false];
-  // this line is used by starport scaffolding # genesis/proto/state
+  repeated Token tokens = 2 [(gogoproto.nullable) = false];
 }
