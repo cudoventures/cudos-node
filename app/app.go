@@ -112,6 +112,10 @@ import (
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+
+	tokenmodule "github.com/CudoVentures/cudos-node/x/token"
+	tokenkeeper "github.com/CudoVentures/cudos-node/x/token/keeper"
+	tokentypes "github.com/CudoVentures/cudos-node/x/token/types"
 )
 
 const Name = "cudos-node"
@@ -180,6 +184,7 @@ var (
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
 		marketplace.AppModuleBasic{},
+		tokenmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -194,6 +199,7 @@ var (
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
+		tokentypes.ModuleName:          {authtypes.Minter},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -274,6 +280,7 @@ type App struct {
 	NftKeeper         nftmodulekeeper.Keeper
 	GroupKeeper       groupkeeper.Keeper
 	MarketplaceKeeper marketplacekeeper.Keeper
+	TokenKeeper       tokenkeeper.Keeper
 
 	// the module manager
 	mm           *module.Manager
@@ -311,6 +318,7 @@ func New(
 		feegrant.StoreKey,
 		group.StoreKey,
 		marketplacetypes.StoreKey,
+		tokentypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -520,6 +528,14 @@ func New(
 		groupConfig,
 	)
 
+	app.TokenKeeper = *tokenkeeper.NewKeeper(
+		appCodec,
+		keys[tokentypes.StoreKey],
+		keys[tokentypes.MemStoreKey],
+		app.GetSubspace(tokentypes.ModuleName),
+		app.BankKeeper,
+	)
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -558,6 +574,7 @@ func New(
 		nftModule,
 		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		tokenmodule.NewAppModule(appCodec, app.TokenKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -588,6 +605,7 @@ func New(
 		wasmtypes.ModuleName,
 		group.ModuleName,
 		marketplacetypes.ModuleName,
+		tokentypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -614,6 +632,7 @@ func New(
 		wasmtypes.ModuleName,
 		group.ModuleName,
 		marketplacetypes.ModuleName,
+		tokentypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -651,6 +670,7 @@ func New(
 		paramstypes.ModuleName,
 		group.ModuleName,
 		marketplacetypes.ModuleName,
+		tokentypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -852,6 +872,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(marketplacetypes.ModuleName)
+	paramsKeeper.Subspace(tokentypes.ModuleName)
 
 	return paramsKeeper
 }

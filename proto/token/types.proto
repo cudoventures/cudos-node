@@ -1,0 +1,30 @@
+syntax = "proto3";
+package cudoventures.cudosnode.token;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
+
+message Allowance {
+  string spender = 1; 
+  string amount = 2 [(gogoproto.customtype) = "Int"];
+}
+
+message Allowances {
+  string address = 1; 
+  repeated Allowance allowances = 2; 
+}
+
+message InitialBalance {
+  string address = 1;
+  string amount = 2 [(gogoproto.customtype) = "Int"];
+}
+
+message Token {
+  string denom = 1; 
+  string name = 2; 
+  uint64 decimals = 3;
+  string maxSupply = 4 [(gogoproto.customtype) = "Int"];
+  repeated Allowances allowances = 5; 
+  string owner = 6;
+}
