@@ -18,8 +18,8 @@ message MsgCreateToken {
   string denom = 1; 
   string name = 2; 
   uint64 decimals = 3; 
-  repeated InitialBalance initialBalances = 4; 
-  string maxSupply = 5 [(gogoproto.customtype) = "Int"];
+  repeated Balance initialBalances = 4; 
+  uint64 maxSupply = 5;
   string owner = 6;
 }
 message MsgCreateTokenResponse {}
@@ -30,7 +30,7 @@ message MsgUpdateToken {
 
   string name = 3;
   uint64 decimals = 4;
-  InitialBalance initialBalances = 5;
+  Balance initialBalances = 5;
   string maxSupply = 6;
   Allowances allowances = 7;
 }

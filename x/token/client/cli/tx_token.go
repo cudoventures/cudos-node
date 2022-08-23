@@ -2,13 +2,11 @@ package cli
 
 import (
 	"encoding/json"
-	"errors"
 
 	"github.com/CudoVentures/cudos-node/x/token/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 )
@@ -16,30 +14,37 @@ import (
 func CmdCreateToken() *cobra.Command {
 	cmd := &cobra.Command{
 		// todo add example + initial-balances and max-supply should be optional flags
-		Use:   "create-token [denom] [name] [decimals] [initial-balances] [max-supply]",
+		Use:   "create [denom] [name] [decimals] [initial-balances] [max-supply]",
 		Short: "Create a new fungible token",
-		Args:  cobra.ExactArgs(5),
+		Long: `
+Parameters:
+  denom:            Unique token symbol, eg. ETH
+  name:             Token name, eg. Ethereum
+  decimals:         Number of digits after the decimal point, eg. 1.00 has two decimals
+  initial-balances: Mint tokens to specified addresses, eg. --initial-balances='[{"address":"cudos12mly447tcat35rs6ltzj8j8ez6ul8yv6dxh3u8","amount":"123"}]'
+  max-supply:       Maximum supply that cannot be exceeded, eg. 21000000
+Example:
+  cudos-noded tx token create-token TOK Tokemania 2 '[{"address":"cudos1wfmq7vdd7sw6v648z0ts5ftfl8ptp9hru9sjsm","amount":"123"}]' 100000000 --from=cudos1j34vv7gmvl6cqg90my8mgzqpfgak6xzrg5l6p7 --chain-id=cudos-network --gas=auto --fees=100000000000acudos 
+`,
+		Args: cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			// Get indexes
-			indexDenom := args[0]
+			denom := args[0]
+			name := args[1]
 
-			// Get value arguments
-			argName := args[1]
-			argDecimals, err := cast.ToUint64E(args[2])
+			decimals, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
 			}
 
-			// todo currently it's single initialBalance, figure out array as single args
-			argInitialBalances := []*types.InitialBalance{}
-			err = json.Unmarshal([]byte(args[3]), &argInitialBalances)
+			initialBalances := []*types.Balance{}
+			err = json.Unmarshal([]byte(args[3]), &initialBalances)
 			if err != nil {
 				return err
 			}
 
-			argMaxSupply, ok := sdk.NewIntFromString(args[4])
-			if !ok {
-				return errors.New("invalid max supply")
+			maxSupply, err := cast.ToUint64E(args[4])
+			if err != nil {
+				return err
 			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -49,11 +54,11 @@ func CmdCreateToken() *cobra.Command {
 
 			msg := types.NewMsgCreateToken(
 				clientCtx.GetFromAddress().String(),
-				indexDenom,
-				argName,
-				argDecimals,
-				argInitialBalances,
-				&argMaxSupply,
+				denom,
+				name,
+				decimals,
+				initialBalances,
+				maxSupply,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -82,7 +87,7 @@ func CmdUpdateToken() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argInitialBalances := new(types.InitialBalance)
+			argInitialBalances := new(types.Balance)
 			err = json.Unmarshal([]byte(args[3]), argInitialBalances)
 			if err != nil {
 				return err

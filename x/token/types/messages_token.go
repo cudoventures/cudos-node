@@ -18,8 +18,8 @@ func NewMsgCreateToken(
 	denom string,
 	name string,
 	decimals uint64,
-	initialBalances []*InitialBalance,
-	maxSupply *sdk.Int,
+	initialBalances []*Balance,
+	maxSupply uint64,
 
 ) *MsgCreateToken {
 	return &MsgCreateToken{
@@ -68,7 +68,7 @@ func NewMsgUpdateToken(
 	denom string,
 	name string,
 	decimals uint64,
-	initialBalances *InitialBalance,
+	initialBalances *Balance,
 	maxSupply string,
 	allowances *Allowances,
 

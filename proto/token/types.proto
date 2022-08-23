@@ -7,7 +7,7 @@ option go_package = "github.com/CudoVentures/cudos-node/x/token/types";
 
 message Allowance {
   string spender = 1; 
-  string amount = 2 [(gogoproto.customtype) = "Int"];
+  string amount = 2;
 }
 
 message Allowances {
@@ -15,16 +15,16 @@ message Allowances {
   repeated Allowance allowances = 2; 
 }
 
-message InitialBalance {
+message Balance {
   string address = 1;
-  string amount = 2 [(gogoproto.customtype) = "Int"];
+  string amount = 2;
 }
 
 message Token {
   string denom = 1; 
   string name = 2; 
   uint64 decimals = 3;
-  string maxSupply = 4 [(gogoproto.customtype) = "Int"];
+  uint64 maxSupply = 4;
   repeated Allowances allowances = 5; 
   string owner = 6;
 }
