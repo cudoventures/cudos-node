@@ -195,6 +195,9 @@ func getProportion(totalCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
 }
 
 func (k Keeper) distributeRoyalties(ctx sdk.Context, price sdk.Coin, seller, royalties string) error {
+	if royalties == "" {
+		return nil
+	}
 
 	var totalPercentPaid float64
 

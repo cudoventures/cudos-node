@@ -12,8 +12,8 @@ import (
 
 func CmdListCollection() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-collection",
-		Short: "list all Collection",
+		Use:   "list-collections",
+		Short: "list all Collections",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 

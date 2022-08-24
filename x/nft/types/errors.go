@@ -24,4 +24,6 @@ var (
 	ErrNotOwnerOfSoftLock  = sdkerrors.Register(ModuleName, 20, "not owner of soft lock")
 	ErrSoftLocked          = sdkerrors.Register(ModuleName, 21, "soft locked")
 	ErrNotEditable         = sdkerrors.Register(ModuleName, 22, "not editable")
+	ErrInvalidDescription  = sdkerrors.Register(ModuleName, 23, "invalid description")
+	ErrInvalidTokenData    = sdkerrors.Register(ModuleName, 24, "invalid token data")
 )

@@ -5,15 +5,24 @@ import (
 	"strconv"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 const (
 	DoNotModify = "[do-not-modify]"
-	MinDenomLen = 3
-	MaxDenomLen = 64
 
-	MaxTokenURILen = 256
+	MinDenomIdLen          = 3
+	MaxDenomIdLen          = 64
+	MinDenomNameLen        = 3
+	MaxDenomNameLen        = 64
+	MinDenomSymbolLen      = 3
+	MaxDenomSymbolLen      = 64
+	MaxDenomTraitsLen      = 256
+	MaxDenomDescriptionLen = 256
+
+	MaxTokenURILen  = 256
+	MaxTokenDataLen = 512
 )
 
 var (
@@ -25,8 +34,8 @@ var (
 
 // ValidateDenomID verifies whether the  parameters are legal
 func ValidateDenomID(denomID string) error {
-	if len(denomID) < MinDenomLen || len(denomID) > MaxDenomLen {
-		return sdkerrors.Wrapf(ErrInvalidDenom, "the length of denom(%s) only accepts value [%d, %d]", denomID, MinDenomLen, MaxDenomLen)
+	if len(denomID) < MinDenomIdLen || len(denomID) > MaxDenomIdLen {
+		return sdkerrors.Wrapf(ErrInvalidDenom, "the length of denom id(%s) only accepts value [%d, %d]", denomID, MinDenomIdLen, MaxDenomIdLen)
 	}
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "the denom(%s) only accepts lowercase alphanumeric characters, and begin with an english letter", denomID)
@@ -40,6 +49,9 @@ func ValidateDenomName(denomName string) error {
 	if len(denomName) == 0 {
 		return sdkerrors.Wrapf(ErrInvalidDenomName, "denom name(%s) can not be space", denomName)
 	}
+	if len(denomName) < MinDenomNameLen || len(denomName) > MaxDenomNameLen {
+		return sdkerrors.Wrapf(ErrInvalidDenomName, "the length of denom name(%s) only accepts value [%d, %d]", denomName, MinDenomNameLen, MaxDenomNameLen)
+	}
 	return nil
 }
 
@@ -49,13 +61,19 @@ func ValidateDenomSymbol(symbol string) error {
 	if len(symbol) == 0 {
 		return sdkerrors.Wrapf(ErrInvalidDenomSymbol, "denom symbol(%s) can not be space", symbol)
 	}
+	if len(symbol) < MinDenomSymbolLen || len(symbol) > MaxDenomSymbolLen {
+		return sdkerrors.Wrapf(ErrInvalidDenomSymbol, "the length of denom symbol(%s) only accepts value [%d, %d]", symbol, MinDenomNameLen, MaxDenomNameLen)
+	}
 	return nil
 }
 
 func ValidateDenomTraits(traits string) error {
-	traits = strings.TrimSpace(traits)
 	if traits == "" {
 		return nil
+	}
+
+	if len(traits) > MaxDenomTraitsLen {
+		return sdkerrors.Wrapf(ErrInvalidTraits, "the length of traits %d is exceeding max accepted length %d", len(traits), MaxDenomTraitsLen)
 	}
 
 	traitsList := strings.Split(traits, ",")
@@ -63,6 +81,25 @@ func ValidateDenomTraits(traits string) error {
 		if _, ok := DenomTraitsMapStrToType[trait]; !ok {
 			return sdkerrors.Wrapf(ErrInvalidTraits, "denom trait(%s) is not supported.", trait)
 		}
+	}
+	return nil
+}
+
+func ValidateMinter(minter string) error {
+	if minter == "" {
+		return nil
+	}
+
+	if _, err := sdk.AccAddressFromBech32(minter); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid minter address (%s)", err)
+	}
+
+	return nil
+}
+
+func ValidateDescription(description string) error {
+	if len(description) > MaxDenomTraitsLen {
+		return sdkerrors.Wrapf(ErrInvalidDescription, "the length of denom description %d is exceeding max accepted length %d", len(description), MaxDenomTraitsLen)
 	}
 	return nil
 }
@@ -81,6 +118,13 @@ func ValidateTokenID(tokenID string) error {
 func ValidateTokenURI(tokenURI string) error {
 	if len(tokenURI) > MaxTokenURILen {
 		return sdkerrors.Wrapf(ErrInvalidTokenURI, "the length of nft uri(%s) only accepts value [0, %d]", tokenURI, MaxTokenURILen)
+	}
+	return nil
+}
+
+func ValidateTokenData(tokenData string) error {
+	if len(tokenData) > MaxTokenDataLen {
+		return sdkerrors.Wrapf(ErrInvalidTokenURI, "the length of nft data(%s) only accepts value [0, %d]", tokenData, MaxTokenDataLen)
 	}
 	return nil
 }

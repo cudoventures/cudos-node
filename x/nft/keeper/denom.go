@@ -124,6 +124,10 @@ func (k Keeper) IsDenomCreator(ctx sdk.Context, denomID string, address sdk.AccA
 }
 
 func (k Keeper) IsDenomMinter(denom types.Denom, address sdk.AccAddress) error {
+	if denom.Minter == "" {
+		return nil
+	}
+
 	minter, err := sdk.AccAddressFromBech32(denom.Minter)
 	if err != nil {
 		return err

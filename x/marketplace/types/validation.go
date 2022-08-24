@@ -10,6 +10,10 @@ import (
 
 // TODO: There is duplication of this logic in keeper.distributeRoyalties
 func ValidateRoyalties(royalties string) error {
+	if royalties == "" {
+		return nil
+	}
+
 	var totalPercent float64
 
 	splitFn := func(c rune) bool {

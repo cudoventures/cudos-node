@@ -48,6 +48,7 @@ message MsgIssueDenom {
     string symbol = 6;
     string traits = 7;
     string minter = 8;
+    string description = 9;
 }
 
 // MsgIssueDenomResponse defines the Msg/IssueDenom response type.

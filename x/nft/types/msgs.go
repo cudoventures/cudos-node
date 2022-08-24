@@ -31,7 +31,7 @@ var (
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
-func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits, minter string) *MsgIssueDenom {
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits, minter, description string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender:                sender,
 		Id:                    denomID,
@@ -41,6 +41,7 @@ func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner,
 		Symbol:                symbol,
 		Traits:                traits,
 		Minter:                minter,
+		Description:           description,
 	}
 }
 
@@ -69,6 +70,14 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	}
 
 	if err := ValidateDenomTraits(msg.Traits); err != nil {
+		return err
+	}
+
+	if err := ValidateMinter(msg.Minter); err != nil {
+		return err
+	}
+
+	if err := ValidateDescription(msg.Description); err != nil {
 		return err
 	}
 

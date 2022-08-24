@@ -56,6 +56,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				"--schema=<schema-content or path to schema.json> "+
 				"--chain-id=<chain-id> "+
 				"--traits=<traits>"+
+				"--description=<description>"+
 				"--minter=<minter>",
 			version.AppName,
 		),
@@ -86,6 +87,10 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			description, err := cmd.Flags().GetString(FlagDescription)
+			if err != nil {
+				return err
+			}
 
 			optionsContent, err := ioutil.ReadFile(schema)
 			if err == nil {
@@ -101,6 +106,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				symbol,
 				traits,
 				minter,
+				description,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -123,6 +129,7 @@ func GetCmdMintNFT() *cobra.Command {
 		Example: fmt.Sprintf(
 			"$ %s tx nft mint <denom-id> "+
 				"--recipient=<recipient> "+
+				"--name=<name> "+
 				"--from=<key-name> "+
 				"--uri=<uri> "+
 				"--chain-id=<chain-id> ",

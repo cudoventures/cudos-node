@@ -12,8 +12,8 @@ import (
 
 func CmdListNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "list-nft",
-		Short: "list all nft",
+		Use:   "list-nfts",
+		Short: "list all nfts",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 

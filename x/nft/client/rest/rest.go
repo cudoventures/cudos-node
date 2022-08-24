@@ -23,13 +23,14 @@ const (
 )
 
 type issueDenomReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	ID      string       `json:"id"`
-	Name    string       `json:"name"`
-	Schema  string       `json:"schema"`
-	Symbol  string       `json:"symbol"`
-	Traits  string       `json:"traits"`
-	Minter  string       `json:"minter"`
+	BaseReq     rest.BaseReq `json:"base_req"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Schema      string       `json:"schema"`
+	Symbol      string       `json:"symbol"`
+	Traits      string       `json:"traits"`
+	Minter      string       `json:"minter"`
+	Description string       `json:"description"`
 }
 
 type mintNFTReq struct {
