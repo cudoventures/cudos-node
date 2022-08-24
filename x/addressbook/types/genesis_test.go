@@ -3,11 +3,13 @@ package types_test
 import (
 	"testing"
 
+	"github.com/CudoVentures/cudos-node/testutil/sample"
 	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
+	creator := sample.AccAddress()
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -19,12 +21,42 @@ func TestGenesisState_Validate(t *testing.T) {
 			valid:    true,
 		},
 		{
-			desc:     "valid genesis state",
+			desc: "valid genesis state",
 			genState: &types.GenesisState{
 
+				AddressList: []types.Address{
+					{
+						Creator: creator,
+						Network: "BTC",
+						Label:   "100@testdenom",
+					},
+					{
+						Creator: creator,
+						Network: "BTC",
+						Label:   "101@testdenom",
+					},
+				},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
+		},
+		{
+			desc: "duplicated address",
+			genState: &types.GenesisState{
+				AddressList: []types.Address{
+					{
+						Creator: creator,
+						Network: "BTC",
+						Label:   "100@testdenom",
+					},
+					{
+						Creator: creator,
+						Network: "BTC",
+						Label:   "100@testdenom",
+					},
+				},
+			},
+			valid: false,
 		},
 		// this line is used by starport scaffolding # types/genesis/testcase
 	} {

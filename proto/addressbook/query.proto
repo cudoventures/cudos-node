@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "addressbook/params.proto";
+import "addressbook/address.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
@@ -15,7 +16,17 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/CudoVentures/cudos-node/addressbook/params";
   }
-  // this line is used by starport scaffolding # 2
+  // Queries a Address by owner, network and label.
+	rpc Address(QueryGetAddressRequest) returns (QueryGetAddressResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/addressbook/address/{creator}/{network}/{label}";
+	}
+
+	// Queries a list of Address items.
+	rpc AddressAll(QueryAllAddressRequest) returns (QueryAllAddressResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/addressbook/address";
+	}
+
+// this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -25,6 +36,25 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetAddressRequest {
+	string creator = 1;
+	string network = 2;
+	string label = 3;
+}
+
+message QueryGetAddressResponse {
+	Address address = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAddressRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAddressResponse {
+	repeated Address address = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

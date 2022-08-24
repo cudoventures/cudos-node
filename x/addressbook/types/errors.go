@@ -8,5 +8,6 @@ import (
 
 // x/addressbook module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+	ErrInvalidNetwork = sdkerrors.Register(ModuleName, 1100, "invalid network")
+	ErrInvalidLabel   = sdkerrors.Register(ModuleName, 1101, "invalid label")
 )
