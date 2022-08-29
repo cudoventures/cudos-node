@@ -9,7 +9,7 @@ const TypeMsgPublishNft = "publish_nft"
 
 var _ sdk.Msg = &MsgPublishNft{}
 
-func NewMsgPublishNft(creator, tokenId, denomId, price string) *MsgPublishNft {
+func NewMsgPublishNft(creator, tokenId, denomId string, price sdk.Coin) *MsgPublishNft {
 	return &MsgPublishNft{
 		Creator: creator,
 		TokenId: tokenId,
@@ -48,7 +48,7 @@ func (msg *MsgPublishNft) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmptyDenomID, "empty denom id")
 	}
 
-	if _, err := sdk.ParseCoinNormalized(msg.Price); err != nil {
+	if msg.Price.Amount.Equal(sdk.NewInt(0)) {
 		return sdkerrors.Wrapf(ErrInvalidPrice, "invalid price (%s)", msg.Price)
 	}
 

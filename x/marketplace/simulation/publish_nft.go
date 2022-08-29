@@ -32,7 +32,7 @@ func SimulateMsgPublishNft(
 			ownerAddr.String(),
 			nftID,
 			denom,
-			"100000000000acudos",
+			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)

@@ -9,7 +9,7 @@ const TypeMsgMintNft = "mint_nft"
 
 var _ sdk.Msg = &MsgMintNft{}
 
-func NewMsgMintNft(creator, denomId, recipient, price, name, uri, data string) *MsgMintNft {
+func NewMsgMintNft(creator, denomId, recipient, name, uri, data string, price sdk.Coin) *MsgMintNft {
 	return &MsgMintNft{
 		Creator:   creator,
 		DenomId:   denomId,
@@ -52,8 +52,8 @@ func (msg *MsgMintNft) ValidateBasic() error {
 	if msg.DenomId == "" {
 		return sdkerrors.Wrap(ErrEmptyDenomID, "empty denom id")
 	}
-	if _, err := sdk.ParseCoinNormalized(msg.Price); err != nil {
-		return sdkerrors.Wrapf(ErrInvalidPrice, "invalid price (%s)", msg.Price)
+	if msg.Price.Amount.Equal(sdk.NewInt(0)) {
+		return sdkerrors.Wrapf(ErrInvalidPrice, "invalid price (%+v)", msg.Price)
 	}
 
 	return nil

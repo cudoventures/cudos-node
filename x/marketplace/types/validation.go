@@ -1,54 +1,41 @@
 package types
 
 import (
-	"strconv"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func ValidateRoyalties(royalties string) error {
-	if royalties == "" {
+func ValidateRoyalties(royalties []Royalty) error {
+	if len(royalties) == 0 {
 		return nil
 	}
 
-	var totalPercent float64
+	var totalPercent sdk.Dec
 
-	splitFn := func(c rune) bool {
-		return c == ','
-	}
+	for _, royalty := range royalties {
 
-	royaltiesList := strings.FieldsFunc(royalties, splitFn)
-
-	for _, royalty := range royaltiesList {
-		royaltyParts := strings.Split(royalty, ":")
-
-		_, err := sdk.AccAddressFromBech32(royaltyParts[0])
+		_, err := sdk.AccAddressFromBech32(royalty.Address)
 		if err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid royalty address (%s): %s", royaltyParts[0], err)
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid royalty address (%s): %s", royalty.Address, err)
 		}
 
-		value, err := strconv.ParseFloat(royaltyParts[1], 32)
-		if err != nil {
-			return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "invalid royalty percent (%s): %s", royaltyParts[1], err)
-		}
+		totalPercent = totalPercent.Add(royalty.Percent)
 
-		totalPercent += value
-
-		percentParts := strings.Split(royaltyParts[1], ".")
+		percentParts := strings.Split(royalty.Percent.String(), ".")
 
 		if len(percentParts) == 2 && len(percentParts[1]) > 2 {
-			return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "invalid royalty percent precision (%s)", royaltyParts[1])
+			return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "invalid royalty percent precision (%s)", percentParts[1])
 		}
 	}
 
-	if totalPercent <= 0 {
-		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%f) cannot be less than or equal to zero", totalPercent)
+	if totalPercent.LTE(sdk.NewDec(0)) {
+		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%s) cannot be less than or equal to zero", totalPercent.String())
 	}
 
-	if totalPercent > 100 {
-		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%f) cannot be greater than 100", totalPercent)
+	if totalPercent.GT(sdk.NewDec(100)) {
+		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%s) cannot be greater than 100", totalPercent.String())
 	}
 
 	return nil

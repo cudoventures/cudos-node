@@ -2,11 +2,13 @@ package cli
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 )
@@ -26,12 +28,22 @@ func CmdPublishCollection() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			denomID := args[0]
 
-			mintRoyalties, err := cmd.Flags().GetString(FlagMintRoyalties)
+			flagMintRoyalties, err := cmd.Flags().GetString(FlagMintRoyalties)
 			if err != nil {
 				return err
 			}
 
-			resaleRoyalties, err := cmd.Flags().GetString(FlagResaleRoyalties)
+			mintRoyalties, err := parseRoyalties(flagMintRoyalties)
+			if err != nil {
+				return err
+			}
+
+			flagResaleRoyalties, err := cmd.Flags().GetString(FlagResaleRoyalties)
+			if err != nil {
+				return err
+			}
+
+			resaleRoyalties, err := parseRoyalties(flagResaleRoyalties)
 			if err != nil {
 				return err
 			}
@@ -58,4 +70,34 @@ func CmdPublishCollection() *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func parseRoyalties(royaltiesStr string) ([]types.Royalty, error) {
+	royaltiesStr = strings.TrimSpace(royaltiesStr)
+	royaltiesStrList := strings.Split(royaltiesStr, ",")
+
+	var royalties []types.Royalty
+
+	for _, royaltyStr := range royaltiesStrList {
+		split := strings.Split(strings.TrimSpace(royaltyStr), ":")
+
+		address, err := sdk.AccAddressFromBech32(strings.TrimSpace(split[0]))
+		if err != nil {
+			return nil, err
+		}
+
+		percent, err := sdk.NewDecFromStr(strings.TrimSpace(split[1]))
+		if err != nil {
+			return nil, err
+		}
+
+		royalty := types.Royalty{
+			Address: address.String(),
+			Percent: percent,
+		}
+
+		royalties = append(royalties, royalty)
+	}
+
+	return royalties, nil
 }

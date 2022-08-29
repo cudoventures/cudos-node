@@ -32,7 +32,7 @@ func SimulateMsgMintNft(
 			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
 		}
 
-		collection := types.NewCollection(denom, "", "", ownerAddr.String(), false)
+		collection := types.NewCollection(denom, []types.Royalty{}, []types.Royalty{}, ownerAddr.String(), false)
 		_, err := k.PublishCollection(ctx, collection)
 		if err != nil {
 			err := fmt.Errorf("failed to publish collection")
@@ -51,10 +51,10 @@ func SimulateMsgMintNft(
 			ownerAddr.String(),
 			denom,
 			recipientAcc.Address.String(),
-			"100000000000acudos",
 			name,
 			uri,
 			data,
+			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)

@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
@@ -21,6 +22,11 @@ func CmdMintNft() *cobra.Command {
 			argDenomId := args[0]
 			argRecipient := args[1]
 			argPrice := args[2]
+
+			price, err := sdk.ParseCoinNormalized(argPrice)
+			if err != nil {
+				return err
+			}
 
 			name, err := cmd.Flags().GetString(FlagMintNftName)
 			if err != nil {
@@ -46,10 +52,10 @@ func CmdMintNft() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argDenomId,
 				argRecipient,
-				argPrice,
 				name,
 				uri,
 				data,
+				price,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

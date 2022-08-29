@@ -1,13 +1,16 @@
 syntax = "proto3";
 package cudoventures.cudosnode.marketplace;
 
+import "marketplace/royalty.proto";
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 message Collection {
   uint64 id = 1;
   string denomId = 2;
-  string mintRoyalties = 3;
-  string resaleRoyalties = 4;
+  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
+  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
   bool verified = 5;
   string owner = 6;
 }

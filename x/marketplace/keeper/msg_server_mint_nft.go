@@ -20,7 +20,7 @@ func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types
 		return &types.MsgMintNftResponse{}, err
 	}
 
-	nftId, err := k.Keeper.MintNFT(ctx, msg.DenomId, msg.Price, msg.Name, msg.Uri, msg.Data, recipient, sender)
+	nftId, err := k.Keeper.MintNFT(ctx, msg.DenomId, msg.Name, msg.Uri, msg.Data, msg.Price, recipient, sender)
 	if err != nil {
 		return &types.MsgMintNftResponse{}, err
 	}

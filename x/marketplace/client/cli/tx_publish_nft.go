@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +21,12 @@ func CmdPublishNft() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			nftId := args[0]
 			denomId := args[1]
-			price := args[2]
+			argPrice := args[2]
+
+			price, err := sdk.ParseCoinNormalized(argPrice)
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

@@ -1,6 +1,6 @@
 package types
 
-func NewCollection(denomId, mintRoyalties, resaleRoyalties, owner string, verified bool) Collection {
+func NewCollection(denomId string, mintRoyalties, resaleRoyalties []Royalty, owner string, verified bool) Collection {
 	return Collection{
 		DenomId:         denomId,
 		MintRoyalties:   mintRoyalties,

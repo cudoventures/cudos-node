@@ -9,7 +9,7 @@ const TypeMsgPublishCollection = "publish_collection"
 
 var _ sdk.Msg = &MsgPublishCollection{}
 
-func NewMsgPublishCollection(creator, denomId, mintRoyalties, resaleRoyalties string) *MsgPublishCollection {
+func NewMsgPublishCollection(creator, denomId string, mintRoyalties, resaleRoyalties []Royalty) *MsgPublishCollection {
 	return &MsgPublishCollection{
 		Creator:         creator,
 		DenomId:         denomId,

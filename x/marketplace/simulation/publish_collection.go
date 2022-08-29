@@ -27,12 +27,12 @@ func SimulateMsgPublishCollection(
 			err := fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishCollectionType, err.Error()), nil, err
 		}
-		// TODO: Do simulation with royalties to make it more accurate
+
 		msg := types.NewMsgPublishCollection(
 			ownerAddr.String(),
 			denom,
-			"",
-			"",
+			[]types.Royalty{},
+			[]types.Royalty{},
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)

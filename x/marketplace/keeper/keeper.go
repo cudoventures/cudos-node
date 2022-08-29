@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -129,21 +128,16 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) erro
 		return sdkerrors.Wrap(types.ErrCannotBuyOwnNft, "cannot buy own nft")
 	}
 
-	price, err := sdk.ParseCoinNormalized(nft.Price)
-	if err != nil {
-		return sdkerrors.Wrapf(types.ErrInvalidPrice, "invalid price (%s)", nft.Price)
-	}
-
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, buyer, types.ModuleName, sdk.NewCoins(price)); err != nil {
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, buyer, types.ModuleName, sdk.NewCoins(nft.Price)); err != nil {
 		return err
 	}
 
 	collection, found := k.getCollectionByDenomID(ctx, nft.DenomId)
-	if !found || collection.ResaleRoyalties == "" {
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyer, sdk.NewCoins(price))
+	if !found || len(collection.ResaleRoyalties) == 0 {
+		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyer, sdk.NewCoins(nft.Price))
 	}
 
-	if err := k.distributeRoyalties(ctx, price, nft.Owner, collection.ResaleRoyalties); err != nil {
+	if err := k.DistributeRoyalties(ctx, nft.Price, nft.Owner, collection.ResaleRoyalties); err != nil {
 		return err
 	}
 
@@ -161,7 +155,7 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) erro
 	return nil
 }
 
-func (k Keeper) MintNFT(ctx sdk.Context, denomID, priceStr, name, uri, data string, recipient sdk.AccAddress, sender sdk.AccAddress) (string, error) {
+func (k Keeper) MintNFT(ctx sdk.Context, denomID, name, uri, data string, price sdk.Coin, recipient sdk.AccAddress, sender sdk.AccAddress) (string, error) {
 	denom, err := k.nftKeeper.GetDenom(ctx, denomID)
 	if err != nil {
 		return "", err
@@ -172,12 +166,7 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID, priceStr, name, uri, data stri
 		return "", sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection %s not published for sale", denomID)
 	}
 
-	price, err := sdk.ParseCoinNormalized(priceStr)
-	if err != nil {
-		return "", sdkerrors.Wrapf(types.ErrInvalidPrice, "invalid price (%s)", priceStr)
-	}
-
-	if err := k.distributeRoyalties(ctx, price, denom.Creator, collection.MintRoyalties); err != nil {
+	if err := k.DistributeRoyalties(ctx, price, denom.Creator, collection.MintRoyalties); err != nil {
 		return "", err
 	}
 
@@ -194,50 +183,33 @@ func getProportion(totalCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
 	return sdk.NewCoin(totalCoin.Denom, totalCoin.Amount.ToDec().Mul(ratio).TruncateInt())
 }
 
-func (k Keeper) distributeRoyalties(ctx sdk.Context, price sdk.Coin, seller, royalties string) error {
-	if royalties == "" {
+func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller string, royalties []types.Royalty) error {
+	if len(royalties) == 0 {
 		return nil
 	}
 
-	var totalPercentPaid float64
+	var totalPercentPaid sdk.Dec
 
-	splitFn := func(c rune) bool {
-		return c == ','
-	}
+	for _, royalty := range royalties {
 
-	royaltiesList := strings.FieldsFunc(royalties, splitFn)
-
-	for _, royalty := range royaltiesList {
-		royaltyParts := strings.Split(royalty, ":")
-
-		royaltyReceiver, err := sdk.AccAddressFromBech32(royaltyParts[0])
+		royaltyReceiver, err := sdk.AccAddressFromBech32(royalty.Address)
 		if err != nil {
-			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid royalty address (%s): %s", royaltyParts[0], err)
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid royalty address (%s): %s", royalty.Address, err)
 		}
 
-		royaltyPercent, err := sdk.NewDecFromStr(royaltyParts[1])
-		if err != nil {
-			return sdkerrors.Wrapf(types.ErrInvalidRoyaltyPercent, "invalid royalty percent (%s): %s", royaltyParts[1], err)
-		}
-
-		portion := getProportion(price, royaltyPercent)
+		portion := getProportion(price, royalty.Percent)
 
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, royaltyReceiver, sdk.NewCoins(portion))
 	}
 
-	if totalPercentPaid < 100.0 {
+	if totalPercentPaid.LT(sdk.NewDec(100)) {
 		sellerAddr, err := sdk.AccAddressFromBech32(seller)
 		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid seller address (%s): %s", seller, err)
 		}
 
-		sellerPercent := 100.0 - totalPercentPaid
-		sellerLeftAmount, err := sdk.NewDecFromStr(fmt.Sprintf("%.2f", sellerPercent))
-		if err != nil {
-			return sdkerrors.Wrapf(types.ErrInvalidRoyaltyPercent, "invalid seller royalty percent (%f): %s", sellerPercent, err)
-		}
-
-		portion := getProportion(price, sellerLeftAmount)
+		sellerPercent := sdk.NewDec(100).Sub(totalPercentPaid)
+		portion := getProportion(price, sellerPercent)
 
 		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddr, sdk.NewCoins(portion))
 	}

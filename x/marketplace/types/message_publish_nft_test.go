@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/cudos-node/testutil/sample"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -19,7 +20,7 @@ func TestMsgPublishNft_ValidateBasic(t *testing.T) {
 			msg: MsgPublishNft{
 				TokenId: "1",
 				DenomId: "1",
-				Price:   "10000acudos",
+				Price:   sdk.NewCoin("acudos", sdk.NewInt(1000)),
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
@@ -28,7 +29,7 @@ func TestMsgPublishNft_ValidateBasic(t *testing.T) {
 			msg: MsgPublishNft{
 				TokenId: "1",
 				DenomId: "1",
-				Price:   "2000acudos",
+				Price:   sdk.NewCoin("acudos", sdk.NewInt(999)),
 				Creator: sample.AccAddress(),
 			},
 		},

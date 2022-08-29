@@ -1,12 +1,17 @@
 syntax = "proto3";
 package cudoventures.cudosnode.marketplace;
 
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 message Nft {
   uint64 id = 1;
   string tokenId = 2; 
   string denomId = 3; 
-  string price = 4;
+  cosmos.base.v1beta1.Coin price = 4 
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];;
   string owner = 5;
 }

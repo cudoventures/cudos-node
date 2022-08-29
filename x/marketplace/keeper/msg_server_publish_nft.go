@@ -15,7 +15,7 @@ func (k msgServer) PublishNft(goCtx context.Context, msg *types.MsgPublishNft) (
 		return nil, err
 	}
 
-	nftID, err := k.PublishNFT(ctx, types.NewNft(msg.TokenId, msg.DenomId, msg.Price, msg.Creator))
+	nftID, err := k.PublishNFT(ctx, types.NewNft(msg.TokenId, msg.DenomId, msg.Creator, msg.Price))
 	if err != nil {
 		return &types.MsgPublishNftResponse{}, err
 	}
@@ -26,7 +26,7 @@ func (k msgServer) PublishNft(goCtx context.Context, msg *types.MsgPublishNft) (
 			sdk.NewAttribute(types.AttributeKeyNftID, strconv.FormatUint(nftID, 10)),
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyPrice, msg.Price),
+			sdk.NewAttribute(types.AttributeKeyPrice, msg.Price.String()),
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
 		),
 		sdk.NewEvent(

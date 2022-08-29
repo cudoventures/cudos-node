@@ -31,10 +31,10 @@ func SimulateMsgBuyNft(
 			return simtypes.NoOpMsg(types.ModuleName, types.EventBuyNftType, err.Error()), nil, err
 		}
 
-		nft := types.NewNft(nftID, denom, "100000000acudos", sellerAddr.String())
+		nft := types.NewNft(nftID, denom, sellerAddr.String(), sdk.NewCoin("acudos", sdk.NewInt(100000000)))
 		publishedNftID, err := k.PublishNFT(ctx, nft)
 		if err != nil {
-
+			return simtypes.NoOpMsg(types.ModuleName, types.EventBuyNftType, err.Error()), nil, err
 		}
 
 		// Buy the NFT

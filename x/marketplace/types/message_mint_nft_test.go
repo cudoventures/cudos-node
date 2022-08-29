@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/cudos-node/testutil/sample"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -24,7 +25,7 @@ func TestMsgMintNft_ValidateBasic(t *testing.T) {
 			name: "valid address",
 			msg: MsgMintNft{
 				DenomId:   "1",
-				Price:     "10000.22acudos",
+				Price:     sdk.NewCoin("acudos", sdk.NewInt(1000)),
 				Creator:   sample.AccAddress(),
 				Recipient: sample.AccAddress(),
 			},
