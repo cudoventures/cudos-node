@@ -8,7 +8,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// TODO: There is duplication of this logic in keeper.distributeRoyalties
 func ValidateRoyalties(royalties string) error {
 	if royalties == "" {
 		return nil

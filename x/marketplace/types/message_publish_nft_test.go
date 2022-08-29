@@ -17,12 +17,18 @@ func TestMsgPublishNft_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgPublishNft{
+				TokenId: "1",
+				DenomId: "1",
+				Price:   "10000acudos",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgPublishNft{
+				TokenId: "1",
+				DenomId: "1",
+				Price:   "2000acudos",
 				Creator: sample.AccAddress(),
 			},
 		},

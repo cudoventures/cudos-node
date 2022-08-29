@@ -23,7 +23,10 @@ func TestMsgMintNft_ValidateBasic(t *testing.T) {
 		}, {
 			name: "valid address",
 			msg: MsgMintNft{
-				Creator: sample.AccAddress(),
+				DenomId:   "1",
+				Price:     "10000.22acudos",
+				Creator:   sample.AccAddress(),
+				Recipient: sample.AccAddress(),
 			},
 		},
 	}

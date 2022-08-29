@@ -226,7 +226,6 @@ func (k Keeper) distributeRoyalties(ctx sdk.Context, price sdk.Coin, seller, roy
 	}
 
 	if totalPercentPaid < 100.0 {
-		// TODO: Should we do calculation here or just send everything left in the module acc?
 		sellerAddr, err := sdk.AccAddressFromBech32(seller)
 		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid seller address (%s): %s", seller, err)

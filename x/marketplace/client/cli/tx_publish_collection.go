@@ -17,10 +17,10 @@ func CmdPublishCollection() *cobra.Command {
 		Short: "Publish collection for sale",
 		Long:  "Publish collection for sale",
 		Example: fmt.Sprintf(
-			"$ %s tx marketplace publish-collection <denom-id> " +
-				"--mint-royalties=<mint-royalties> " +
-				"--resale-royalties=<resale-royalties> " +
-				version.AppName,
+			"$ %s tx marketplace publish-collection <denom-id> "+
+				"--mint-royalties=<mint-royalties> "+
+				"--resale-royalties=<resale-royalties> ",
+			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

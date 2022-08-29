@@ -47,8 +47,8 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // IssueDenom issues a denom according to the given params
-func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema, symbol, traits, minter string, creator sdk.AccAddress) error {
-	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, traits, minter, creator))
+func (k Keeper) IssueDenom(ctx sdk.Context, id, name, schema, symbol, traits, minter, description string, creator sdk.AccAddress) error {
+	return k.SetDenom(ctx, types.NewDenom(id, name, schema, symbol, traits, minter, description, creator))
 }
 
 // MintNFTUnverified mints an NFT without verifying if the owner is the creator of denom

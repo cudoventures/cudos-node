@@ -98,7 +98,7 @@ func ValidateMinter(minter string) error {
 }
 
 func ValidateDescription(description string) error {
-	if len(description) > MaxDenomTraitsLen {
+	if len(description) > MaxDenomDescriptionLen {
 		return sdkerrors.Wrapf(ErrInvalidDescription, "the length of denom description %d is exceeding max accepted length %d", len(description), MaxDenomTraitsLen)
 	}
 	return nil
