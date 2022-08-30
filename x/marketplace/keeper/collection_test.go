@@ -20,7 +20,7 @@ func createNCollection(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Co
 }
 
 func TestCollectionGet(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNCollection(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetCollection(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestCollectionGet(t *testing.T) {
 }
 
 func TestCollectionRemove(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNCollection(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveCollection(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestCollectionRemove(t *testing.T) {
 }
 
 func TestCollectionGetAll(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNCollection(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestCollectionGetAll(t *testing.T) {
 }
 
 func TestCollectionCount(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNCollection(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetCollectionCount(ctx))

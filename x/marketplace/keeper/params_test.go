@@ -9,7 +9,7 @@ import (
 )
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.MarketplaceKeeper(t)
+	k, _, ctx := testkeeper.MarketplaceKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)

@@ -16,7 +16,7 @@ import (
 )
 
 func TestCollectionQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNCollection(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestCollectionQuerySingle(t *testing.T) {
 }
 
 func TestCollectionQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNCollection(keeper, ctx, 5)
 

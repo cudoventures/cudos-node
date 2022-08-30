@@ -180,7 +180,7 @@ func (k Keeper) getCollectionByDenomID(ctx sdk.Context, denomID string) (types.C
 }
 
 func getProportion(totalCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {
-	return sdk.NewCoin(totalCoin.Denom, totalCoin.Amount.ToDec().Mul(ratio).TruncateInt())
+	return sdk.NewCoin(totalCoin.Denom, totalCoin.Amount.ToDec().Mul(ratio).Quo(sdk.NewDec(100)).TruncateInt())
 }
 
 func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller string, royalties []types.Royalty) error {
@@ -188,7 +188,7 @@ func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller stri
 		return nil
 	}
 
-	var totalPercentPaid sdk.Dec
+	amountLeft := price.Amount
 
 	for _, royalty := range royalties {
 
@@ -198,20 +198,20 @@ func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller stri
 		}
 
 		portion := getProportion(price, royalty.Percent)
+		amountLeft = amountLeft.Sub(portion.Amount)
 
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, royaltyReceiver, sdk.NewCoins(portion))
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, royaltyReceiver, sdk.NewCoins(portion)); err != nil {
+			return err
+		}
 	}
 
-	if totalPercentPaid.LT(sdk.NewDec(100)) {
+	if amountLeft.GT(sdk.NewInt(0)) {
 		sellerAddr, err := sdk.AccAddressFromBech32(seller)
 		if err != nil {
 			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid seller address (%s): %s", seller, err)
 		}
 
-		sellerPercent := sdk.NewDec(100).Sub(totalPercentPaid)
-		portion := getProportion(price, sellerPercent)
-
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddr, sdk.NewCoins(portion))
+		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddr, sdk.NewCoins(sdk.NewCoin(price.Denom, amountLeft)))
 	}
 
 	return nil
