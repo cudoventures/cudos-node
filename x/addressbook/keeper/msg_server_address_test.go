@@ -53,18 +53,9 @@ func TestAddressMsgServerUpdate(t *testing.T) {
 			},
 		},
 		{
-			desc: "Unauthorized",
-			request: &types.MsgUpdateAddress{
-				Creator: "B",
-				Network: "ETH",
-				Label:   "0@testdenom",
-			},
-			err: sdkerrors.ErrUnauthorized,
-		},
-		{
 			desc: "KeyNotFound",
 			request: &types.MsgUpdateAddress{
-				Creator: creator,
+				Creator: "B",
 				Network: "UNK",
 				Label:   "0@testdenom",
 			},
@@ -111,15 +102,6 @@ func TestAddressMsgServerDelete(t *testing.T) {
 				Network: "ETH",
 				Label:   "1@newdenom",
 			},
-		},
-		{
-			desc: "Unauthorized",
-			request: &types.MsgDeleteAddress{
-				Creator: "B",
-				Network: "ETH",
-				Label:   "1@newdenom",
-			},
-			err: sdkerrors.ErrUnauthorized,
 		},
 		{
 			desc: "KeyNotFound",

@@ -23,7 +23,7 @@ func createNAddress(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Addre
 		items[i].Network = "BTC"
 		items[i].Label = "1@testdenom"
 
-		keeper.SetAddress(ctx, items[i])
+		keeper.CreateNewAddress(ctx, items[i])
 	}
 	return items
 }

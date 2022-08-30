@@ -4,13 +4,39 @@ import (
 	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// SetAddress set a specific address in the store from its index
-func (k Keeper) SetAddress(ctx sdk.Context, address types.Address) {
+// CreateNewAddress set a specific address in the store from its index
+func (k Keeper) CreateNewAddress(ctx sdk.Context, address types.Address) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKeyPrefix))
+
+	key := types.AddressKey(address.Creator, address.Network, address.Label)
+
+	if b := store.Get(key); b != nil {
+		return sdkerrors.Wrapf(types.ErrKeyAlreadyExists, "Key (%s) already exists", key)
+	}
+
 	b := k.cdc.MustMarshal(&address)
 	store.Set(types.AddressKey(address.Creator, address.Network, address.Label), b)
+
+	return nil
+}
+
+// UpdateExistingAddress set a specific address in the store from its index
+func (k Keeper) UpdateExistingAddress(ctx sdk.Context, address types.Address) error {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKeyPrefix))
+
+	key := types.AddressKey(address.Creator, address.Network, address.Label)
+
+	if b := store.Get(key); b == nil {
+		return sdkerrors.Wrapf(types.ErrKeyNotFound, "Key (%s) not found", key)
+	}
+
+	b := k.cdc.MustMarshal(&address)
+	store.Set(types.AddressKey(address.Creator, address.Network, address.Label), b)
+
+	return nil
 }
 
 // GetAddress returns a address from its index

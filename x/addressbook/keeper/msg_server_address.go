@@ -29,10 +29,8 @@ func (k msgServer) CreateAddress(goCtx context.Context, msg *types.MsgCreateAddr
 		Value:   msg.Value,
 	}
 
-	k.SetAddress(
-		ctx,
-		address,
-	)
+	k.CreateNewAddress(ctx, address)
+
 	return &types.MsgCreateAddressResponse{}, nil
 }
 
@@ -62,7 +60,7 @@ func (k msgServer) UpdateAddress(goCtx context.Context, msg *types.MsgUpdateAddr
 		Value:   msg.Value,
 	}
 
-	k.SetAddress(ctx, address)
+	k.UpdateExistingAddress(ctx, address)
 
 	return &types.MsgUpdateAddressResponse{}, nil
 }
@@ -86,12 +84,7 @@ func (k msgServer) DeleteAddress(goCtx context.Context, msg *types.MsgDeleteAddr
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	k.RemoveAddress(
-		ctx,
-		msg.Creator,
-		msg.Network,
-		msg.Label,
-	)
+	k.RemoveAddress(ctx, msg.Creator, msg.Network, msg.Label)
 
 	return &types.MsgDeleteAddressResponse{}, nil
 }
