@@ -9,6 +9,13 @@ const (
 	TypeMsgCreateAddress = "create_address"
 	TypeMsgUpdateAddress = "update_address"
 	TypeMsgDeleteAddress = "delete_address"
+
+	MinNetworkLength = 1
+	MaxNetworkLength = 256
+	MinLabelLength   = 1
+	MaxLabelLength   = 256
+	MinValueLength   = 1
+	MaxValueLength   = 256
 )
 
 var _ sdk.Msg = &MsgCreateAddress{}
@@ -44,6 +51,15 @@ func (msg *MsgCreateAddress) GetSignBytes() []byte {
 }
 
 func (msg *MsgCreateAddress) ValidateBasic() error {
+	if err := validateNetwork(msg.Network); err != nil {
+		return err
+	}
+	if err := validateLabel(msg.Label); err != nil {
+		return err
+	}
+	if err := validateValue(msg.Value); err != nil {
+		return err
+	}
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
@@ -84,6 +100,15 @@ func (msg *MsgUpdateAddress) GetSignBytes() []byte {
 }
 
 func (msg *MsgUpdateAddress) ValidateBasic() error {
+	if err := validateNetwork(msg.Network); err != nil {
+		return err
+	}
+	if err := validateLabel(msg.Label); err != nil {
+		return err
+	}
+	if err := validateValue(msg.Value); err != nil {
+		return err
+	}
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
@@ -122,9 +147,36 @@ func (msg *MsgDeleteAddress) GetSignBytes() []byte {
 }
 
 func (msg *MsgDeleteAddress) ValidateBasic() error {
+	if err := validateNetwork(msg.Network); err != nil {
+		return err
+	}
+	if err := validateLabel(msg.Label); err != nil {
+		return err
+	}
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
+	return nil
+}
+
+func validateNetwork(network string) error {
+	if len(network) < MinNetworkLength || len(network) > MaxNetworkLength {
+		return sdkerrors.Wrapf(ErrInvalidNetwork, "the length of network(%s) only accepts value [%d, %d]", network, MinNetworkLength, MaxNetworkLength)
+	}
+	return nil
+}
+
+func validateLabel(label string) error {
+	if len(label) < MinLabelLength || len(label) > MaxLabelLength {
+		return sdkerrors.Wrapf(ErrInvalidNetwork, "the length of label(%s) only accepts value [%d, %d]", label, MinLabelLength, MaxLabelLength)
+	}
+	return nil
+}
+
+func validateValue(value string) error {
+	if len(value) < MinValueLength || len(value) > MaxValueLength {
+		return sdkerrors.Wrapf(ErrInvalidNetwork, "the length of value(%s) only accepts value [%d, %d]", value, MinValueLength, MaxValueLength)
+	}
 	return nil
 }

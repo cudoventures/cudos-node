@@ -12,4 +12,5 @@ var (
 	ErrInvalidLabel     = sdkerrors.Register(ModuleName, 1101, "invalid label")
 	ErrKeyAlreadyExists = sdkerrors.Register(ModuleName, 1102, "key already exist")
 	ErrKeyNotFound      = sdkerrors.Register(ModuleName, 1103, "key not found")
+	ErrInvalidValue     = sdkerrors.Register(ModuleName, 1104, "invalid value")
 )
