@@ -1,0 +1,16 @@
+syntax = "proto3";
+package cudoventures.cudosnode.addressbook;
+
+import "gogoproto/gogo.proto";
+import "addressbook/params.proto";
+import "addressbook/address.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
+
+// GenesisState defines the addressbook module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Address addressList = 2 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

@@ -109,6 +109,10 @@ import (
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
@@ -177,6 +181,7 @@ var (
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
+		addressbook.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -268,8 +273,9 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper   nftmodulekeeper.Keeper
-	GroupKeeper groupkeeper.Keeper
+	NftKeeper         nftmodulekeeper.Keeper
+	GroupKeeper       groupkeeper.Keeper
+	AddressbookKeeper addressbookkeeper.Keeper
 
 	// the module manager
 	mm           *module.Manager
@@ -306,6 +312,7 @@ func New(
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 		group.StoreKey,
+		addressbooktypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -421,6 +428,13 @@ func New(
 		keys[nftmoduletypes.MemStoreKey],
 	)
 
+	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
+		appCodec,
+		keys[addressbooktypes.StoreKey],
+		keys[addressbooktypes.MemStoreKey],
+		app.GetSubspace(addressbooktypes.ModuleName),
+	)
+
 	supportedFeatures := "iterator,staking,stargate"
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
@@ -493,6 +507,8 @@ func New(
 
 	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
 
+	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
@@ -564,6 +580,7 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		addressbookModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -593,6 +610,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -618,6 +636,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -654,6 +673,7 @@ func New(
 		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -858,6 +878,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
+	paramsKeeper.Subspace(addressbooktypes.ModuleName)
 
 	return paramsKeeper
 }
