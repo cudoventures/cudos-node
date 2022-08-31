@@ -17,12 +17,18 @@ func TestMsgCreateAddress_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgCreateAddress{
+				Network: "n",
+				Label:   "l",
+				Value:   "v",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgCreateAddress{
+				Network: "n",
+				Label:   "l",
+				Value:   "v",
 				Creator: sample.AccAddress(),
 			},
 		},
@@ -48,12 +54,18 @@ func TestMsgUpdateAddress_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgUpdateAddress{
+				Network: "n",
+				Label:   "l",
+				Value:   "v",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgUpdateAddress{
+				Network: "n",
+				Label:   "l",
+				Value:   "v",
 				Creator: sample.AccAddress(),
 			},
 		},
@@ -79,12 +91,16 @@ func TestMsgDeleteAddress_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgDeleteAddress{
+				Network: "n",
+				Label:   "l",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgDeleteAddress{
+				Network: "n",
+				Label:   "l",
 				Creator: sample.AccAddress(),
 			},
 		},
