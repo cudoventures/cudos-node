@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// List all nfts for sale in the marketplace
 func CmdListNft() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-nfts",
@@ -43,6 +44,7 @@ func CmdListNft() *cobra.Command {
 	return cmd
 }
 
+// Show details about nft listed for sale in the marketplace
 func CmdShowNft() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show-nft [id]",

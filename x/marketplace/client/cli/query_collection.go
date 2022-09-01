@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Query all collections listed for sale in the marketplace
 func CmdListCollection() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list-collections",
@@ -43,6 +44,7 @@ func CmdListCollection() *cobra.Command {
 	return cmd
 }
 
+// Show details about collection listed for sale in the marketplace
 func CmdShowCollection() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show-collection [id]",

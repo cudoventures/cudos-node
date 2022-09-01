@@ -13,26 +13,27 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/params";
-  }
-  // Queries a Collection by id.
+	// Parameters queries the parameters of the module.
+	rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/params";
+	}
+
+	// Queries a Collection for sale by id.
 	rpc Collection(QueryGetCollectionRequest) returns (QueryGetCollectionResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection/{id}";
 	}
 
-	// Queries a list of Collection items.
+	// Queries all Collection items for sale.
 	rpc CollectionAll(QueryAllCollectionRequest) returns (QueryAllCollectionResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection";
 	}
 
-// Queries a Nft by id.
+	// Queries a Nft for sale by id.
 	rpc Nft(QueryGetNftRequest) returns (QueryGetNftResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/nft/{id}";
 	}
 
-	// Queries a list of Nft items.
+	// Queries all Nft items for sale.
 	rpc NftAll(QueryAllNftRequest) returns (QueryAllNftResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/nft";
 	}

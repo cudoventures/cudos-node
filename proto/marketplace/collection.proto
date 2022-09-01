@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
+// Collection listed for sale in the marketplace
 message Collection {
   uint64 id = 1;
   string denomId = 2;

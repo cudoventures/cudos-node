@@ -7,6 +7,7 @@ import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
+// NFT listed for sale in the marketplace
 message Nft {
   uint64 id = 1;
   string tokenId = 2; 
