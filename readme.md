@@ -184,6 +184,99 @@ The module gives the user the ability to either write(via transaction) or read(v
 ## Usage from inside a CosmWasm smart contract
 You can check how to use the module from a rust smart contract in the [`cudos-cosmwasm-bindings`](https://github.com/CudoVentures/cudos-cosmwasm-bindings)
 
+## Object types:
+
+### NFT
+```go
+// NFT non fungible token interface
+type NFT interface {
+    GetID() string              // unique identifier of the NFT
+    GetName() string            // return the name of BaseNFT
+    GetOwner() sdk.AccAddress   // gets owner account of the NFT
+    GetURI() string             // tokenData field: URI to retrieve the of chain tokenData of the NFT
+    GetData() string            // return the Data of BaseNFT
+    GetApprovedAddresses() map[string]bool// returns the approved addresses of BaseNFT
+
+}
+```
+
+### NFT implementation
+```go
+type BaseNFT struct {
+	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+```
+
+## Collections
+
+>As all NFTs belong to a specific `Collection` under `{denomID}/{tokenID}`
+
+```go
+// Collection of non fungible tokens
+type Collection struct {
+    Denom Denom     `json:"denom"`  // Denom of the collection; not exported to clients
+    NFTs  []BaseNFT `json:"nfts"`   // NFTs that belongs to a collection
+}
+```
+
+## Owners
+
+>Owner holds the address of the user and his collection of NFTs
+
+```go
+// Owner of non fungible tokens
+type Owner struct {
+    Address       string            `json:"address"`
+    IDCollections []IDCollection    `json:"id_collections"`
+}
+```
+
+## IDCollection
+>IDCollection holds the denomId and the Ids of the NFTs(insted of the full object)
+
+```go
+// IDCollection of non fungible tokens
+type IDCollection struct {
+    DenomId string   `json:"denom_id"`
+    TokenIds []string `json:"token_ids"`
+}
+
+```
+
+## Denom
+
+> The denomination is used to group NFTs under it
+
+```go
+// Denom defines a type of NFT
+type Denom struct {
+	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
+	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+```
+
+## Events
+> The events that are emitted after certain operations
+```go
+	EventTypeIssueDenom    = "issue_denom"
+	EventTypeTransferNft   = "transfer_nft"
+  EventTypeTransferDenom = "transfer_denom"
+	EventTypeApproveNft    = "approve_nft"
+	EventTypeApproveAllNft = "approve_all_nft"
+	EventTypeRevokeNft     = "revoke_nft"
+	EventTypeEditNFT       = "edit_nft"
+	EventTypeMintNFT       = "mint_nft"
+	EventTypeBurnNFT       = "burn_nft"
+```
+
 ## Full commands info:
 
 ### Transaction commands
@@ -510,98 +603,6 @@ $ cudos-noded query nft approvals <denomId> <tokenId>
 ``` bash
 $ cudos-noded query nft isApprovedForAll <owner> <operator>
 ```
-
-## Object types:
-
-### NFT
-```go
-// NFT non fungible token interface
-type NFT interface {
-    GetID() string              // unique identifier of the NFT
-    GetName() string            // return the name of BaseNFT
-    GetOwner() sdk.AccAddress   // gets owner account of the NFT
-    GetURI() string             // tokenData field: URI to retrieve the of chain tokenData of the NFT
-    GetData() string            // return the Data of BaseNFT
-    GetApprovedAddresses() map[string]bool// returns the approved addresses of BaseNFT
-
-}
-```
-
-### NFT implementation
-```go
-type BaseNFT struct {
-	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
-	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
-	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
-	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-}
-```
-
-## Collections
-
->As all NFTs belong to a specific `Collection` under `{denomID}/{tokenID}`
-
-```go
-// Collection of non fungible tokens
-type Collection struct {
-    Denom Denom     `json:"denom"`  // Denom of the collection; not exported to clients
-    NFTs  []BaseNFT `json:"nfts"`   // NFTs that belongs to a collection
-}
-```
-
-## Owners
-
->Owner holds the address of the user and his collection of NFTs
-
-```go
-// Owner of non fungible tokens
-type Owner struct {
-    Address       string            `json:"address"`
-    IDCollections []IDCollection    `json:"id_collections"`
-}
-```
-
-## IDCollection
->IDCollection holds the denomId and the Ids of the NFTs(insted of the full object)
-
-```go
-// IDCollection of non fungible tokens
-type IDCollection struct {
-    DenomId string   `json:"denom_id"`
-    TokenIds []string `json:"token_ids"`
-}
-
-```
-
-## Denom
-> The denomination is used to group NFTs under it
-```go
-// Denom defines a type of NFT
-type Denom struct {
-	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
-	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
-}
-```
-
-## Events
-> The events that are emitted after certain operations
-```go
-	EventTypeIssueDenom    = "issue_denom"
-	EventTypeTransferNft   = "transfer_nft"
-  EventTypeTransferDenom = "transfer_denom"
-	EventTypeApproveNft    = "approve_nft"
-	EventTypeApproveAllNft = "approve_all_nft"
-	EventTypeRevokeNft     = "revoke_nft"
-	EventTypeEditNFT       = "edit_nft"
-	EventTypeMintNFT       = "mint_nft"
-	EventTypeBurnNFT       = "burn_nft"
-```
-
 ## API Endpoints
 > default API local url: localhost:1317
 
