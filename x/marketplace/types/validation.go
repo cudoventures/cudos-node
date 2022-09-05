@@ -12,7 +12,7 @@ func ValidateRoyalties(royalties []Royalty) error {
 		return nil
 	}
 
-	var totalPercent sdk.Dec
+	totalPercent := sdk.NewDecFromInt(sdk.NewInt(0))
 
 	for _, royalty := range royalties {
 
@@ -25,8 +25,18 @@ func ValidateRoyalties(royalties []Royalty) error {
 
 		percentParts := strings.Split(royalty.Percent.String(), ".")
 
-		if len(percentParts) == 2 && len(percentParts[1]) > 2 {
-			return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "invalid royalty percent precision (%s)", percentParts[1])
+		if len(percentParts) == 2 {
+
+			trailingZeroesCount := 0
+			i := len(percentParts[1]) - 1
+			for i >= 0 && percentParts[1][i] == '0' {
+				trailingZeroesCount++
+				i--
+			}
+
+			if len(percentParts[1])-trailingZeroesCount > 2 {
+				return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "invalid royalty percent precision (%s)", percentParts[1])
+			}
 		}
 	}
 

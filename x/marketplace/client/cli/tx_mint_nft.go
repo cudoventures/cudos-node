@@ -17,18 +17,14 @@ func CmdMintNft() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "mint-nft [denom-id] [recipient] [price] [name] [uri] [data]",
 		Short: "Mint NFT via marketplace",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argDenomId := args[0]
 			argRecipient := args[1]
 			argPrice := args[2]
+			argName := args[3]
 
 			price, err := sdk.ParseCoinNormalized(argPrice)
-			if err != nil {
-				return err
-			}
-
-			name, err := cmd.Flags().GetString(FlagMintNftName)
 			if err != nil {
 				return err
 			}
@@ -52,7 +48,7 @@ func CmdMintNft() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				argDenomId,
 				argRecipient,
-				name,
+				argName,
 				uri,
 				data,
 				price,
@@ -64,6 +60,7 @@ func CmdMintNft() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().AddFlagSet(FsMintNFT)
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

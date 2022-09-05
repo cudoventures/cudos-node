@@ -18,4 +18,6 @@ var (
 	ErrNftNotFound                    = sdkerrors.Register(ModuleName, 1107, "nft not found")
 	ErrCannotBuyOwnNft                = sdkerrors.Register(ModuleName, 1108, "cannot buy own nft")
 	ErrCollectionNotFound             = sdkerrors.Register(ModuleName, 1109, "collection not published for sale")
+	ErrNotNftOwner                    = sdkerrors.Register(ModuleName, 1110, "not nft owner")
+	ErrNftAlreadyPublished            = sdkerrors.Register(ModuleName, 1111, "nft already published")
 )

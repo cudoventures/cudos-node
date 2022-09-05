@@ -5,6 +5,7 @@ var (
 	EventPublishNftType        = "publish_nft"
 	EventBuyNftType            = "buy_nft"
 	EventMintNftType           = "mint_nft"
+	EventRemoveNftType         = "remove_nft"
 
 	AttributeValueCategory = ModuleName
 
@@ -15,4 +16,5 @@ var (
 	AttributeKeyNftID        = "nft_id"
 	AttributeKeyPrice        = "price"
 	AttributeKeyBuyer        = "buyer"
+	AttributeKeyOwner        = "owner"
 )

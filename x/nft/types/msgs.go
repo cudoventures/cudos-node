@@ -455,14 +455,15 @@ func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
 
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidNftName, "name field cannot be empty")
-	}
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid receipt address (%s)", err)
+	}
+
+	if err := ValidateTokenName(msg.Name); err != nil {
+		return err
 	}
 	if err := ValidateDenomID(msg.DenomId); err != nil {
 		return err

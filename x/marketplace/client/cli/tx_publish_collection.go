@@ -73,6 +73,10 @@ func CmdPublishCollection() *cobra.Command {
 }
 
 func parseRoyalties(royaltiesStr string) ([]types.Royalty, error) {
+	if len(royaltiesStr) == 0 {
+		return []types.Royalty{}, nil
+	}
+
 	royaltiesStr = strings.TrimSpace(royaltiesStr)
 	royaltiesStrList := strings.Split(royaltiesStr, ",")
 

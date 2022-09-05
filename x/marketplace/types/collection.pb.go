@@ -23,6 +23,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Collection listed for sale in the marketplace
 type Collection struct {
 	Id              uint64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	DenomId         string    `protobuf:"bytes,2,opt,name=denomId,proto3" json:"denomId,omitempty"`

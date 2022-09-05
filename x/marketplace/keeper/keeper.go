@@ -103,19 +103,24 @@ func (k Keeper) PublishNFT(ctx sdk.Context, nft types.Nft) (uint64, error) {
 		k.nftKeeper.IsApprovedOperator(ctx, nftVal.GetOwner(), sdk.AccAddress(nft.Owner)) ||
 		k.isApprovedNftAddress(nftVal, nft.Owner) {
 
+		store := ctx.KVStore(k.storeKey)
+		key := types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId)
+		if b := store.Get(key); len(b) > 0 {
+			return 0, sdkerrors.Wrapf(types.ErrNftAlreadyPublished, "nft with token id (%s) from denom (%s) already published for sale", nft.TokenId, nft.DenomId)
+		}
+
 		if err := k.nftKeeper.SoftLockNFT(ctx, types.ModuleName, nft.DenomId, nft.TokenId); err != nil {
 			return 0, err
 		}
 
 		nftID := k.AppendNft(ctx, nft)
 
-		store := ctx.KVStore(k.storeKey)
-		store.Set(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId), types.Uint64ToBytes(nftID))
+		store.Set(key, types.Uint64ToBytes(nftID))
 
 		return nftID, nil
 	}
 
-	return 0, nil
+	return 0, sdkerrors.Wrapf(types.ErrNotNftOwner, "%s not nft owner or approved operator for token id (%s) from denom (%s)", nft.Owner, nft.TokenId, nft.DenomId)
 }
 
 func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) error {
@@ -173,10 +178,35 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID, name, uri, data string, price 
 	return k.nftKeeper.MintNFT(ctx, denomID, name, uri, data, sender, recipient)
 }
 
+func (k Keeper) RemoveNFT(ctx sdk.Context, nftID uint64, owner sdk.AccAddress) error {
+	nft, found := k.GetNft(ctx, nftID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNftNotFound, "nft with id (%d) is not found for sale", nftID)
+	}
+
+	if nft.Owner != owner.String() {
+		return sdkerrors.Wrapf(types.ErrNotNftOwner, "not owner of (%d)", nftID)
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId))
+
+	k.RemoveNft(ctx, nftID)
+
+	if err := k.nftKeeper.SoftUnlockNFT(ctx, types.ModuleName, nft.DenomId, nft.TokenId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (k Keeper) getCollectionByDenomID(ctx sdk.Context, denomID string) (types.Collection, bool) {
 	store := ctx.KVStore(k.storeKey)
-	collectionID := types.BytesToUint64(store.Get(types.KeyCollectionDenomID(denomID)))
-	return k.GetCollection(ctx, collectionID)
+	collectionIDBytes := store.Get(types.KeyCollectionDenomID(denomID))
+	if collectionIDBytes == nil {
+		return types.Collection{}, false
+	}
+	return k.GetCollection(ctx, types.BytesToUint64(collectionIDBytes))
 }
 
 func getProportion(totalCoin sdk.Coin, ratio sdk.Dec) sdk.Coin {

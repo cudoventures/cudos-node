@@ -21,6 +21,8 @@ const (
 	MaxDenomTraitsLen      = 256
 	MaxDenomDescriptionLen = 256
 
+	MinTokenNameLen = 1
+	MaxTokenNameLen = 64
 	MaxTokenURILen  = 256
 	MaxTokenDataLen = 512
 )
@@ -106,10 +108,15 @@ func ValidateDescription(description string) error {
 
 // ValidateTokenID verify that the tokenID is legal
 func ValidateTokenID(tokenID string) error {
-
-	_, err := isUint64(tokenID)
-	if err != nil {
+	if _, err := isUint64(tokenID); err != nil {
 		return err
+	}
+	return nil
+}
+
+func ValidateTokenName(tokenName string) error {
+	if len(tokenName) < MinTokenNameLen || len(tokenName) > MaxTokenNameLen {
+		return sdkerrors.Wrapf(ErrInvalidNftName, "the length of token name(%s) only accepts value [%d, %d]", tokenName, MinTokenNameLen, MaxTokenNameLen)
 	}
 	return nil
 }

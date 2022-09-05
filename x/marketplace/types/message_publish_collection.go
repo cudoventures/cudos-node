@@ -1,6 +1,7 @@
 package types
 
 import (
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -40,12 +41,13 @@ func (msg *MsgPublishCollection) GetSignBytes() []byte {
 }
 
 func (msg *MsgPublishCollection) ValidateBasic() error {
-	if msg.DenomId == "" {
-		return sdkerrors.Wrap(ErrEmptyDenomID, "empty denom id")
-	}
 
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
+	}
+
+	if err := nfttypes.ValidateDenomID(msg.DenomId); err != nil {
+		return err
 	}
 
 	if err := ValidateRoyalties(msg.MintRoyalties); err != nil {

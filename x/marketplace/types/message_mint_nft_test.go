@@ -18,13 +18,14 @@ func TestMsgMintNft_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgMintNft{
+				DenomId: "123",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgMintNft{
-				DenomId:   "1",
+				DenomId:   "123",
 				Price:     sdk.NewCoin("acudos", sdk.NewInt(1000)),
 				Creator:   sample.AccAddress(),
 				Recipient: sample.AccAddress(),

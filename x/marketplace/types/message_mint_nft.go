@@ -1,6 +1,7 @@
 package types
 
 import (
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -49,11 +50,18 @@ func (msg *MsgMintNft) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid recipient address (%s)", err)
 	}
-	if msg.DenomId == "" {
-		return sdkerrors.Wrap(ErrEmptyDenomID, "empty denom id")
-	}
 	if msg.Price.Amount.Equal(sdk.NewInt(0)) {
 		return sdkerrors.Wrapf(ErrInvalidPrice, "invalid price (%+v)", msg.Price)
+	}
+
+	if err := nfttypes.ValidateDenomID(msg.DenomId); err != nil {
+		return err
+	}
+	if err := nfttypes.ValidateTokenName(msg.Name); err != nil {
+		return err
+	}
+	if err := nfttypes.ValidateTokenURI(msg.Uri); err != nil {
+		return err
 	}
 
 	return nil

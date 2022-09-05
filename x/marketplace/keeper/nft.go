@@ -75,6 +75,9 @@ func (k Keeper) GetNft(ctx sdk.Context, id uint64) (val types.Nft, found bool) {
 func (k Keeper) RemoveNft(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NftKey))
 	store.Delete(GetNftIDBytes(id))
+
+	count := k.GetNftCount(ctx)
+	k.SetNftCount(ctx, count-1)
 }
 
 // GetAllNft returns all nft

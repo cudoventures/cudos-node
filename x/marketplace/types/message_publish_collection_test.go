@@ -17,14 +17,14 @@ func TestMsgPublishCollection_ValidateBasic(t *testing.T) {
 		{
 			name: "invalid address",
 			msg: MsgPublishCollection{
-				DenomId: "1",
+				DenomId: "123",
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
 			msg: MsgPublishCollection{
-				DenomId: "1",
+				DenomId: "123",
 				Creator: sample.AccAddress(),
 			},
 		},
