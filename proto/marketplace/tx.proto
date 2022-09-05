@@ -16,6 +16,7 @@ service Msg {
   rpc PublishNft(MsgPublishNft) returns (MsgPublishNftResponse);
   rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
   rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
+  rpc RemoveNft(MsgRemoveNft) returns (MsgRemoveNftResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -60,6 +61,14 @@ message MsgMintNft {
 }
 
 message MsgMintNftResponse {
+}
+
+message MsgRemoveNft {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgRemoveNftResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

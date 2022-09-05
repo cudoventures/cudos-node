@@ -555,13 +555,13 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Queries a Collection by id.
+	// Queries a Collection for sale by id.
 	Collection(ctx context.Context, in *QueryGetCollectionRequest, opts ...grpc.CallOption) (*QueryGetCollectionResponse, error)
-	// Queries a list of Collection items.
+	// Queries all Collection items for sale.
 	CollectionAll(ctx context.Context, in *QueryAllCollectionRequest, opts ...grpc.CallOption) (*QueryAllCollectionResponse, error)
-	// Queries a Nft by id.
+	// Queries a Nft for sale by id.
 	Nft(ctx context.Context, in *QueryGetNftRequest, opts ...grpc.CallOption) (*QueryGetNftResponse, error)
-	// Queries a list of Nft items.
+	// Queries all Nft items for sale.
 	NftAll(ctx context.Context, in *QueryAllNftRequest, opts ...grpc.CallOption) (*QueryAllNftResponse, error)
 }
 
@@ -622,13 +622,13 @@ func (c *queryClient) NftAll(ctx context.Context, in *QueryAllNftRequest, opts .
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Queries a Collection by id.
+	// Queries a Collection for sale by id.
 	Collection(context.Context, *QueryGetCollectionRequest) (*QueryGetCollectionResponse, error)
-	// Queries a list of Collection items.
+	// Queries all Collection items for sale.
 	CollectionAll(context.Context, *QueryAllCollectionRequest) (*QueryAllCollectionResponse, error)
-	// Queries a Nft by id.
+	// Queries a Nft for sale by id.
 	Nft(context.Context, *QueryGetNftRequest) (*QueryGetNftResponse, error)
-	// Queries a list of Nft items.
+	// Queries all Nft items for sale.
 	NftAll(context.Context, *QueryAllNftRequest) (*QueryAllNftResponse, error)
 }
 
