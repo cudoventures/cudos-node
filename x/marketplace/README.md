@@ -65,6 +65,16 @@ type Nft struct {
 }
 ```
 
+### Events
+> The events that are emitted after certain operations
+```go
+	EventPublishCollectionType = "publish_collection"
+	EventPublishNftType        = "publish_nft"
+	EventBuyNftType            = "buy_nft"
+	EventMintNftType           = "mint_nft"
+	EventRemoveNftType         = "remove_nft"
+```
+
 ## Full commands info
 
 ### Transactions
