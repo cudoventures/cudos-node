@@ -1,0 +1,20 @@
+syntax = "proto3";
+package cudoventures.cudosnode.marketplace;
+
+import "gogoproto/gogo.proto";
+import "marketplace/params.proto";
+import "marketplace/collection.proto";
+import "marketplace/nft.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
+
+// GenesisState defines the marketplace module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  repeated Collection collectionList = 2 [(gogoproto.nullable) = false];
+  uint64 collectionCount = 3;
+  repeated Nft nftList = 4 [(gogoproto.nullable) = false];
+  uint64 nftCount = 5;
+  // this line is used by starport scaffolding # genesis/proto/state
+}

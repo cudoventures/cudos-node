@@ -1,0 +1,74 @@
+syntax = "proto3";
+package cudoventures.cudosnode.marketplace;
+
+import "marketplace/royalty.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
+  rpc PublishNft(MsgPublishNft) returns (MsgPublishNftResponse);
+  rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
+  rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
+  rpc RemoveNft(MsgRemoveNft) returns (MsgRemoveNftResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgPublishCollection {
+  string creator = 1;
+  string denomId = 2;
+  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
+  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgPublishCollectionResponse {
+}
+
+message MsgPublishNft {
+  string creator = 1;
+  string tokenId = 2;
+  string denomId = 3;
+  cosmos.base.v1beta1.Coin price = 4 
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+}
+
+message MsgPublishNftResponse {
+}
+
+message MsgBuyNft {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgBuyNftResponse {
+}
+
+message MsgMintNft {
+  string creator = 1;
+  string denomId = 2;
+  string recipient = 3;
+  cosmos.base.v1beta1.Coin price = 4 
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  string name = 5;
+  string uri = 6;
+  string data = 7;
+}
+
+message MsgMintNftResponse {
+}
+
+message MsgRemoveNft {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgRemoveNftResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

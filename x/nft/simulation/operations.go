@@ -113,7 +113,7 @@ func SimulateMsgTransferNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := getRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransferNft, err.Error()), nil, err
@@ -173,7 +173,7 @@ func SimulateMsgEditNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := getRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("account invalid")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditNFT, err.Error()), nil, err
@@ -288,7 +288,7 @@ func SimulateMsgBurnNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := getRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeBurnNFT, err.Error()), nil, err
@@ -422,6 +422,9 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 			"schema",
 			"",
 			denomSymbol,
+			"",
+			"",
+			"",
 		)
 		account := ak.GetAccount(ctx, sender.Address)
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())
@@ -453,7 +456,7 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func getRandomNFTFromOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
+func GetRandomNFTFromOwner(ctx sdk.Context, k NftKeeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
 	owners, err := k.GetOwners(ctx)
 	if err != nil {
 		return nil, "", ""
@@ -499,4 +502,8 @@ func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
 
 func genRandomBool(r *rand.Rand) bool {
 	return r.Int()%2 == 0
+}
+
+type NftKeeper interface {
+	GetOwners(ctx sdk.Context) (owners types.Owners, err error)
 }

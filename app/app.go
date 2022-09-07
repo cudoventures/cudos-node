@@ -14,14 +14,17 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
@@ -60,10 +63,10 @@ import (
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
@@ -71,6 +74,8 @@ import (
 
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
@@ -135,6 +140,8 @@ func New(
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 		group.StoreKey,
+		addressbooktypes.StoreKey,
+		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -156,9 +163,11 @@ func New(
 	app.MountMemoryStores(memKeys)
 
 	// add keepers
-	app.AddKeepers(skipUpgradeHeights, homePath, appOpts)
+	app.AccountKeeper = authkeeper.NewAccountKeeper(
+		appCodec, keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+	)
 
-/****  Module Options ****/
+	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
 	// we prefer to be more strict in what arguments the modules expect.
@@ -173,6 +182,10 @@ func New(
 	cudoMintModule := cudoMint.NewAppModule(appCodec, app.cudoMintKeeper)
 
 	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
+
+	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
+
+	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
@@ -208,7 +221,9 @@ func New(
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
+		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		addressbookModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -238,6 +253,8 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -263,6 +280,8 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -297,11 +316,18 @@ func New(
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 		group.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter()))
+
+	// initialize stores
+	app.MountKVStores(keys)
+	app.MountTransientStores(tkeys)
+	app.MountMemoryStores(memKeys)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)

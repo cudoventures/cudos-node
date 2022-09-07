@@ -105,6 +105,14 @@ import (
 	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
@@ -173,6 +181,8 @@ var (
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
+		addressbook.AppModuleBasic{},
+		marketplace.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -186,6 +196,7 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		marketplacetypes.ModuleName:    nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -263,7 +274,9 @@ type SimApp struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper nftmodulekeeper.Keeper
+	NftKeeper         nftmodulekeeper.Keeper
+	AddressbookKeeper addressbookkeeper.Keeper
+	MarketplaceKeeper marketplacekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -304,6 +317,8 @@ func NewSimApp(
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
+		addressbooktypes.StoreKey,
+		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -368,6 +383,24 @@ func NewSimApp(
 	)
 
 	app.feegrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
+
+	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
+		appCodec,
+		keys[addressbooktypes.StoreKey],
+		keys[addressbooktypes.MemStoreKey],
+		app.GetSubspace(addressbooktypes.ModuleName),
+	)
+	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
+
+	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
+		appCodec,
+		keys[marketplacetypes.StoreKey],
+		keys[marketplacetypes.MemStoreKey],
+		app.GetSubspace(marketplacetypes.ModuleName),
+		app.BankKeeper,
+		app.NftKeeper,
+	)
+	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// ... other modules keepers
 
@@ -513,6 +546,8 @@ func NewSimApp(
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
+		addressbookModule,
+		marketplaceModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -541,6 +576,8 @@ func NewSimApp(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -565,6 +602,8 @@ func NewSimApp(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -599,6 +638,8 @@ func NewSimApp(
 		upgradetypes.ModuleName,
 		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
+		addressbooktypes.ModuleName,
+		marketplacetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -847,6 +888,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
+	paramsKeeper.Subspace(addressbooktypes.ModuleName)
+	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 
 	return paramsKeeper
 }
