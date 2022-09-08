@@ -31,6 +31,7 @@ type issueDenomReq struct {
 	Traits      string       `json:"traits"`
 	Minter      string       `json:"minter"`
 	Description string       `json:"description"`
+	Data        string       `json:"data"`
 }
 
 type mintNFTReq struct {

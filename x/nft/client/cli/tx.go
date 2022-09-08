@@ -57,7 +57,8 @@ func GetCmdIssueDenom() *cobra.Command {
 				"--chain-id=<chain-id> "+
 				"--traits=<traits>"+
 				"--description=<description>"+
-				"--minter=<minter>",
+				"--minter=<minter>"+
+				"--data=<data>",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -71,23 +72,33 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			schema, err := cmd.Flags().GetString(FlagSchema)
 			if err != nil {
 				return err
 			}
+
 			symbol, err := cmd.Flags().GetString(FlagDenomSymbol)
 			if err != nil {
 				return err
 			}
+
 			traits, err := cmd.Flags().GetString(FlagTraits)
 			if err != nil {
 				return err
 			}
+
 			minter, err := cmd.Flags().GetString(FlagMinter)
 			if err != nil {
 				return err
 			}
+
 			description, err := cmd.Flags().GetString(FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			data, err := cmd.Flags().GetString(FlagData)
 			if err != nil {
 				return err
 			}
@@ -107,6 +118,7 @@ func GetCmdIssueDenom() *cobra.Command {
 				traits,
 				minter,
 				description,
+				data,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
