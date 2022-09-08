@@ -30,6 +30,7 @@ message Denom {
     string traits = 6 [(gogoproto.jsontag) = "traits"];
     string minter = 7 [(gogoproto.jsontag) = "minter"];
     string description = 8 [(gogoproto.jsontag) = "description"];
+    string data = 9 [(gogoproto.jsontag) = "data"];
 }
 
 // IDCollection defines a type of collection with specified ID

@@ -31,7 +31,7 @@ var (
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
-func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits, minter, description string) *MsgIssueDenom {
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits, minter, description, data string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender:                sender,
 		Id:                    denomID,
@@ -42,6 +42,7 @@ func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner,
 		Traits:                traits,
 		Minter:                minter,
 		Description:           description,
+		Data:                  data,
 	}
 }
 
