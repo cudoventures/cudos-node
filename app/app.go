@@ -70,7 +70,7 @@ import (
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
@@ -83,7 +83,6 @@ import (
 const Name = "cudos-node"
 
 var (
-	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 )
 
@@ -93,10 +92,6 @@ var (
 )
 
 func init() {
-	// userHomeDir, err := os.UserHomeDir()
-	// if err != nil {
-	// 	panic(err)
-	// }
 	cudosHome, present := os.LookupEnv("CUDOS_HOME")
 	if !present {
 		userHomeDir, err := os.Getwd()
@@ -104,14 +99,13 @@ func init() {
 			panic(err)
 		}
 
-		// DefaultNodeHome = filepath.Join(userHomeDir, "data", "."+Name)
 		DefaultNodeHome = filepath.Join(userHomeDir, "cudos-data")
 	} else {
 		DefaultNodeHome = cudosHome
 	}
 }
 
-// New returns a reference to an initialized Gaia.
+// New returns a reference to an initialized Cudos.
 // NewSimApp returns a reference to an initialized SimApp.
 func New(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
@@ -129,14 +123,22 @@ func New(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	keys := sdk.NewKVStoreKeys(
-		authtypes.StoreKey, authzkeeper.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
-		// minttypes.StoreKey,
-		distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		authtypes.StoreKey,
+		authzkeeper.StoreKey,
+		banktypes.StoreKey,
+		stakingtypes.StoreKey,
+		distrtypes.StoreKey,
+		slashingtypes.StoreKey,
+		govtypes.StoreKey,
+		paramstypes.StoreKey,
+		ibchost.StoreKey,
+		upgradetypes.StoreKey,
+		evidencetypes.StoreKey,
+		ibctransfertypes.StoreKey,
+		capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		nftmoduletypes.StoreKey,
-		cudoMinttypes.StoreKey,
+		cudominttypes.StoreKey,
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
@@ -162,6 +164,8 @@ func New(
 	app.MountKVStores(keys)
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
+
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	// add keepers
 	app.AddKeepers(skipUpgradeHeights, homePath, appOpts)
@@ -197,15 +201,12 @@ func New(
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.mm = module.NewManager(
-		genutil.NewAppModule(
-			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
-			encodingConfig.TxConfig,
-		),
+		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
+		crisis.NewAppModule(&app.CrisisKeeper, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
@@ -217,9 +218,9 @@ func New(
 		transferModule,
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
-		cudoMintModule,
-		gravityModule,
-		feegrantModule,
+		cudoMint.NewAppModule(appCodec, app.cudoMintKeeper),
+		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
+		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
 		marketplaceModule,
@@ -234,7 +235,7 @@ func New(
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
-		cudoMinttypes.ModuleName,
+		cudominttypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
 		evidencetypes.ModuleName,
@@ -268,7 +269,7 @@ func New(
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
-		cudoMinttypes.ModuleName,
+		cudominttypes.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
@@ -300,7 +301,7 @@ func New(
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
-		cudoMinttypes.ModuleName,
+		cudominttypes.ModuleName,
 		crisistypes.ModuleName,
 		gravitytypes.ModuleName, //MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
@@ -330,10 +331,6 @@ func New(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// initialize BaseApp
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
-
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
@@ -347,6 +344,9 @@ func New(
 		tmos.Exit(err.Error())
 	}
 
+	// initialize BaseApp
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 

@@ -1,10 +1,12 @@
 package app
 
 import (
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
@@ -13,12 +15,14 @@ func (app *App) SetUpgradeHandlers() {
 }
 
 func setV110Handler(app *App) {
-	app.UpgradeKeeper.SetUpgradeHandler("v1.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	const upgradeVersion string = "v1.1.0"
+
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		if len(fromVM) == 0 {
 			fromVM = app.mm.GetVersionMap()
-			delete(fromVM, "authz")
-			delete(fromVM, "group")
-			fromVM[cudoMinttypes.ModuleName] = 1
+			delete(fromVM, authz.ModuleName)
+			delete(fromVM, group.ModuleName)
+			fromVM[cudominttypes.ModuleName] = 1
 		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
@@ -29,12 +33,11 @@ func setV110Handler(app *App) {
 		panic(err)
 	}
 
-	if upgradeInfo.Name == "v1.1.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "group"},
+			Added: []string{authz.ModuleName, group.ModuleName},
 		}
 
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 }
