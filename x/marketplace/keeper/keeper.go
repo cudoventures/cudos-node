@@ -139,12 +139,25 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) erro
 
 	collection, found := k.getCollectionByDenomID(ctx, nft.DenomId)
 	if !found || len(collection.ResaleRoyalties) == 0 {
-		return k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyer, sdk.NewCoins(nft.Price))
+
+		sellerAddr, err := sdk.AccAddressFromBech32(nft.Owner)
+		if err != nil {
+			return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid seller address (%s): %s", nft.Owner, err)
+		}
+
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddr, sdk.NewCoins(nft.Price)); err != nil {
+			return err
+		}
 	}
 
 	if err := k.DistributeRoyalties(ctx, nft.Price, nft.Owner, collection.ResaleRoyalties); err != nil {
 		return err
 	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId))
+
+	k.RemoveNft(ctx, nftID)
 
 	baseNft, err := k.nftKeeper.GetBaseNFT(ctx, nft.DenomId, nft.TokenId)
 	if err != nil {
