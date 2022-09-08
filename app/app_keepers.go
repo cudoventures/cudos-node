@@ -119,6 +119,9 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
 
+	// set migrations
+	app.SetUpgradeHandlers()
+
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	// register the staking hooks
