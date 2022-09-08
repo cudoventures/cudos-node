@@ -9,6 +9,7 @@ import (
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -64,8 +65,15 @@ import (
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
+
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
@@ -119,6 +127,28 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
 
+	app.UpgradeKeeper.SetUpgradeHandler("privatetestnet04-v1.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		fromVM = app.mm.GetVersionMap()
+		delete(fromVM, "authz")
+		delete(fromVM, "group")
+		fromVM[cudoMinttypes.ModuleName] = 1
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+	})
+
+	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(err)
+	}
+
+	if upgradeInfo.Name == "privatetestnet04-v1.1.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{"authz", "group"},
+		}
+
+		// configure store loader that checks if version == upgradeHeight and applies store upgrades
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
+
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	// register the staking hooks
@@ -145,6 +175,22 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.appCodec,
 		app.keys[nftmoduletypes.StoreKey],
 		app.keys[nftmoduletypes.MemStoreKey],
+	)
+
+	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
+		app.appCodec,
+		app.keys[addressbooktypes.StoreKey],
+		app.keys[addressbooktypes.MemStoreKey],
+		app.GetSubspace(addressbooktypes.ModuleName),
+	)
+
+	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
+		app.appCodec,
+		app.keys[marketplacetypes.StoreKey],
+		app.keys[marketplacetypes.MemStoreKey],
+		app.GetSubspace(marketplacetypes.ModuleName),
+		app.BankKeeper,
+		app.NftKeeper,
 	)
 
 	supportedFeatures := "iterator,staking,stargate"
@@ -224,7 +270,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
-
 
 	groupConfig := group.DefaultConfig()
 	/*
