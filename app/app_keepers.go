@@ -9,7 +9,6 @@ import (
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -65,7 +64,6 @@ import (
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 
@@ -127,27 +125,8 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
 
-	app.UpgradeKeeper.SetUpgradeHandler("privatetestnet04-v1.1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		fromVM = app.mm.GetVersionMap()
-		delete(fromVM, "authz")
-		delete(fromVM, "group")
-		fromVM[cudoMinttypes.ModuleName] = 1
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if upgradeInfo.Name == "privatetestnet04-v1.1.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "group"},
-		}
-
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
+	// set migrations
+	app.SetUpgradeHandlers()
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
