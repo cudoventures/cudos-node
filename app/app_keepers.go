@@ -9,17 +9,12 @@ import (
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
-	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
-
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-
-	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -55,7 +50,6 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
@@ -69,7 +63,6 @@ import (
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
-
 	app.ParamsKeeper = InitParamsKeeper(app.appCodec, app.cdc, app.keys[paramstypes.StoreKey], app.tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
@@ -95,21 +88,21 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter())
 
-	bk := bankkeeper.NewBaseKeeper(
+	bankKeeper := bankkeeper.NewBaseKeeper(
 		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
-		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bk, app.GetSubspace(stakingtypes.ModuleName),
+		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, app.GetSubspace(stakingtypes.ModuleName),
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
-		app.appCodec, app.keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, bk,
+		app.appCodec, app.keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, bankKeeper,
 		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 
-	bk.SetDistrKeeper(app.DistrKeeper)
+	bankKeeper.SetDistrKeeper(app.DistrKeeper)
 
-	app.BankKeeper = bk
+	app.BankKeeper = bankKeeper
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		app.appCodec, app.keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
@@ -118,11 +111,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.GetSubspace(crisistypes.ModuleName), app.invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
-
-	// set migrations
-	app.SetUpgradeHandlers()
-
-	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -137,7 +125,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.appCodec, app.keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
-	// just re-use the full router - do we want to limit this more?
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -225,14 +212,10 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 
 	app.GravityKeeper = gravitykeeper.NewKeeper(
-		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper, app.AccountKeeper,
 	)
 
 	groupConfig := group.DefaultConfig()
-	/*
-		Example of setting group params:
-		groupConfig.MaxMetadataLen = 1000
-	*/
 	app.GroupKeeper = groupkeeper.NewKeeper(
 		app.keys[group.StoreKey],
 		app.appCodec,
