@@ -1,7 +1,6 @@
 package app
 
 import (
-	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -22,7 +21,6 @@ func setV110Handler(app *App) {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
-			fromVM[cudominttypes.ModuleName] = 1
 		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
