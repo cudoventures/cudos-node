@@ -20,6 +20,7 @@ const (
 	MaxDenomSymbolLen      = 64
 	MaxDenomTraitsLen      = 256
 	MaxDenomDescriptionLen = 256
+	MaxDenomDataLen        = 512
 
 	MinTokenNameLen = 1
 	MaxTokenNameLen = 64
@@ -101,7 +102,14 @@ func ValidateMinter(minter string) error {
 
 func ValidateDescription(description string) error {
 	if len(description) > MaxDenomDescriptionLen {
-		return sdkerrors.Wrapf(ErrInvalidDescription, "the length of denom description %d is exceeding max accepted length %d", len(description), MaxDenomTraitsLen)
+		return sdkerrors.Wrapf(ErrInvalidDescription, "the length of denom description %d is exceeding max accepted length %d", len(description), MaxDenomDescriptionLen)
+	}
+	return nil
+}
+
+func ValidateDenomData(data string) error {
+	if len(data) > MaxDenomDataLen {
+		return sdkerrors.Wrapf(ErrInvalidDenomData, "the length of denom data %d is exceeding max accepted length %d", len(data), MaxDenomDataLen)
 	}
 	return nil
 }

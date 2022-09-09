@@ -82,6 +82,10 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 		return err
 	}
 
+	if err := ValidateDenomData(msg.Data); err != nil {
+		return err
+	}
+
 	return nil
 }
 
