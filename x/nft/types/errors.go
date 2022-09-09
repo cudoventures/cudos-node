@@ -26,4 +26,5 @@ var (
 	ErrNotEditable         = sdkerrors.Register(ModuleName, 22, "not editable")
 	ErrInvalidDescription  = sdkerrors.Register(ModuleName, 23, "invalid description")
 	ErrInvalidTokenData    = sdkerrors.Register(ModuleName, 24, "invalid token data")
+	ErrInvalidDenomData    = sdkerrors.Register(ModuleName, 25, "invalid denom data")
 )
