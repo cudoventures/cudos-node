@@ -259,3 +259,21 @@ func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller stri
 
 	return nil
 }
+
+func (k Keeper) getCollectionStatus(ctx sdk.Context, id uint64) (bool, error) {
+	collection, found := k.GetCollection(ctx, id)
+	if !found {
+		return false, sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
+	}
+	return collection.Verified, nil
+}
+
+func (k Keeper) setCollectionStatus(ctx sdk.Context, id uint64, verified bool) error {
+	collection, found := k.GetCollection(ctx, id)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
+	}
+	collection.Verified = verified
+	k.SetCollection(ctx, collection)
+	return nil
+}

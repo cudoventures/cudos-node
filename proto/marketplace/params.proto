@@ -8,5 +8,5 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  
+  repeated string admins = 1 [(gogoproto.nullable) = false];
 }
