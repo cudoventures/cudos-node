@@ -12,22 +12,26 @@ When NFT is published for sale, it will be soft locked in the NFT module, so the
 
 #### Transaction
 
-| Command                                          | Description                                                                                                                                                            |
-| ------------------------------------------------ | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [`publish-collection`](#publish-collection)      | Publishes [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store. |
-| [`publish-nft`](#publish-nft)                    | Publish [`NFT@NFT Module`](../../readme.md#nft) from NFT module for sale with given price, creates [`NFT`](#nft) in marketplace store.                                 |
-| [`mint-nft`](#mint-nft)                          | Mint [`NFT@NFT Module`](../../readme.md#nft) via NFT module, state of marketplace is not affected anyhow.                                                              |
-| [`buy-nft`](#buy-nft)                            | Buy [`NFT@NFT Module`](../../readme.md#nft) and removes the [`NFT`](#nft) from marketplace store.                                                                      |
-| [`remove-nft`](#remove-nft)                      | Remove [`NFT`](#nft) from marketplace store.                                                                                                            |
+| Command                                                   | Description                                                                                                                                                            |
+| ----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`publish-collection`](#publish-collection)               | Publishes [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store. |
+| [`publish-nft`](#publish-nft)                             | Publish [`NFT@NFT Module`](../../readme.md#nft) from NFT module for sale with given price, creates [`NFT`](#nft) in marketplace store.                                 |
+| [`mint-nft`](#mint-nft)                                   | Mint [`NFT@NFT Module`](../../readme.md#nft) via NFT module, state of marketplace is not affected anyhow.                                                              |
+| [`buy-nft`](#buy-nft)                                     | Buy [`NFT@NFT Module`](../../readme.md#nft) and removes the [`NFT`](#nft) from marketplace store.                                                                      |
+| [`remove-nft`](#remove-nft)                               | Remove [`NFT`](#nft) from marketplace store.                                                                                                                           |
+| [`verify-collection`](#verify-collection)                 | Verify [`Collection`](#collection).                                                                                                                                    |
+| [`unverify-collection`](#unverify-collection)             | Unverify [`Collection`](#collection).                                                                                                                                  |
+| [`transfer-admin-permission`](#transfer-admin-permission) | Transfer marketplace admin permission.                                                                                                                                 |
 
 #### Query
 
-| Command                                 | Description                                   |
-| --------------------------------------- | ----------------------------------------------|
-| [`list-collections`](#list-collections)       | Queries all [`Collection`](#collection) |
-| [`list-nfts`](#list-nfts)                     | Queries all  [`NFT`](#nft)              |
-| [`show-collection`](#show-collection)        | Show [`Collection`](#collection) by Id   |
-| [`show-nft`](#show-nft)                      | Show [`NFT`](#nft) by Id                 |
+| Command                                              | Description                                   |
+| -----------------------------------------------------|-----------------------------------------------|
+| [`list-collections`](#list-collections)              | Queries all [`Collection`](#collection)       |
+| [`list-nfts`](#list-nfts)                            | Queries all  [`NFT`](#nft)                    |
+| [`show-collection`](#show-collection)                | Show [`Collection`](#collection) by Id        |
+| [`show-nft`](#show-nft)                              | Show [`NFT`](#nft) by Id                      |
+| [`collection-by-denom-id`](#collection-by-denom-id)  | Show [`Collection`](#collection) by denom Id  |
 
 ## Object types:
 
@@ -68,11 +72,14 @@ type Nft struct {
 ### Events
 > The events that are emitted after certain operations
 ```go
-	EventPublishCollectionType = "publish_collection"
-	EventPublishNftType        = "publish_nft"
-	EventBuyNftType            = "buy_nft"
-	EventMintNftType           = "mint_nft"
-	EventRemoveNftType         = "remove_nft"
+	EventPublishCollectionType       = "publish_collection"
+	EventPublishNftType              = "publish_nft"
+	EventBuyNftType                  = "buy_nft"
+	EventMintNftType                 = "mint_nft"
+	EventRemoveNftType               = "remove_nft"
+	EventVerifyCollectionType        = "verify_collection"
+	EventUnverifyCollectionType      = "unverify_collection"
+  EventTransferAdminPermissionType = "transfer_admin_permission"
 ```
 
 ## Full commands info
@@ -151,6 +158,45 @@ cudos-noded tx marketplace buy-nft <nft-id> --keyring-backend=<keyring> --chain-
 cudos-noded tx marketplace remove-nft <nft-id> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
+### `verify-collection`
+
+> Verify collection in the marketplace.
+
+- arguments:
+  - `collection-id` `string` `Collection id in the marketplace` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace verify-collection <collection-id> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+### `unverify-collection`
+
+> Unverify collection in the marketplace.
+
+- arguments:
+  - `collection-id` `string` `Collection id in the marketplace` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace unverify-collection <collection-id> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+### `transfer-admin-permission`
+
+> Transfer marketplace admin permission to different address.
+
+- arguments:
+  - `new-admin` `string` `New marketplace admin address` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace transfer-admin-permission <new-admin> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
 ### Queries
 
 ### `list-collections`
@@ -203,4 +249,17 @@ cudos-noded query marketplace show-collection <collection-id>
 
 ```bash
 cudos-noded query marketplace show-nft <nft-id>
+```
+
+### `collection-by-denom-id`
+
+> Get collection published for sale by its denom Id.
+
+- arguments:
+  - `denom-id` `string` `Denom Id of the collection` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded query marketplace collection-by-denom-id <denom-id>
 ```
