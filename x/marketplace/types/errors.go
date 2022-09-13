@@ -20,4 +20,7 @@ var (
 	ErrCollectionNotFound             = sdkerrors.Register(ModuleName, 1109, "collection not published for sale")
 	ErrNotNftOwner                    = sdkerrors.Register(ModuleName, 1110, "not nft owner")
 	ErrNftAlreadyPublished            = sdkerrors.Register(ModuleName, 1111, "nft already published")
+	ErrAlreadyAdmin                   = sdkerrors.Register(ModuleName, 1112, "already admin")
+	ErrCollectionAlreadyVerified      = sdkerrors.Register(ModuleName, 1113, "collection is already verified")
+	ErrCollectionAlreadyUnverified    = sdkerrors.Register(ModuleName, 1114, "collection is already unverified")
 )

@@ -38,6 +38,11 @@ service Query {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/nft";
 	}
 
+// Queries a list of CollectionByDenomId items.
+	rpc CollectionByDenomId(QueryCollectionByDenomIdRequest) returns (QueryCollectionByDenomIdResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection_by_denom_id/{denomId}";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -82,6 +87,14 @@ message QueryAllNftRequest {
 message QueryAllNftResponse {
 	repeated Nft Nft = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCollectionByDenomIdRequest {
+	string denomId = 1;
+}
+
+message QueryCollectionByDenomIdResponse {
+	Collection Collection = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

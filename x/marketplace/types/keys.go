@@ -17,6 +17,8 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_marketplace"
+
+	AdminDenom = "cudosMarketplaceAdmin"
 )
 
 func KeyPrefix(p string) []byte {

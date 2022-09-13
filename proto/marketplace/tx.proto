@@ -17,6 +17,9 @@ service Msg {
   rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
   rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
   rpc RemoveNft(MsgRemoveNft) returns (MsgRemoveNftResponse);
+  rpc VerifyCollection(MsgVerifyCollection) returns (MsgVerifyCollectionResponse);
+  rpc UnverifyCollection(MsgUnverifyCollection) returns (MsgUnverifyCollectionResponse);
+  rpc TransferAdminPermission(MsgTransferAdminPermission) returns (MsgTransferAdminPermissionResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -69,6 +72,30 @@ message MsgRemoveNft {
 }
 
 message MsgRemoveNftResponse {
+}
+
+message MsgVerifyCollection {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgVerifyCollectionResponse {
+}
+
+message MsgUnverifyCollection {
+  string creator = 1;
+  uint64 id = 2;
+}
+
+message MsgUnverifyCollectionResponse {
+}
+
+message MsgTransferAdminPermission {
+  string creator = 1;
+  string newAdmin = 2;
+}
+
+message MsgTransferAdminPermissionResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
