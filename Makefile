@@ -14,13 +14,13 @@ BUILD_FLAGS := -ldflags '$(ldflags)'
 
 all: install
 
-install: export CGO_LDFLAGS="-Wl,-rpath,$$ORIGIN/../"
+install: export CGO_LDFLAGS=-Wl,-rpath,$$ORIGIN/../
 install: go.sum
 		@echo "--> Installing cudos-noded"
 		@go install -mod=readonly $(BUILD_FLAGS) -tags "ledger" ./cmd/cudos-noded
 
 
-build: export CGO_LDFLAGS="-Wl,-rpath,$$ORIGIN/../"
+build: export CGO_LDFLAGS=-Wl,-rpath,$$ORIGIN/../
 build: go.sum
 		@echo "--> Building cudos-noded"
 		@go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ -tags "ledger" ./cmd/cudos-noded
