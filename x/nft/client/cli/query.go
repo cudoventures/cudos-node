@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -39,47 +40,6 @@ func GetQueryCmd() *cobra.Command {
 	)
 
 	return queryCmd
-}
-
-func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "collection [denom-id],[denom-id]",
-		Short:   "Query NFTs in a collection",
-		Long:    "Get all the NFTs from a given collection.",
-		Example: fmt.Sprintf("$ %s query nft collection <denom-id>", version.AppName),
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			// nolint: govet
-			if err := types.ValidateDenomID(args[0]); err != nil {
-				return err
-			}
-			pageReq, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.Collection(
-				context.Background(),
-				&types.QueryCollectionRequest{
-					DenomId:    args[0],
-					Pagination: pageReq,
-				},
-			)
-			if err != nil {
-				return err
-			}
-			return clientCtx.PrintProto(resp)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "nfts")
-
-	return cmd
 }
 
 // GetCmdQuerySupply queries the supply of a nft collection
@@ -215,6 +175,42 @@ func GetCmdQueryCollection() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nfts")
+
+	return cmd
+}
+
+// GetCmdQueryCollectionsByDenomIds queries for all the collections matching a set of denom ids
+func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "collection [denom-id1,denom-id2,denom-id3..]",
+		Short:   "Query Collections by denom ids",
+		Long:    "Get all the collections for given denom ids.",
+		Example: fmt.Sprintf("$ %s query nft collectionByDenomIds <denom-id,denom-id2, denom-id3>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			denomIds := strings.Split(args[1], ",")
+
+			for _, denomId := range denomIds {
+				if err := types.ValidateDenomID(denomId); err != nil {
+					return err
+				}
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.CollectionsByDenomIds(context.Background(), &types.QueryCollectionsByIdsRequest{
+				DenomIds: denomIds,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

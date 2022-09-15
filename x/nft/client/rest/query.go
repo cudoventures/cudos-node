@@ -14,17 +14,18 @@ import (
 )
 
 const (
-	QueryGlobalRoutePrefix  = "cudosnode.cudosnode.nft.Query"
-	QuerySupplyRoute        = "Supply"
-	QueryOwnerRoute         = "Owner"
-	QueryCollectionRoute    = "Collection"
-	QueryDenomsRoute        = "Denoms"
-	QueryDenomRoute         = "Denom"
-	QueryDenomByNameRoute   = "DenomByName"
-	QueryDenomBySymbolRoute = "DenomBySymbol"
-	QueryNFTRoute           = "NFT"
-	QueryApprovalsNFTRoute  = "GetApprovalsNFT"
-	QueryIsApprovedForAll   = "QueryApprovalsIsApprovedForAll"
+	QueryGlobalRoutePrefix     = "cudosnode.cudosnode.nft.Query"
+	QuerySupplyRoute           = "Supply"
+	QueryOwnerRoute            = "Owner"
+	QueryCollectionRoute       = "Collection"
+	QueryDenomsRoute           = "Denoms"
+	QueryDenomRoute            = "Denom"
+	QueryDenomByNameRoute      = "DenomByName"
+	QueryDenomBySymbolRoute    = "DenomBySymbol"
+	QueryNFTRoute              = "NFT"
+	QueryApprovalsNFTRoute     = "GetApprovalsNFT"
+	QueryIsApprovedForAll      = "QueryApprovalsIsApprovedForAll"
+	QueryCollectionsByDenomIds = "QueryCollectionsByDenomIds"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -57,6 +58,57 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 
 	// Query if an address is an authorized operator for another address
 	r.HandleFunc(fmt.Sprintf("/%s/isApprovedForAll", types.ModuleName), queryIsApprovedForAll(cliCtx)).Methods("POST")
+
+	// Query for collections by denomIds
+	r.HandleFunc(fmt.Sprintf("/%s/nftsByIds", types.ModuleName), queryCollectionsByDenomIds(cliCtx)).Methods("POST")
+}
+
+// Get the collections by denom ids with their nfts
+func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		var req queryCollectionsByDenomIdsRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		for _, id := range req.DenomIds {
+			if err := types.ValidateDenomID(id); err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}
+
+		request := types.QueryCollectionsByIdsRequest{
+			DenomIds: req.DenomIds,
+		}
+
+		bz, err := request.Marshal()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// nolint: govet
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryCollectionsByDenomIds)
+		res, height, err := cliCtx.QueryWithData(
+			queryPath, bz,
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		var response types.QueryCollectionByIdsResponse
+		cliCtx.Codec.MustUnmarshal(res, &response)
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, response)
+	}
 }
 
 // Get the total supply of a collection or owner
