@@ -1,5 +1,9 @@
 cudos-data
 node_modules
 .idea
+.vscode
 init-root.sh
 build
+
+*[]"github.com/CudoVentures/cudos-node/x/nft/types".Collection
+[]*"github.com/CudoVentures/cudos-node/x/nft/types".Collection

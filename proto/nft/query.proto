@@ -25,6 +25,11 @@ service Query {
         option (google.api.http).get = "/cudosnode/nft/collections/{denom_id}";
     }
 
+    // Collection queries the NFTs of the specified denom
+    rpc CollectionsByDenomIds(QueryCollectionsByIdsRequest) returns (QueryCollectionByIdsResponse) {
+        option (google.api.http).get = "/cudosnode/nft/collectionsByDenomIds";
+    }
+
     // Denom queries the definition of a given denom
     rpc Denom(QueryDenomRequest) returns (QueryDenomResponse) {
         option (google.api.http).get = "/cudosnode/nft/denoms/{denom_id}";
@@ -100,6 +105,17 @@ message QueryCollectionResponse {
     Collection collection = 1;
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
+// QueryCollectionsByIdsRequest is the request type for the Query/CollectionsByIds RPC method
+message QueryCollectionsByIdsRequest {
+    repeated string denom_ids = 1 [ (gogoproto.moretags) = "yaml:\"denom_ids\"" ];
+}
+
+// QueryCollectionResponse is the response type for the Query/CollectionsByIds RPC method
+message QueryCollectionByIdsResponse {
+    repeated Collection collections = 1;
+}
+
 
 // QueryDenomRequest is the request type for the Query/Denom RPC method
 message QueryDenomRequest {

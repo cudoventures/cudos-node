@@ -30,6 +30,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryDenomBySymbol(),
 		GetCmdQueryDenoms(),
 		GetCmdQueryCollection(),
+		GetCmdQueryCollectionsByDenomIds(),
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
@@ -38,6 +39,47 @@ func GetQueryCmd() *cobra.Command {
 	)
 
 	return queryCmd
+}
+
+func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "collection [denom-id],[denom-id]",
+		Short:   "Query NFTs in a collection",
+		Long:    "Get all the NFTs from a given collection.",
+		Example: fmt.Sprintf("$ %s query nft collection <denom-id>", version.AppName),
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// nolint: govet
+			if err := types.ValidateDenomID(args[0]); err != nil {
+				return err
+			}
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.Collection(
+				context.Background(),
+				&types.QueryCollectionRequest{
+					DenomId:    args[0],
+					Pagination: pageReq,
+				},
+			)
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nfts")
+
+	return cmd
 }
 
 // GetCmdQuerySupply queries the supply of a nft collection
