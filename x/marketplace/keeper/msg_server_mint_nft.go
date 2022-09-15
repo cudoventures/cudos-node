@@ -31,6 +31,7 @@ func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
 			sdk.NewAttribute(types.AttributeKeyNftID, nftId),
 			sdk.NewAttribute(types.AttributeKeyBuyer, msg.Recipient),
+			sdk.NewAttribute(types.AttributeKeyUID, msg.Uid),
 		),
 		sdk.NewEvent(
 			sdk.EventTypeMessage,
