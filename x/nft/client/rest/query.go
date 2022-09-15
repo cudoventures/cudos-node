@@ -25,7 +25,7 @@ const (
 	QueryNFTRoute              = "NFT"
 	QueryApprovalsNFTRoute     = "GetApprovalsNFT"
 	QueryIsApprovedForAll      = "QueryApprovalsIsApprovedForAll"
-	QueryCollectionsByDenomIds = "QueryCollectionsByDenomIds"
+	QueryCollectionsByDenomIds = "CollectionsByDenomIds"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -60,7 +60,7 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/%s/isApprovedForAll", types.ModuleName), queryIsApprovedForAll(cliCtx)).Methods("POST")
 
 	// Query for collections by denomIds
-	r.HandleFunc(fmt.Sprintf("/%s/nftsByIds", types.ModuleName), queryCollectionsByDenomIds(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s/collectionsByDenomIds", types.ModuleName), queryCollectionsByDenomIds(cliCtx)).Methods("POST")
 }
 
 // Get the collections by denom ids with their nfts
