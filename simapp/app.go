@@ -503,7 +503,7 @@ func NewSimApp(
 	cudoMintModule := cudoMint.NewAppModule(appCodec, app.CudoMintKeeper)
 
 	app.GravityKeeper = gravitykeeper.NewKeeper(
-		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
+		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper, app.AccountKeeper,
 	)
 
 	gravityModule := gravity.NewAppModule(app.GravityKeeper, app.BankKeeper)
