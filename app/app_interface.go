@@ -222,8 +222,6 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	GravityKeeper        gravitykeeper.Keeper
-	NftKeeper            nftmodulekeeper.Keeper
-	GroupKeeper          groupkeeper.Keeper
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
@@ -377,9 +375,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
-	paramsKeeper.Subspace(authz.ModuleName)
-	paramsKeeper.Subspace(feegrant.ModuleName)
-	paramsKeeper.Subspace(group.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
