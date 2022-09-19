@@ -93,8 +93,10 @@ type Nft struct {
 - arguments:
   - `denom-id` `string` `Denom to publish for sale` `required: true`
 - flags:
-  - `--mint-royalties` `string` `The unique name of the denom.` `required: false`
-  - `--resale-royalties` `string` `The unique symbol of the denom.` `required: false`
+  - `--mint-royalties` `string` `Royalties that will be distributed when NFTs are minted on demand via the marketplace.` `required: false`
+  - `--resale-royalties` `string` `Royalties that will be distributed when reselling NFTs on the marketplace.` `required: false`
+
+Royalties are represented in the format `"address1:percent,address2:percent"`, first royalties are paid and whatever is left is paid to the seller. If there are no royalties set, the full amount is paid to the seller.
 
 ```bash
 cudos-noded tx marketplace publish-collection <denom-id> --mint-royalties="cudos1kztarv5vlckzt5j7z3y5u0dj6q6q6axyz4pe60;0.01,cudos14vjzkqs505xvs4tp3kdkzq3mzh6vutngnlqamz:11.22" --resale-royalties="cudos18687hmplu9mfxr47um0adne6ml29turydgm64j:50" --keyring-backend=<keyring> --chain-id=<chain-id> --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
@@ -125,8 +127,8 @@ cudos-noded tx marketplace publish-nft <token-id> <denom-id> 10000000acudos --ke
   - `price` `string` `Amount to be paid to mint the NFT` `required: true`
   - `token-name` `string` `Name of token to be minted` `required: true`
 - flags:
-  - `--uri` `string` `The unique name of the denom.` `required: false`
-  - `--data` `string` `The unique name of the denom.` `required: false`
+  - `--uri` `string` `Uri for NFT metadata stored offchain.` `required: false`
+  - `--data` `string` `NFT metdata stored onchain.` `required: false`
 
 ```bash
 cudos-noded tx marketplace mint-nft <denom-id> <recipient> 11111acudos <token-name> --uri=<token-uri> --data=<token-data> --keyring-backend=<keyring> --chain-id=<chain-id> --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
