@@ -4,7 +4,7 @@ var (
 	EventPublishCollectionType       = "publish_collection"
 	EventPublishNftType              = "publish_nft"
 	EventBuyNftType                  = "buy_nft"
-	EventMintNftType                 = "mint_nft"
+	EventMintNftType                 = "marketplace_mint_nft"
 	EventRemoveNftType               = "remove_nft"
 	EventTransferAdminPermissionType = "transfer_admin_permission"
 	EventVerifyCollectionType        = "verify_collection"
@@ -21,4 +21,5 @@ var (
 	AttributeKeyBuyer        = "buyer"
 	AttributeKeyOwner        = "owner"
 	AttributeKeyNewAdmin     = "new_admin"
+	AttributeKeyUID          = "uid"
 )

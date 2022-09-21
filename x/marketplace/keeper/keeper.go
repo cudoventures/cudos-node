@@ -184,6 +184,10 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID, name, uri, data string, price 
 		return "", sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection %s not published for sale", denomID)
 	}
 
+	if !collection.Verified {
+		return "", sdkerrors.Wrapf(types.ErrCollectionIsUnverified, "collection %d is not verified", collection.Id)
+	}
+
 	if err := k.DistributeRoyalties(ctx, price, denom.Creator, collection.MintRoyalties); err != nil {
 		return "", err
 	}

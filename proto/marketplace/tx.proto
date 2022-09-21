@@ -61,6 +61,7 @@ message MsgMintNft {
   string name = 5;
   string uri = 6;
   string data = 7;
+  string uid = 8;
 }
 
 message MsgMintNftResponse {
