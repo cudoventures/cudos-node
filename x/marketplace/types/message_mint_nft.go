@@ -10,7 +10,7 @@ const TypeMsgMintNft = "mint_nft"
 
 var _ sdk.Msg = &MsgMintNft{}
 
-func NewMsgMintNft(creator, denomId, recipient, name, uri, data string, price sdk.Coin) *MsgMintNft {
+func NewMsgMintNft(creator, denomId, recipient, name, uri, data, uid string, price sdk.Coin) *MsgMintNft {
 	return &MsgMintNft{
 		Creator:   creator,
 		DenomId:   denomId,
@@ -19,6 +19,7 @@ func NewMsgMintNft(creator, denomId, recipient, name, uri, data string, price sd
 		Name:      name,
 		Uri:       uri,
 		Data:      data,
+		Uid:       uid,
 	}
 }
 

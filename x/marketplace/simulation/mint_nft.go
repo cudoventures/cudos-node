@@ -54,6 +54,7 @@ func SimulateMsgMintNft(
 			name,
 			uri,
 			data,
+			"",
 			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
 		)
 
