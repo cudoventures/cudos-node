@@ -51,6 +51,7 @@ func CmdMintNft() *cobra.Command {
 				argName,
 				uri,
 				data,
+				"",
 				price,
 			)
 			if err := msg.ValidateBasic(); err != nil {
