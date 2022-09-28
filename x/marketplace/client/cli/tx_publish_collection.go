@@ -15,7 +15,7 @@ import (
 
 func CmdPublishCollection() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "publish-collection [denom-id] [mint-royalties] [resale-royalties]",
+		Use:   "publish-collection [denom-id]",
 		Short: "Publish collection for sale",
 		Long:  "Publish collection for sale",
 		Example: fmt.Sprintf(
