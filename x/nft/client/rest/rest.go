@@ -102,6 +102,10 @@ type queryCollectionRequest struct {
 	Pagination query.PageRequest `json:"pagination"`
 }
 
+type queryCollectionsByDenomIdsRequest struct {
+	DenomIds []string `json:"denom_ids"`
+}
+
 type queryOwnerRequest struct {
 	DenomId      string            `json:"denom_id,omitempty"`
 	OwnerAddress string            `json:"owner_address"`

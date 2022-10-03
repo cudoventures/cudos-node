@@ -1,5 +1,6 @@
 cudos-data
 node_modules
 .idea
+.vscode
 init-root.sh
 build

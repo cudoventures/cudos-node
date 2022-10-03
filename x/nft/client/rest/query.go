@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -14,17 +15,18 @@ import (
 )
 
 const (
-	QueryGlobalRoutePrefix  = "cudosnode.cudosnode.nft.Query"
-	QuerySupplyRoute        = "Supply"
-	QueryOwnerRoute         = "Owner"
-	QueryCollectionRoute    = "Collection"
-	QueryDenomsRoute        = "Denoms"
-	QueryDenomRoute         = "Denom"
-	QueryDenomByNameRoute   = "DenomByName"
-	QueryDenomBySymbolRoute = "DenomBySymbol"
-	QueryNFTRoute           = "NFT"
-	QueryApprovalsNFTRoute  = "GetApprovalsNFT"
-	QueryIsApprovedForAll   = "QueryApprovalsIsApprovedForAll"
+	QueryGlobalRoutePrefix     = "cudosnode.cudosnode.nft.Query"
+	QuerySupplyRoute           = "Supply"
+	QueryOwnerRoute            = "Owner"
+	QueryCollectionRoute       = "Collection"
+	QueryDenomsRoute           = "Denoms"
+	QueryDenomRoute            = "Denom"
+	QueryDenomByNameRoute      = "DenomByName"
+	QueryDenomBySymbolRoute    = "DenomBySymbol"
+	QueryNFTRoute              = "NFT"
+	QueryApprovalsNFTRoute     = "GetApprovalsNFT"
+	QueryIsApprovedForAll      = "QueryApprovalsIsApprovedForAll"
+	QueryCollectionsByDenomIds = "CollectionsByDenomIds"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -57,6 +59,63 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 
 	// Query if an address is an authorized operator for another address
 	r.HandleFunc(fmt.Sprintf("/%s/isApprovedForAll", types.ModuleName), queryIsApprovedForAll(cliCtx)).Methods("POST")
+
+	// Query for collections by denomIds
+	r.HandleFunc(fmt.Sprintf("/%s/collectionsByDenomIds", types.ModuleName), queryCollectionsByDenomIds(cliCtx)).Methods("POST")
+}
+
+// Get the collections by denom ids with their nfts
+func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		var req queryCollectionsByDenomIdsRequest
+		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		if len(req.DenomIds) == 0 {
+			err := errors.New("denomIds array is empty")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		for _, id := range req.DenomIds {
+			if err := types.ValidateDenomID(id); err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+		}
+
+		request := types.QueryCollectionsByIdsRequest{
+			DenomIds: req.DenomIds,
+		}
+
+		bz, err := request.Marshal()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// nolint: govet
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryCollectionsByDenomIds)
+		res, height, err := cliCtx.QueryWithData(
+			queryPath, bz,
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		var response types.QueryCollectionByIdsResponse
+		cliCtx.Codec.MustUnmarshal(res, &response)
+
+		cliCtx = cliCtx.WithHeight(height)
+		rest.PostProcessResponse(w, cliCtx, response)
+	}
 }
 
 // Get the total supply of a collection or owner
@@ -67,6 +126,7 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 		err := types.ValidateDenomID(denomID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		var _ sdk.AccAddress
@@ -187,6 +247,7 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 
 		if err := types.ValidateDenomID(req.DenomId); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryCollectionRequest{
@@ -275,6 +336,7 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 		denomName := mux.Vars(r)[RestParamDenomName]
 		if err := types.ValidateDenomName(denomName); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryDenomByNameRequest{DenomName: denomName}
@@ -315,6 +377,7 @@ func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 		denomSymbol := mux.Vars(r)[RestParamDenomSymbol]
 		if err := types.ValidateDenomSymbol(denomSymbol); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryDenomBySymbolRequest{Symbol: denomSymbol}
@@ -442,11 +505,13 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 		denomID := vars[RestParamDenomID]
 		if err := types.ValidateDenomID(denomID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		tokenID := vars[RestParamTokenID]
 		if err := types.ValidateTokenID(tokenID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryApprovalsNFTRequest{

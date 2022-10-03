@@ -2,7 +2,9 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -30,6 +32,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryDenomBySymbol(),
 		GetCmdQueryDenoms(),
 		GetCmdQueryCollection(),
+		GetCmdQueryCollectionsByDenomIds(),
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
@@ -173,6 +176,47 @@ func GetCmdQueryCollection() *cobra.Command {
 	}
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nfts")
+
+	return cmd
+}
+
+// GetCmdQueryCollectionsByDenomIds queries for all the collections matching a set of denom ids
+func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "collection [denom-id1,denom-id2,denom-id3..]",
+		Short:   "Query Collections by denom ids",
+		Long:    "Get all the collections for given denom ids.",
+		Example: fmt.Sprintf("$ %s query nft collectionByDenomIds <denom-id,denom-id2, denom-id3>", version.AppName),
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			denomIds := strings.Split(args[1], ",")
+
+			if len(denomIds) == 0 {
+				err := errors.New("denomIds array is empty")
+				return err
+			}
+
+			for _, denomId := range denomIds {
+				if err := types.ValidateDenomID(denomId); err != nil {
+					return err
+				}
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+			resp, err := queryClient.CollectionsByDenomIds(context.Background(), &types.QueryCollectionsByIdsRequest{
+				DenomIds: denomIds,
+			})
+			if err != nil {
+				return err
+			}
+			return clientCtx.PrintProto(resp)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
