@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -194,6 +195,11 @@ func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
 			}
 
 			denomIds := strings.Split(args[1], ",")
+
+			if len(denomIds) == 0 {
+				err := errors.New("denomIds array is empty")
+				return err
+			}
 
 			for _, denomId := range denomIds {
 				if err := types.ValidateDenomID(denomId); err != nil {

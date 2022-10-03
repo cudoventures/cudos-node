@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -73,9 +74,14 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
+		if len(req.DenomIds) == 0 {
+			err := errors.New("denomIds array is empty")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
 		for _, id := range req.DenomIds {
 			if err := types.ValidateDenomID(id); err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
 			}
 		}
 
