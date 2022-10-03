@@ -77,6 +77,7 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 		if len(req.DenomIds) == 0 {
 			err := errors.New("denomIds array is empty")
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 		for _, id := range req.DenomIds {
 			if err := types.ValidateDenomID(id); err != nil {
@@ -125,6 +126,7 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 		err := types.ValidateDenomID(denomID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		var _ sdk.AccAddress
@@ -245,6 +247,7 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 
 		if err := types.ValidateDenomID(req.DenomId); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryCollectionRequest{
@@ -333,6 +336,7 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 		denomName := mux.Vars(r)[RestParamDenomName]
 		if err := types.ValidateDenomName(denomName); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryDenomByNameRequest{DenomName: denomName}
@@ -373,6 +377,7 @@ func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 		denomSymbol := mux.Vars(r)[RestParamDenomSymbol]
 		if err := types.ValidateDenomSymbol(denomSymbol); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryDenomBySymbolRequest{Symbol: denomSymbol}
@@ -500,11 +505,13 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 		denomID := vars[RestParamDenomID]
 		if err := types.ValidateDenomID(denomID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		tokenID := vars[RestParamTokenID]
 		if err := types.ValidateTokenID(tokenID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		request := types.QueryApprovalsNFTRequest{
