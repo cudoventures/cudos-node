@@ -115,14 +115,14 @@ func KeyDenomID(id string) []byte {
 	return append(key, []byte(id)...)
 }
 
-// ReferenceKeyDenomName gets the storeKey by the denom name
-func ReferenceKeyDenomName(name string) []byte {
+// KeyDenomName gets the storeKey by the denom name
+func KeyDenomName(name string) []byte {
 	key := append(PrefixDenomName, delimiter...)
 	return append(key, []byte(name)...)
 }
 
-// ReferenceKeyDenomSymbol gets the storeKey by the symbol
-func ReferenceKeyDenomSymbol(name string) []byte {
+// KeyDenomSymbol gets the storeKey by the symbol
+func KeyDenomSymbol(name string) []byte {
 	key := append(PrefixDenomSymbol, delimiter...)
 	return append(key, []byte(name)...)
 }

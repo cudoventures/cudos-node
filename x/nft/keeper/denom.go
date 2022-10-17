@@ -18,13 +18,13 @@ func (k Keeper) HasDenomID(ctx sdk.Context, id string) bool {
 // HasDenomNm returns whether the specified denom name exists
 func (k Keeper) HasDenomNm(ctx sdk.Context, name string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.ReferenceKeyDenomName(name))
+	return store.Has(types.KeyDenomName(name))
 }
 
 // HasDenomSymbol returns whether the specified denom symbol exists
 func (k Keeper) HasDenomSymbol(ctx sdk.Context, name string) bool {
 	store := ctx.KVStore(k.storeKey)
-	return store.Has(types.ReferenceKeyDenomSymbol(name))
+	return store.Has(types.KeyDenomSymbol(name))
 }
 
 // SetDenom is responsible for saving the definition of denom
@@ -45,8 +45,8 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 	bz := k.cdc.MustMarshal(&denom)
 	keyByDenomID := types.KeyDenomID(denom.Id)
 	store.Set(keyByDenomID, bz)
-	store.Set(types.ReferenceKeyDenomName(denom.Name), keyByDenomID)
-	store.Set(types.ReferenceKeyDenomSymbol(denom.Symbol), keyByDenomID)
+	store.Set(types.KeyDenomName(denom.Name), keyByDenomID)
+	store.Set(types.KeyDenomSymbol(denom.Symbol), keyByDenomID)
 	return nil
 }
 
@@ -67,32 +67,31 @@ func (k Keeper) GetDenom(ctx sdk.Context, id string) (denom types.Denom, err err
 func (k Keeper) GetDenomByName(ctx sdk.Context, name string) (denom types.Denom, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	keyDenomID := store.Get(types.ReferenceKeyDenomName(name))
+	keyDenomID := store.Get(types.KeyDenomName(name))
 	if len(keyDenomID) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom name: %s", name)
 	}
 
 	bz := store.Get(keyDenomID)
-	if len(keyDenomID) == 0 {
+	if len(bz) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom by denom id key: %s", string(keyDenomID))
 	}
 
 	k.cdc.MustUnmarshal(bz, &denom)
 	return denom, nil
-
 }
 
 // GetDenomBySymbol returns the denom by symbol
 func (k Keeper) GetDenomBySymbol(ctx sdk.Context, symbol string) (denom types.Denom, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	keyDenomID := store.Get(types.ReferenceKeyDenomSymbol(symbol))
+	keyDenomID := store.Get(types.KeyDenomSymbol(symbol))
 	if len(keyDenomID) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom symbol: %s", symbol)
 	}
 
 	bz := store.Get(keyDenomID)
-	if len(keyDenomID) == 0 {
+	if len(bz) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom by denom id key: %s", string(keyDenomID))
 	}
 
