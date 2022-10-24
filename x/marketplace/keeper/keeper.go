@@ -188,6 +188,10 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID, name, uri, data string, price 
 		return "", sdkerrors.Wrapf(types.ErrCollectionIsUnverified, "collection %d is not verified", collection.Id)
 	}
 
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sender, types.ModuleName, sdk.NewCoins(price)); err != nil {
+		return "", err
+	}
+
 	if err := k.DistributeRoyalties(ctx, price, denom.Creator, collection.MintRoyalties); err != nil {
 		return "", err
 	}
