@@ -56,6 +56,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgTransferAdminPermission int = 100
 
+	opWeightMsgCreateCollection = "op_weight_msg_create_collection"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateCollection int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -176,6 +180,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgTransferAdminPermission,
 		marketplacesimulation.SimulateMsgTransferAdminPermission(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateCollection int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateCollection, &weightMsgCreateCollection, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateCollection = defaultWeightMsgCreateCollection
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateCollection,
+		marketplacesimulation.SimulateMsgCreateCollection(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

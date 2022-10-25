@@ -292,7 +292,10 @@ type Denom struct {
   - `--symbol` `string` `The unique symbol of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required`
+  - `--traits` `string` [`Traits`](./x/nft/types/traits.go)` that define the denom behavior and restrictions` `required: false`
+  - `--description` `string` `Text description of the denom` `required: false`
+  - `--data` `string` `Denom metadata` `required: false`
+  - `--minter` `string` `Address that will be allowed to mint NFTs from this denom other than the owner` `required: false`
 
 **Example:**
 
@@ -312,7 +315,6 @@ $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --sy
     - `--from` `string` `The address that is minting the NFT. Must be denom creator. Can be either an address or alias to that address` `required: true`
     - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
     - `--uri` `string` `The URI of the NFT.` `required: false`
-    - `--chain-id` `string` `The name of the network.` `required: true`
  
 
 **Example:**
@@ -332,7 +334,6 @@ $ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<
 - flags:
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -349,7 +350,6 @@ $ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> -
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -369,7 +369,6 @@ $ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<ch
 - flags:
   - `--from` `string` `The address that is requesting the transfer of the NFT. Can be either an address or alias to that address. must be either the owner, approved address on NFT or globally approved operator.` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -385,8 +384,6 @@ $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-nam
   - `denom-id` `string` `The denomId of the transferred NFT classification` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the transfer of the NFT collection. Must be the owner.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -405,7 +402,6 @@ $ cudos-noded tx nft transfer-denom <recipient> <denom-id> --from=<key-name> --c
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -423,7 +419,6 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the removal of approval. Can be either an address or alias to that address. Must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -440,7 +435,6 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
   - `approved` `string` `Boolean value indicating if the addres is approved: can be true or false` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the approval. The approved address will be able to handle the transfers of --from assets. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 

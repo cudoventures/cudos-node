@@ -18,6 +18,7 @@ type NftKeeper interface {
 	SoftUnlockNFT(ctx sdk.Context, lockOwner, denomID, tokenID string) error
 	MintNFT(ctx sdk.Context, denomID string, tokenNm, tokenURI, tokenData string, sender, owner sdk.AccAddress) (string, error)
 	GetOwners(ctx sdk.Context) (owners nfttypes.Owners, err error)
+	IssueDenom(ctx sdk.Context, id, name, schema, symbol, traits, minter, description, data string, creator sdk.AccAddress) error
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)

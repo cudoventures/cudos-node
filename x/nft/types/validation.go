@@ -21,6 +21,7 @@ const (
 	MaxDenomTraitsLen      = 256
 	MaxDenomDescriptionLen = 256
 	MaxDenomDataLen        = 512
+	MaxSchemaLen           = 512
 
 	MinTokenNameLen = 1
 	MaxTokenNameLen = 64
@@ -66,6 +67,13 @@ func ValidateDenomSymbol(symbol string) error {
 	}
 	if len(symbol) < MinDenomSymbolLen || len(symbol) > MaxDenomSymbolLen {
 		return sdkerrors.Wrapf(ErrInvalidDenomSymbol, "the length of denom symbol(%s) only accepts value [%d, %d]", symbol, MinDenomNameLen, MaxDenomNameLen)
+	}
+	return nil
+}
+
+func ValidateSchema(schema string) error {
+	if len(schema) > MaxSchemaLen {
+		return sdkerrors.Wrapf(ErrInvalidSchema, "the length of denom schema %d is exceeding max accepted length %d", len(schema), MaxSchemaLen)
 	}
 	return nil
 }

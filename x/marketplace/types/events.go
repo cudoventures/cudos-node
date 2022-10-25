@@ -9,6 +9,7 @@ var (
 	EventTransferAdminPermissionType = "transfer_admin_permission"
 	EventVerifyCollectionType        = "verify_collection"
 	EventUnverifyCollectionType      = "unverify_collection"
+	EventCreateCollectionType        = "create_collection"
 
 	AttributeValueCategory = ModuleName
 
