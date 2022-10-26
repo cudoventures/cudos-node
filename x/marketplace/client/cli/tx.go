@@ -39,6 +39,7 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdUnverifyCollection())
 	cmd.AddCommand(CmdTransferAdminPermission())
 	cmd.AddCommand(CmdCreateCollection())
+	cmd.AddCommand(CmdUpdateRoyalties())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

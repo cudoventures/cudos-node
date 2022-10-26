@@ -223,6 +223,21 @@ cudos-noded tx marketplace unverify-collection <collection-id> --keyring-backend
 cudos-noded tx marketplace transfer-admin-permission <new-admin> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
+### `update-royalties`
+
+> Update collection royalties.
+
+- arguments:
+  - `collection-id` `string` `Collection id in the marketplace` `required: true`
+- flags:
+  - `--mint-royalties` `string` `Royalties that will be distributed when NFTs are minted on demand via the marketplace.` `required: false`
+  - `--resale-royalties` `string` `Royalties that will be distributed when reselling NFTs on the marketplace.` `required: false`
+
+```bash
+cudos-noded tx marketplace update-royalties <collection-id> --mint-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --resale-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+
 ### Queries
 
 ### `list-collections`

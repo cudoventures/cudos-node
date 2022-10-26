@@ -28,7 +28,7 @@ func CmdPublishCollection() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			denomID := args[0]
 
-			flagMintRoyalties, err := cmd.Flags().GetString(FlagMintRoyalties)
+			flagMintRoyalties, err := cmd.Flags().GetString(FlagPublishCollectionMintRoyalties)
 			if err != nil {
 				return err
 			}
@@ -38,7 +38,7 @@ func CmdPublishCollection() *cobra.Command {
 				return err
 			}
 
-			flagResaleRoyalties, err := cmd.Flags().GetString(FlagResaleRoyalties)
+			flagResaleRoyalties, err := cmd.Flags().GetString(FlagPublishCollectionResaleRoyalties)
 			if err != nil {
 				return err
 			}

@@ -3,8 +3,8 @@ package cli
 import flag "github.com/spf13/pflag"
 
 const (
-	FlagMintRoyalties   = "mint-royalties"
-	FlagResaleRoyalties = "resale-royalties"
+	FlagPublishCollectionMintRoyalties   = "mint-royalties"
+	FlagPublishCollectionResaleRoyalties = "resale-royalties"
 
 	FlagMintNftName = "name"
 	FlagMintNftUri  = "uri"
@@ -20,15 +20,19 @@ const (
 	FlagCreateCollectionMintRoyalties   = "mint-royalties"
 	FlagCreateCollectionResaleRoyalties = "resale-royalties"
 	FlagCreateCollectionVerified        = "verified"
+
+	FlagUpdateMintRoyalties   = "mint-royalties"
+	FlagUpdateResaleRoyalties = "resale-royalties"
 )
 
 var FsPublishCollection = flag.NewFlagSet("", flag.ContinueOnError)
 var FsMintNFT = flag.NewFlagSet("", flag.ContinueOnError)
 var FsCreateCollection = flag.NewFlagSet("", flag.ContinueOnError)
+var FsUpdateRoyalties = flag.NewFlagSet("", flag.ContinueOnError)
 
 func init() {
-	FsPublishCollection.String(FlagMintRoyalties, "", "Royalties only for NFT first sale")
-	FsPublishCollection.String(FlagResaleRoyalties, "", "Royalties for NFT resale after the first sale")
+	FsPublishCollection.String(FlagPublishCollectionMintRoyalties, "", "Collection mint royalties")
+	FsPublishCollection.String(FlagPublishCollectionResaleRoyalties, "", "Collection resale royalties")
 
 	FsMintNFT.String(FlagMintNftName, "", "NFT name")
 	FsMintNFT.String(FlagMintNftUri, "", "NFT uri")
@@ -44,4 +48,7 @@ func init() {
 	FsCreateCollection.String(FlagCreateCollectionMintRoyalties, "", "Collection mint royalties")
 	FsCreateCollection.String(FlagCreateCollectionResaleRoyalties, "", "Collection resale royalties")
 	FsCreateCollection.String(FlagCreateCollectionVerified, "", "Collection verified flag")
+
+	FsUpdateRoyalties.String(FlagUpdateMintRoyalties, "", "Collection mint royalties")
+	FsUpdateRoyalties.String(FlagUpdateResaleRoyalties, "", "Collection resale royalties")
 }

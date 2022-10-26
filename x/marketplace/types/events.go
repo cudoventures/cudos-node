@@ -10,6 +10,7 @@ var (
 	EventVerifyCollectionType        = "verify_collection"
 	EventUnverifyCollectionType      = "unverify_collection"
 	EventCreateCollectionType        = "create_collection"
+	EventUpdateRoyaltiesType         = "update_royalties"
 
 	AttributeValueCategory = ModuleName
 

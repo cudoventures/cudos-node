@@ -293,3 +293,19 @@ func (k Keeper) setCollectionStatus(ctx sdk.Context, id uint64, verified bool) e
 	k.SetCollection(ctx, collection)
 	return nil
 }
+
+func (k Keeper) setCollectionRoyalties(ctx sdk.Context, sender string, id uint64, mintRoyalties, resaleRoyalties []types.Royalty) error {
+	collection, found := k.GetCollection(ctx, id)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
+	}
+
+	if collection.Owner != sender {
+		return sdkerrors.Wrapf(types.ErrNotCollectionOwner, "owner of collection %d is %s, not %s", id, collection.Owner, sender)
+	}
+
+	collection.MintRoyalties = mintRoyalties
+	collection.ResaleRoyalties = resaleRoyalties
+	k.SetCollection(ctx, collection)
+	return nil
+}

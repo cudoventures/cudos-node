@@ -21,6 +21,7 @@ service Msg {
   rpc UnverifyCollection(MsgUnverifyCollection) returns (MsgUnverifyCollectionResponse);
   rpc TransferAdminPermission(MsgTransferAdminPermission) returns (MsgTransferAdminPermissionResponse);
   rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
+  rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -116,6 +117,16 @@ message MsgCreateCollection {
 }
 
 message MsgCreateCollectionResponse {
+}
+
+message MsgUpdateRoyalties {
+  string creator = 1;
+  uint64 id = 2;
+  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
+  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateRoyaltiesResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message
