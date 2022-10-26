@@ -22,6 +22,7 @@ service Msg {
   rpc TransferAdminPermission(MsgTransferAdminPermission) returns (MsgTransferAdminPermissionResponse);
   rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
   rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
+  rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -127,6 +128,16 @@ message MsgUpdateRoyalties {
 }
 
 message MsgUpdateRoyaltiesResponse {
+}
+
+message MsgUpdatePrice {
+  string creator = 1;
+  uint64 id = 2;
+  cosmos.base.v1beta1.Coin price = 4 
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+}
+
+message MsgUpdatePriceResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

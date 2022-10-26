@@ -309,3 +309,18 @@ func (k Keeper) setCollectionRoyalties(ctx sdk.Context, sender string, id uint64
 	k.SetCollection(ctx, collection)
 	return nil
 }
+
+func (k Keeper) setNftPrice(ctx sdk.Context, sender string, id uint64, price sdk.Coin) error {
+	nft, found := k.GetNft(ctx, id)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNftNotFound, "NFT with id %d not found", id)
+	}
+
+	if nft.Owner != sender {
+		return sdkerrors.Wrapf(types.ErrNotCollectionOwner, "owner of NFT %d is %s, not %s", id, nft.Owner, sender)
+	}
+
+	nft.Price = price
+	k.SetNft(ctx, nft)
+	return nil
+}

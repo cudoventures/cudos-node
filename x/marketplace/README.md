@@ -237,6 +237,19 @@ cudos-noded tx marketplace transfer-admin-permission <new-admin> --keyring-backe
 cudos-noded tx marketplace update-royalties <collection-id> --mint-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --resale-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
+### `update-price`
+
+> Update collection royalties.
+
+- arguments:
+  - `nft-id` `string` `NFT id in the marketplace` `required: true`
+  - `price` `string` `New price for the NFT` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace update-price <nft-id> <price> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
 
 ### Queries
 

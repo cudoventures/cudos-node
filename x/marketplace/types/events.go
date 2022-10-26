@@ -11,6 +11,7 @@ var (
 	EventUnverifyCollectionType      = "unverify_collection"
 	EventCreateCollectionType        = "create_collection"
 	EventUpdateRoyaltiesType         = "update_royalties"
+	EventUpdatePriceType             = "update_price"
 
 	AttributeValueCategory = ModuleName
 
