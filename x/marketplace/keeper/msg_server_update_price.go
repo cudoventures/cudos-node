@@ -11,7 +11,7 @@ import (
 func (k msgServer) UpdatePrice(goCtx context.Context, msg *types.MsgUpdatePrice) (*types.MsgUpdatePriceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.setNftPrice(ctx, msg.Creator, msg.Id, msg.Price); err != nil {
+	if err := k.SetNftPrice(ctx, msg.Creator, msg.Id, msg.Price); err != nil {
 		return &types.MsgUpdatePriceResponse{}, err
 	}
 

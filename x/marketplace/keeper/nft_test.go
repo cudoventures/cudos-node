@@ -20,7 +20,7 @@ func createNNft(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Nft {
 }
 
 func TestNftGet(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNNft(keeper, ctx, 10)
 	for _, item := range items {
 		got, found := keeper.GetNft(ctx, item.Id)
@@ -33,7 +33,7 @@ func TestNftGet(t *testing.T) {
 }
 
 func TestNftRemove(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNNft(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveNft(ctx, item.Id)
@@ -43,7 +43,7 @@ func TestNftRemove(t *testing.T) {
 }
 
 func TestNftGetAll(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNNft(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
@@ -52,7 +52,7 @@ func TestNftGetAll(t *testing.T) {
 }
 
 func TestNftCount(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNNft(keeper, ctx, 10)
 	count := uint64(len(items))
 	require.Equal(t, count, keeper.GetNftCount(ctx))

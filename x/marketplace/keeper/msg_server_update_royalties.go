@@ -11,7 +11,7 @@ import (
 func (k msgServer) UpdateRoyalties(goCtx context.Context, msg *types.MsgUpdateRoyalties) (*types.MsgUpdateRoyaltiesResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.setCollectionRoyalties(ctx, msg.Creator, msg.Id, msg.MintRoyalties, msg.ResaleRoyalties); err != nil {
+	if err := k.SetCollectionRoyalties(ctx, msg.Creator, msg.Id, msg.MintRoyalties, msg.ResaleRoyalties); err != nil {
 		return &types.MsgUpdateRoyaltiesResponse{}, nil
 	}
 

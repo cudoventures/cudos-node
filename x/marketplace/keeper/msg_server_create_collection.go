@@ -12,7 +12,7 @@ func (k msgServer) CreateCollection(goCtx context.Context, msg *types.MsgCreateC
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if msg.Verified {
-		if err := k.isAdmin(ctx, msg.Creator); err != nil {
+		if err := k.IsAdmin(ctx, msg.Creator); err != nil {
 			return &types.MsgCreateCollectionResponse{}, err
 		}
 	}

@@ -218,6 +218,10 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 		return err
 	}
 
+	if err := k.IsEditable(ctx, denomID); err != nil {
+		return err
+	}
+
 	if !k.HasDenomID(ctx, denomID) {
 		return sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}

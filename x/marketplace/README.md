@@ -16,7 +16,9 @@ When NFT is published for sale, it will be soft locked in the NFT module, so the
 | ----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [`publish-collection`](#publish-collection)               | Publishes [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store. |
 | [`create-collection`](#create-collection)                 | Creates [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store and verifies it |
+| [`update-royalties`](#update-royalties)                   | Update royalties of already published collection. |
 | [`publish-nft`](#publish-nft)                             | Publish [`NFT@NFT Module`](../../readme.md#nft) from NFT module for sale with given price, creates [`NFT`](#nft) in marketplace store.                                 |
+| [`update-price`](#update-price)                           | Updates price of already published or sale NFT.
 | [`mint-nft`](#mint-nft)                                   | Mint [`NFT@NFT Module`](../../readme.md#nft) via NFT module, state of marketplace is not affected anyhow.                                                              |
 | [`buy-nft`](#buy-nft)                                     | Buy [`NFT@NFT Module`](../../readme.md#nft) and removes the [`NFT`](#nft) from marketplace store.                                                                      |
 | [`remove-nft`](#remove-nft)                               | Remove [`NFT`](#nft) from marketplace store.                                                                                                                           |
@@ -239,7 +241,7 @@ cudos-noded tx marketplace update-royalties <collection-id> --mint-royalties="cu
 
 ### `update-price`
 
-> Update collection royalties.
+> Update NFT price.
 
 - arguments:
   - `nft-id` `string` `NFT id in the marketplace` `required: true`

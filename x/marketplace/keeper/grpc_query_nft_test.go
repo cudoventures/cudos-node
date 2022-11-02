@@ -16,7 +16,7 @@ import (
 )
 
 func TestNftQuerySingle(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNNft(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -61,7 +61,7 @@ func TestNftQuerySingle(t *testing.T) {
 }
 
 func TestNftQueryPaginated(t *testing.T) {
-	keeper, _, ctx := keepertest.MarketplaceKeeper(t)
+	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNNft(keeper, ctx, 5)
 

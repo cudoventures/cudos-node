@@ -541,6 +541,52 @@ func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DecreaseSup
 	assert.Equal(suite.T(), uint64(0), supplyAfterBurn)
 }
 
+func (suite *IntegrationTestKeeperSuite) TestDenom_With_NotEditable_Trait_NftsShouldNotBeEditable() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, "NotEditable", denomMinter, denomDescription, denomData, address2)
+	suite.NoError(err)
+
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenId, address)
+	suite.Equal("denom 'denomid' has not editable trait: not editable", err.Error())
+
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenId, tokenNm, "", "", address)
+	suite.Equal("denom 'denomid' has not editable trait: not editable", err.Error())
+}
+
+func (suite *IntegrationTestKeeperSuite) TestDenom_With_Minter_ShouldAllowMinterToMintNfts() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, address.String(), denomDescription, denomData, address2)
+	suite.NoError(err)
+
+	_, err = suite.keeper.MintNFT(suite.ctx, denomID, denomNm, tokenURI, tokenData, address, address)
+	suite.NoError(err)
+}
+
+func (suite *IntegrationTestKeeperSuite) TestSoftLockedNftShouldBeNotTransferableBurnableEditable() {
+	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
+	suite.NoError(err)
+
+	tokenId, err := suite.keeper.MintNFT(suite.ctx, denomID, denomNm, tokenURI, tokenData, address2, address)
+	suite.NoError(err)
+
+	lockOwner := "lockOwner"
+	suite.NoError(suite.keeper.SoftLockNFT(suite.ctx, lockOwner, denomID, tokenId))
+
+	err = suite.keeper.BurnNFT(suite.ctx, denomID, tokenId, address)
+	suite.Equal("token id 1 from denom with id denomid is soft locked by lockOwner: soft locked", err.Error())
+
+	err = suite.keeper.EditNFT(suite.ctx, denomID, tokenId, tokenNm, "", "", address)
+	suite.Equal("token id 1 from denom with id denomid is soft locked by lockOwner: soft locked", err.Error())
+
+	err = suite.keeper.TransferOwner(suite.ctx, denomID, tokenId, address, address2, address)
+	suite.Equal("token id 1 from denom with id denomid is soft locked by lockOwner: soft locked", err.Error())
+
+	suite.NoError(suite.keeper.SoftUnlockNFT(suite.ctx, lockOwner, denomID, tokenId))
+
+	suite.NoError(suite.keeper.EditNFT(suite.ctx, denomID, tokenId, tokenNm, "", "", address))
+}
+
 // CreateTestAddrs creates test addresses
 func CreateTestAddrs(numAddrs int) []sdk.AccAddress {
 	var addresses []sdk.AccAddress

@@ -12,11 +12,11 @@ import (
 func (k msgServer) VerifyCollection(goCtx context.Context, msg *types.MsgVerifyCollection) (*types.MsgVerifyCollectionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.isAdmin(ctx, msg.Creator); err != nil {
+	if err := k.IsAdmin(ctx, msg.Creator); err != nil {
 		return &types.MsgVerifyCollectionResponse{}, err
 	}
 
-	verified, err := k.getCollectionStatus(ctx, msg.Id)
+	verified, err := k.GetCollectionStatus(ctx, msg.Id)
 	if err != nil {
 		return &types.MsgVerifyCollectionResponse{}, err
 	}
@@ -25,7 +25,7 @@ func (k msgServer) VerifyCollection(goCtx context.Context, msg *types.MsgVerifyC
 		return &types.MsgVerifyCollectionResponse{}, sdkerrors.Wrapf(types.ErrCollectionAlreadyVerified, "collection %d is verified", msg.Id)
 	}
 
-	if err := k.setCollectionStatus(ctx, msg.Id, true); err != nil {
+	if err := k.SetCollectionStatus(ctx, msg.Id, true); err != nil {
 		return &types.MsgVerifyCollectionResponse{}, err
 	}
 

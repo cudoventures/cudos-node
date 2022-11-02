@@ -35,7 +35,7 @@ func TestGenesis(t *testing.T) {
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
-	k, _, ctx := keepertest.MarketplaceKeeper(t)
+	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	marketplace.InitGenesis(ctx, *k, genesisState)
 	got := marketplace.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)

@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k msgServer) isAdmin(ctx sdk.Context, sender string) error {
+func (k msgServer) IsAdmin(ctx sdk.Context, sender string) error {
 	for _, admin := range k.GetParams(ctx).Admins {
 		if strings.ToLower(admin) == strings.ToLower(sender) {
 			return nil
