@@ -10,7 +10,7 @@ import (
 func (k msgServer) TransferAdminPermission(goCtx context.Context, msg *types.MsgTransferAdminPermission) (*types.MsgTransferAdminPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.isAdmin(ctx, msg.Creator); err != nil {
+	if err := k.IsAdmin(ctx, msg.Creator); err != nil {
 		return &types.MsgTransferAdminPermissionResponse{}, err
 	}
 

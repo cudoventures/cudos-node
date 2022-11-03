@@ -70,6 +70,10 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 		return err
 	}
 
+	if err := ValidateSchema(msg.Schema); err != nil {
+		return err
+	}
+
 	if err := ValidateDenomTraits(msg.Traits); err != nil {
 		return err
 	}

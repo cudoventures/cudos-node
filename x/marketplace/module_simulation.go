@@ -56,6 +56,18 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgTransferAdminPermission int = 100
 
+	opWeightMsgCreateCollection = "op_weight_msg_create_collection"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateCollection int = 100
+
+	opWeightMsgUpdateRoyalties = "op_weight_msg_update_royalties"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateRoyalties int = 100
+
+	opWeightMsgUpdatePrice = "op_weight_msg_update_price"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdatePrice int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -176,6 +188,39 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgTransferAdminPermission,
 		marketplacesimulation.SimulateMsgTransferAdminPermission(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgCreateCollection int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateCollection, &weightMsgCreateCollection, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateCollection = defaultWeightMsgCreateCollection
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateCollection,
+		marketplacesimulation.SimulateMsgCreateCollection(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateRoyalties int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateRoyalties, &weightMsgUpdateRoyalties, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateRoyalties = defaultWeightMsgUpdateRoyalties
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateRoyalties,
+		marketplacesimulation.SimulateMsgUpdateRoyalties(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdatePrice int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdatePrice, &weightMsgUpdatePrice, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdatePrice = defaultWeightMsgUpdatePrice
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdatePrice,
+		marketplacesimulation.SimulateMsgUpdatePrice(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

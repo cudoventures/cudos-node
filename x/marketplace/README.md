@@ -15,7 +15,10 @@ When NFT is published for sale, it will be soft locked in the NFT module, so the
 | Command                                                   | Description                                                                                                                                                            |
 | ----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [`publish-collection`](#publish-collection)               | Publishes [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store. |
+| [`create-collection`](#create-collection)                 | Creates [`denom@NFT Module`](../../readme.md#denom) from NFT module for sale with specified royalties, creates [`Collection`](#collection) in the marketplace store and verifies it |
+| [`update-royalties`](#update-royalties)                   | Update royalties of already published collection. |
 | [`publish-nft`](#publish-nft)                             | Publish [`NFT@NFT Module`](../../readme.md#nft) from NFT module for sale with given price, creates [`NFT`](#nft) in marketplace store.                                 |
+| [`update-price`](#update-price)                           | Updates price of already published or sale NFT.
 | [`mint-nft`](#mint-nft)                                   | Mint [`NFT@NFT Module`](../../readme.md#nft) via NFT module, state of marketplace is not affected anyhow.                                                              |
 | [`buy-nft`](#buy-nft)                                     | Buy [`NFT@NFT Module`](../../readme.md#nft) and removes the [`NFT`](#nft) from marketplace store.                                                                      |
 | [`remove-nft`](#remove-nft)                               | Remove [`NFT`](#nft) from marketplace store.                                                                                                                           |
@@ -102,6 +105,29 @@ Royalties are represented in the format `"address1:percent,address2:percent"`, f
 cudos-noded tx marketplace publish-collection <denom-id> --mint-royalties="cudos1kztarv5vlckzt5j7z3y5u0dj6q6q6axyz4pe60;0.01,cudos14vjzkqs505xvs4tp3kdkzq3mzh6vutngnlqamz:11.22" --resale-royalties="cudos18687hmplu9mfxr47um0adne6ml29turydgm64j:50" --keyring-backend=<keyring> --chain-id=<chain-id> --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
+### `create-collection`
+
+> Creates denom, publishes for sale with optional royalties and can also verify it if executed by marketplace admin.
+
+- arguments:
+  - `denom-id` `string` `Denom to publish for sale` `required: true`
+- flags:
+  - `--name` `string` `The unique name of the denom.` `required: true`
+  - `--symbol` `string` `The unique symbol of the denom.` `required: true`
+  - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
+  - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
+  - `--traits` `string` [`Traits`](../nft/types/traits.go)` that define the denom behavior and restrictions` `required: false`
+  - `--description` `string` `Text description of the denom` `required: false`
+  - `--data` `string` `Denom metadata` `required: false`
+  - `--minter` `string` `Address that will be allowed to mint NFTs from this denom other than the owner` `required: false`
+  - `--mint-royalties` `string` `Royalties that will be distributed when NFTs are minted on demand via the marketplace.` `required: false`
+  - `--resale-royalties` `string` `Royalties that will be distributed when reselling NFTs on the marketplace.` `required: false`
+  - `--verified` `bool` `Specifies if collection is verified - can be set to true only by admins` `required: false`
+
+```bash
+cudos-noded tx marketplace create-collection <denom-id> --name=<denom-name> --symbol=<denom-symbol> --verified=true --mint-royalties="cudos1kztarv5vlckzt5j7z3y5u0dj6q6q6axyz4pe60;0.01,cudos14vjzkqs505xvs4tp3kdkzq3mzh6vutngnlqamz:11.22" --resale-royalties="cudos18687hmplu9mfxr47um0adne6ml29turydgm64j:50" --keyring-backend=<keyring> --chain-id=<chain-id> --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+  
 ### `publish-nft`
 
 > Publish NFT for sale with price. Only owner, approved operator or approved address can publish it for sale.
@@ -197,6 +223,34 @@ cudos-noded tx marketplace unverify-collection <collection-id> --keyring-backend
 
 ```bash
 cudos-noded tx marketplace transfer-admin-permission <new-admin> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+### `update-royalties`
+
+> Update collection royalties.
+
+- arguments:
+  - `collection-id` `string` `Collection id in the marketplace` `required: true`
+- flags:
+  - `--mint-royalties` `string` `Royalties that will be distributed when NFTs are minted on demand via the marketplace.` `required: false`
+  - `--resale-royalties` `string` `Royalties that will be distributed when reselling NFTs on the marketplace.` `required: false`
+
+```bash
+cudos-noded tx marketplace update-royalties <collection-id> --mint-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --resale-royalties="cudos18x9glvtqk0x43xnjdx7w9lzqm0ganc950ur8n5:50" --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+### `update-price`
+
+> Update NFT price.
+
+- arguments:
+  - `nft-id` `string` `NFT id in the marketplace` `required: true`
+  - `price` `string` `New price for the NFT` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace update-price <nft-id> <price> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
 ### Queries

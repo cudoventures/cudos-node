@@ -7,6 +7,8 @@ import (
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -23,7 +25,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 )
 
-func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *bankkeeper.BaseKeeper, sdk.Context) {
+func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankkeeper.BaseKeeper, sdk.Context) {
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
 
@@ -46,10 +48,15 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *bankkeeper.BaseKeeper, sd
 
 	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, bankModuleStore.storeKey, authKeeper, bankModuleStore.paramSubspace, nil)
 
+	nftModuleStore, err := setupModuleStore(t, cdc, db, stateStore, nfttypes.StoreKey)
+	require.NoError(t, err)
+
+	nftKeeper := nftkeeper.NewKeeper(cdc, nftModuleStore.storeKey, nftModuleStore.memStoreKey)
+
 	moduleStore, err := setupModuleStore(t, cdc, db, stateStore, types.StoreKey)
 	require.NoError(t, err)
 
-	k := keeper.NewKeeper(cdc, moduleStore.storeKey, moduleStore.memStoreKey, moduleStore.paramSubspace, bankKeeper, nil)
+	k := keeper.NewKeeper(cdc, moduleStore.storeKey, moduleStore.memStoreKey, moduleStore.paramSubspace, bankKeeper, nftKeeper)
 
 	require.NoError(t, stateStore.LoadLatestVersion())
 
@@ -57,7 +64,7 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *bankkeeper.BaseKeeper, sd
 	bankKeeper.SetParams(ctx, banktypes.DefaultParams())
 	k.SetParams(ctx, types.DefaultParams())
 
-	return k, &bankKeeper, ctx
+	return k, nftKeeper, &bankKeeper, ctx
 }
 
 func setupModuleStore(t testing.TB, cdc *codec.ProtoCodec, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore, storeKeyName string) (moduleStore, error) {

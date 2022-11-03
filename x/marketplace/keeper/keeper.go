@@ -64,7 +64,7 @@ func (k Keeper) PublishCollection(ctx sdk.Context, collection types.Collection) 
 	}
 
 	if denom.Creator != collection.Owner {
-		return 0, sdkerrors.Wrapf(types.ErrNotDenomOwner, "Owner of denom %s is %s", collection.DenomId, collection.Owner)
+		return 0, sdkerrors.Wrapf(types.ErrNotDenomOwner, "Owner of denom %s is %s", collection.DenomId, denom.Creator)
 	}
 
 	if k.isCollectionPublished(ctx, collection.DenomId) {
@@ -99,8 +99,13 @@ func (k Keeper) PublishNFT(ctx sdk.Context, nft types.Nft) (uint64, error) {
 		return 0, err
 	}
 
+	publisher, err := sdk.AccAddressFromBech32(nft.Owner)
+	if err != nil {
+		return 0, err
+	}
+
 	if nftVal.GetOwner().String() == nft.Owner ||
-		k.nftKeeper.IsApprovedOperator(ctx, nftVal.GetOwner(), sdk.AccAddress(nft.Owner)) ||
+		k.nftKeeper.IsApprovedOperator(ctx, nftVal.GetOwner(), publisher) ||
 		k.isApprovedNftAddress(nftVal, nft.Owner) {
 
 		store := ctx.KVStore(k.storeKey)
@@ -137,7 +142,7 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) erro
 		return err
 	}
 
-	collection, found := k.getCollectionByDenomID(ctx, nft.DenomId)
+	collection, found := k.GetCollectionByDenomID(ctx, nft.DenomId)
 	if !found || len(collection.ResaleRoyalties) == 0 {
 
 		sellerAddr, err := sdk.AccAddressFromBech32(nft.Owner)
@@ -179,7 +184,7 @@ func (k Keeper) MintNFT(ctx sdk.Context, denomID, name, uri, data string, price 
 		return "", err
 	}
 
-	collection, found := k.getCollectionByDenomID(ctx, denomID)
+	collection, found := k.GetCollectionByDenomID(ctx, denomID)
 	if !found {
 		return "", sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection %s not published for sale", denomID)
 	}
@@ -221,7 +226,15 @@ func (k Keeper) RemoveNFT(ctx sdk.Context, nftID uint64, owner sdk.AccAddress) e
 	return nil
 }
 
-func (k Keeper) getCollectionByDenomID(ctx sdk.Context, denomID string) (types.Collection, bool) {
+func (k Keeper) CreateCollection(ctx sdk.Context, sender sdk.AccAddress, id, name, schema, symbol, traits, description, minter, data string, mintRoyalties, resaleRoyalties []types.Royalty, verified bool) (uint64, error) {
+	if err := k.nftKeeper.IssueDenom(ctx, id, name, schema, symbol, traits, minter, description, data, sender); err != nil {
+		return 0, err
+	}
+
+	return k.PublishCollection(ctx, types.NewCollection(id, mintRoyalties, resaleRoyalties, sender.String(), verified))
+}
+
+func (k Keeper) GetCollectionByDenomID(ctx sdk.Context, denomID string) (types.Collection, bool) {
 	store := ctx.KVStore(k.storeKey)
 	collectionIDBytes := store.Get(types.KeyCollectionDenomID(denomID))
 	if collectionIDBytes == nil {
@@ -268,7 +281,7 @@ func (k Keeper) DistributeRoyalties(ctx sdk.Context, price sdk.Coin, seller stri
 	return nil
 }
 
-func (k Keeper) getCollectionStatus(ctx sdk.Context, id uint64) (bool, error) {
+func (k Keeper) GetCollectionStatus(ctx sdk.Context, id uint64) (bool, error) {
 	collection, found := k.GetCollection(ctx, id)
 	if !found {
 		return false, sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
@@ -276,12 +289,43 @@ func (k Keeper) getCollectionStatus(ctx sdk.Context, id uint64) (bool, error) {
 	return collection.Verified, nil
 }
 
-func (k Keeper) setCollectionStatus(ctx sdk.Context, id uint64, verified bool) error {
+func (k Keeper) SetCollectionStatus(ctx sdk.Context, id uint64, verified bool) error {
 	collection, found := k.GetCollection(ctx, id)
 	if !found {
 		return sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
 	}
 	collection.Verified = verified
 	k.SetCollection(ctx, collection)
+	return nil
+}
+
+func (k Keeper) SetCollectionRoyalties(ctx sdk.Context, sender string, id uint64, mintRoyalties, resaleRoyalties []types.Royalty) error {
+	collection, found := k.GetCollection(ctx, id)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrCollectionNotFound, "collection with id %d not found", id)
+	}
+
+	if collection.Owner != sender {
+		return sdkerrors.Wrapf(types.ErrNotCollectionOwner, "owner of collection %d is %s, not %s", id, collection.Owner, sender)
+	}
+
+	collection.MintRoyalties = mintRoyalties
+	collection.ResaleRoyalties = resaleRoyalties
+	k.SetCollection(ctx, collection)
+	return nil
+}
+
+func (k Keeper) SetNftPrice(ctx sdk.Context, sender string, id uint64, price sdk.Coin) error {
+	nft, found := k.GetNft(ctx, id)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrNftNotFound, "NFT with id %d not found", id)
+	}
+
+	if nft.Owner != sender {
+		return sdkerrors.Wrapf(types.ErrNotCollectionOwner, "owner of NFT %d is %s, not %s", id, nft.Owner, sender)
+	}
+
+	nft.Price = price
+	k.SetNft(ctx, nft)
 	return nil
 }

@@ -20,6 +20,9 @@ service Msg {
   rpc VerifyCollection(MsgVerifyCollection) returns (MsgVerifyCollectionResponse);
   rpc UnverifyCollection(MsgUnverifyCollection) returns (MsgUnverifyCollectionResponse);
   rpc TransferAdminPermission(MsgTransferAdminPermission) returns (MsgTransferAdminPermissionResponse);
+  rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
+  rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
+  rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -97,6 +100,44 @@ message MsgTransferAdminPermission {
 }
 
 message MsgTransferAdminPermissionResponse {
+}
+
+message MsgCreateCollection {
+  string creator = 1;
+  string id = 2;
+  string name = 3;
+  string schema = 4;
+  string symbol = 5;
+  string traits = 6;
+  string description = 7;
+  string minter = 8;
+  string data = 9;
+  repeated Royalty mintRoyalties = 10 [(gogoproto.nullable) = false];
+  repeated Royalty resaleRoyalties = 11[(gogoproto.nullable) = false];
+  bool verified = 12;
+}
+
+message MsgCreateCollectionResponse {
+}
+
+message MsgUpdateRoyalties {
+  string creator = 1;
+  uint64 id = 2;
+  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
+  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
+}
+
+message MsgUpdateRoyaltiesResponse {
+}
+
+message MsgUpdatePrice {
+  string creator = 1;
+  uint64 id = 2;
+  cosmos.base.v1beta1.Coin price = 4 
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+}
+
+message MsgUpdatePriceResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

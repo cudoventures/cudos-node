@@ -16,7 +16,7 @@ func (k Keeper) CollectionByDenomId(goCtx context.Context, req *types.QueryColle
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	collection, found := k.getCollectionByDenomID(ctx, req.DenomId)
+	collection, found := k.GetCollectionByDenomID(ctx, req.DenomId)
 	if !found {
 		return &types.QueryCollectionByDenomIdResponse{}, nil
 	}

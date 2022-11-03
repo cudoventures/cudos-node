@@ -27,4 +27,5 @@ var (
 	ErrInvalidDescription  = sdkerrors.Register(ModuleName, 23, "invalid description")
 	ErrInvalidTokenData    = sdkerrors.Register(ModuleName, 24, "invalid token data")
 	ErrInvalidDenomData    = sdkerrors.Register(ModuleName, 25, "invalid denom data")
+	ErrInvalidSchema       = sdkerrors.Register(ModuleName, 26, "invalid schema")
 )
