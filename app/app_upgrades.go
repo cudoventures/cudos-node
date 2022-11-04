@@ -1,11 +1,13 @@
 package app
 
 import (
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/group"
+
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
@@ -21,6 +23,14 @@ func setV110Handler(app *App) {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
+
+			if _, ok := fromVM[nfttypes.ModuleName]; ok {
+				if fromVM[nfttypes.ModuleName] == 2 {
+					fromVM[nfttypes.ModuleName] = 1
+				}
+			} else {
+				fromVM[nfttypes.ModuleName] = 1
+			}
 		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
