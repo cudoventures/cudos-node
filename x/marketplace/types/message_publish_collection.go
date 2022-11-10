@@ -50,9 +50,9 @@ func (msg *MsgPublishCollection) ValidateBasic() error {
 		return err
 	}
 
-	if err := ValidateRoyalties(msg.MintRoyalties); err != nil {
+	if err := ValidateMintRoyalties(msg.MintRoyalties); err != nil {
 		return err
 	}
 
-	return ValidateRoyalties(msg.ResaleRoyalties)
+	return ValidateResaleRoyalties(msg.ResaleRoyalties)
 }

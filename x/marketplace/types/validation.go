@@ -7,7 +7,16 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func ValidateRoyalties(royalties []Royalty) error {
+func ValidateMintRoyalties(royalties []Royalty) error {
+	requiredPercent := sdk.NewDec(100)
+	return ValidateRoyalties(royalties, &requiredPercent)
+}
+
+func ValidateResaleRoyalties(royalties []Royalty) error {
+	return ValidateRoyalties(royalties, nil)
+}
+
+func ValidateRoyalties(royalties []Royalty, requiredPercent *sdk.Dec) error {
 	if len(royalties) == 0 {
 		return nil
 	}
@@ -46,6 +55,10 @@ func ValidateRoyalties(royalties []Royalty) error {
 
 	if totalPercent.GT(sdk.NewDec(100)) {
 		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%s) cannot be greater than 100", totalPercent.String())
+	}
+
+	if requiredPercent != nil && !totalPercent.Equal(*requiredPercent) {
+		return sdkerrors.Wrapf(ErrInvalidRoyaltyPercent, "total royalty percent (%s) must be equal to required royalrty percent (%s)", totalPercent.String(), requiredPercent.String())
 	}
 
 	return nil

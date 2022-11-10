@@ -39,6 +39,11 @@ func CmdMintNft() *cobra.Command {
 				return err
 			}
 
+			uid, err := cmd.Flags().GetString(FlagMintNftUid)
+			if err != nil {
+				return err
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -51,7 +56,7 @@ func CmdMintNft() *cobra.Command {
 				argName,
 				uri,
 				data,
-				"",
+				uid,
 				price,
 			)
 			if err := msg.ValidateBasic(); err != nil {

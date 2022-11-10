@@ -44,9 +44,9 @@ func (msg *MsgUpdateRoyalties) ValidateBasic() error {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
 
-	if err := ValidateRoyalties(msg.MintRoyalties); err != nil {
+	if err := ValidateMintRoyalties(msg.MintRoyalties); err != nil {
 		return err
 	}
 
-	return ValidateRoyalties(msg.ResaleRoyalties)
+	return ValidateResaleRoyalties(msg.ResaleRoyalties)
 }

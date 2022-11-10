@@ -9,6 +9,7 @@ const (
 	FlagMintNftName = "name"
 	FlagMintNftUri  = "uri"
 	FlagMintNftData = "data"
+	FlagMintNftUid  = "uid"
 
 	FlagCreateCollectionName            = "name"
 	FlagCreateCollectionSymbol          = "symbol"
@@ -37,6 +38,7 @@ func init() {
 	FsMintNFT.String(FlagMintNftName, "", "NFT name")
 	FsMintNFT.String(FlagMintNftUri, "", "NFT uri")
 	FsMintNFT.String(FlagMintNftData, "", "NFT data")
+	FsMintNFT.String(FlagMintNftUid, "", "NFT Uid")
 
 	FsCreateCollection.String(FlagCreateCollectionName, "", "Denom name")
 	FsCreateCollection.String(FlagCreateCollectionSymbol, "", "Denom symbol name")
