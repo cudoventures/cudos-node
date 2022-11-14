@@ -351,6 +351,22 @@ func New(
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath, app.BaseApp)
 
+	app.UpgradeKeeper.SetUpgradeHandler("v1.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ss, ok := app.ParamsKeeper.GetSubspace(cudoMinttypes.ModuleName)
+		if ok {
+			bpd := ss.GetRaw(ctx, []byte("BlocksPerDay"))
+
+			bpdString := strings.ReplaceAll(string(bpd), "\"", "")
+
+			bpdInt, parseOk := sdk.NewIntFromString(bpdString)
+			if parseOk {
+				ss.Set(ctx, []byte("IncrementModifier"), bpdInt)
+			}
+		}
+
+		return fromVM, nil
+	})
+
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	const upgradeVersion string = "v1.0.1"
