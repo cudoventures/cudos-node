@@ -22,6 +22,7 @@ service Msg {
   rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
   rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
   rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
+  rpc AddAdmin(MsgAddAdmin) returns (MsgAddAdminResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -129,6 +130,14 @@ message MsgUpdatePrice {
 }
 
 message MsgUpdatePriceResponse {
+}
+
+message MsgAddAdmin {
+  string creator = 1;
+  string address = 2;
+}
+
+message MsgAddAdminResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

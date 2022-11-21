@@ -11,6 +11,7 @@ var (
 	EventCreateCollectionType   = "create_collection"
 	EventUpdateRoyaltiesType    = "update_royalties"
 	EventUpdatePriceType        = "update_price"
+	EventAddAdmin               = "add_admin"
 
 	AttributeValueCategory = ModuleName
 
