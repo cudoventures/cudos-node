@@ -16,7 +16,7 @@ func (k msgServer) AddAdmin(goCtx context.Context, msg *types.MsgAddAdmin) (*typ
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventAddAdmin,
+			types.EventAddAdminType,
 			sdk.NewAttribute(types.AttributeKeyAddress, msg.Address),
 		),
 		sdk.NewEvent(

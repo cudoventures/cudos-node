@@ -24,7 +24,8 @@ When NFT is published for sale, it will be soft locked in the NFT module, so the
 | [`remove-nft`](#remove-nft)                               | Remove [`NFT`](#nft) from marketplace store.                                                                                                                           |
 | [`verify-collection`](#verify-collection)                 | Verify [`Collection`](#collection).                                                                                                                                    |
 | [`unverify-collection`](#unverify-collection)             | Unverify [`Collection`](#collection).                                                                                                                                  |
-| [`transfer-admin-permission`](#transfer-admin-permission) | Transfer marketplace admin permission.                                                                                                                                 |
+| [`add-admin`](#add-admin)                                 | Add admin
+| [`remove-admin`](#remove-admin)                           | Remove admin
 
 #### Query
 
@@ -35,6 +36,7 @@ When NFT is published for sale, it will be soft locked in the NFT module, so the
 | [`show-collection`](#show-collection)                | Show [`Collection`](#collection) by Id        |
 | [`show-nft`](#show-nft)                              | Show [`NFT`](#nft) by Id                      |
 | [`collection-by-denom-id`](#collection-by-denom-id)  | Show [`Collection`](#collection) by denom Id  |
+| [`list-admins`](#list-admins)                        | Queries all marketplace admins                |
 
 ## Object types:
 
@@ -82,6 +84,11 @@ type Nft struct {
 	EventRemoveNftType               = "remove_nft"
 	EventVerifyCollectionType        = "verify_collection"
 	EventUnverifyCollectionType      = "unverify_collection"
+  EventCreateCollectionType        = "create_collection"
+	EventUpdateRoyaltiesType         = "update_royalties"
+	EventUpdatePriceType             = "update_price"
+	EventAddAdminType                = "add_admin"
+	EventRemoveAdminType             = "remove_admin"
 ```
 
 ## Full commands info
@@ -252,6 +259,32 @@ cudos-noded tx marketplace update-royalties <collection-id> --mint-royalties="cu
 cudos-noded tx marketplace update-price <nft-id> <price> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
 ```
 
+### `add-admin`
+
+> Add admin.
+
+- arguments:
+  - `address` `string` `Address to join the admin set` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace add-admin <admin-address> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
+### `remove-admin`
+
+> Remove admin.
+
+- arguments:
+  - `address` `string` `Address to be removed from the admin set` `required: true`
+- flags:
+  none
+
+```bash
+cudos-noded tx marketplace remove-admin <admin-address> --keyring-backend=<keyring> --chain-id=cudos-local-network --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>
+```
+
 ### Queries
 
 ### `list-collections`
@@ -317,4 +350,17 @@ cudos-noded query marketplace show-nft <nft-id>
 
 ```bash
 cudos-noded query marketplace collection-by-denom-id <denom-id>
+```
+
+### `list-admins`
+
+> List admins.
+
+- arguments:
+  - none
+- flags:
+  - none
+
+```bash
+cudos-noded query marketplace list-admins
 ```

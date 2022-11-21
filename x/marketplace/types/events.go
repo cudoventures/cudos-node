@@ -11,8 +11,8 @@ var (
 	EventCreateCollectionType   = "create_collection"
 	EventUpdateRoyaltiesType    = "update_royalties"
 	EventUpdatePriceType        = "update_price"
-	EventAddAdmin               = "add_admin"
-	EventRemoveAdmin            = "remove_admin"
+	EventAddAdminType           = "add_admin"
+	EventRemoveAdminType        = "remove_admin"
 
 	AttributeValueCategory = ModuleName
 

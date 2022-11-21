@@ -16,7 +16,7 @@ func (k msgServer) RemoveAdmin(goCtx context.Context, msg *types.MsgRemoveAdmin)
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventRemoveAdmin,
+			types.EventRemoveAdminType,
 			sdk.NewAttribute(types.AttributeKeyAddress, msg.Address),
 		),
 		sdk.NewEvent(
