@@ -12,6 +12,7 @@ var (
 	EventUpdateRoyaltiesType    = "update_royalties"
 	EventUpdatePriceType        = "update_price"
 	EventAddAdmin               = "add_admin"
+	EventRemoveAdmin            = "remove_admin"
 
 	AttributeValueCategory = ModuleName
 
@@ -23,6 +24,6 @@ var (
 	AttributeKeyPrice        = "price"
 	AttributeKeyBuyer        = "buyer"
 	AttributeKeyOwner        = "owner"
-	AttributeKeyNewAdmin     = "new_admin"
+	AttributeKeyAddress      = "address"
 	AttributeKeyUID          = "uid"
 )

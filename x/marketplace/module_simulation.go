@@ -68,6 +68,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgAddAdmin int = 100
 
+	opWeightMsgRemoveAdmin = "op_weight_msg_remove_admin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRemoveAdmin int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -221,6 +225,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgAddAdmin,
 		marketplacesimulation.SimulateMsgAddAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgRemoveAdmin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveAdmin, &weightMsgRemoveAdmin, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveAdmin = defaultWeightMsgRemoveAdmin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveAdmin,
+		marketplacesimulation.SimulateMsgRemoveAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

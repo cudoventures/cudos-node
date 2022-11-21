@@ -7,16 +7,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) AddAdmin(goCtx context.Context, msg *types.MsgAddAdmin) (*types.MsgAddAdminResponse, error) {
+func (k msgServer) RemoveAdmin(goCtx context.Context, msg *types.MsgRemoveAdmin) (*types.MsgRemoveAdminResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.AddAdmin(ctx, msg.Address, msg.Creator); err != nil {
-		return &types.MsgAddAdminResponse{}, err
+	if err := k.Keeper.RemoveAdmin(ctx, msg.Address, msg.Creator); err != nil {
+		return &types.MsgRemoveAdminResponse{}, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
-			types.EventAddAdmin,
+			types.EventRemoveAdmin,
 			sdk.NewAttribute(types.AttributeKeyAddress, msg.Address),
 		),
 		sdk.NewEvent(
@@ -26,5 +26,5 @@ func (k msgServer) AddAdmin(goCtx context.Context, msg *types.MsgAddAdmin) (*typ
 		),
 	})
 
-	return &types.MsgAddAdminResponse{}, nil
+	return &types.MsgRemoveAdminResponse{}, nil
 }
