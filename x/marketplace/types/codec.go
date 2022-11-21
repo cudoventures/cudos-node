@@ -15,7 +15,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRemoveNft{}, "marketplace/RemoveNft", nil)
 	cdc.RegisterConcrete(&MsgVerifyCollection{}, "marketplace/VerifyCollection", nil)
 	cdc.RegisterConcrete(&MsgUnverifyCollection{}, "marketplace/UnverifyCollection", nil)
-	cdc.RegisterConcrete(&MsgTransferAdminPermission{}, "marketplace/TransferAdminPermission", nil)
 	cdc.RegisterConcrete(&MsgCreateCollection{}, "marketplace/CreateCollection", nil)
 	cdc.RegisterConcrete(&MsgUpdateRoyalties{}, "marketplace/UpdateRoyalties", nil)
 	cdc.RegisterConcrete(&MsgUpdatePrice{}, "marketplace/UpdatePrice", nil)
@@ -43,9 +42,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUnverifyCollection{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgTransferAdminPermission{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateCollection{},

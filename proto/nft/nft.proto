@@ -60,8 +60,6 @@ message Collection {
 message ApprovedAddresses {
     option (gogoproto.equal) = true;
     map<string, ApprovedAddressesData> approvedAddresses = 1;
-
-
 }
 
 message ApprovedAddressesData {

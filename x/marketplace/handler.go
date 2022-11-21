@@ -38,9 +38,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case *types.MsgUnverifyCollection:
 			res, err := msgServer.UnverifyCollection(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *types.MsgTransferAdminPermission:
-			res, err := msgServer.TransferAdminPermission(sdk.WrapSDKContext(ctx), msg)
-			return sdk.WrapServiceResult(ctx, res, err)
 		case *types.MsgCreateCollection:
 			res, err := msgServer.CreateCollection(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)

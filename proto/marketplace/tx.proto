@@ -19,7 +19,6 @@ service Msg {
   rpc RemoveNft(MsgRemoveNft) returns (MsgRemoveNftResponse);
   rpc VerifyCollection(MsgVerifyCollection) returns (MsgVerifyCollectionResponse);
   rpc UnverifyCollection(MsgUnverifyCollection) returns (MsgUnverifyCollectionResponse);
-  rpc TransferAdminPermission(MsgTransferAdminPermission) returns (MsgTransferAdminPermissionResponse);
   rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
   rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
   rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
@@ -92,14 +91,6 @@ message MsgUnverifyCollection {
 }
 
 message MsgUnverifyCollectionResponse {
-}
-
-message MsgTransferAdminPermission {
-  string creator = 1;
-  string newAdmin = 2;
-}
-
-message MsgTransferAdminPermissionResponse {
 }
 
 message MsgCreateCollection {

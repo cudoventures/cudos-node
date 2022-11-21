@@ -18,7 +18,7 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_marketplace"
 
-	AdminDenom = "cudosMarketplaceAdmin"
+	AdminDenom = "cudosAdmin"
 )
 
 func KeyPrefix(p string) []byte {
@@ -47,6 +47,10 @@ func KeyNftDenomTokenID(denomID, tokenID string) []byte {
 	return append(key, KeyPrefix(tokenID)...)
 }
 
+func KeyAdmins() []byte {
+	return append(KeyPrefix(AdminsKey), delimiter...)
+}
+
 var delimiter = []byte("/")
 
 const (
@@ -59,4 +63,8 @@ const (
 	NftKey             = "Nft-value-"
 	NftCountKey        = "Nft-count-"
 	NftDenomTokenIDKey = "Nft-denom-token-id-"
+)
+
+const (
+	AdminsKey = "Admins-"
 )

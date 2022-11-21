@@ -82,7 +82,6 @@ type Nft struct {
 	EventRemoveNftType               = "remove_nft"
 	EventVerifyCollectionType        = "verify_collection"
 	EventUnverifyCollectionType      = "unverify_collection"
-  EventTransferAdminPermissionType = "transfer_admin_permission"
 ```
 
 ## Full commands info

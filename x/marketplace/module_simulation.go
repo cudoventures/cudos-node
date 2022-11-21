@@ -52,10 +52,6 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUnverifyCollection int = 100
 
-	opWeightMsgTransferAdminPermission = "op_weight_msg_transfer_admin_permission"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgTransferAdminPermission int = 100
-
 	opWeightMsgCreateCollection = "op_weight_msg_create_collection"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateCollection int = 100
@@ -177,17 +173,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUnverifyCollection,
 		marketplacesimulation.SimulateMsgUnverifyCollection(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgTransferAdminPermission int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgTransferAdminPermission, &weightMsgTransferAdminPermission, nil,
-		func(_ *rand.Rand) {
-			weightMsgTransferAdminPermission = defaultWeightMsgTransferAdminPermission
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgTransferAdminPermission,
-		marketplacesimulation.SimulateMsgTransferAdminPermission(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgCreateCollection int
