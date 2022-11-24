@@ -37,10 +37,11 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdRemoveNft())
 	cmd.AddCommand(CmdVerifyCollection())
 	cmd.AddCommand(CmdUnverifyCollection())
-	cmd.AddCommand(CmdTransferAdminPermission())
 	cmd.AddCommand(CmdCreateCollection())
 	cmd.AddCommand(CmdUpdateRoyalties())
 	cmd.AddCommand(CmdUpdatePrice())
+	cmd.AddCommand(CmdAddAdmin())
+	cmd.AddCommand(CmdRemoveAdmin())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

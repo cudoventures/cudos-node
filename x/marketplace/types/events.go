@@ -1,17 +1,18 @@
 package types
 
 var (
-	EventPublishCollectionType       = "publish_collection"
-	EventPublishNftType              = "publish_nft"
-	EventBuyNftType                  = "buy_nft"
-	EventMintNftType                 = "marketplace_mint_nft"
-	EventRemoveNftType               = "remove_nft"
-	EventTransferAdminPermissionType = "transfer_admin_permission"
-	EventVerifyCollectionType        = "verify_collection"
-	EventUnverifyCollectionType      = "unverify_collection"
-	EventCreateCollectionType        = "create_collection"
-	EventUpdateRoyaltiesType         = "update_royalties"
-	EventUpdatePriceType             = "update_price"
+	EventPublishCollectionType  = "publish_collection"
+	EventPublishNftType         = "publish_nft"
+	EventBuyNftType             = "buy_nft"
+	EventMintNftType            = "marketplace_mint_nft"
+	EventRemoveNftType          = "remove_nft"
+	EventVerifyCollectionType   = "verify_collection"
+	EventUnverifyCollectionType = "unverify_collection"
+	EventCreateCollectionType   = "create_collection"
+	EventUpdateRoyaltiesType    = "update_royalties"
+	EventUpdatePriceType        = "update_price"
+	EventAddAdminType           = "add_admin"
+	EventRemoveAdminType        = "remove_admin"
 
 	AttributeValueCategory = ModuleName
 
@@ -23,6 +24,6 @@ var (
 	AttributeKeyPrice        = "price"
 	AttributeKeyBuyer        = "buyer"
 	AttributeKeyOwner        = "owner"
-	AttributeKeyNewAdmin     = "new_admin"
+	AttributeKeyAddress      = "address"
 	AttributeKeyUID          = "uid"
 )

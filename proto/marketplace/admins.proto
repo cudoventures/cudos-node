@@ -5,7 +5,8 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
-// Params defines the parameters for the module.
-message Params {
-  option (gogoproto.goproto_stringer) = false;
+message Admins {
+    option (gogoproto.equal) = true;
+
+    repeated string addresses = 1 [(gogoproto.nullable) = false];
 }

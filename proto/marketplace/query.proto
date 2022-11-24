@@ -43,6 +43,11 @@ service Query {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/collection_by_denom_id/{denomId}";
 	}
 
+// Queries a list of ListAdmins items.
+	rpc ListAdmins(QueryListAdminsRequest) returns (QueryListAdminsResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/list_admins";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -95,6 +100,13 @@ message QueryCollectionByDenomIdRequest {
 
 message QueryCollectionByDenomIdResponse {
 	Collection Collection = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryListAdminsRequest {
+}
+
+message QueryListAdminsResponse {
+	repeated string Admins = 1 [(gogoproto.nullable) = false];
 }
 
 // this line is used by starport scaffolding # 3

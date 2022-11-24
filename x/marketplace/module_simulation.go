@@ -52,10 +52,6 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUnverifyCollection int = 100
 
-	opWeightMsgTransferAdminPermission = "op_weight_msg_transfer_admin_permission"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgTransferAdminPermission int = 100
-
 	opWeightMsgCreateCollection = "op_weight_msg_create_collection"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgCreateCollection int = 100
@@ -67,6 +63,14 @@ const (
 	opWeightMsgUpdatePrice = "op_weight_msg_update_price"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgUpdatePrice int = 100
+
+	opWeightMsgAddAdmin = "op_weight_msg_add_admin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddAdmin int = 100
+
+	opWeightMsgRemoveAdmin = "op_weight_msg_remove_admin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgRemoveAdmin int = 100
 
 	// this line is used by starport scaffolding # simapp/module/const
 )
@@ -179,17 +183,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		marketplacesimulation.SimulateMsgUnverifyCollection(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgTransferAdminPermission int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgTransferAdminPermission, &weightMsgTransferAdminPermission, nil,
-		func(_ *rand.Rand) {
-			weightMsgTransferAdminPermission = defaultWeightMsgTransferAdminPermission
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgTransferAdminPermission,
-		marketplacesimulation.SimulateMsgTransferAdminPermission(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgCreateCollection int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateCollection, &weightMsgCreateCollection, nil,
 		func(_ *rand.Rand) {
@@ -221,6 +214,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgUpdatePrice,
 		marketplacesimulation.SimulateMsgUpdatePrice(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddAdmin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddAdmin, &weightMsgAddAdmin, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddAdmin = defaultWeightMsgAddAdmin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddAdmin,
+		marketplacesimulation.SimulateMsgAddAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgRemoveAdmin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgRemoveAdmin, &weightMsgRemoveAdmin, nil,
+		func(_ *rand.Rand) {
+			weightMsgRemoveAdmin = defaultWeightMsgRemoveAdmin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgRemoveAdmin,
+		marketplacesimulation.SimulateMsgRemoveAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

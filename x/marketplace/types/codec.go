@@ -15,10 +15,11 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRemoveNft{}, "marketplace/RemoveNft", nil)
 	cdc.RegisterConcrete(&MsgVerifyCollection{}, "marketplace/VerifyCollection", nil)
 	cdc.RegisterConcrete(&MsgUnverifyCollection{}, "marketplace/UnverifyCollection", nil)
-	cdc.RegisterConcrete(&MsgTransferAdminPermission{}, "marketplace/TransferAdminPermission", nil)
 	cdc.RegisterConcrete(&MsgCreateCollection{}, "marketplace/CreateCollection", nil)
 	cdc.RegisterConcrete(&MsgUpdateRoyalties{}, "marketplace/UpdateRoyalties", nil)
 	cdc.RegisterConcrete(&MsgUpdatePrice{}, "marketplace/UpdatePrice", nil)
+	cdc.RegisterConcrete(&MsgAddAdmin{}, "marketplace/AddAdmin", nil)
+	cdc.RegisterConcrete(&MsgRemoveAdmin{}, "marketplace/RemoveAdmin", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -45,9 +46,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgUnverifyCollection{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgTransferAdminPermission{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgCreateCollection{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
@@ -55,6 +53,12 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgUpdatePrice{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAddAdmin{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgRemoveAdmin{},
 	)
 	// this line is used by starport scaffolding # 3
 

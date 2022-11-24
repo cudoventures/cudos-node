@@ -329,3 +329,94 @@ func (k Keeper) SetNftPrice(ctx sdk.Context, sender string, id uint64, price sdk
 	k.SetNft(ctx, nft)
 	return nil
 }
+
+func (k Keeper) GetAdmins(ctx sdk.Context) ([]string, error) {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types.KeyAdmins())
+	if b == nil {
+		return []string{}, nil
+	}
+
+	var admins types.Admins
+	k.cdc.MustUnmarshal(b, &admins)
+
+	return admins.Addresses, nil
+}
+
+func (k Keeper) IsAdmin(ctx sdk.Context, address string) error {
+	admins, err := k.GetAdmins(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, admin := range admins {
+		if admin == address {
+			return nil
+		}
+	}
+
+	return sdkerrors.Wrapf(types.ErrNotAdmin, "'%s' is not admin", address)
+}
+
+func (k Keeper) isCudosAdmin(ctx sdk.Context, address string) error {
+	accAddr, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return err
+	}
+
+	balance := k.bankKeeper.GetBalance(ctx, accAddr, types.AdminDenom)
+	if balance.IsPositive() {
+		return nil
+	}
+
+	return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "Insufficient permissions. Address '%s' has no %s tokens", address, types.AdminDenom)
+}
+
+func (k Keeper) setAdmins(ctx sdk.Context, admins []string) {
+	b := k.cdc.MustMarshal(&types.Admins{Addresses: admins})
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.KeyAdmins(), b)
+}
+
+func (k Keeper) AddAdmin(ctx sdk.Context, admin, creator string) error {
+	if err := k.isCudosAdmin(ctx, creator); err != nil {
+		return err
+	}
+
+	admins, err := k.GetAdmins(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, address := range admins {
+		if address == admin {
+			return sdkerrors.Wrapf(types.ErrAlreadyAdmin, "'%s' is already admin.", admin)
+		}
+	}
+
+	admins = append(admins, admin)
+
+	k.setAdmins(ctx, admins)
+
+	return nil
+}
+
+func (k Keeper) RemoveAdmin(ctx sdk.Context, admin, creator string) error {
+	if err := k.isCudosAdmin(ctx, creator); err != nil {
+		return err
+	}
+
+	admins, err := k.GetAdmins(ctx)
+	if err != nil {
+		return err
+	}
+
+	for i, address := range admins {
+		if address == admin {
+			k.setAdmins(ctx, append(admins[:i], admins[i+1:]...))
+			return nil
+		}
+	}
+
+	return sdkerrors.Wrapf(types.ErrNotAdmin, "'%s' is not admin", admin)
+}

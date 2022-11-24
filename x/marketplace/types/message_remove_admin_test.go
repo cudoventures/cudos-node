@@ -8,23 +8,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgTransferAdminPermission_ValidateBasic(t *testing.T) {
+func TestMsgRemoveAdmin_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgTransferAdminPermission
+		msg  MsgRemoveAdmin
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgTransferAdminPermission{
+			msg: MsgRemoveAdmin{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgTransferAdminPermission{
-				Creator:  sample.AccAddress(),
-				NewAdmin: sample.AccAddress(),
+			msg: MsgRemoveAdmin{
+				Creator: sample.AccAddress(),
+				Address: sample.AccAddress(),
 			},
 		},
 	}

@@ -12,22 +12,22 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdTransferAdminPermission() *cobra.Command {
+func CmdRemoveAdmin() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "transfer-admin-permission [new-admin]",
-		Short: "Transfer admin permission to new address",
+		Use:   "remove-admin [address]",
+		Short: "Remove admin",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argNewAdmin := args[0]
+			argAddress := args[0]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgTransferAdminPermission(
+			msg := types.NewMsgRemoveAdmin(
 				clientCtx.GetFromAddress().String(),
-				argNewAdmin,
+				argAddress,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
