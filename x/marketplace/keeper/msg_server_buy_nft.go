@@ -16,13 +16,17 @@ func (k msgServer) BuyNft(goCtx context.Context, msg *types.MsgBuyNft) (*types.M
 		return nil, err
 	}
 
-	if err := k.Keeper.BuyNFT(ctx, msg.Id, buyer); err != nil {
+	nft, err := k.Keeper.BuyNFT(ctx, msg.Id, buyer)
+
+	if err != nil {
 		return &types.MsgBuyNftResponse{}, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventBuyNftType,
+			sdk.NewAttribute(types.AttributeKeyDenomID, nft.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, nft.TokenId),
 			sdk.NewAttribute(types.AttributeKeyNftID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyBuyer, msg.Creator),
 		),
