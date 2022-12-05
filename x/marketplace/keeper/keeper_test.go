@@ -387,7 +387,7 @@ func TestBuyNftShouldFailForNotExistingId(t *testing.T) {
 
 	kp, _, _, ctx := testkeeper.MarketplaceKeeper(t)
 
-	err = kp.BuyNFT(ctx, 0, owner)
+	_, err = kp.BuyNFT(ctx, 0, owner)
 	require.Equal(t, "nft with id (0) is not found for sale: nft not found", err.Error())
 }
 
@@ -407,7 +407,7 @@ func TestBuyNftShouldFailWhenBuyingOwnNft(t *testing.T) {
 	publishedId, err := kp.PublishNFT(ctx, types.NewNft("1", "testdenom", owner.String(), sdk.NewCoin("acudos", sdk.NewInt(10000))))
 	require.NoError(t, err)
 
-	err = kp.BuyNFT(ctx, publishedId, owner)
+	_, err = kp.BuyNFT(ctx, publishedId, owner)
 	require.Equal(t, "cannot buy own nft: cannot buy own nft", err.Error())
 }
 
@@ -444,7 +444,8 @@ func TestBuyNftShouldBeSuccessfulWithResaleRoyalties(t *testing.T) {
 	err = bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyer, sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewInt(price))))
 	require.NoError(t, err)
 
-	require.NoError(t, kp.BuyNFT(ctx, publishedId, buyer))
+	_, err = kp.BuyNFT(ctx, publishedId, buyer)
+	require.NoError(t, err, buyer)
 
 	royaltyReceiverAddr, err := sdk.AccAddressFromBech32(royaltyReceiver)
 	require.NoError(t, err)
@@ -483,7 +484,8 @@ func TestBuyNftShouldBeSuccessfulWithoutResaleRoyalties(t *testing.T) {
 	err = bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, buyer, sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewInt(price))))
 	require.NoError(t, err)
 
-	require.NoError(t, kp.BuyNFT(ctx, publishedId, buyer))
+	_, err = kp.BuyNFT(ctx, publishedId, buyer)
+	require.NoError(t, err)
 
 	require.Equal(t, true, bankKeeper.GetBalance(ctx, owner, "acudos").Amount.Equal(sdk.NewInt(10000)))
 
@@ -514,7 +516,7 @@ func TestBuyNftShouldFailWhenInsufficientFunds(t *testing.T) {
 	buyer, err := sdk.AccAddressFromBech32(genAddresses(1)[0])
 	require.NoError(t, err)
 
-	err = kp.BuyNFT(ctx, publishedId, buyer)
+	_, err = kp.BuyNFT(ctx, publishedId, buyer)
 	require.Equal(t, "0acudos is smaller than 10000acudos: insufficient funds", err.Error())
 }
 
@@ -722,7 +724,7 @@ func TestSetNftPriceShouldFailIfNftNotFound(t *testing.T) {
 	require.NoError(t, err)
 
 	kp, _, _, ctx := testkeeper.MarketplaceKeeper(t)
-	err = kp.SetNftPrice(ctx, owner.String(), 0, sdk.NewCoin("acudos", sdk.NewInt(1)))
+	_, err = kp.SetNftPrice(ctx, owner.String(), 0, sdk.NewCoin("acudos", sdk.NewInt(1)))
 	require.Equal(t, "NFT with id 0 not found: nft not found", err.Error())
 }
 
@@ -746,7 +748,7 @@ func TestSetNftPriceShouldFailIfNotOwner(t *testing.T) {
 	setter, err := sdk.AccAddressFromBech32(genAddresses(1)[0])
 	require.NoError(t, err)
 
-	err = kp.SetNftPrice(ctx, setter.String(), nftId, sdk.NewCoin("acudos", sdk.NewInt(5)))
+	_, err = kp.SetNftPrice(ctx, setter.String(), nftId, sdk.NewCoin("acudos", sdk.NewInt(5)))
 	require.Equal(t, fmt.Sprintf("owner of NFT 0 is %s, not %s: not collection owner", owner.String(), setter.String()), err.Error())
 }
 
@@ -767,7 +769,7 @@ func TestSetNftPrice(t *testing.T) {
 	nftId, err := kp.PublishNFT(ctx, types.NewNft("1", "testdenom", owner.String(), sdk.NewCoin("acudos", sdk.NewInt(10000))))
 	require.NoError(t, err)
 
-	err = kp.SetNftPrice(ctx, owner.String(), nftId, sdk.NewCoin("acudos", sdk.NewInt(5)))
+	_, err = kp.SetNftPrice(ctx, owner.String(), nftId, sdk.NewCoin("acudos", sdk.NewInt(5)))
 	require.NoError(t, err)
 
 	nft, found := kp.GetNft(ctx, nftId)

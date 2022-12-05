@@ -20,7 +20,7 @@ func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types
 		return &types.MsgMintNftResponse{}, err
 	}
 
-	nftId, err := k.Keeper.MintNFT(ctx, msg.DenomId, msg.Name, msg.Uri, msg.Data, msg.Price, recipient, sender)
+	tokenId, err := k.Keeper.MintNFT(ctx, msg.DenomId, msg.Name, msg.Uri, msg.Data, msg.Price, recipient, sender)
 	if err != nil {
 		return &types.MsgMintNftResponse{}, err
 	}
@@ -29,7 +29,7 @@ func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types
 		sdk.NewEvent(
 			types.EventMintNftType,
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeKeyNftID, nftId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, tokenId),
 			sdk.NewAttribute(types.AttributeKeyBuyer, msg.Recipient),
 			sdk.NewAttribute(types.AttributeKeyUID, msg.Uid),
 		),

@@ -16,13 +16,16 @@ func (k msgServer) RemoveNft(goCtx context.Context, msg *types.MsgRemoveNft) (*t
 		return nil, err
 	}
 
-	if err := k.RemoveNFT(ctx, msg.Id, owner); err != nil {
+	nft, err := k.RemoveNFT(ctx, msg.Id, owner)
+	if err != nil {
 		return &types.MsgRemoveNftResponse{}, err
 	}
 
 	ctx.EventManager().EmitEvents(sdk.Events{
 		sdk.NewEvent(
 			types.EventRemoveNftType,
+			sdk.NewAttribute(types.AttributeKeyDenomID, nft.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, nft.TokenId),
 			sdk.NewAttribute(types.AttributeKeyNftID, strconv.FormatUint(msg.Id, 10)),
 			sdk.NewAttribute(types.AttributeKeyOwner, msg.Creator),
 		),
