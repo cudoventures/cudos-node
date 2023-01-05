@@ -6,11 +6,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/testutil/network"
 	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func TestPublishAuction(t *testing.T) {
@@ -27,12 +30,11 @@ func TestPublishAuction(t *testing.T) {
 	}
 
 	for _, tc := range []struct {
-		desc   string
-		args   []string
-		errMsg string
+		desc    string
+		args    []string
+		wantErr error
 	}{
 		{
-			// todo make a valid test case with DutchAuction
 			desc: "valid",
 			args: []string{
 				"1",
@@ -41,46 +43,52 @@ func TestPublishAuction(t *testing.T) {
 				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
 			},
 		},
+		// todo make a valid test case with DutchAuction
 		{
-			desc: "invalid tokenID arg",
+			desc: "invalid denom id",
+			args: []string{
+				"1",
+				"123",
+				"25h",
+				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
+			},
+			wantErr: nfttypes.ErrInvalidNFT,
+		},
+		{
+			desc: "invalid token id",
 			args: []string{
 				"invalid",
 				"xyz",
 				"25h",
 				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
 			},
-			errMsg: "invalid nft: invalid address",
+			wantErr: nfttypes.ErrInvalidNFT,
 		},
 		{
-			desc: "invalid auctionType arg",
+			desc: "invalid auction type",
 			args: []string{
 				"1",
 				"xyz",
 				"25h",
 				`{"@type":"/Invalid","minPrice":{"denom":"stake","amount":"0"}}`,
 			},
-			errMsg: "unable to resolve type URL /Invalid",
+			wantErr: sdkerrors.ErrInvalidType,
 		},
 		{
-			desc: "invalid duration arg",
+			desc: "invalid duration",
 			args: []string{
 				"1",
 				"xyz",
 				"24",
 				"",
 			},
-			errMsg: "time: missing unit in duration \"24\"",
+			wantErr: types.ErrInvalidAuctionDuration,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := append(tc.args, flags...)
 			_, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.CmdPublishAuction(), args)
-
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
-			}
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

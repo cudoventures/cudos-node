@@ -61,7 +61,7 @@ func simulateMsgPlaceBid(
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
 		}
 
-		auctionID, err := k.PublishAuction(ctx, a)
+		auctionId, err := k.PublishAuction(ctx, a)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
 		}
@@ -69,7 +69,7 @@ func simulateMsgPlaceBid(
 		bidder, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, bidder.Address)
 
-		msg := types.NewMsgPlaceBid(bidder.Address.String(), auctionID, sdk.NewCoin("acudos", sdk.NewInt(100000000000)))
+		msg := types.NewMsgPlaceBid(bidder.Address.String(), auctionId, sdk.NewCoin("acudos", sdk.NewInt(100000000000)))
 
 		spendable := bk.SpendableCoins(ctx, bidder.Address)
 		fees, err := simtypes.RandomFees(r, ctx, spendable)

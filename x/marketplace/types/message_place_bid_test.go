@@ -9,40 +9,50 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var (
-	amount = sdk.NewCoin("cosmos", sdk.OneInt())
-)
-
 func TestMsgPlaceBid_ValidateBasic(t *testing.T) {
-	tests := []struct {
-		name string
-		msg  MsgPlaceBid
-		err  error
+	for _, tc := range []struct {
+		desc    string
+		arrange func(msg *MsgPlaceBid)
+		wantErr error
 	}{
 		{
-			// todo cover all ValidateBasic() errors
-			name: "invalid address",
-			msg: MsgPlaceBid{
-				Bidder: "invalid_address",
-			},
-			err: sdkerrors.ErrInvalidAddress,
-		}, {
-			name: "valid address",
-			msg: MsgPlaceBid{
-				Bidder:    sample.AccAddress(),
-				AuctionId: 1,
-				Amount:    amount,
-			},
+			desc:    "valid",
+			arrange: func(msg *MsgPlaceBid) {},
 		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.msg.ValidateBasic()
-			if tt.err != nil {
-				require.ErrorIs(t, err, tt.err)
-				return
-			}
-			require.NoError(t, err)
+		{
+			desc: "zero amount",
+			arrange: func(msg *MsgPlaceBid) {
+				msg.Amount = sdk.Coin{"acudos", sdk.ZeroInt()}
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "invalid amount denom",
+			arrange: func(msg *MsgPlaceBid) {
+				msg.Amount = sdk.Coin{"", sdk.ZeroInt()}
+
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "invalid address",
+			arrange: func(msg *MsgPlaceBid) {
+				msg.Bidder = "invalid"
+			},
+			wantErr: sdkerrors.ErrInvalidAddress,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			msg := NewMsgPlaceBid(
+				sample.AccAddress(),
+				0,
+				sdk.NewCoin("acudos", sdk.OneInt()),
+			)
+
+			tc.arrange(msg)
+
+			err := msg.ValidateBasic()
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

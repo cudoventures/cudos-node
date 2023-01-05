@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +26,7 @@ func CmdPublishAuction() *cobra.Command {
 
 			duration, err := time.ParseDuration(args[2])
 			if err != nil {
-				return err
+				return types.ErrInvalidAuctionDuration
 			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -33,12 +34,12 @@ func CmdPublishAuction() *cobra.Command {
 				return err
 			}
 
-			var auctionType types.AuctionType
-			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &auctionType); err != nil {
-				return err
+			var at types.AuctionType
+			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &at); err != nil {
+				return sdkerrors.ErrInvalidType
 			}
 
-			msg, err := types.NewMsgPublishAuction(clientCtx.GetFromAddress().String(), denomId, tokenId, duration, auctionType)
+			msg, err := types.NewMsgPublishAuction(clientCtx.GetFromAddress().String(), denomId, tokenId, duration, at)
 			if err != nil {
 				return err
 			}

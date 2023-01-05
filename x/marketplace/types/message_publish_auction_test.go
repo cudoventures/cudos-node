@@ -5,29 +5,77 @@ import (
 	"time"
 
 	"github.com/CudoVentures/cudos-node/testutil/sample"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
-	tests := []struct {
+	for _, tc := range []struct {
 		desc    string
 		arrange func(msg *MsgPublishAuction)
-		errMsg  string
+		wantErr error
 	}{
 		{
-			desc:    "valid",
+			desc:    "valid english auction",
 			arrange: func(msg *MsgPublishAuction) {},
+		},
+		{
+			desc: "english auction zero amount",
+			arrange: func(msg *MsgPublishAuction) {
+				err := msg.SetAuctionType(&EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.ZeroInt())})
+				require.NoError(t, err)
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "english auction invalid amount denom",
+			arrange: func(msg *MsgPublishAuction) {
+				err := msg.SetAuctionType(&EnglishAuction{MinPrice: sdk.Coin{"", sdk.OneInt()}})
+				require.NoError(t, err)
+				sdk.ZeroInt().Sub(sdk.OneInt())
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		// todo validate DutchAuction
+		{
+			desc: "invalid auction type",
+			arrange: func(msg *MsgPublishAuction) {
+				msg.AuctionType = &types.Any{}
+			},
+			wantErr: sdkerrors.ErrInvalidType,
+		},
+		{
+			desc: "duration less than 24 hours",
+			arrange: func(msg *MsgPublishAuction) {
+				msg.Duration = time.Hour * 23
+			},
+			wantErr: ErrInvalidAuctionDuration,
+		},
+		{
+			desc: "invalid denom id",
+			arrange: func(msg *MsgPublishAuction) {
+				msg.DenomId = "123"
+			},
+			wantErr: nfttypes.ErrInvalidNFT,
+		},
+		{
+			desc: "invalid token id",
+			arrange: func(msg *MsgPublishAuction) {
+				msg.TokenId = "invalid"
+			},
+			wantErr: nfttypes.ErrInvalidNFT,
 		},
 		{
 			desc: "invalid address",
 			arrange: func(msg *MsgPublishAuction) {
 				msg.Creator = "invalid"
 			},
-			errMsg: "",
+			wantErr: sdkerrors.ErrInvalidAddress,
 		},
-	}
-	for _, tc := range tests {
+	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			msg, err := NewMsgPublishAuction(
 				sample.AccAddress(),
@@ -40,11 +88,8 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 
 			tc.arrange(msg)
 
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-				return
-			}
-			require.NoError(t, err)
+			err = msg.ValidateBasic()
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

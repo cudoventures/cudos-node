@@ -20,14 +20,14 @@ func CmdPlaceBid() *cobra.Command {
 		// todo example
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argAuctionId, err := strconv.ParseUint(args[0], 10, 64)
+			auctionId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return err
+				return types.ErrInvalidAuctionId
 			}
 
-			argAmount, err := sdk.ParseCoinNormalized(args[1])
+			amount, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
-				return err
+				return types.ErrInvalidPrice
 			}
 
 			ctx, err := client.GetClientTxContext(cmd)
@@ -35,7 +35,7 @@ func CmdPlaceBid() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgPlaceBid(ctx.GetFromAddress().String(), argAuctionId, argAmount)
+			msg := types.NewMsgPlaceBid(ctx.GetFromAddress().String(), auctionId, amount)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

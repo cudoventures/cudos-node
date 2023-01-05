@@ -55,7 +55,7 @@ func CmdShowAuction() *cobra.Command {
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return err
+				return types.ErrInvalidAuctionId
 			}
 
 			params := &types.QueryGetAuctionRequest{

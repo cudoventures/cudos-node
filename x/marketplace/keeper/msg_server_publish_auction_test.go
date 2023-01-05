@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -15,6 +14,7 @@ import (
 	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
@@ -27,7 +27,7 @@ func TestMsgServerPublishAuction(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string
 		arrange func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context)
-		errMsg  string
+		wantErr error
 	}{
 		{
 			desc:    "valid english auction",
@@ -58,7 +58,7 @@ func TestMsgServerPublishAuction(t *testing.T) {
 				err := nk.SoftLockNFT(ctx, accs[0].Address.String(), denomId, tokenId)
 				require.NoError(t, err)
 			},
-			errMsg: fmt.Sprintf("Failed to acquire soft lock on Denom asd NFT 1 for marketplace because already acquired by %s: already soft locked", accs[0].Address.String()),
+			wantErr: nfttypes.ErrAlreadySoftLocked,
 		},
 		{
 			desc: "already published auction",
@@ -66,7 +66,7 @@ func TestMsgServerPublishAuction(t *testing.T) {
 				_, err := msgServer.PublishAuction(ctx, msg)
 				require.NoError(t, err)
 			},
-			errMsg: "nft is already published: nft already published",
+			wantErr: types.ErrNftAlreadyPublished,
 		},
 		{
 			desc: "already published nft",
@@ -74,39 +74,38 @@ func TestMsgServerPublishAuction(t *testing.T) {
 				_, err := msgServer.PublishNft(ctx, &types.MsgPublishNft{accs[0].Address.String(), tokenId, denomId, sdk.NewCoin("stake", sdk.OneInt())})
 				require.NoError(t, err)
 			},
-			errMsg: "nft is already published: nft already published",
+			wantErr: types.ErrNftAlreadyPublished,
 		},
 		{
 			desc: "invalid AuctionType",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.AuctionType = &codectypes.Any{}
 			},
-			errMsg: "expected <nil>, got <nil>: invalid type",
+			wantErr: sdkerrors.ErrInvalidType,
 		},
 		{
 			desc: "not owner",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.Creator = accs[1].Address.String()
 			},
-			errMsg: fmt.Sprintf("%s not nft owner or approved operator for token id (1) from denom (asd): not nft owner", accs[1].Address.String()),
+			wantErr: types.ErrNotNftOwner,
 		},
 		{
 			desc: "not existing nft",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.TokenId = tokenId + tokenId
 			},
-			errMsg: "not found NFT: asd: unknown nft collection",
+			wantErr: types.ErrNftNotFound,
 		},
 		{
 			desc: "invalid creator",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.Creator = ""
 			},
-			errMsg: "empty address string is not allowed",
+			wantErr: sdkerrors.ErrInvalidAddress,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-
 			k, nk, _, ctx := keepertest.MarketplaceKeeper(t)
 			msgServer := keeper.NewMsgServerImpl(*k)
 
@@ -122,12 +121,7 @@ func TestMsgServerPublishAuction(t *testing.T) {
 			tc.arrange(msg, msgServer, nk, ctx)
 
 			_, err = msgServer.PublishAuction(ctx, msg)
-
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
-			}
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

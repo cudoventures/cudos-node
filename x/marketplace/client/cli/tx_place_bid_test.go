@@ -11,6 +11,7 @@ import (
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/testutil/network"
 	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 // todo check refactor
@@ -28,39 +29,34 @@ func TestPlaceBid(t *testing.T) {
 	}
 
 	for _, tc := range []struct {
-		desc   string
-		args   []string
-		errMsg string
+		desc    string
+		args    []string
+		wantErr error
 	}{
 		{
 			desc: "valid",
 			args: []string{"1", "1acudos"},
 		},
 		{
-			desc:   "invalid msg.ValidateBasic",
-			args:   []string{"1", "0acudos"},
-			errMsg: "amount must be positive: invalid price",
+			desc:    "error ValidateBasic",
+			args:    []string{"1", "0acudos"},
+			wantErr: types.ErrInvalidPrice,
 		},
 		{
-			desc:   "invalid coin arg",
-			args:   []string{"1", "invalid"},
-			errMsg: "invalid decimal coin expression: invalid",
+			desc:    "invalid amount",
+			args:    []string{"1", "invalid"},
+			wantErr: types.ErrInvalidPrice,
 		},
 		{
-			desc:   "invalid auctionID arg",
-			args:   []string{"invalid", "1acudos"},
-			errMsg: "strconv.ParseUint: parsing \"invalid\": invalid syntax",
+			desc:    "invalid auction id",
+			args:    []string{"invalid", "1acudos"},
+			wantErr: types.ErrInvalidAuctionId,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			args := append(tc.args, flags...)
 			_, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.CmdPlaceBid(), args)
-
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
-			}
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

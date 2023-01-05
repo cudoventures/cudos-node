@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -17,13 +18,12 @@ import (
 func TestAuctionQuerySingle(t *testing.T) {
 	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	// todo these auctions are completely empty and nothing is tested add auctionType and etc
 	msgs := createNAuction(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetAuctionRequest
 		response *types.QueryGetAuctionResponse
-		errMsg   string
+		wantErr  error
 	}{
 		{
 			desc:     "First",
@@ -38,23 +38,18 @@ func TestAuctionQuerySingle(t *testing.T) {
 		{
 			desc:    "KeyNotFound",
 			request: &types.QueryGetAuctionRequest{Id: uint64(len(msgs))},
-			errMsg:  "key not found",
+			wantErr: sdkerrors.ErrKeyNotFound,
 		},
 		{
-			desc:   "InvalidRequest",
-			errMsg: "rpc error: code = InvalidArgument desc = invalid request",
+			desc:    "InvalidRequest",
+			wantErr: status.Error(codes.InvalidArgument, "invalid request"),
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			response, err := keeper.Auction(wctx, tc.request)
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t,
-					nullify.Fill(tc.response),
-					nullify.Fill(response),
-				)
+			require.ErrorIs(t, err, tc.wantErr)
+			if err == nil {
+				require.Equal(t, nullify.Fill(tc.response), nullify.Fill(response))
 			}
 		})
 	}

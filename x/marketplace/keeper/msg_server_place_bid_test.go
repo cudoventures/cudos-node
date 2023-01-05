@@ -11,6 +11,8 @@ import (
 	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
@@ -25,7 +27,7 @@ func TestMsgServerPlaceBid(t *testing.T) {
 		desc         string
 		arrange      func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context)
 		addBlockTime time.Duration
-		errMsg       string
+		wantErr      error
 	}{
 		{
 			desc:    "valid",
@@ -37,14 +39,14 @@ func TestMsgServerPlaceBid(t *testing.T) {
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
 				msg.Amount = fund[0].AddAmount(sdk.OneInt())
 			},
-			errMsg: "10000acudos is smaller than 10001acudos: insufficient funds",
+			wantErr: sdkerrors.ErrInsufficientFunds,
 		},
 		{
 			desc: "invalid bidder",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
 				msg.Bidder = "invalid"
 			},
-			errMsg: "decoding bech32 failed: invalid bech32 string length 7",
+			wantErr: sdkerrors.ErrInvalidAddress,
 		},
 		{
 			desc: "bid lower than current bid",
@@ -52,48 +54,47 @@ func TestMsgServerPlaceBid(t *testing.T) {
 				_, err := msgServer.PlaceBid(ctx, msg)
 				require.NoError(t, err)
 			},
-			errMsg: "bid is lower than current bid: invalid price",
+			wantErr: types.ErrInvalidPrice,
 		},
 		{
 			desc: "bid lower than min price",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
 				msg.Amount = msg.Amount.SubAmount(sdk.OneInt())
 			},
-			errMsg: "bid is lower than auction minimum price: invalid price",
+			wantErr: types.ErrInvalidPrice,
 		},
 		{
 			desc:         "auction expired",
 			arrange:      func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {},
 			addBlockTime: time.Hour * 25,
-			errMsg:       "cannot place a bid for inactive auction 0: auction expired",
+			wantErr:      types.ErrAuctionExpired,
 		},
 		{
 			desc: "bidder same as creator",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
 				msg.Bidder = accs[0].Address.String()
 			},
-			errMsg: "cannot bid own auctions: cannot buy own nft",
+			wantErr: types.ErrCannotBuyOwnNft,
 		},
 		{
 			desc: "invalid auction id",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
 				msg.AuctionId++
 			},
-			errMsg: "auction with id (1) does not exist: auction not found",
+			wantErr: types.ErrAuctionNotFound,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			k, nk, bk, ctx := keepertest.MarketplaceKeeper(t)
 			msgServer := keeper.NewMsgServerImpl(*k)
 
-			if err := bk.MintCoins(ctx, types.ModuleName, fund); err != nil {
-				panic(err)
-			}
-			if err := bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, fund); err != nil {
-				panic(err)
-			}
+			err := bk.MintCoins(ctx, types.ModuleName, fund.Add(fund...))
+			require.NoError(t, err)
 
-			err := nk.IssueDenom(ctx, "asd", "asd", "{a:a,b:b}", "asd", "", accs[0].Address.String(), "", "", accs[0].Address)
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, fund)
+			require.NoError(t, err)
+
+			err = nk.IssueDenom(ctx, "asd", "asd", "{a:a,b:b}", "asd", "", accs[0].Address.String(), "", "", accs[0].Address)
 			require.NoError(t, err)
 
 			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", accs[0].Address, accs[0].Address)
@@ -109,16 +110,9 @@ func TestMsgServerPlaceBid(t *testing.T) {
 
 			tc.arrange(msg, msgServer, ctx)
 
-			if tc.addBlockTime > 0 {
-				ctx = ctx.WithBlockTime(time.Now().Add(tc.addBlockTime))
-			}
+			ctx = ctx.WithBlockTime(ctx.BlockTime().Add(tc.addBlockTime))
 			_, err = msgServer.PlaceBid(ctx, msg)
-
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
-			}
+			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}
 }

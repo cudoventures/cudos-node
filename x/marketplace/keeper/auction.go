@@ -33,45 +33,45 @@ func (k Keeper) SetAuctionCount(ctx sdk.Context, count uint64) {
 }
 
 // AppendAuction appends a auction in the store with a new id and update the count
-func (k Keeper) AppendAuction(ctx sdk.Context, auction types.Auction) (uint64, error) {
-	auction.Id = k.GetAuctionCount(ctx)
+func (k Keeper) AppendAuction(ctx sdk.Context, a types.Auction) (uint64, error) {
+	a.Id = k.GetAuctionCount(ctx)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
-	b, err := k.cdc.Marshal(&auction)
+	bz, err := k.cdc.Marshal(&a)
 	if err != nil {
 		return 0, err
 	}
 
-	store.Set(GetAuctionIDBytes(auction.Id), b)
-	k.SetAuctionCount(ctx, auction.Id+1)
-	return auction.Id, nil
+	store.Set(GetAuctionIDBytes(a.Id), bz)
+	k.SetAuctionCount(ctx, a.Id+1)
+	return a.Id, nil
 }
 
 // SetAuction set a specific auction in the store
-func (k Keeper) SetAuction(ctx sdk.Context, auction types.Auction) error {
+func (k Keeper) SetAuction(ctx sdk.Context, a types.Auction) error {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
-	b, err := k.cdc.Marshal(&auction)
+	bz, err := k.cdc.Marshal(&a)
 	if err != nil {
 		return err
 	}
 
-	store.Set(GetAuctionIDBytes(auction.Id), b)
+	store.Set(GetAuctionIDBytes(a.Id), bz)
 
 	return nil
 }
 
 // GetAuction returns a auction from its id
-func (k Keeper) GetAuction(ctx sdk.Context, id uint64) (val types.Auction, found bool) {
+func (k Keeper) GetAuction(ctx sdk.Context, id uint64) (a types.Auction, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
 	bz := store.Get(GetAuctionIDBytes(id))
 	if bz == nil {
-		return val, false
+		return a, false
 	}
 
-	if err := k.cdc.Unmarshal(bz, &val); err != nil {
-		return val, false
+	if err := k.cdc.Unmarshal(bz, &a); err != nil {
+		return a, false
 	}
 
-	return val, true
+	return a, true
 }
 
 // RemoveAuction removes a auction from the store
@@ -81,7 +81,7 @@ func (k Keeper) RemoveAuction(ctx sdk.Context, id uint64) {
 }
 
 // GetAllAuction returns all auction
-func (k Keeper) GetAllAuction(ctx sdk.Context) (list []types.Auction) {
+func (k Keeper) GetAllAuction(ctx sdk.Context) (a []types.Auction) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -90,7 +90,7 @@ func (k Keeper) GetAllAuction(ctx sdk.Context) (list []types.Auction) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Auction
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+		a = append(a, val)
 	}
 
 	return

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	nft "github.com/CudoVentures/cudos-node/x/nft/types"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -17,7 +18,7 @@ var (
 	_ sdk.Msg = &MsgPublishAuction{}
 )
 
-func NewMsgPublishAuction(creator string, denomId string, tokenId string, duration time.Duration, auctionType AuctionType) (*MsgPublishAuction, error) {
+func NewMsgPublishAuction(creator string, denomId string, tokenId string, duration time.Duration, at AuctionType) (*MsgPublishAuction, error) {
 	msg := &MsgPublishAuction{
 		Creator:  creator,
 		TokenId:  tokenId,
@@ -25,20 +26,20 @@ func NewMsgPublishAuction(creator string, denomId string, tokenId string, durati
 		Duration: duration,
 	}
 
-	err := msg.SetAuctionType(auctionType)
+	err := msg.SetAuctionType(at)
 	return msg, err
 }
 
 func (msg *MsgPublishAuction) GetAuctionType() (AuctionType, error) {
-	auctionType, ok := msg.AuctionType.GetCachedValue().(AuctionType)
+	at, ok := msg.AuctionType.GetCachedValue().(AuctionType)
 	if !ok {
 		return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T, got %T", (AuctionType)(nil), msg.AuctionType.GetCachedValue())
 	}
-	return auctionType, nil
+	return at, nil
 }
 
-func (msg *MsgPublishAuction) SetAuctionType(auctionType AuctionType) error {
-	any, err := types.NewAnyWithValue(auctionType)
+func (msg *MsgPublishAuction) SetAuctionType(at AuctionType) error {
+	any, err := types.NewAnyWithValue(at)
 	if err != nil {
 		return err
 	}
@@ -47,8 +48,8 @@ func (msg *MsgPublishAuction) SetAuctionType(auctionType AuctionType) error {
 }
 
 func (msg MsgPublishAuction) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	var auctionType AuctionType
-	return unpacker.UnpackAny(msg.AuctionType, &auctionType)
+	var at AuctionType
+	return unpacker.UnpackAny(msg.AuctionType, &at)
 }
 
 func (msg *MsgPublishAuction) Route() string {
@@ -74,26 +75,21 @@ func (msg *MsgPublishAuction) GetSignBytes() []byte {
 
 func (msg *MsgPublishAuction) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address")
+		return sdkerrors.ErrInvalidAddress
 	}
 
 	if nft.ValidateDenomID(msg.DenomId) != nil || nft.ValidateTokenID(msg.TokenId) != nil {
-		// todo add errors here and errytwhere
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid nft")
+		return nfttypes.ErrInvalidNFT
 	}
 
 	if msg.Duration < time.Hour*24 {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "duration must be atleast 24 hours")
+		return ErrInvalidAuctionDuration
 	}
 
-	auctionType, err := msg.GetAuctionType()
+	at, err := msg.GetAuctionType()
 	if err != nil {
-		return sdkerrors.Wrap(err, "invalid auction type")
+		return err
 	}
 
-	if err := auctionType.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "invalid auction type")
-	}
-
-	return nil
+	return at.ValidateBasic()
 }

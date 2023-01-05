@@ -48,11 +48,11 @@ func TestShowAuction(t *testing.T) {
 		fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 	}
 	for _, tc := range []struct {
-		desc string
-		id   string
-		args []string
-		err  error
-		obj  types.Auction
+		desc    string
+		id      string
+		args    []string
+		wantErr error
+		obj     types.Auction
 	}{
 		{
 			desc: "valid",
@@ -61,16 +61,16 @@ func TestShowAuction(t *testing.T) {
 			obj:  objs[0],
 		},
 		{
-			desc: "not existing auction",
-			id:   fmt.Sprintf("%d", objs[len(objs)-1].Id+1),
-			args: common,
-			err:  status.Error(codes.NotFound, "rpc error: code = InvalidArgument desc = key not found: invalid request"),
+			desc:    "not existing auction",
+			id:      fmt.Sprintf("%d", objs[len(objs)-1].Id+1),
+			args:    common,
+			wantErr: status.Error(codes.NotFound, "rpc error: code = InvalidArgument desc = key not found: invalid request"),
 		},
 		{
-			desc: "invalid auctionID arg",
-			id:   "not_found",
-			args: common,
-			err:  status.Error(codes.NotFound, "not found"),
+			desc:    "invalid auctionID arg",
+			id:      "not_found",
+			args:    common,
+			wantErr: status.Error(codes.NotFound, "not found"),
 		},
 	} {
 		tc := tc
@@ -78,10 +78,10 @@ func TestShowAuction(t *testing.T) {
 			args := []string{tc.id}
 			args = append(args, tc.args...)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowAuction(), args)
-			if tc.err != nil {
-				stat, ok := status.FromError(tc.err)
+			if tc.wantErr != nil {
+				stat, ok := status.FromError(tc.wantErr)
 				require.True(t, ok)
-				require.ErrorIs(t, stat.Err(), tc.err)
+				require.ErrorIs(t, stat.Err(), tc.wantErr)
 			} else {
 				require.NoError(t, err)
 				var resp types.QueryGetAuctionResponse

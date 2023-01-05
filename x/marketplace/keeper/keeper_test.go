@@ -2,13 +2,19 @@ package keeper_test
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 
+	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
 	testkeeper "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/testutil/sample"
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 )
 
@@ -775,4 +781,153 @@ func TestSetNftPrice(t *testing.T) {
 	nft, found := kp.GetNft(ctx, nftId)
 	require.True(t, found)
 	require.Equal(t, int64(5), nft.Price.Amount.Int64())
+}
+
+func TestAuctionEndBlocker(t *testing.T) {
+	r := rand.New(rand.NewSource(rand.Int63()))
+	accs := simtypes.RandomAccounts(r, 2)
+	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(10000)))
+	amount := sdk.NewCoin("acudos", sdk.OneInt())
+	bid := types.Bid{amount, accs[1].Address.String()}
+	a, err := types.NewAuction(
+		accs[0].Address.String(),
+		"asd",
+		"1",
+		time.Now().Add(time.Hour*24),
+		&types.EnglishAuction{MinPrice: amount},
+	)
+	require.NoError(t, err)
+
+	for _, tc := range []struct {
+		desc         string
+		arrange      func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper)
+		assert       func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper)
+		addBlockTime time.Duration
+		errMsg       string
+	}{
+		{
+			desc: "english auction valid",
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				auctionId, err := k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+				err = k.PlaceBid(ctx, auctionId, bid)
+				require.NoError(t, err)
+			},
+			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
+				_, found := k.GetAuction(ctx, 0)
+				require.False(t, found)
+				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
+				require.Equal(t, fund.Add(amount), haveSpendable)
+				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
+				require.Equal(t, fund.Sub(sdk.NewCoins(amount)), haveSpendable)
+				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				require.Equal(t, bid.Bidder, nft.Owner)
+				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				a := a
+				a.Creator = bid.Bidder
+				_, err = k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+			},
+			addBlockTime: time.Hour * 25,
+		},
+		{
+			desc: "valid english auction no current bid",
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				_, err := k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+			},
+			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
+				_, found := k.GetAuction(ctx, 0)
+				require.False(t, found)
+				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
+				require.Equal(t, fund, haveSpendable)
+				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				require.Equal(t, a.Creator, nft.Owner)
+				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				_, err = k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+			},
+			addBlockTime: time.Hour * 25,
+		},
+		{
+			desc: "english auction err handleSale",
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				auctionId, err := k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+				err = k.PlaceBid(ctx, auctionId, bid)
+				require.NoError(t, err)
+				err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, sdk.NewCoins(amount))
+				require.NoError(t, err)
+			},
+			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
+				_, found := k.GetAuction(ctx, 0)
+				require.True(t, found)
+				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
+				require.Equal(t, fund, haveSpendable)
+				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
+				require.Equal(t, fund, haveSpendable)
+				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				require.Equal(t, a.Creator, nft.Owner)
+				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				require.Error(t, err)
+			},
+			addBlockTime: time.Hour * 25,
+			errMsg:       "0acudos is smaller than 1acudos: insufficient funds",
+		},
+		{
+			desc: "english auction not expired",
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				_, err := k.PublishAuction(ctx, a)
+				require.NoError(t, err)
+			},
+			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
+				_, found := k.GetAuction(ctx, 0)
+				require.True(t, found)
+				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
+				require.Equal(t, fund, haveSpendable)
+				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
+				require.Equal(t, fund, haveSpendable)
+				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+				require.NoError(t, err)
+				require.Equal(t, a.Creator, nft.Owner)
+				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				require.Error(t, err)
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			k, nk, bk, ctx := keepertest.MarketplaceKeeper(t)
+
+			err := bk.MintCoins(ctx, types.ModuleName, fund.Add(fund...))
+			require.NoError(t, err)
+
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[0].Address, fund)
+			require.NoError(t, err)
+
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, fund)
+			require.NoError(t, err)
+
+			err = nk.IssueDenom(ctx, "asd", "asd", "{a:a,b:b}", "asd", "", accs[0].Address.String(), "", "", accs[0].Address)
+			require.NoError(t, err)
+
+			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", accs[0].Address, accs[0].Address)
+			require.NoError(t, err)
+
+			tc.arrange(ctx, k, bk)
+			ctx = ctx.WithBlockTime(time.Now().Add(tc.addBlockTime))
+			err = k.AuctionEndBlocker(ctx)
+
+			if tc.errMsg != "" {
+				require.EqualError(t, err, tc.errMsg)
+			} else {
+				require.NoError(t, err)
+				tc.assert(ctx, k, nk, bk)
+			}
+		})
+	}
 }

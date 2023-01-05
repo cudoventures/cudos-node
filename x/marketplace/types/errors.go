@@ -28,4 +28,6 @@ var (
 	ErrAuctionExpired                 = sdkerrors.Register(ModuleName, 1117, "auction expired")
 	ErrNotAdmin                       = sdkerrors.Register(ModuleName, 1118, "not admin")
 	ErrAuctionNotFound                = sdkerrors.Register(ModuleName, 1119, "auction not found")
+	ErrInvalidAuctionDuration         = sdkerrors.Register(ModuleName, 1120, "invalid duration")
+	ErrInvalidAuctionId               = sdkerrors.Register(ModuleName, 1121, "invalid auction id")
 )

@@ -40,20 +40,11 @@ func (msg *MsgPlaceBid) GetSignBytes() []byte {
 
 func (msg *MsgPlaceBid) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.Bidder); err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address")
+		return sdkerrors.ErrInvalidAddress
 	}
 
-	if msg.AuctionId < 0 {
-		// todo add errors here and errytwhere
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid auction")
-	}
-
-	if msg.Amount.Validate() != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid price")
-	}
-
-	if msg.Amount.IsZero() {
-		return sdkerrors.Wrapf(ErrInvalidPrice, "amount must be positive")
+	if msg.Amount.Validate() != nil || msg.Amount.IsZero() {
+		return ErrInvalidPrice
 	}
 
 	return nil
