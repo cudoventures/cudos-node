@@ -27,8 +27,6 @@ service Msg {
   rpc AddAdmin(MsgAddAdmin) returns (MsgAddAdminResponse);
   rpc RemoveAdmin(MsgRemoveAdmin) returns (MsgRemoveAdminResponse);
   rpc PublishAuction(MsgPublishAuction) returns (MsgPublishAuctionResponse);
-  // rpc UpdateAuction(MsgUpdateAuction) returns (MsgUpdateAuctionResponse);
-  // rpc DeleteAuction(MsgDeleteAuction) returns (MsgDeleteAuctionResponse);
   rpc PlaceBid(MsgPlaceBid) returns (MsgPlaceBidResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }

@@ -33,13 +33,21 @@ func TestMsgServerPublishAuction(t *testing.T) {
 			desc:    "valid english auction",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {},
 		},
-		// todo valid dutch auction test case
+		// todo dutch auction
 		{
 			desc: "valid approved nft address",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.Creator = accs[1].Address.String()
 				nftMsgServer := nftkeeper.NewMsgServerImpl(*nk)
-				_, err := nftMsgServer.ApproveNft(ctx, &nfttypes.MsgApproveNft{tokenId, denomId, accs[0].Address.String(), accs[1].Address.String(), ""})
+				_, err := nftMsgServer.ApproveNft(
+					ctx,
+					&nfttypes.MsgApproveNft{
+						Id:              tokenId,
+						DenomId:         denomId,
+						Sender:          accs[0].Address.String(),
+						ApprovedAddress: accs[1].Address.String(),
+					},
+				)
 				require.NoError(t, err)
 			},
 		},
@@ -48,7 +56,14 @@ func TestMsgServerPublishAuction(t *testing.T) {
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
 				msg.Creator = accs[1].Address.String()
 				nftMsgServer := nftkeeper.NewMsgServerImpl(*nk)
-				_, err := nftMsgServer.ApproveAllNft(ctx, &nfttypes.MsgApproveAllNft{accs[1].Address.String(), accs[0].Address.String(), true, ""})
+				_, err := nftMsgServer.ApproveAllNft(
+					ctx,
+					&nfttypes.MsgApproveAllNft{
+						Operator: accs[1].Address.String(),
+						Sender:   accs[0].Address.String(),
+						Approved: true,
+					},
+				)
 				require.NoError(t, err)
 			},
 		},
@@ -71,7 +86,15 @@ func TestMsgServerPublishAuction(t *testing.T) {
 		{
 			desc: "already published nft",
 			arrange: func(msg *types.MsgPublishAuction, msgServer types.MsgServer, nk *nftkeeper.Keeper, ctx sdk.Context) {
-				_, err := msgServer.PublishNft(ctx, &types.MsgPublishNft{accs[0].Address.String(), tokenId, denomId, sdk.NewCoin("stake", sdk.OneInt())})
+				_, err := msgServer.PublishNft(
+					ctx,
+					&types.MsgPublishNft{
+						Creator: accs[0].Address.String(),
+						TokenId: tokenId,
+						DenomId: denomId,
+						Price:   sdk.NewCoin("stake", sdk.OneInt()),
+					},
+				)
 				require.NoError(t, err)
 			},
 			wantErr: types.ErrNftAlreadyPublished,

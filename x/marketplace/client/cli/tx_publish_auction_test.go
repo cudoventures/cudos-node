@@ -43,7 +43,7 @@ func TestPublishAuction(t *testing.T) {
 				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
 			},
 		},
-		// todo make a valid test case with DutchAuction
+		// todo dutch auction
 		{
 			desc: "invalid denom id",
 			args: []string{

@@ -14,7 +14,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
-// todo check refactor
 func TestPlaceBid(t *testing.T) {
 	cfg := simapp.NewConfig()
 	cfg.NumValidators = 1

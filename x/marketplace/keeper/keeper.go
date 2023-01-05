@@ -473,11 +473,16 @@ func (k Keeper) PlaceBid(ctx sdk.Context, auctionId uint64, bid types.Bid) error
 			return err
 		}
 		// update auction type
-		a.SetAuctionType(at)
+		if err := a.SetAuctionType(at); err != nil {
+			return err
+		}
+	case *types.DutchAuction:
+		// todo dutch auction
 	}
 
 	// update auction in store
-	return k.SetAuction(ctx, a)
+	k.SetAuction(ctx, a)
+	return nil
 }
 
 func (k Keeper) handleBidEnglishAuction(ctx sdk.Context, at *types.EnglishAuction, bid types.Bid) (*types.EnglishAuction, error) {
@@ -534,13 +539,11 @@ func (k Keeper) AuctionEndBlocker(ctx sdk.Context) error {
 			if !processed {
 				continue
 			}
+		case *types.DutchAuction:
+			// todo dutch auction
 		}
 	}
 
-	// TODO dutch auctions
-	// 1. on PublishAuction calculate how many blocks until expiration
-	// 2. we need to lower the price every block by: (startPrice - endPrice) / blocks
-	// 3. keep that number (or calculate live and have 3rd field CurrentPrice)
 	return nil
 }
 

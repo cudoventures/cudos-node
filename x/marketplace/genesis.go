@@ -23,7 +23,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set nft count
 	k.SetNftCount(ctx, genState.NftCount)
-	// Set all the auction
+
+	// Set all the auctions
 	for _, elem := range genState.AuctionList {
 		k.SetAuction(ctx, elem)
 	}

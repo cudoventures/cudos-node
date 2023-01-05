@@ -36,10 +36,7 @@ func (k Keeper) SetAuctionCount(ctx sdk.Context, count uint64) {
 func (k Keeper) AppendAuction(ctx sdk.Context, a types.Auction) (uint64, error) {
 	a.Id = k.GetAuctionCount(ctx)
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
-	bz, err := k.cdc.Marshal(&a)
-	if err != nil {
-		return 0, err
-	}
+	bz := k.cdc.MustMarshal(&a)
 
 	store.Set(GetAuctionIDBytes(a.Id), bz)
 	k.SetAuctionCount(ctx, a.Id+1)
@@ -47,16 +44,10 @@ func (k Keeper) AppendAuction(ctx sdk.Context, a types.Auction) (uint64, error) 
 }
 
 // SetAuction set a specific auction in the store
-func (k Keeper) SetAuction(ctx sdk.Context, a types.Auction) error {
+func (k Keeper) SetAuction(ctx sdk.Context, a types.Auction) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
-	bz, err := k.cdc.Marshal(&a)
-	if err != nil {
-		return err
-	}
-
+	bz := k.cdc.MustMarshal(&a)
 	store.Set(GetAuctionIDBytes(a.Id), bz)
-
-	return nil
 }
 
 // GetAuction returns a auction from its id
@@ -67,10 +58,7 @@ func (k Keeper) GetAuction(ctx sdk.Context, id uint64) (a types.Auction, found b
 		return a, false
 	}
 
-	if err := k.cdc.Unmarshal(bz, &a); err != nil {
-		return a, false
-	}
-
+	k.cdc.MustUnmarshal(bz, &a)
 	return a, true
 }
 
@@ -81,16 +69,16 @@ func (k Keeper) RemoveAuction(ctx sdk.Context, id uint64) {
 }
 
 // GetAllAuction returns all auction
-func (k Keeper) GetAllAuction(ctx sdk.Context) (a []types.Auction) {
+func (k Keeper) GetAllAuction(ctx sdk.Context) (auctions []types.Auction) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.Auction
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		a = append(a, val)
+		var a types.Auction
+		k.cdc.MustUnmarshal(iterator.Value(), &a)
+		auctions = append(auctions, a)
 	}
 
 	return

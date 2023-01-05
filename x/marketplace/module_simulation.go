@@ -102,7 +102,6 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 			},
 		},
 		AuctionCount: 2,
-		// todo BidList?
 
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
@@ -293,7 +292,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	))
 
 	var weightMsgPlaceBidDutchAuction int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlaceBid, &weightMsgPlaceBidEnglishAuction, nil,
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlaceBid, &weightMsgPlaceBidDutchAuction, nil,
 		func(_ *rand.Rand) {
 			weightMsgPlaceBidDutchAuction = defaultWeightMsgPlaceBid
 		},

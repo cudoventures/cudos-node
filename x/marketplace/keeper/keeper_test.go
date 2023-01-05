@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
 	testkeeper "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/testutil/sample"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
@@ -788,7 +787,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 	accs := simtypes.RandomAccounts(r, 2)
 	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(10000)))
 	amount := sdk.NewCoin("acudos", sdk.OneInt())
-	bid := types.Bid{amount, accs[1].Address.String()}
+	bid := types.Bid{Amount: amount, Bidder: accs[1].Address.String()}
 	a, err := types.NewAuction(
 		accs[0].Address.String(),
 		"asd",
@@ -901,7 +900,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			k, nk, bk, ctx := keepertest.MarketplaceKeeper(t)
+			k, nk, bk, ctx := testkeeper.MarketplaceKeeper(t)
 
 			err := bk.MintCoins(ctx, types.ModuleName, fund.Add(fund...))
 			require.NoError(t, err)

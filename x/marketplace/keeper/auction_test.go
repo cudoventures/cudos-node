@@ -24,11 +24,16 @@ func createNAuction(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Aucti
 		}
 
 		if i%2 == 0 {
-			a.SetAuctionType(&types.EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.OneInt())})
+			if err := a.SetAuctionType(
+				&types.EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.OneInt())},
+			); err != nil {
+				continue
+			}
 		} else {
-			// todo fill DutchAuction data
-			a.SetAuctionType(&types.DutchAuction{})
-
+			// todo dutch auction
+			if err := a.SetAuctionType(&types.DutchAuction{}); err != nil {
+				continue
+			}
 		}
 		id, err := keeper.AppendAuction(ctx, a)
 		if err != nil {

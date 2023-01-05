@@ -49,7 +49,7 @@ service Query {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/list_admins";
 	}
 
-// Queries a Auction by id.
+	// Queries a Auction by id.
 	rpc Auction(QueryGetAuctionRequest) returns (QueryGetAuctionResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/auction/{id}";
 	}
@@ -133,7 +133,7 @@ message QueryAllAuctionRequest {
 }
 
 message QueryAllAuctionResponse {
-	repeated Auction Auction = 1 [(gogoproto.nullable) = false];
+	repeated Auction Auctions = 1 [(gogoproto.nullable) = false];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

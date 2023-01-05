@@ -11,7 +11,14 @@ import (
 func (k msgServer) PlaceBid(goCtx context.Context, msg *types.MsgPlaceBid) (*types.MsgPlaceBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.PlaceBid(ctx, msg.AuctionId, types.Bid{msg.Amount, msg.Bidder}); err != nil {
+	if err := k.Keeper.PlaceBid(
+		ctx,
+		msg.AuctionId,
+		types.Bid{
+			Amount: msg.Amount,
+			Bidder: msg.Bidder,
+		},
+	); err != nil {
 		return nil, err
 	}
 

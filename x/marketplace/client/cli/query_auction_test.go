@@ -18,8 +18,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
-// todo check refactor
-
 func networkWithAuctionObjects(t *testing.T, n int) (*network.Network, []types.Auction) {
 	t.Helper()
 	cfg := simapp.NewConfig()
@@ -123,10 +121,10 @@ func TestListAuction(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryAllAuctionResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Auction), step)
+			require.LessOrEqual(t, len(resp.Auctions), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Auction),
+				nullify.Fill(resp.Auctions),
 			)
 		}
 	})
@@ -139,10 +137,10 @@ func TestListAuction(t *testing.T) {
 			require.NoError(t, err)
 			var resp types.QueryAllAuctionResponse
 			require.NoError(t, net.Config.Codec.UnmarshalJSON(out.Bytes(), &resp))
-			require.LessOrEqual(t, len(resp.Auction), step)
+			require.LessOrEqual(t, len(resp.Auctions), step)
 			require.Subset(t,
 				nullify.Fill(objs),
-				nullify.Fill(resp.Auction),
+				nullify.Fill(resp.Auctions),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -157,10 +155,10 @@ func TestListAuction(t *testing.T) {
 		require.Equal(t, len(objs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(objs),
-			nullify.Fill(resp.Auction),
+			nullify.Fill(resp.Auctions),
 		)
 	})
-	t.Run("Invalid page request", func(t *testing.T) {
+	t.Run("InvalidPageRequest", func(t *testing.T) {
 		args := request(nil, 1, uint64(len(objs)), true)
 		args = append(args, fmt.Sprintf("--%s=%d", flags.FlagPage, 2))
 		_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdListAuction(), args)

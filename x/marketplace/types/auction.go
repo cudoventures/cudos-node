@@ -12,7 +12,6 @@ type AuctionType interface {
 	codec.ProtoMarshaler
 
 	ValidateBasic() error
-	// HandleBid(ctx sdk.Context, bid Bid, bk BankKeeper) error
 }
 
 func NewAuction(creator string, denomId string, tokenId string, endTime time.Time, at AuctionType) (Auction, error) {
@@ -63,6 +62,6 @@ func (a *EnglishAuction) ValidateBasic() error {
 var _ AuctionType = (*DutchAuction)(nil)
 
 func (a *DutchAuction) ValidateBasic() error {
-	// todo
+	// todo dutch auction
 	return nil
 }

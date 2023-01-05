@@ -56,13 +56,16 @@ func simulateMsgPublishAuction(
 			time.Hour*25,
 			at,
 		)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishAuctionType, err.Error()), nil, err
+		}
 
 		account := ak.GetAccount(ctx, owner)
 
 		ownerAccount, found := simtypes.FindAccount(accs, owner)
 		if !found {
 			err := fmt.Errorf("account %s not found", msg.Creator)
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishNftType, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishAuctionType, err.Error()), nil, err
 		}
 
 		spendable := bk.SpendableCoins(ctx, account.GetAddress())

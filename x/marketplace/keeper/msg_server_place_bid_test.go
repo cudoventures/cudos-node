@@ -33,7 +33,7 @@ func TestMsgServerPlaceBid(t *testing.T) {
 			desc:    "valid",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {},
 		},
-		// todo dutch auction tests
+		// todo dutch auction
 		{
 			desc: "insufficient balance",
 			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
@@ -106,7 +106,11 @@ func TestMsgServerPlaceBid(t *testing.T) {
 			_, err = msgServer.PublishAuction(ctx, msgPublishAuction)
 			require.NoError(t, err)
 
-			msg := &types.MsgPlaceBid{auctionId, amount, accs[1].Address.String()}
+			msg := &types.MsgPlaceBid{
+				AuctionId: auctionId,
+				Amount:    amount,
+				Bidder:    accs[1].Address.String(),
+			}
 
 			tc.arrange(msg, msgServer, ctx)
 

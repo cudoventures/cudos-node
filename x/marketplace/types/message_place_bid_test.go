@@ -22,14 +22,14 @@ func TestMsgPlaceBid_ValidateBasic(t *testing.T) {
 		{
 			desc: "zero amount",
 			arrange: func(msg *MsgPlaceBid) {
-				msg.Amount = sdk.Coin{"acudos", sdk.ZeroInt()}
+				msg.Amount = sdk.NewCoin("acudos", sdk.ZeroInt())
 			},
 			wantErr: ErrInvalidPrice,
 		},
 		{
 			desc: "invalid amount denom",
 			arrange: func(msg *MsgPlaceBid) {
-				msg.Amount = sdk.Coin{"", sdk.ZeroInt()}
+				msg.Amount = sdk.Coin{Denom: "", Amount: sdk.ZeroInt()}
 
 			},
 			wantErr: ErrInvalidPrice,

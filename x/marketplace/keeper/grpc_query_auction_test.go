@@ -75,10 +75,10 @@ func TestAuctionQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.AuctionAll(wctx, request(nil, uint64(i), uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Auction), step)
+			require.LessOrEqual(t, len(resp.Auctions), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.Auction),
+				nullify.Fill(resp.Auctions),
 			)
 		}
 	})
@@ -88,10 +88,10 @@ func TestAuctionQueryPaginated(t *testing.T) {
 		for i := 0; i < len(msgs); i += step {
 			resp, err := keeper.AuctionAll(wctx, request(next, 0, uint64(step), false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Auction), step)
+			require.LessOrEqual(t, len(resp.Auctions), step)
 			require.Subset(t,
 				nullify.Fill(msgs),
-				nullify.Fill(resp.Auction),
+				nullify.Fill(resp.Auctions),
 			)
 			next = resp.Pagination.NextKey
 		}
@@ -102,7 +102,7 @@ func TestAuctionQueryPaginated(t *testing.T) {
 		require.Equal(t, len(msgs), int(resp.Pagination.Total))
 		require.ElementsMatch(t,
 			nullify.Fill(msgs),
-			nullify.Fill(resp.Auction),
+			nullify.Fill(resp.Auctions),
 		)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {

@@ -37,7 +37,7 @@ func (k Keeper) AuctionAll(c context.Context, req *types.QueryAllAuctionRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllAuctionResponse{Auction: auctions, Pagination: pageRes}, nil
+	return &types.QueryAllAuctionResponse{Auctions: auctions, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Auction(c context.Context, req *types.QueryGetAuctionRequest) (*types.QueryGetAuctionResponse, error) {

@@ -33,13 +33,15 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 		{
 			desc: "english auction invalid amount denom",
 			arrange: func(msg *MsgPublishAuction) {
-				err := msg.SetAuctionType(&EnglishAuction{MinPrice: sdk.Coin{"", sdk.OneInt()}})
+				err := msg.SetAuctionType(&EnglishAuction{
+					MinPrice: sdk.Coin{Denom: "", Amount: sdk.OneInt()},
+				})
 				require.NoError(t, err)
 				sdk.ZeroInt().Sub(sdk.OneInt())
 			},
 			wantErr: ErrInvalidPrice,
 		},
-		// todo validate DutchAuction
+		// todo dutch auction
 		{
 			desc: "invalid auction type",
 			arrange: func(msg *MsgPublishAuction) {
