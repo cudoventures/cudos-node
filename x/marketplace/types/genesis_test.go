@@ -40,6 +40,15 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				NftCount: 2,
+				AuctionList: []types.Auction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				AuctionCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -93,6 +102,32 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				NftCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated auction",
+			genState: &types.GenesisState{
+				AuctionList: []types.Auction{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid auction count",
+			genState: &types.GenesisState{
+				AuctionList: []types.Auction{
+					{
+						Id: 1,
+					},
+				},
+				AuctionCount: 0,
 			},
 			valid: false,
 		},

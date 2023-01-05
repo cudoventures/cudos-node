@@ -5,6 +5,8 @@ import "marketplace/royalty.proto";
 import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/any.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -12,7 +14,7 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
+  rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
   rpc PublishNft(MsgPublishNft) returns (MsgPublishNftResponse);
   rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
   rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
@@ -24,6 +26,10 @@ service Msg {
   rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
   rpc AddAdmin(MsgAddAdmin) returns (MsgAddAdminResponse);
   rpc RemoveAdmin(MsgRemoveAdmin) returns (MsgRemoveAdminResponse);
+  rpc PublishAuction(MsgPublishAuction) returns (MsgPublishAuctionResponse);
+  // rpc UpdateAuction(MsgUpdateAuction) returns (MsgUpdateAuctionResponse);
+  // rpc DeleteAuction(MsgDeleteAuction) returns (MsgDeleteAuctionResponse);
+  rpc PlaceBid(MsgPlaceBid) returns (MsgPlaceBidResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -149,4 +155,29 @@ message MsgRemoveAdmin {
 message MsgRemoveAdminResponse {
 }
 
-// this line is used by starport scaffolding # proto/tx/message
+message MsgPublishAuction {
+  option (gogoproto.goproto_getters) = false;
+  
+  string tokenId = 1;
+  string denomId = 2;
+  google.protobuf.Duration duration = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdduration)  = true
+  ];
+  google.protobuf.Any auctionType = 4 [(cosmos_proto.accepts_interface) = "AuctionType"];
+  string creator = 5;
+}
+
+message MsgPublishAuctionResponse {
+}
+
+message MsgPlaceBid {
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 auctionId = 1;
+  cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+  string bidder = 3;
+}
+
+message MsgPlaceBidResponse {
+}

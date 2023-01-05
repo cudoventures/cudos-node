@@ -1,0 +1,42 @@
+syntax = "proto3";
+package cudoventures.cudosnode.marketplace;
+
+import "gogoproto/gogo.proto"; 
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
+option (gogoproto.goproto_getters_all) = false;
+
+message Auction {
+  uint64 id = 1;
+  string tokenId = 2; 
+  string denomId = 3; 
+  google.protobuf.Timestamp endTime = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.stdtime)  = true
+  ]; 
+  google.protobuf.Any type = 5 [(cosmos_proto.accepts_interface) = "AuctionType"];
+  string creator = 6;
+}
+
+message Bid {
+  cosmos.base.v1beta1.Coin amount = 1 [(gogoproto.nullable) = false];
+  string bidder = 2;
+}
+
+message EnglishAuction {
+  option (cosmos_proto.implements_interface) = "AuctionType";
+
+  cosmos.base.v1beta1.Coin minPrice = 1 [(gogoproto.nullable) = false]; 
+  Bid currentBid = 2;
+}
+
+message DutchAuction {
+  option (cosmos_proto.implements_interface) = "AuctionType";
+
+  cosmos.base.v1beta1.Coin startPrice = 1 [(gogoproto.nullable) = false]; 
+  cosmos.base.v1beta1.Coin minPrice = 2 [(gogoproto.nullable) = false]; 
+}

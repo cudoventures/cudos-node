@@ -25,5 +25,7 @@ var (
 	ErrCollectionAlreadyUnverified    = sdkerrors.Register(ModuleName, 1114, "collection is already unverified")
 	ErrCollectionIsUnverified         = sdkerrors.Register(ModuleName, 1115, "collection is unverified")
 	ErrNotCollectionOwner             = sdkerrors.Register(ModuleName, 1116, "not collection owner")
-	ErrNotAdmin                       = sdkerrors.Register(ModuleName, 1117, "not admin")
+	ErrAuctionExpired                 = sdkerrors.Register(ModuleName, 1117, "auction expired")
+	ErrNotAdmin                       = sdkerrors.Register(ModuleName, 1118, "not admin")
+	ErrAuctionNotFound                = sdkerrors.Register(ModuleName, 1119, "auction not found")
 )

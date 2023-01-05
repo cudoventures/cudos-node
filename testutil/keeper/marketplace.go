@@ -56,7 +56,7 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankke
 	moduleStore, err := setupModuleStore(t, cdc, db, stateStore, types.StoreKey)
 	require.NoError(t, err)
 
-	k := keeper.NewKeeper(cdc, moduleStore.storeKey, moduleStore.memStoreKey, moduleStore.paramSubspace, bankKeeper, nftKeeper)
+	k := keeper.NewKeeper(appCodec, moduleStore.storeKey, moduleStore.memStoreKey, moduleStore.paramSubspace, bankKeeper, nftKeeper)
 
 	require.NoError(t, stateStore.LoadLatestVersion())
 

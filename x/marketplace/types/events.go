@@ -13,6 +13,9 @@ var (
 	EventUpdatePriceType        = "update_price"
 	EventAddAdminType           = "add_admin"
 	EventRemoveAdminType        = "remove_admin"
+	EventPublishAuctionType     = "publish_auction"
+	EventPlaceBidType           = "place_bid"
+	EventAuctionExpiredType     = "auction_expired"
 
 	AttributeValueCategory = ModuleName
 
@@ -26,4 +29,7 @@ var (
 	AttributeKeyOwner        = "owner"
 	AttributeKeyAddress      = "address"
 	AttributeKeyUID          = "uid"
+	AttributeAuctionID       = "auction_id"
+	AttributeAuctionType     = "auction_type"
+	AttributeBidder          = "bidder"
 )

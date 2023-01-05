@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -142,39 +143,18 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) (typ
 		return types.Nft{}, err
 	}
 
-	collection, found := k.GetCollectionByDenomID(ctx, nft.DenomId)
-	if !found || len(collection.ResaleRoyalties) == 0 {
-
-		sellerAddr, err := sdk.AccAddressFromBech32(nft.Owner)
-		if err != nil {
-			return types.Nft{}, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid seller address (%s): %s", nft.Owner, err)
-		}
-
-		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, sellerAddr, sdk.NewCoins(nft.Price)); err != nil {
-			return types.Nft{}, err
-		}
-	}
-
-	if err := k.DistributeRoyalties(ctx, nft.Price, nft.Owner, collection.ResaleRoyalties); err != nil {
-		return types.Nft{}, err
-	}
-
-	store := ctx.KVStore(k.storeKey)
-	store.Delete(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId))
-
-	k.RemoveNft(ctx, nftID)
-
-	baseNft, err := k.nftKeeper.GetBaseNFT(ctx, nft.DenomId, nft.TokenId)
+	seller, err := sdk.AccAddressFromBech32(nft.Owner)
 	if err != nil {
 		return types.Nft{}, err
 	}
 
-	if err := k.nftKeeper.SoftUnlockNFT(ctx, types.ModuleName, nft.DenomId, nft.TokenId); err != nil {
+	if err := k.handleSale(ctx, nft.DenomId, nft.TokenId, buyer, seller, nft.Price); err != nil {
 		return types.Nft{}, err
 	}
 
-	k.nftKeeper.TransferNftInternal(ctx, nft.DenomId, nft.TokenId, sdk.AccAddress(nft.Owner), buyer, baseNft)
-
+	k.RemoveNft(ctx, nftID)
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId))
 	return nft, nil
 }
 
@@ -420,4 +400,205 @@ func (k Keeper) RemoveAdmin(ctx sdk.Context, admin, creator string) error {
 	}
 
 	return sdkerrors.Wrapf(types.ErrNotAdmin, "'%s' is not admin", admin)
+}
+
+func (k Keeper) PublishAuction(ctx sdk.Context, a types.Auction) (uint64, error) {
+	// check if nft is already listed
+	store := ctx.KVStore(k.storeKey)
+	key := types.KeyNftDenomTokenID(a.DenomId, a.TokenId)
+	if len(store.Get(key)) > 0 {
+		return 0, sdkerrors.Wrapf(types.ErrNftAlreadyPublished, "nft is already published")
+	}
+
+	creator, err := sdk.AccAddressFromBech32(a.Creator)
+	if err != nil {
+		return 0, err
+	}
+
+	nft, err := k.nftKeeper.GetNFT(ctx, a.DenomId, a.TokenId)
+	if err != nil {
+		return 0, err
+	}
+
+	// check if user is authorized - must be nft owner or approved operator
+	if nft.GetOwner().String() != a.Creator &&
+		!k.nftKeeper.IsApprovedOperator(ctx, nft.GetOwner(), creator) &&
+		!k.isApprovedNftAddress(nft, a.Creator) {
+		return 0, sdkerrors.Wrapf(types.ErrNotNftOwner, "%s not nft owner or approved operator for token id (%s) from denom (%s)", a.Creator, a.TokenId, a.DenomId)
+	}
+
+	// lock nft during auction
+	if err := k.nftKeeper.SoftLockNFT(ctx, types.ModuleName, a.DenomId, a.TokenId); err != nil {
+		return 0, err
+	}
+
+	// save auction to store
+	auctionID, err := k.AppendAuction(ctx, a)
+	if err != nil {
+		return 0, err
+	}
+	// mark nft as listed
+	store.Set(key, types.Uint64ToBytes(auctionID))
+
+	return auctionID, nil
+}
+
+func (k Keeper) PlaceBid(ctx sdk.Context, auctionID uint64, bid types.Bid) error {
+	a, found := k.GetAuction(ctx, auctionID)
+	if !found {
+		return sdkerrors.Wrapf(types.ErrAuctionNotFound, "auction with id (%d) does not exist", auctionID)
+	}
+
+	if a.Creator == bid.Bidder {
+		return sdkerrors.Wrap(types.ErrCannotBuyOwnNft, "cannot bid own auctions")
+	}
+
+	if ctx.BlockTime().After(a.EndTime) {
+		return sdkerrors.Wrapf(types.ErrAuctionExpired, "cannot place a bid for inactive auction %d", a.Id)
+	}
+
+	auctionType, err := a.GetAuctionType()
+	if err != nil {
+		return err
+	}
+
+	switch at := auctionType.(type) {
+	case *types.EnglishAuction:
+		if err := k.handleBidEnglishAuction(ctx, at, bid); err != nil {
+			return err
+		}
+		a.SetAuctionType(at)
+	}
+
+	return k.SetAuction(ctx, a)
+}
+
+func (k Keeper) handleBidEnglishAuction(ctx sdk.Context, a *types.EnglishAuction, bid types.Bid) error {
+	if bid.Amount.IsLT(a.MinPrice) {
+		return sdkerrors.Wrap(types.ErrInvalidPrice, "bid is lower than auction minimum price")
+	}
+
+	if a.CurrentBid != nil {
+		if a.CurrentBid.Amount.IsGTE(bid.Amount) {
+			return sdkerrors.Wrap(types.ErrInvalidPrice, "bid is lower than current bid")
+		}
+
+		bidder, err := sdk.AccAddressFromBech32(a.CurrentBid.Bidder)
+		if err != nil {
+			return err
+		}
+
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, bidder, sdk.NewCoins(a.CurrentBid.Amount)); err != nil {
+			return err
+		}
+	}
+
+	bidder, err := sdk.AccAddressFromBech32(bid.Bidder)
+	if err != nil {
+		return err
+	}
+
+	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, bidder, types.ModuleName, sdk.NewCoins(bid.Amount)); err != nil {
+		return err
+	}
+
+	a.CurrentBid = &bid
+
+	return nil
+}
+
+func (k Keeper) AuctionEndBlocker(ctx sdk.Context) error {
+	for _, a := range k.GetAllAuction(ctx) {
+		auctionType, err := a.GetAuctionType()
+		if err != nil {
+			return err
+		}
+
+		switch at := auctionType.(type) {
+		case *types.EnglishAuction:
+			if err := k.handleEndBlockEnglishAuction(ctx, a, at); err != nil {
+				return err
+			}
+		}
+	}
+
+	// TODO dutch auctions
+	// 1. on PublishAuction calculate how many blocks until expiration
+	// 2. we need to lower the price every block by: (startPrice - endPrice) / blocks
+	// 3. keep that number (or calculate live and have 3rd field CurrentPrice)
+	return nil
+}
+
+func (k Keeper) handleEndBlockEnglishAuction(ctx sdk.Context, a types.Auction, at *types.EnglishAuction) error {
+	if ctx.BlockTime().Before(a.EndTime) {
+		return fmt.Errorf("auction has not expired yet")
+	}
+
+	events := sdk.Events{
+		sdk.NewEvent(
+			types.EventAuctionExpiredType,
+			sdk.NewAttribute(types.AttributeAuctionID, strconv.FormatUint(a.Id, 10)),
+		),
+	}
+
+	if at.CurrentBid == nil {
+		if err := k.nftKeeper.SoftUnlockNFT(ctx, types.ModuleName, a.DenomId, a.TokenId); err != nil {
+			return err
+		}
+	} else {
+		buyer, err := sdk.AccAddressFromBech32(at.CurrentBid.Bidder)
+		if err != nil {
+			return err
+		}
+
+		seller, err := sdk.AccAddressFromBech32(a.Creator)
+		if err != nil {
+			return err
+		}
+
+		if err := k.handleSale(ctx, a.DenomId, a.TokenId, buyer, seller, at.CurrentBid.Amount); err != nil {
+			return err
+		}
+
+		events.AppendEvent(sdk.NewEvent(
+			types.EventBuyNftType,
+			sdk.NewAttribute(types.AttributeKeyDenomID, a.DenomId),
+			sdk.NewAttribute(types.AttributeKeyTokenID, a.TokenId),
+			sdk.NewAttribute(types.AttributeAuctionID, strconv.FormatUint(a.Id, 10)),
+			sdk.NewAttribute(types.AttributeKeyBuyer, at.CurrentBid.Bidder),
+		))
+
+	}
+
+	k.RemoveAuction(ctx, a.Id)
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyNftDenomTokenID(a.DenomId, a.TokenId))
+
+	ctx.EventManager().EmitEvents(events)
+	return nil
+}
+
+func (k Keeper) handleSale(ctx sdk.Context, denomId string, tokenId string, buyer sdk.AccAddress, seller sdk.AccAddress, amount sdk.Coin) error {
+	collection, found := k.GetCollectionByDenomID(ctx, denomId)
+	if !found || len(collection.ResaleRoyalties) == 0 {
+		if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, seller, sdk.NewCoins(amount)); err != nil {
+			return err
+		}
+	}
+
+	if err := k.DistributeRoyalties(ctx, amount, seller.String(), collection.ResaleRoyalties); err != nil {
+		return err
+	}
+
+	baseNft, err := k.nftKeeper.GetBaseNFT(ctx, denomId, tokenId)
+	if err != nil {
+		return err
+	}
+
+	if err := k.nftKeeper.SoftUnlockNFT(ctx, types.ModuleName, denomId, tokenId); err != nil {
+		return err
+	}
+
+	k.nftKeeper.TransferNftInternal(ctx, denomId, tokenId, seller, buyer, baseNft)
+	return nil
 }

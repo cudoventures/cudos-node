@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "marketplace/params.proto";
 import "marketplace/collection.proto";
 import "marketplace/nft.proto";
+import "marketplace/auction.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -46,6 +47,16 @@ service Query {
 // Queries a list of ListAdmins items.
 	rpc ListAdmins(QueryListAdminsRequest) returns (QueryListAdminsResponse) {
 		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/list_admins";
+	}
+
+// Queries a Auction by id.
+	rpc Auction(QueryGetAuctionRequest) returns (QueryGetAuctionResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/auction/{id}";
+	}
+
+	// Queries a list of Auction items.
+	rpc AuctionAll(QueryAllAuctionRequest) returns (QueryAllAuctionResponse) {
+		option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/auction";
 	}
 
 // this line is used by starport scaffolding # 2
@@ -107,6 +118,23 @@ message QueryListAdminsRequest {
 
 message QueryListAdminsResponse {
 	repeated string Admins = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetAuctionRequest {
+	uint64 id = 1;
+}
+
+message QueryGetAuctionResponse {
+	Auction Auction = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAuctionRequest {
+	cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAuctionResponse {
+	repeated Auction Auction = 1 [(gogoproto.nullable) = false];
+	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // this line is used by starport scaffolding # 3

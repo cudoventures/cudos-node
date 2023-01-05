@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 import "marketplace/params.proto";
 import "marketplace/collection.proto";
 import "marketplace/nft.proto";
+import "marketplace/auction.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -16,5 +17,7 @@ message GenesisState {
   uint64 collectionCount = 3;
   repeated Nft nftList = 4 [(gogoproto.nullable) = false];
   uint64 nftCount = 5;
+  repeated Auction auctionList = 6 [(gogoproto.nullable) = false];
+  uint64 auctionCount = 7;
   // this line is used by starport scaffolding # genesis/proto/state
 }

@@ -20,6 +20,12 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdatePrice{}, "marketplace/UpdatePrice", nil)
 	cdc.RegisterConcrete(&MsgAddAdmin{}, "marketplace/AddAdmin", nil)
 	cdc.RegisterConcrete(&MsgRemoveAdmin{}, "marketplace/RemoveAdmin", nil)
+	cdc.RegisterConcrete(&MsgPublishAuction{}, "marketplace/PublishAuction", nil)
+	cdc.RegisterConcrete(&MsgPlaceBid{}, "marketplace/Bid", nil)
+	cdc.RegisterInterface((*AuctionType)(nil), nil)
+	cdc.RegisterConcrete(&EnglishAuction{}, "marketplace/EnglishAuction", nil)
+	cdc.RegisterConcrete(&DutchAuction{}, "marketplace/DutchAuction", nil)
+
 	// this line is used by starport scaffolding # 2
 }
 
@@ -60,9 +66,23 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgRemoveAdmin{},
 	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPublishAuction{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPlaceBid{},
+	)
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
+
+	registry.RegisterInterface(
+		"cudoventures.cudosnode.marketplace.AuctionType",
+		(*AuctionType)(nil),
+		&EnglishAuction{},
+		&DutchAuction{},
+	)
 }
 
 var (
