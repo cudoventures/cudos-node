@@ -7,7 +7,8 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "marketplace/params.proto";
 import "marketplace/collection.proto";
 import "marketplace/nft.proto";
-import "marketplace/auction.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -125,7 +126,9 @@ message QueryGetAuctionRequest {
 }
 
 message QueryGetAuctionResponse {
-	Auction Auction = 1 [(gogoproto.nullable) = false];
+	google.protobuf.Any Auction = 1 [
+		(cosmos_proto.accepts_interface) = "Auction"
+	];
 }
 
 message QueryAllAuctionRequest {
@@ -133,8 +136,9 @@ message QueryAllAuctionRequest {
 }
 
 message QueryAllAuctionResponse {
-	repeated Auction Auctions = 1 [(gogoproto.nullable) = false];
+	repeated google.protobuf.Any Auctions = 1 [
+		(cosmos_proto.accepts_interface) = "Auction"
+	];
 	cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-
 // this line is used by starport scaffolding # 3

@@ -13,6 +13,7 @@ import (
 	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 )
@@ -783,118 +784,153 @@ func TestSetNftPrice(t *testing.T) {
 }
 
 func TestAuctionEndBlocker(t *testing.T) {
-	r := rand.New(rand.NewSource(rand.Int63()))
-	accs := simtypes.RandomAccounts(r, 2)
-	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(10000)))
+	accs := simtypes.RandomAccounts(rand.New(rand.NewSource(rand.Int63())), 2)
+	acc1, acc2 := accs[0].Address, accs[1].Address
+	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(100)))
 	amount := sdk.NewCoin("acudos", sdk.OneInt())
-	bid := types.Bid{Amount: amount, Bidder: accs[1].Address.String()}
-	a, err := types.NewAuction(
-		accs[0].Address.String(),
-		"asd",
-		"1",
-		time.Now().Add(time.Hour*24),
-		&types.EnglishAuction{MinPrice: amount},
-	)
-	require.NoError(t, err)
+	now := time.Now()
+	tomorrow := now.Add(time.Hour * 24)
+	ea := *types.NewEnglishAuction(acc1.String(), "asd", "1", amount, now, tomorrow)
+	_ = types.NewDutchAuction(acc1.String(), "asd", "1", fund[0], amount, now, tomorrow)
+	bid := types.Bid{Amount: amount, Bidder: acc2.String()}
 
 	for _, tc := range []struct {
 		desc         string
-		arrange      func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper)
-		assert       func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper)
 		addBlockTime time.Duration
-		errMsg       string
+		wantErr      error
+		arrange      func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper)
+		assert       func(
+			ctx sdk.Context,
+			k *keeper.Keeper,
+			nk *nftkeeper.Keeper,
+			bk types.BankKeeper,
+		)
 	}{
 		{
-			desc: "english auction valid",
+			desc:         "english auction valid",
+			addBlockTime: time.Hour * 24,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
-				auctionId, err := k.PublishAuction(ctx, a)
+				auctionId, err := k.PublishAuction(ctx, &ea)
 				require.NoError(t, err)
+
 				err = k.PlaceBid(ctx, auctionId, bid)
 				require.NoError(t, err)
 			},
-			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
-				_, found := k.GetAuction(ctx, 0)
-				require.False(t, found)
-				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
-				require.Equal(t, fund.Add(amount), haveSpendable)
-				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
-				require.Equal(t, fund.Sub(sdk.NewCoins(amount)), haveSpendable)
-				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				_, err := k.GetAuction(ctx, 0)
+				require.Error(t, err)
+
+				balance := bk.SpendableCoins(ctx, acc1)
+				require.Equal(t, fund.Add(amount), balance)
+				balance = bk.SpendableCoins(ctx, acc2)
+				require.Equal(t, fund.Sub(sdk.NewCoins(amount)), balance)
+
+				nft, err := nk.GetBaseNFT(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.NoError(t, err)
 				require.Equal(t, bid.Bidder, nft.Owner)
-				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				err = nk.IsSoftLocked(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.NoError(t, err)
-				a := a
-				a.Creator = bid.Bidder
-				_, err = k.PublishAuction(ctx, a)
+
+				a := ea
+				a.BaseAuction = types.NewBaseAuction(bid.Bidder, "asd", "1", now, tomorrow)
+				_, err = k.PublishAuction(ctx, &a)
 				require.NoError(t, err)
 			},
-			addBlockTime: time.Hour * 25,
 		},
 		{
-			desc: "valid english auction no current bid",
+			desc:         "valid english auction no current bid",
+			addBlockTime: time.Hour * 24,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
-				_, err := k.PublishAuction(ctx, a)
+				_, err := k.PublishAuction(ctx, &ea)
 				require.NoError(t, err)
 			},
-			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
-				_, found := k.GetAuction(ctx, 0)
-				require.False(t, found)
-				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
-				require.Equal(t, fund, haveSpendable)
-				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				_, err := k.GetAuction(ctx, 0)
+				require.Error(t, err)
+				balance := bk.SpendableCoins(ctx, acc1)
+				require.Equal(t, fund, balance)
+
+				nft, err := nk.GetBaseNFT(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.NoError(t, err)
-				require.Equal(t, a.Creator, nft.Owner)
-				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+				require.Equal(t, ea.GetCreator(), nft.Owner)
+				err = nk.IsSoftLocked(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.NoError(t, err)
-				_, err = k.PublishAuction(ctx, a)
+
+				_, err = k.PublishAuction(ctx, &ea)
 				require.NoError(t, err)
 			},
-			addBlockTime: time.Hour * 25,
 		},
 		{
-			desc: "english auction err handleSale",
+			desc:         "english auction err trade",
+			addBlockTime: time.Hour * 24,
+			wantErr:      sdkerrors.ErrInsufficientFunds,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
-				auctionId, err := k.PublishAuction(ctx, a)
+				auctionId, err := k.PublishAuction(ctx, &ea)
 				require.NoError(t, err)
+
 				err = k.PlaceBid(ctx, auctionId, bid)
 				require.NoError(t, err)
-				err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, sdk.NewCoins(amount))
+
+				err = bk.SendCoinsFromModuleToAccount(
+					ctx, types.ModuleName, acc2, sdk.NewCoins(amount),
+				)
 				require.NoError(t, err)
 			},
-			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
-				_, found := k.GetAuction(ctx, 0)
-				require.True(t, found)
-				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
-				require.Equal(t, fund, haveSpendable)
-				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
-				require.Equal(t, fund, haveSpendable)
-				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				_, err := k.GetAuction(ctx, 0)
 				require.NoError(t, err)
-				require.Equal(t, a.Creator, nft.Owner)
-				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+
+				balance := bk.SpendableCoins(ctx, acc1)
+				require.Equal(t, fund, balance)
+				balance = bk.SpendableCoins(ctx, acc2)
+				require.Equal(t, fund, balance)
+
+				nft, err := nk.GetBaseNFT(ctx, ea.GetDenomId(), ea.GetTokenId())
+				require.NoError(t, err)
+				require.Equal(t, ea.GetCreator(), nft.Owner)
+				err = nk.IsSoftLocked(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.Error(t, err)
 			},
-			addBlockTime: time.Hour * 25,
-			errMsg:       "0acudos is smaller than 1acudos: insufficient funds",
 		},
 		{
 			desc: "english auction not expired",
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
-				_, err := k.PublishAuction(ctx, a)
+				_, err := k.PublishAuction(ctx, &ea)
 				require.NoError(t, err)
 			},
-			assert: func(ctx sdk.Context, k *keeper.Keeper, nk *nftkeeper.Keeper, bk types.BankKeeper) {
-				_, found := k.GetAuction(ctx, 0)
-				require.True(t, found)
-				haveSpendable := bk.SpendableCoins(ctx, accs[0].Address)
-				require.Equal(t, fund, haveSpendable)
-				haveSpendable = bk.SpendableCoins(ctx, accs[1].Address)
-				require.Equal(t, fund, haveSpendable)
-				nft, err := nk.GetBaseNFT(ctx, a.DenomId, a.TokenId)
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				_, err := k.GetAuction(ctx, 0)
 				require.NoError(t, err)
-				require.Equal(t, a.Creator, nft.Owner)
-				err = nk.IsSoftLocked(ctx, a.DenomId, a.TokenId)
+
+				balance := bk.SpendableCoins(ctx, acc1)
+				require.Equal(t, fund, balance)
+				balance = bk.SpendableCoins(ctx, acc2)
+				require.Equal(t, fund, balance)
+
+				nft, err := nk.GetBaseNFT(ctx, ea.GetDenomId(), ea.GetTokenId())
+				require.NoError(t, err)
+				require.Equal(t, ea.GetCreator(), nft.Owner)
+				err = nk.IsSoftLocked(ctx, ea.GetDenomId(), ea.GetTokenId())
 				require.Error(t, err)
 			},
 		},
@@ -905,26 +941,24 @@ func TestAuctionEndBlocker(t *testing.T) {
 			err := bk.MintCoins(ctx, types.ModuleName, fund.Add(fund...))
 			require.NoError(t, err)
 
-			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[0].Address, fund)
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, acc1, fund)
 			require.NoError(t, err)
 
-			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, fund)
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, acc2, fund)
 			require.NoError(t, err)
 
-			err = nk.IssueDenom(ctx, "asd", "asd", "{a:a,b:b}", "asd", "", accs[0].Address.String(), "", "", accs[0].Address)
+			err = nk.IssueDenom(ctx, "asd", "asd", "", "", "", acc1.String(), "", "", acc1)
 			require.NoError(t, err)
 
-			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", accs[0].Address, accs[0].Address)
+			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", acc1, acc1)
 			require.NoError(t, err)
 
 			tc.arrange(ctx, k, bk)
-			ctx = ctx.WithBlockTime(time.Now().Add(tc.addBlockTime))
-			err = k.AuctionEndBlocker(ctx)
+			ctx = ctx.WithBlockTime(now.Add(tc.addBlockTime))
 
-			if tc.errMsg != "" {
-				require.EqualError(t, err, tc.errMsg)
-			} else {
-				require.NoError(t, err)
+			err = k.AuctionEndBlocker(ctx)
+			require.ErrorIs(t, err, tc.wantErr)
+			if tc.wantErr == nil {
 				tc.assert(ctx, k, nk, bk)
 			}
 		})

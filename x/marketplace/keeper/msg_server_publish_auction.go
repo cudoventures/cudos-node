@@ -8,15 +8,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) PublishAuction(goCtx context.Context, msg *types.MsgPublishAuction) (*types.MsgPublishAuctionResponse, error) {
+func (k msgServer) PublishAuction(
+	goCtx context.Context, msg *types.MsgPublishAuction,
+) (*types.MsgPublishAuctionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	at, err := msg.GetAuctionType()
-	if err != nil {
-		return nil, err
-	}
-
-	a, err := types.NewAuction(msg.Creator, msg.DenomId, msg.TokenId, ctx.BlockTime().Add(msg.Duration), at)
+	a, err := types.AuctionFromMsgPublishAuction(msg, ctx.BlockTime())
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +29,7 @@ func (k msgServer) PublishAuction(goCtx context.Context, msg *types.MsgPublishAu
 			sdk.NewAttribute(types.AttributeAuctionID, strconv.FormatUint(auctionId, 10)),
 			sdk.NewAttribute(types.AttributeKeyTokenID, msg.TokenId),
 			sdk.NewAttribute(types.AttributeKeyDenomID, msg.DenomId),
-			sdk.NewAttribute(types.AttributeAuctionType, at.String()),
+			sdk.NewAttribute(types.AttributeAuctionType, a.String()),
 			sdk.NewAttribute(types.AttributeKeyCreator, msg.Creator),
 		),
 		sdk.NewEvent(

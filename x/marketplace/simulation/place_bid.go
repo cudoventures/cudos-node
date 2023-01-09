@@ -22,7 +22,9 @@ func SimulateMsgPlaceBidEnglishAuction(
 	nk types.NftKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
-	return simulateMsgPlaceBid(ak, bk, nk, k, &types.EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.NewInt(100000000000))})
+	return simulateMsgPlaceBid(ak, bk, nk, k, &types.EnglishAuction{
+		MinPrice: sdk.NewCoin("acudos", sdk.NewInt(10)),
+	})
 }
 
 func SimulateMsgPlaceBidDutchAuction(
@@ -31,8 +33,10 @@ func SimulateMsgPlaceBidDutchAuction(
 	nk types.NftKeeper,
 	k keeper.Keeper,
 ) simtypes.Operation {
-	// todo dutch auction
-	return nil
+	return simulateMsgPlaceBid(ak, bk, nk, k, &types.DutchAuction{
+		StartPrice: sdk.NewCoin("acudos", sdk.NewInt(10)),
+		MinPrice:   sdk.NewCoin("acudos", sdk.NewInt(1)),
+	})
 }
 
 func simulateMsgPlaceBid(
@@ -40,41 +44,50 @@ func simulateMsgPlaceBid(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
-	at types.AuctionType,
+	a types.Auction,
 ) simtypes.Operation {
-	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	return func(
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accs []simtypes.Account,
+		chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		seller, denomId, tokenId := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
 		if seller.Empty() {
 			err := fmt.Errorf("invalid account")
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			return op, nil, err
 		}
 
-		a, err := types.NewAuction(
+		a.SetBaseAuction(types.NewBaseAuction(
 			seller.String(),
 			denomId,
 			tokenId,
-			time.Now().Add(time.Hour*25),
-			at,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
-		}
+			ctx.BlockTime(),
+			ctx.BlockTime().Add(time.Hour*24),
+		))
 
 		auctionId, err := k.PublishAuction(ctx, a)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			return op, nil, err
 		}
 
 		bidder, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, bidder.Address)
 
-		msg := types.NewMsgPlaceBid(bidder.Address.String(), auctionId, sdk.NewCoin("acudos", sdk.NewInt(100000000000)))
+		msg := types.NewMsgPlaceBid(
+			bidder.Address.String(),
+			auctionId,
+			sdk.NewCoin("acudos", sdk.NewInt(10)),
+		)
 
-		spendable := bk.SpendableCoins(ctx, bidder.Address)
-		fees, err := simtypes.RandomFees(r, ctx, spendable)
+		balance := bk.SpendableCoins(ctx, bidder.Address)
+		fees, err := simtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			return op, nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -89,11 +102,13 @@ func simulateMsgPlaceBid(
 			bidder.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
+			op := simtypes.NoOpMsg(types.ModuleName, msg.Type(), err.Error())
+			return op, nil, err
 		}
 
 		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error()), nil, err
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			return op, nil, err
 		}
 
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil

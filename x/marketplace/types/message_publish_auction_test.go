@@ -25,7 +25,8 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 		{
 			desc: "english auction zero amount",
 			arrange: func(msg *MsgPublishAuction) {
-				err := msg.SetAuctionType(&EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.ZeroInt())})
+				zeroAmount := sdk.NewCoin("acudos", sdk.ZeroInt())
+				err := msg.SetAuction(&EnglishAuction{MinPrice: zeroAmount})
 				require.NoError(t, err)
 			},
 			wantErr: ErrInvalidPrice,
@@ -33,9 +34,8 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 		{
 			desc: "english auction invalid amount denom",
 			arrange: func(msg *MsgPublishAuction) {
-				err := msg.SetAuctionType(&EnglishAuction{
-					MinPrice: sdk.Coin{Denom: "", Amount: sdk.OneInt()},
-				})
+				invalidAmount := sdk.Coin{Denom: "", Amount: sdk.OneInt()}
+				err := msg.SetAuction(&EnglishAuction{MinPrice: invalidAmount})
 				require.NoError(t, err)
 				sdk.ZeroInt().Sub(sdk.OneInt())
 			},
@@ -45,7 +45,7 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 		{
 			desc: "invalid auction type",
 			arrange: func(msg *MsgPublishAuction) {
-				msg.AuctionType = &types.Any{}
+				msg.Auction = &types.Any{}
 			},
 			wantErr: sdkerrors.ErrInvalidType,
 		},
@@ -61,14 +61,14 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 			arrange: func(msg *MsgPublishAuction) {
 				msg.DenomId = "123"
 			},
-			wantErr: nfttypes.ErrInvalidNFT,
+			wantErr: nfttypes.ErrInvalidDenom,
 		},
 		{
 			desc: "invalid token id",
 			arrange: func(msg *MsgPublishAuction) {
 				msg.TokenId = "invalid"
 			},
-			wantErr: nfttypes.ErrInvalidNFT,
+			wantErr: nfttypes.ErrInvalidTokenID,
 		},
 		{
 			desc: "invalid address",

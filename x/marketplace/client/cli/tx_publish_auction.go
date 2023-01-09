@@ -16,7 +16,7 @@ var _ = strconv.Itoa(0)
 
 func CmdPublishAuction() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "publish-auction [token-id] [denom-id] [duration] [auction-type]",
+		Use: "publish-auction [token-id] [denom-id] [duration] [auction]",
 		// todo example
 		Short: "List NFT for an auction",
 		Args:  cobra.ExactArgs(4),
@@ -34,12 +34,14 @@ func CmdPublishAuction() *cobra.Command {
 				return err
 			}
 
-			var at types.AuctionType
-			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &at); err != nil {
-				return sdkerrors.ErrInvalidType
+			var a types.Auction
+			err = clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &a)
+			if err != nil {
+				return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "%s", err)
 			}
 
-			msg, err := types.NewMsgPublishAuction(clientCtx.GetFromAddress().String(), denomId, tokenId, duration, at)
+			sender := clientCtx.GetFromAddress().String()
+			msg, err := types.NewMsgPublishAuction(sender, denomId, tokenId, duration, a)
 			if err != nil {
 				return err
 			}

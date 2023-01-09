@@ -4,10 +4,18 @@ import (
 	"testing"
 
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
+	auctions := []types.Auction{
+		&types.EnglishAuction{BaseAuction: &types.BaseAuction{Id: 0}},
+		&types.DutchAuction{BaseAuction: &types.BaseAuction{Id: 1}},
+	}
+	auctionsAny, err := types.PackAuctions(auctions)
+	require.NoError(t, err)
+
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState
@@ -39,15 +47,8 @@ func TestGenesisState_Validate(t *testing.T) {
 						Id: 1,
 					},
 				},
-				NftCount: 2,
-				AuctionList: []types.Auction{
-					{
-						Id: 0,
-					},
-					{
-						Id: 1,
-					},
-				},
+				NftCount:     2,
+				AuctionList:  auctionsAny,
 				AuctionCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
@@ -108,12 +109,12 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "duplicated auction",
 			genState: &types.GenesisState{
-				AuctionList: []types.Auction{
+				AuctionList: []*codectypes.Any{
 					{
-						Id: 0,
+						Value: []byte("1"),
 					},
 					{
-						Id: 0,
+						Value: []byte("1"),
 					},
 				},
 			},
@@ -122,9 +123,9 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "invalid auction count",
 			genState: &types.GenesisState{
-				AuctionList: []types.Auction{
+				AuctionList: []*codectypes.Any{
 					{
-						Id: 1,
+						Value: []byte("1"),
 					},
 				},
 				AuctionCount: 0,

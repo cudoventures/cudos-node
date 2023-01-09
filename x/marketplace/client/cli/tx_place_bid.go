@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -17,8 +18,7 @@ func CmdPlaceBid() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "place-bid [auction-id] [amount]",
 		Short: "Place a bid on an auction",
-		// todo example
-		Args: cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			auctionId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -27,7 +27,7 @@ func CmdPlaceBid() *cobra.Command {
 
 			amount, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
-				return types.ErrInvalidPrice
+				return sdkerrors.Wrapf(types.ErrInvalidPrice, "invalid amount: %s", err)
 			}
 
 			ctx, err := client.GetClientTxContext(cmd)

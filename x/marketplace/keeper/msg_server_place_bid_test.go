@@ -17,40 +17,60 @@ import (
 )
 
 func TestMsgServerPlaceBid(t *testing.T) {
-	r := rand.New(rand.NewSource(rand.Int63()))
-	accs := simtypes.RandomAccounts(r, 2)
-	auctionId := uint64(0)
-	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(10000)))
+	accs := simtypes.RandomAccounts(rand.New(rand.NewSource(rand.Int63())), 2)
+	acc1, acc2 := accs[0].Address, accs[1].Address
+	fund := sdk.NewCoins(sdk.NewCoin("acudos", sdk.NewIntFromUint64(100)))
 	amount := sdk.NewCoin("acudos", sdk.OneInt())
 
 	for _, tc := range []struct {
-		desc         string
-		arrange      func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context)
+		desc    string
+		arrange func(
+			msg *types.MsgPlaceBid,
+			msgServer types.MsgServer,
+			ctx sdk.Context,
+		)
 		addBlockTime time.Duration
 		wantErr      error
 	}{
 		{
-			desc:    "valid",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {},
+			desc: "valid",
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
+			},
 		},
 		// todo dutch auction
 		{
 			desc: "insufficient balance",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
 				msg.Amount = fund[0].AddAmount(sdk.OneInt())
 			},
 			wantErr: sdkerrors.ErrInsufficientFunds,
 		},
 		{
 			desc: "invalid bidder",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
 				msg.Bidder = "invalid"
 			},
 			wantErr: sdkerrors.ErrInvalidAddress,
 		},
 		{
 			desc: "bid lower than current bid",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
 				_, err := msgServer.PlaceBid(ctx, msg)
 				require.NoError(t, err)
 			},
@@ -58,27 +78,44 @@ func TestMsgServerPlaceBid(t *testing.T) {
 		},
 		{
 			desc: "bid lower than min price",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
 				msg.Amount = msg.Amount.SubAmount(sdk.OneInt())
 			},
 			wantErr: types.ErrInvalidPrice,
 		},
 		{
-			desc:         "auction expired",
-			arrange:      func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {},
+			desc: "auction expired",
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
+			},
 			addBlockTime: time.Hour * 25,
 			wantErr:      types.ErrAuctionExpired,
 		},
 		{
 			desc: "bidder same as creator",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
-				msg.Bidder = accs[0].Address.String()
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
+				msg.Bidder = acc1.String()
 			},
 			wantErr: types.ErrCannotBuyOwnNft,
 		},
 		{
 			desc: "invalid auction id",
-			arrange: func(msg *types.MsgPlaceBid, msgServer types.MsgServer, ctx sdk.Context) {
+			arrange: func(
+				msg *types.MsgPlaceBid,
+				msgServer types.MsgServer,
+				ctx sdk.Context,
+			) {
 				msg.AuctionId++
 			},
 			wantErr: types.ErrAuctionNotFound,
@@ -91,30 +128,36 @@ func TestMsgServerPlaceBid(t *testing.T) {
 			err := bk.MintCoins(ctx, types.ModuleName, fund.Add(fund...))
 			require.NoError(t, err)
 
-			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, accs[1].Address, fund)
+			err = bk.SendCoinsFromModuleToAccount(ctx, types.ModuleName, acc2, fund)
 			require.NoError(t, err)
 
-			err = nk.IssueDenom(ctx, "asd", "asd", "{a:a,b:b}", "asd", "", accs[0].Address.String(), "", "", accs[0].Address)
+			err = nk.IssueDenom(ctx, "asd", "asd", "", "", "", acc1.String(), "", "", acc1)
 			require.NoError(t, err)
 
-			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", accs[0].Address, accs[0].Address)
+			_, err = nk.MintNFT(ctx, "asd", "asd", "", "", acc1, acc1)
 			require.NoError(t, err)
 
-			msgPublishAuction, err := types.NewMsgPublishAuction(accs[0].Address.String(), "asd", "1", time.Hour*24, &types.EnglishAuction{MinPrice: amount})
+			msgPublishAuction, err := types.NewMsgPublishAuction(
+				acc1.String(),
+				"asd",
+				"1",
+				time.Hour*24,
+				&types.EnglishAuction{MinPrice: amount},
+			)
 			require.NoError(t, err)
 
 			_, err = msgServer.PublishAuction(ctx, msgPublishAuction)
 			require.NoError(t, err)
 
 			msg := &types.MsgPlaceBid{
-				AuctionId: auctionId,
+				AuctionId: 0,
 				Amount:    amount,
-				Bidder:    accs[1].Address.String(),
+				Bidder:    acc2.String(),
 			}
 
 			tc.arrange(msg, msgServer, ctx)
-
 			ctx = ctx.WithBlockTime(ctx.BlockTime().Add(tc.addBlockTime))
+
 			_, err = msgServer.PlaceBid(ctx, msg)
 			require.ErrorIs(t, err, tc.wantErr)
 		})

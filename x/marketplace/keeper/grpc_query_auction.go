@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -12,44 +13,54 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) AuctionAll(c context.Context, req *types.QueryAllAuctionRequest) (*types.QueryAllAuctionResponse, error) {
+func (k Keeper) AuctionAll(
+	c context.Context, req *types.QueryAllAuctionRequest,
+) (*types.QueryAllAuctionResponse, error) {
 	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid request")
+		return nil, sdkerrors.ErrInvalidRequest
 	}
 
-	var auctions []types.Auction
+	var auctions []*codectypes.Any
 	ctx := sdk.UnwrapSDKContext(c)
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AuctionKey))
 
-	store := ctx.KVStore(k.storeKey)
-	auctionStore := prefix.NewStore(store, types.KeyPrefix(types.AuctionKey))
-
-	pageRes, err := query.Paginate(auctionStore, req.Pagination, func(key []byte, value []byte) error {
-		var auction types.Auction
-		if err := k.cdc.Unmarshal(value, &auction); err != nil {
+	pageRes, err := query.Paginate(store, req.Pagination, func(key, value []byte) error {
+		var a types.Auction
+		if err := k.cdc.UnmarshalInterface(value, &a); err != nil {
 			return err
 		}
 
-		auctions = append(auctions, auction)
+		auctionAny, err := types.PackAuction(a)
+		if err != nil {
+			return err
+		}
+
+		auctions = append(auctions, auctionAny)
 		return nil
 	})
-
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, err
 	}
 
 	return &types.QueryAllAuctionResponse{Auctions: auctions, Pagination: pageRes}, nil
 }
 
-func (k Keeper) Auction(c context.Context, req *types.QueryGetAuctionRequest) (*types.QueryGetAuctionResponse, error) {
+func (k Keeper) Auction(
+	ctx context.Context, req *types.QueryGetAuctionRequest,
+) (*types.QueryGetAuctionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	ctx := sdk.UnwrapSDKContext(c)
-	auction, found := k.GetAuction(ctx, req.Id)
-	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+	a, err := k.GetAuction(sdk.UnwrapSDKContext(ctx), req.Id)
+	if err != nil {
+		return nil, types.ErrAuctionNotFound
 	}
 
-	return &types.QueryGetAuctionResponse{Auction: auction}, nil
+	auctionAny, err := types.PackAuction(a)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.QueryGetAuctionResponse{Auction: auctionAny}, nil
 }

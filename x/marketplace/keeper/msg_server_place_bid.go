@@ -8,17 +8,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) PlaceBid(goCtx context.Context, msg *types.MsgPlaceBid) (*types.MsgPlaceBidResponse, error) {
+func (k msgServer) PlaceBid(
+	goCtx context.Context, msg *types.MsgPlaceBid,
+) (*types.MsgPlaceBidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := k.Keeper.PlaceBid(
-		ctx,
-		msg.AuctionId,
-		types.Bid{
-			Amount: msg.Amount,
-			Bidder: msg.Bidder,
-		},
-	); err != nil {
+	err := k.Keeper.PlaceBid(ctx, msg.AuctionId, types.Bid{
+		Amount: msg.Amount,
+		Bidder: msg.Bidder,
+	})
+	if err != nil {
 		return nil, err
 	}
 

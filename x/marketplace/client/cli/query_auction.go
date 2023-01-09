@@ -50,7 +50,6 @@ func CmdShowAuction() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
-
 			queryClient := types.NewQueryClient(clientCtx)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
@@ -58,13 +57,10 @@ func CmdShowAuction() *cobra.Command {
 				return types.ErrInvalidAuctionId
 			}
 
-			params := &types.QueryGetAuctionRequest{
-				Id: id,
-			}
-
+			params := &types.QueryGetAuctionRequest{Id: id}
 			res, err := queryClient.Auction(context.Background(), params)
 			if err != nil {
-				return err
+				return types.ErrAuctionNotFound
 			}
 
 			return clientCtx.PrintProto(res)

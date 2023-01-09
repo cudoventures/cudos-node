@@ -22,7 +22,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgRemoveAdmin{}, "marketplace/RemoveAdmin", nil)
 	cdc.RegisterConcrete(&MsgPublishAuction{}, "marketplace/PublishAuction", nil)
 	cdc.RegisterConcrete(&MsgPlaceBid{}, "marketplace/Bid", nil)
-	cdc.RegisterInterface((*AuctionType)(nil), nil)
+	cdc.RegisterInterface((*Auction)(nil), nil)
 	cdc.RegisterConcrete(&EnglishAuction{}, "marketplace/EnglishAuction", nil)
 	cdc.RegisterConcrete(&DutchAuction{}, "marketplace/DutchAuction", nil)
 
@@ -78,8 +78,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 
 	registry.RegisterInterface(
-		"cudoventures.cudosnode.marketplace.AuctionType",
-		(*AuctionType)(nil),
+		"cudoventures.cudosnode.marketplace.Auction",
+		(*Auction)(nil),
 		&EnglishAuction{},
 		&DutchAuction{},
 	)

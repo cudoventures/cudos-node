@@ -11,9 +11,15 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
+	auctions := []types.Auction{
+		&types.EnglishAuction{BaseAuction: &types.BaseAuction{Id: 0}},
+		&types.DutchAuction{BaseAuction: &types.BaseAuction{Id: 1}},
+	}
+	auctionsAny, err := types.PackAuctions(auctions)
+	require.NoError(t, err)
+
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
-
 		CollectionList: []types.Collection{
 			{
 				Id: 0,
@@ -31,15 +37,8 @@ func TestGenesis(t *testing.T) {
 				Id: 1,
 			},
 		},
-		NftCount: 2,
-		AuctionList: []types.Auction{
-			{
-				Id: 0,
-			},
-			{
-				Id: 1,
-			},
-		},
+		NftCount:     2,
+		AuctionList:  auctionsAny,
 		AuctionCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}

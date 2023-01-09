@@ -89,18 +89,19 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	for i, acc := range simState.Accounts {
 		accs[i] = acc.Address.String()
 	}
+
+	auctions := []types.Auction{
+		&types.EnglishAuction{BaseAuction: &types.BaseAuction{Id: 0}},
+		&types.DutchAuction{BaseAuction: &types.BaseAuction{Id: 1}},
+	}
+	auctionsAny, err := types.PackAuctions(auctions)
+	if err != nil {
+		panic(err)
+	}
+
 	marketplaceGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		AuctionList: []types.Auction{
-			{
-				Id:      0,
-				Creator: sample.AccAddress(),
-			},
-			{
-				Id:      1,
-				Creator: sample.AccAddress(),
-			},
-		},
+		Params:       types.DefaultParams(),
+		AuctionList:  auctionsAny,
 		AuctionCount: 2,
 
 		// this line is used by starport scaffolding # simapp/module/genesisState
@@ -259,48 +260,68 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	))
 
 	var weightMsgPublishEnglishAuction int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishAuction, &weightMsgPublishEnglishAuction, nil,
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc,
+		opWeightMsgPublishAuction,
+		&weightMsgPublishEnglishAuction,
+		nil,
 		func(_ *rand.Rand) {
 			weightMsgPublishEnglishAuction = defaultWeightMsgPublishAuction
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPublishEnglishAuction,
-		marketplacesimulation.SimulateMsgPublishEnglishAuction(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
-	))
+	op := marketplacesimulation.SimulateMsgPublishEnglishAuction(
+		am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper,
+	)
+	weightedOp := simulation.NewWeightedOperation(weightMsgPublishEnglishAuction, op)
+	operations = append(operations, weightedOp)
 
 	var weightMsgPublishDutchAuction int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPublishAuction, &weightMsgPublishDutchAuction, nil,
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc,
+		opWeightMsgPublishAuction,
+		&weightMsgPublishDutchAuction,
+		nil,
 		func(_ *rand.Rand) {
 			weightMsgPublishDutchAuction = defaultWeightMsgPublishAuction
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPublishDutchAuction,
-		marketplacesimulation.SimulateMsgPublishDutchAuction(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
-	))
+	op = marketplacesimulation.SimulateMsgPublishDutchAuction(
+		am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper,
+	)
+	weightedOp = simulation.NewWeightedOperation(weightMsgPublishDutchAuction, op)
+	operations = append(operations, weightedOp)
 
 	var weightMsgPlaceBidEnglishAuction int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlaceBid, &weightMsgPlaceBidEnglishAuction, nil,
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc,
+		opWeightMsgPlaceBid,
+		&weightMsgPlaceBidEnglishAuction,
+		nil,
 		func(_ *rand.Rand) {
 			weightMsgPlaceBidEnglishAuction = defaultWeightMsgPlaceBid
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPlaceBidEnglishAuction,
-		marketplacesimulation.SimulateMsgPlaceBidEnglishAuction(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
-	))
+	op = marketplacesimulation.SimulateMsgPlaceBidEnglishAuction(
+		am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper,
+	)
+	weightedOp = simulation.NewWeightedOperation(weightMsgPlaceBidEnglishAuction, op)
+	operations = append(operations, weightedOp)
 
 	var weightMsgPlaceBidDutchAuction int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlaceBid, &weightMsgPlaceBidDutchAuction, nil,
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc,
+		opWeightMsgPlaceBid,
+		&weightMsgPlaceBidDutchAuction,
+		nil,
 		func(_ *rand.Rand) {
 			weightMsgPlaceBidDutchAuction = defaultWeightMsgPlaceBid
 		},
 	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPlaceBidDutchAuction,
-		marketplacesimulation.SimulateMsgPlaceBidDutchAuction(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
-	))
+	op = marketplacesimulation.SimulateMsgPlaceBidDutchAuction(
+		am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper,
+	)
+	weightedOp = simulation.NewWeightedOperation(weightMsgPlaceBidDutchAuction, op)
+	operations = append(operations, weightedOp)
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

@@ -156,13 +156,15 @@ message MsgRemoveAdminResponse {
 message MsgPublishAuction {
   option (gogoproto.goproto_getters) = false;
   
-  string tokenId = 1;
-  string denomId = 2;
+  string denomId = 1;
+  string tokenId = 2;
   google.protobuf.Duration duration = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration)  = true
   ];
-  google.protobuf.Any auctionType = 4 [(cosmos_proto.accepts_interface) = "AuctionType"];
+  google.protobuf.Any auction = 4 [
+    (cosmos_proto.accepts_interface) = "Auction"
+  ];
   string creator = 5;
 }
 

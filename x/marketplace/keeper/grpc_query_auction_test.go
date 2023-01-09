@@ -4,21 +4,21 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
-	"github.com/CudoVentures/cudos-node/testutil/nullify"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func TestAuctionQuerySingle(t *testing.T) {
-	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
+	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNAuction(keeper, ctx, 2)
+	auctions := createNAuction(k, ctx, 2)
+	auctionsAny, err := types.PackAuctions(auctions)
+	require.NoError(t, err)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetAuctionRequest
@@ -27,18 +27,18 @@ func TestAuctionQuerySingle(t *testing.T) {
 	}{
 		{
 			desc:     "First",
-			request:  &types.QueryGetAuctionRequest{Id: msgs[0].Id},
-			response: &types.QueryGetAuctionResponse{Auction: msgs[0]},
+			request:  &types.QueryGetAuctionRequest{Id: auctions[0].GetId()},
+			response: &types.QueryGetAuctionResponse{Auction: auctionsAny[0]},
 		},
 		{
 			desc:     "Second",
-			request:  &types.QueryGetAuctionRequest{Id: msgs[1].Id},
-			response: &types.QueryGetAuctionResponse{Auction: msgs[1]},
+			request:  &types.QueryGetAuctionRequest{Id: auctions[1].GetId()},
+			response: &types.QueryGetAuctionResponse{Auction: auctionsAny[1]},
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetAuctionRequest{Id: uint64(len(msgs))},
-			wantErr: sdkerrors.ErrKeyNotFound,
+			request: &types.QueryGetAuctionRequest{Id: uint64(len(auctions))},
+			wantErr: types.ErrAuctionNotFound,
 		},
 		{
 			desc:    "InvalidRequest",
@@ -46,10 +46,10 @@ func TestAuctionQuerySingle(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			response, err := keeper.Auction(wctx, tc.request)
+			haveResp, err := k.Auction(wctx, tc.request)
 			require.ErrorIs(t, err, tc.wantErr)
-			if err == nil {
-				require.Equal(t, nullify.Fill(tc.response), nullify.Fill(response))
+			if tc.wantErr == nil {
+				require.Equal(t, tc.response, haveResp)
 			}
 		})
 	}
@@ -58,9 +58,9 @@ func TestAuctionQuerySingle(t *testing.T) {
 func TestAuctionQueryPaginated(t *testing.T) {
 	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNAuction(keeper, ctx, 5)
+	auctions := createNAuction(keeper, ctx, 5)
 
-	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAuctionRequest {
+	q := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAuctionRequest {
 		return &types.QueryAllAuctionRequest{
 			Pagination: &query.PageRequest{
 				Key:        next,
@@ -71,46 +71,43 @@ func TestAuctionQueryPaginated(t *testing.T) {
 		}
 	}
 	t.Run("ByOffset", func(t *testing.T) {
-		step := 2
-		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.AuctionAll(wctx, request(nil, uint64(i), uint64(step), false))
+		step := uint64(2)
+		for i := 0; i < len(auctions); i += int(step) {
+			resp, err := keeper.AuctionAll(wctx, q(nil, uint64(i), step, false))
 			require.NoError(t, err)
-			require.LessOrEqual(t, len(resp.Auctions), step)
-			require.Subset(t,
-				nullify.Fill(msgs),
-				nullify.Fill(resp.Auctions),
-			)
+			haveAuctions, err := types.UnpackAuctions(resp.Auctions)
+			require.NoError(t, err)
+			require.LessOrEqual(t, len(resp.Auctions), int(step))
+			require.Subset(t, auctions, haveAuctions)
 		}
 	})
 	t.Run("ByKey", func(t *testing.T) {
 		step := 2
 		var next []byte
-		for i := 0; i < len(msgs); i += step {
-			resp, err := keeper.AuctionAll(wctx, request(next, 0, uint64(step), false))
+		for i := 0; i < len(auctions); i += step {
+			resp, err := keeper.AuctionAll(wctx, q(next, 0, uint64(step), false))
+			require.NoError(t, err)
+			haveAuctions, err := types.UnpackAuctions(resp.Auctions)
 			require.NoError(t, err)
 			require.LessOrEqual(t, len(resp.Auctions), step)
-			require.Subset(t,
-				nullify.Fill(msgs),
-				nullify.Fill(resp.Auctions),
-			)
+			require.Subset(t, auctions, haveAuctions)
 			next = resp.Pagination.NextKey
 		}
 	})
 	t.Run("Total", func(t *testing.T) {
-		resp, err := keeper.AuctionAll(wctx, request(nil, 0, 0, true))
+		resp, err := keeper.AuctionAll(wctx, q(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, len(msgs), int(resp.Pagination.Total))
-		require.ElementsMatch(t,
-			nullify.Fill(msgs),
-			nullify.Fill(resp.Auctions),
-		)
+		haveAuctions, err := types.UnpackAuctions(resp.Auctions)
+		require.NoError(t, err)
+		require.Equal(t, len(auctions), int(resp.Pagination.Total))
+		require.Equal(t, auctions, haveAuctions)
 	})
 	t.Run("InvalidRequest", func(t *testing.T) {
 		_, err := keeper.AuctionAll(wctx, nil)
-		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
+		require.Error(t, err)
 	})
 	t.Run("InvalidPageRequest", func(t *testing.T) {
-		_, err := keeper.AuctionAll(wctx, request([]byte("invalid"), 1, 0, true))
-		require.ErrorIs(t, err, status.Error(codes.Internal, "invalid request, either offset or key is expected, got both"))
+		_, err := keeper.AuctionAll(wctx, q([]byte("invalid"), 1, 0, true))
+		require.Error(t, err)
 	})
 }

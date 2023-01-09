@@ -52,7 +52,7 @@ func TestPublishAuction(t *testing.T) {
 				"25h",
 				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
 			},
-			wantErr: nfttypes.ErrInvalidNFT,
+			wantErr: nfttypes.ErrInvalidDenom,
 		},
 		{
 			desc: "invalid token id",
@@ -62,7 +62,7 @@ func TestPublishAuction(t *testing.T) {
 				"25h",
 				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
 			},
-			wantErr: nfttypes.ErrInvalidNFT,
+			wantErr: nfttypes.ErrInvalidTokenID,
 		},
 		{
 			desc: "invalid auction type",
@@ -86,8 +86,9 @@ func TestPublishAuction(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
+			ctx := val.ClientCtx
 			args := append(tc.args, flags...)
-			_, err := clitestutil.ExecTestCLICmd(val.ClientCtx, cli.CmdPublishAuction(), args)
+			_, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdPublishAuction(), args)
 			require.ErrorIs(t, err, tc.wantErr)
 		})
 	}

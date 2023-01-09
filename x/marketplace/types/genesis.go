@@ -2,17 +2,33 @@ package types
 
 import (
 	"fmt"
+
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 )
 
 // DefaultIndex is the default capability global index
 const DefaultIndex uint64 = 1
+
+var _ codectypes.UnpackInterfacesMessage = GenesisState{}
+
+func (gs GenesisState) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, any := range gs.AuctionList {
+		var a Auction
+		err := unpacker.UnpackAny(any, &a)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		CollectionList: []Collection{},
 		NftList:        []Nft{},
-		AuctionList:    []Auction{},
+		AuctionList:    []*codectypes.Any{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -23,7 +39,7 @@ func DefaultGenesis() *GenesisState {
 func (gs GenesisState) Validate() error {
 	// Check for duplicated ID in collection
 	collectionIdMap := make(map[uint64]bool)
-	collectionCount := gs.GetCollectionCount()
+	collectionCount := gs.CollectionCount
 	for _, elem := range gs.CollectionList {
 		if _, ok := collectionIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for collection")
@@ -35,7 +51,7 @@ func (gs GenesisState) Validate() error {
 	}
 	// Check for duplicated ID in nft
 	nftIdMap := make(map[uint64]bool)
-	nftCount := gs.GetNftCount()
+	nftCount := gs.NftCount
 	for _, elem := range gs.NftList {
 		if _, ok := nftIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for nft")
@@ -47,15 +63,20 @@ func (gs GenesisState) Validate() error {
 	}
 	// Check for duplicated ID in auction
 	auctionIdMap := make(map[uint64]bool)
-	auctionCount := gs.GetAuctionCount()
-	for _, elem := range gs.AuctionList {
-		if _, ok := auctionIdMap[elem.Id]; ok {
+	auctionCount := gs.AuctionCount
+	auctionList, err := UnpackAuctions(gs.AuctionList)
+	if err != nil {
+		return err
+	}
+
+	for _, a := range auctionList {
+		if _, ok := auctionIdMap[a.GetId()]; ok {
 			return fmt.Errorf("duplicated id for auction")
 		}
-		if elem.Id >= auctionCount {
+		if a.GetId() >= auctionCount {
 			return fmt.Errorf("auction id should be lower or equal than the last id")
 		}
-		auctionIdMap[elem.Id] = true
+		auctionIdMap[a.GetId()] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

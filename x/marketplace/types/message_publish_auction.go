@@ -3,9 +3,9 @@ package types
 import (
 	"time"
 
-	nft "github.com/CudoVentures/cudos-node/x/nft/types"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -15,10 +15,16 @@ const (
 )
 
 var (
-	_ sdk.Msg = &MsgPublishAuction{}
+	_ sdk.Msg                            = &MsgPublishAuction{}
+	_ codectypes.UnpackInterfacesMessage = MsgPublishAuction{}
 )
 
-func NewMsgPublishAuction(creator string, denomId string, tokenId string, duration time.Duration, at AuctionType) (*MsgPublishAuction, error) {
+func NewMsgPublishAuction(
+	creator string,
+	denomId string, tokenId string,
+	duration time.Duration,
+	a Auction,
+) (*MsgPublishAuction, error) {
 	msg := &MsgPublishAuction{
 		Creator:  creator,
 		TokenId:  tokenId,
@@ -26,30 +32,55 @@ func NewMsgPublishAuction(creator string, denomId string, tokenId string, durati
 		Duration: duration,
 	}
 
-	err := msg.SetAuctionType(at)
+	err := msg.SetAuction(a)
 	return msg, err
 }
 
-func (msg *MsgPublishAuction) GetAuctionType() (AuctionType, error) {
-	at, ok := msg.AuctionType.GetCachedValue().(AuctionType)
+func (msg *MsgPublishAuction) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator %s", err)
+	}
+
+	if err := nfttypes.ValidateDenomID(msg.DenomId); err != nil {
+		return nfttypes.ErrInvalidDenom
+	}
+
+	if err := nfttypes.ValidateTokenID(msg.TokenId); err != nil {
+		return nfttypes.ErrInvalidTokenID
+	}
+
+	if msg.Duration < time.Hour*24 {
+		return sdkerrors.Wrap(ErrInvalidAuctionDuration, "duration is less than 24 hours")
+	}
+
+	a, err := msg.GetAuction()
+	if err != nil {
+		return err
+	}
+
+	return a.ValidateBasic()
+}
+
+func (msg *MsgPublishAuction) GetAuction() (Auction, error) {
+	at, ok := msg.Auction.GetCachedValue().(Auction)
 	if !ok {
-		return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T, got %T", (AuctionType)(nil), msg.AuctionType.GetCachedValue())
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
 	}
 	return at, nil
 }
 
-func (msg *MsgPublishAuction) SetAuctionType(at AuctionType) error {
+func (msg *MsgPublishAuction) SetAuction(at Auction) error {
 	any, err := types.NewAnyWithValue(at)
 	if err != nil {
-		return err
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid auction: %s", err)
 	}
-	msg.AuctionType = any
+	msg.Auction = any
 	return nil
 }
 
 func (msg MsgPublishAuction) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	var at AuctionType
-	return unpacker.UnpackAny(msg.AuctionType, &at)
+	var at Auction
+	return unpacker.UnpackAny(msg.Auction, &at)
 }
 
 func (msg *MsgPublishAuction) Route() string {
@@ -71,25 +102,4 @@ func (msg *MsgPublishAuction) GetSigners() []sdk.AccAddress {
 func (msg *MsgPublishAuction) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
-}
-
-func (msg *MsgPublishAuction) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
-		return sdkerrors.ErrInvalidAddress
-	}
-
-	if nft.ValidateDenomID(msg.DenomId) != nil || nft.ValidateTokenID(msg.TokenId) != nil {
-		return nfttypes.ErrInvalidNFT
-	}
-
-	if msg.Duration < time.Hour*24 {
-		return ErrInvalidAuctionDuration
-	}
-
-	at, err := msg.GetAuctionType()
-	if err != nil {
-		return err
-	}
-
-	return at.ValidateBasic()
 }
