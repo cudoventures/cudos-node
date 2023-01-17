@@ -28,6 +28,7 @@ service Msg {
   rpc RemoveAdmin(MsgRemoveAdmin) returns (MsgRemoveAdminResponse);
   rpc PublishAuction(MsgPublishAuction) returns (MsgPublishAuctionResponse);
   rpc PlaceBid(MsgPlaceBid) returns (MsgPlaceBidResponse);
+  rpc AcceptBid(MsgAcceptBid) returns (MsgAcceptBidResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
@@ -181,3 +182,13 @@ message MsgPlaceBid {
 
 message MsgPlaceBidResponse {
 }
+
+message MsgAcceptBid {
+  uint64 auctionId = 1;
+  string sender = 2;
+}
+
+message MsgAcceptBidResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

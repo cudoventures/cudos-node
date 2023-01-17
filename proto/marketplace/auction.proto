@@ -44,4 +44,5 @@ message DutchAuction {
   cosmos.base.v1beta1.Coin startPrice = 2 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.Coin minPrice = 3 [(gogoproto.nullable) = false]; 
   cosmos.base.v1beta1.Coin currentPrice = 4; 
+  google.protobuf.Timestamp nextDiscountTime = 5 [(gogoproto.stdtime)  = true]; 
 }

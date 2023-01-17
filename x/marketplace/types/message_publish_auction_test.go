@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var amount = sdk.NewCoin("acudos", sdk.OneInt())
+
 func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string
@@ -21,6 +23,16 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 		{
 			desc:    "valid english auction",
 			arrange: func(msg *MsgPublishAuction) {},
+		},
+		{
+			desc: "valid dutch auction",
+			arrange: func(msg *MsgPublishAuction) {
+				err := msg.SetAuction(&DutchAuction{
+					StartPrice: amount.AddAmount(sdk.OneInt()),
+					MinPrice:   amount,
+				})
+				require.NoError(t, err)
+			},
 		},
 		{
 			desc: "english auction zero amount",
@@ -41,7 +53,61 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 			},
 			wantErr: ErrInvalidPrice,
 		},
-		// todo dutch auction
+		{
+			desc: "dutch auction start price lower than min price",
+			arrange: func(msg *MsgPublishAuction) {
+				err := msg.SetAuction(&DutchAuction{
+					StartPrice: amount,
+					MinPrice:   amount.AddAmount(sdk.OneInt()),
+				})
+				require.NoError(t, err)
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "dutch auction start price zero amount",
+			arrange: func(msg *MsgPublishAuction) {
+				zeroAmount := sdk.NewCoin("acudos", sdk.ZeroInt())
+				err := msg.SetAuction(&DutchAuction{StartPrice: zeroAmount})
+				require.NoError(t, err)
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "dutch auction start price invalid amount denom",
+			arrange: func(msg *MsgPublishAuction) {
+				invalidAmount := sdk.Coin{Denom: "", Amount: sdk.OneInt()}
+				err := msg.SetAuction(&DutchAuction{StartPrice: invalidAmount})
+				require.NoError(t, err)
+				sdk.ZeroInt().Sub(sdk.OneInt())
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "dutch auction min price zero amount",
+			arrange: func(msg *MsgPublishAuction) {
+				zeroAmount := sdk.NewCoin("acudos", sdk.ZeroInt())
+				err := msg.SetAuction(&DutchAuction{
+					StartPrice: amount,
+					MinPrice:   zeroAmount,
+				})
+				require.NoError(t, err)
+			},
+			wantErr: ErrInvalidPrice,
+		},
+		{
+			desc: "dutch auction min price invalid amount denom",
+			arrange: func(msg *MsgPublishAuction) {
+				invalidAmount := sdk.Coin{Denom: "", Amount: sdk.OneInt()}
+				err := msg.SetAuction(&DutchAuction{
+					StartPrice: amount,
+					MinPrice:   invalidAmount,
+				})
+				require.NoError(t, err)
+				sdk.ZeroInt().Sub(sdk.OneInt())
+			},
+			wantErr: ErrInvalidPrice,
+		},
 		{
 			desc: "invalid auction type",
 			arrange: func(msg *MsgPublishAuction) {
@@ -84,7 +150,7 @@ func TestMsgPublishAuction_ValidateBasic(t *testing.T) {
 				"test",
 				"123",
 				time.Hour*24,
-				&EnglishAuction{MinPrice: sdk.NewCoin("acudos", sdk.OneInt())},
+				&EnglishAuction{MinPrice: amount},
 			)
 			require.NoError(t, err)
 

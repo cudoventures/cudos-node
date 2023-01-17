@@ -25,7 +25,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*Auction)(nil), nil)
 	cdc.RegisterConcrete(&EnglishAuction{}, "marketplace/EnglishAuction", nil)
 	cdc.RegisterConcrete(&DutchAuction{}, "marketplace/DutchAuction", nil)
-
+	cdc.RegisterConcrete(&MsgAcceptBid{}, "marketplace/AcceptBid", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -72,7 +72,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgPlaceBid{},
 	)
-
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAcceptBid{},
+	)
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

@@ -29,13 +29,15 @@ type Auction interface {
 	SetBaseAuction(a *BaseAuction)
 }
 
-func AuctionFromMsgPublishAuction(msg *MsgPublishAuction, time time.Time) (Auction, error) {
+func AuctionFromMsgPublishAuction(
+	msg *MsgPublishAuction, startTime time.Time,
+) (Auction, error) {
 	a, err := msg.GetAuction()
 	if err != nil {
 		return nil, err
 	}
 
-	endTime := time.Add(msg.Duration)
+	endTime := startTime.Add(msg.Duration)
 
 	switch a := a.(type) {
 	case *EnglishAuction:
@@ -44,7 +46,7 @@ func AuctionFromMsgPublishAuction(msg *MsgPublishAuction, time time.Time) (Aucti
 			msg.DenomId,
 			msg.TokenId,
 			a.MinPrice,
-			time,
+			startTime,
 			endTime,
 		), nil
 	case *DutchAuction:
@@ -54,20 +56,12 @@ func AuctionFromMsgPublishAuction(msg *MsgPublishAuction, time time.Time) (Aucti
 			msg.TokenId,
 			a.StartPrice,
 			a.MinPrice,
-			time,
+			startTime,
 			endTime,
 		), nil
 	default:
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction type")
 	}
-}
-
-func UnpackAuction(auctionAny *codectypes.Any) (Auction, error) {
-	a, ok := auctionAny.GetCachedValue().(Auction)
-	if !ok {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
-	}
-	return a, nil
 }
 
 func PackAuction(a Auction) (*codectypes.Any, error) {
@@ -77,18 +71,6 @@ func PackAuction(a Auction) (*codectypes.Any, error) {
 	}
 
 	return auctionAny, nil
-}
-
-func UnpackAuctions(auctionsAny []*codectypes.Any) ([]Auction, error) {
-	auctions := make([]Auction, len(auctionsAny))
-	for i, a := range auctionsAny {
-		a, ok := a.GetCachedValue().(Auction)
-		if !ok {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
-		}
-		auctions[i] = a
-	}
-	return auctions, nil
 }
 
 func PackAuctions(auctions []Auction) ([]*codectypes.Any, error) {
@@ -101,6 +83,30 @@ func PackAuctions(auctions []Auction) ([]*codectypes.Any, error) {
 		auctionsAny[i] = auctionAny
 	}
 	return auctionsAny, nil
+}
+
+func UnpackAuction(auctionAny *codectypes.Any) (Auction, error) {
+	if auctionAny == nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
+	}
+
+	a, ok := auctionAny.GetCachedValue().(Auction)
+	if !ok {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
+	}
+	return a, nil
+}
+
+func UnpackAuctions(auctionsAny []*codectypes.Any) ([]Auction, error) {
+	auctions := make([]Auction, len(auctionsAny))
+	for i, a := range auctionsAny {
+		a, ok := a.GetCachedValue().(Auction)
+		if !ok {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
+		}
+		auctions[i] = a
+	}
+	return auctions, nil
 }
 
 func NewBaseAuction(
@@ -212,10 +218,13 @@ func NewDutchAuction(
 	startTime time.Time,
 	endTime time.Time,
 ) *DutchAuction {
+	nextDiscountTime := startTime.Add(time.Hour * 1)
 	return &DutchAuction{
-		BaseAuction: NewBaseAuction(creator, denomId, tokenId, startTime, endTime),
-		StartPrice:  startPrice,
-		MinPrice:    minPrice,
+		BaseAuction:      NewBaseAuction(creator, denomId, tokenId, startTime, endTime),
+		StartPrice:       startPrice,
+		MinPrice:         minPrice,
+		CurrentPrice:     &sdk.Coin{Denom: startPrice.Denom, Amount: startPrice.Amount},
+		NextDiscountTime: &nextDiscountTime,
 	}
 }
 
@@ -251,4 +260,27 @@ func (a *DutchAuction) ValidateBasic() error {
 
 func (a *DutchAuction) SetBaseAuction(ba *BaseAuction) {
 	a.BaseAuction = ba
+}
+
+func (a *DutchAuction) IsDiscountTime(time time.Time) bool {
+	return a.NextDiscountTime != nil && time.After(*a.NextDiscountTime)
+}
+
+func (a *DutchAuction) ApplyPriceDiscount() {
+	if a.NextDiscountTime == nil || a.CurrentPrice == nil {
+		return
+	}
+
+	durationHours := int64(a.EndTime.Sub(a.StartTime).Hours()) - 1
+	discount := a.StartPrice.Sub(a.MinPrice).Amount.QuoRaw(durationHours)
+	priceAfterDiscount := a.CurrentPrice.SubAmount(discount)
+	a.CurrentPrice = &priceAfterDiscount
+
+	if a.EndTime.Sub(*a.NextDiscountTime) >= time.Hour*2 {
+		nextDiscountTime := a.NextDiscountTime.Add(time.Hour * 1)
+		a.NextDiscountTime = &nextDiscountTime
+	} else {
+		a.NextDiscountTime = nil
+		a.CurrentPrice = &sdk.Coin{Denom: a.MinPrice.Denom, Amount: a.MinPrice.Amount}
+	}
 }

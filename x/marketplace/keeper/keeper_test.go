@@ -791,7 +791,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 	now := time.Now()
 	tomorrow := now.Add(time.Hour * 24)
 	ea := *types.NewEnglishAuction(acc1.String(), "asd", "1", amount, now, tomorrow)
-	_ = types.NewDutchAuction(acc1.String(), "asd", "1", fund[0], amount, now, tomorrow)
+	da := *types.NewDutchAuction(acc1.String(), "asd", "1", fund[0], amount, now, tomorrow)
 	bid := types.Bid{Amount: amount, Bidder: acc2.String()}
 
 	for _, tc := range []struct {
@@ -807,7 +807,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 		)
 	}{
 		{
-			desc:         "english auction valid",
+			desc:         "english auction expired",
 			addBlockTime: time.Hour * 24,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
 				auctionId, err := k.PublishAuction(ctx, &ea)
@@ -843,7 +843,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 			},
 		},
 		{
-			desc:         "valid english auction no current bid",
+			desc:         "english auction expired no current bid",
 			addBlockTime: time.Hour * 24,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
 				_, err := k.PublishAuction(ctx, &ea)
@@ -871,7 +871,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 			},
 		},
 		{
-			desc:         "english auction err trade",
+			desc:         "english auction err doTrade",
 			addBlockTime: time.Hour * 24,
 			wantErr:      sdkerrors.ErrInsufficientFunds,
 			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
@@ -934,6 +934,70 @@ func TestAuctionEndBlocker(t *testing.T) {
 				require.Error(t, err)
 			},
 		},
+		{
+			desc: "dutch auction",
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				_, err := k.PublishAuction(ctx, &da)
+				require.NoError(t, err)
+			},
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				a, err := k.GetAuction(ctx, 0)
+				require.NoError(t, err)
+
+				da := a.(*types.DutchAuction)
+				require.Equal(t, *da.CurrentPrice, da.StartPrice)
+				require.Equal(t, da.StartTime.Add(time.Hour*1), *da.NextDiscountTime)
+			},
+		},
+		{
+			desc:         "dutch auction discount time",
+			addBlockTime: time.Hour * 2,
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				_, err := k.PublishAuction(ctx, &da)
+				require.NoError(t, err)
+			},
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				a, err := k.GetAuction(ctx, 0)
+				require.NoError(t, err)
+
+				da := a.(*types.DutchAuction)
+				require.True(t, da.CurrentPrice.IsLT(da.StartPrice))
+				require.Equal(t, da.StartTime.Add(time.Hour*2), *da.NextDiscountTime)
+			},
+		},
+		{
+			desc:         "dutch auction expired",
+			addBlockTime: time.Hour * 25,
+			arrange: func(ctx sdk.Context, k *keeper.Keeper, bk types.BankKeeper) {
+				_, err := k.PublishAuction(ctx, &da)
+				require.NoError(t, err)
+			},
+			assert: func(
+				ctx sdk.Context,
+				k *keeper.Keeper,
+				nk *nftkeeper.Keeper,
+				bk types.BankKeeper,
+			) {
+				_, err := k.GetAuction(ctx, 0)
+				require.Error(t, err)
+
+				err = nk.IsSoftLocked(ctx, da.GetDenomId(), da.GetTokenId())
+				require.NoError(t, err)
+
+				_, err = k.PublishAuction(ctx, &da)
+				require.NoError(t, err)
+			},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			k, nk, bk, ctx := testkeeper.MarketplaceKeeper(t)
@@ -958,9 +1022,7 @@ func TestAuctionEndBlocker(t *testing.T) {
 
 			err = k.AuctionEndBlocker(ctx)
 			require.ErrorIs(t, err, tc.wantErr)
-			if tc.wantErr == nil {
-				tc.assert(ctx, k, nk, bk)
-			}
+			tc.assert(ctx, k, nk, bk)
 		})
 	}
 }

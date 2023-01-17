@@ -21,9 +21,9 @@ import (
 )
 
 var (
-	date   = time.Date(2023, 1, 15, 15, 00, 00, 000, time.UTC)
-	amount = sdk.NewCoin("acudos", sdk.NewInt(100))
-	addr1  = sample.AccAddress()
+	startTime = time.Date(2222, 1, 1, 1, 0, 0, 0, time.UTC)
+	amount    = sdk.NewCoin("acudos", sdk.NewInt(100))
+	addr1     = sample.AccAddress()
 )
 
 func networkWithAuctionObjects(t *testing.T, n int) (*network.Network, []types.Auction) {
@@ -43,8 +43,8 @@ func networkWithAuctionObjects(t *testing.T, n int) (*network.Network, []types.A
 				"asd",
 				"1",
 				amount,
-				date,
-				date.Add(time.Hour*24),
+				startTime,
+				startTime.Add(time.Hour*24),
 			)
 		} else {
 			a = types.NewDutchAuction(
@@ -53,8 +53,8 @@ func networkWithAuctionObjects(t *testing.T, n int) (*network.Network, []types.A
 				"1",
 				amount,
 				amount.SubAmount(sdk.NewInt(50)),
-				date,
-				date.Add(time.Hour*24),
+				startTime,
+				startTime.Add(time.Hour*24),
 			)
 		}
 		a.SetId(uint64(i))

@@ -35,50 +35,58 @@ func TestPublishAuction(t *testing.T) {
 		wantErr error
 	}{
 		{
-			desc: "valid",
+			desc: "valid english auction",
 			args: []string{
-				"1",
 				"xyz",
+				"1",
 				"25h",
-				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
+				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"acudos","amount":"1"}}`,
 			},
 		},
-		// todo dutch auction
+		{
+			desc: "valid dutch auction",
+			args: []string{
+				"xyz",
+				"1",
+				"25h",
+				`{"@type":"/cudoventures.cudosnode.marketplace.DutchAuction","startPrice":{"denom":"acudos","amount":"10"},"minPrice":{"denom":"acudos","amount":"1"}}`,
+			},
+		},
 		{
 			desc: "invalid denom id",
 			args: []string{
-				"1",
 				"123",
+				"1",
 				"25h",
-				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
+				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"acudos","amount":"1"}}`,
 			},
 			wantErr: nfttypes.ErrInvalidDenom,
 		},
 		{
 			desc: "invalid token id",
 			args: []string{
-				"invalid",
 				"xyz",
+				"invalid",
 				"25h",
-				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"stake","amount":"1"}}`,
+				`{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"acudos","amount":"1"}}`,
 			},
 			wantErr: nfttypes.ErrInvalidTokenID,
 		},
 		{
 			desc: "invalid auction type",
 			args: []string{
-				"1",
 				"xyz",
+				"1",
 				"25h",
-				`{"@type":"/Invalid","minPrice":{"denom":"stake","amount":"0"}}`,
+				`{"@type":"/Invalid","minPrice":{"denom":"acudos","amount":"0"}}`,
 			},
 			wantErr: sdkerrors.ErrInvalidType,
 		},
 		{
 			desc: "invalid duration",
 			args: []string{
-				"1",
 				"xyz",
+				"1",
 				"24",
 				"",
 			},

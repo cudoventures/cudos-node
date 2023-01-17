@@ -45,7 +45,20 @@ func TestMsgServerPublishAuction(t *testing.T) {
 			) {
 			},
 		},
-		// todo dutch auction
+		{
+			desc: "valid dutch auction",
+			arrange: func(
+				msg *types.MsgPublishAuction,
+				msgServer types.MsgServer,
+				nk *nftkeeper.Keeper,
+				ctx sdk.Context,
+			) {
+				err := msg.SetAuction(
+					&types.DutchAuction{StartPrice: amount, MinPrice: amount},
+				)
+				require.NoError(t, err)
+			},
+		},
 		{
 			desc: "valid approved nft address",
 			arrange: func(
@@ -125,7 +138,7 @@ func TestMsgServerPublishAuction(t *testing.T) {
 					Creator: acc1.String(),
 					TokenId: tokenId,
 					DenomId: denomId,
-					Price:   sdk.NewCoin("stake", sdk.OneInt()),
+					Price:   sdk.NewCoin("acudos", sdk.OneInt()),
 				}
 				_, err := msgServer.PublishNft(ctx, msgPublishNft)
 				require.NoError(t, err)

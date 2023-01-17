@@ -62,18 +62,15 @@ func (msg *MsgPublishAuction) ValidateBasic() error {
 }
 
 func (msg *MsgPublishAuction) GetAuction() (Auction, error) {
-	at, ok := msg.Auction.GetCachedValue().(Auction)
-	if !ok {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidType, "invalid auction")
-	}
-	return at, nil
+	return UnpackAuction(msg.Auction)
 }
 
-func (msg *MsgPublishAuction) SetAuction(at Auction) error {
-	any, err := types.NewAnyWithValue(at)
+func (msg *MsgPublishAuction) SetAuction(a Auction) error {
+	any, err := PackAuction(a)
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "invalid auction: %s", err)
+		return err
 	}
+
 	msg.Auction = any
 	return nil
 }

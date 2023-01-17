@@ -11,18 +11,6 @@ const DefaultIndex uint64 = 1
 
 var _ codectypes.UnpackInterfacesMessage = GenesisState{}
 
-func (gs GenesisState) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, any := range gs.AuctionList {
-		var a Auction
-		err := unpacker.UnpackAny(any, &a)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
@@ -81,4 +69,16 @@ func (gs GenesisState) Validate() error {
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()
+}
+
+func (gs GenesisState) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, any := range gs.AuctionList {
+		var a Auction
+		err := unpacker.UnpackAny(any, &a)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

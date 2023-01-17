@@ -15,7 +15,7 @@ var (
 	EventRemoveAdminType        = "remove_admin"
 	EventPublishAuctionType     = "publish_auction"
 	EventPlaceBidType           = "place_bid"
-	EventAuctionExpiredType     = "auction_expired"
+	EventAcceptBidType          = "accept_bid"
 
 	AttributeValueCategory = ModuleName
 

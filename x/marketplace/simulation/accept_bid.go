@@ -11,40 +11,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-func SimulateMsgPlaceBidEnglishAuction(
+func SimulateMsgAcceptBid(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
-) simtypes.Operation {
-	return simulateMsgPlaceBid(ak, bk, nk, k, &types.EnglishAuction{
-		MinPrice: sdk.NewCoin("acudos", sdk.NewInt(10)),
-	})
-}
-
-func SimulateMsgPlaceBidDutchAuction(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
-	nk types.NftKeeper,
-	k keeper.Keeper,
-) simtypes.Operation {
-	return simulateMsgPlaceBid(ak, bk, nk, k, &types.DutchAuction{
-		StartPrice: sdk.NewCoin("acudos", sdk.NewInt(10)),
-		MinPrice:   sdk.NewCoin("acudos", sdk.NewInt(1)),
-	})
-}
-
-func simulateMsgPlaceBid(
-	ak types.AccountKeeper,
-	bk types.BankKeeper,
-	nk types.NftKeeper,
-	k keeper.Keeper,
-	a types.Auction,
 ) simtypes.Operation {
 	return func(
 		r *rand.Rand,
@@ -56,39 +31,44 @@ func simulateMsgPlaceBid(
 		owner, denomId, tokenId := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
 		if owner.Empty() {
 			err := fmt.Errorf("invalid account")
-			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventAcceptBidType, err.Error())
 			return op, nil, err
 		}
 
-		a.SetBaseAuction(types.NewBaseAuction(
+		a := types.NewEnglishAuction(
 			owner.String(),
 			denomId,
 			tokenId,
+			sdk.NewCoin("acudos", sdk.NewInt(10)),
 			ctx.BlockTime(),
 			ctx.BlockTime().Add(time.Hour*24),
-		))
+		)
 
 		auctionId, err := k.PublishAuction(ctx, a)
 		if err != nil {
-			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventAcceptBidType, err.Error())
 			return op, nil, err
 		}
 
 		bidder, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, bidder.Address)
-
-		msg := types.NewMsgPlaceBid(
-			bidder.Address.String(),
-			auctionId,
-			sdk.NewCoin("acudos", sdk.NewInt(10)),
-		)
-
 		balance := bk.SpendableCoins(ctx, bidder.Address)
 		fees, err := simtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventAcceptBidType, err.Error())
 			return op, nil, err
 		}
+
+		err = k.PlaceBid(ctx, auctionId, types.Bid{
+			Amount: sdk.NewCoin("acudos", sdk.NewInt(10)),
+			Bidder: bidder.Address.String(),
+		})
+		if err != nil {
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventAcceptBidType, err.Error())
+			return op, nil, err
+		}
+
+		msg := types.NewMsgAcceptBid(owner.String(), auctionId)
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
@@ -107,7 +87,7 @@ func simulateMsgPlaceBid(
 		}
 
 		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
-			op := simtypes.NoOpMsg(types.ModuleName, types.EventPlaceBidType, err.Error())
+			op := simtypes.NoOpMsg(types.ModuleName, types.EventAcceptBidType, err.Error())
 			return op, nil, err
 		}
 
