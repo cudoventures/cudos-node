@@ -40,7 +40,7 @@ func (k Keeper) GetNextUniqueId(ctx sdk.Context) uint64 {
 
 	// Count doesn't exist: no element
 	if bz == nil {
-		return 0
+		return 1
 	}
 
 	// Parse bytes
