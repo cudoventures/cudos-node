@@ -16,5 +16,6 @@ message GenesisState {
   uint64 collectionCount = 3;
   repeated Nft nftList = 4 [(gogoproto.nullable) = false];
   uint64 nftCount = 5;
+  uint64 nextUniqueId = 6;
   // this line is used by starport scaffolding # genesis/proto/state
 }
