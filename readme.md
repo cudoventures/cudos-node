@@ -471,7 +471,7 @@ $ cudos-noded query nft denom <denomId>
 **Example:**
 
 ``` bash
-$ cudos-noded query nft denom <denomName>
+$ cudos-noded query nft denom-by-name <denomName>
 ```
 
 ### `denom-by-symbol`
@@ -486,7 +486,7 @@ $ cudos-noded query nft denom <denomName>
 **Example:**
 
 ``` bash
-$ cudos-noded query nft denom <symbol>
+$ cudos-noded query nft denom-by-symbol <symbol>
 ```
 
 
