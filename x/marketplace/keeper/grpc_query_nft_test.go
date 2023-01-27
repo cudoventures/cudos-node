@@ -37,7 +37,7 @@ func TestNftQuerySingle(t *testing.T) {
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetNftRequest{Id: uint64(len(msgs))},
+			request: &types.QueryGetNftRequest{Id: uint64(len(msgs) + 1)},
 			err:     sdkerrors.ErrKeyNotFound,
 		},
 		{
