@@ -32,6 +32,30 @@ func (k Keeper) SetNftCount(ctx sdk.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
+// SetNextUniqueId gets the next unique id for new nft listings
+func (k Keeper) GetNextUniqueId(ctx sdk.Context) uint64 {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.NextUniqueIdKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil {
+		return 1
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
+}
+
+// SetNextUniqueId set the next unique id for new nft listings
+func (k Keeper) SetNextUniqueId(ctx sdk.Context, nextUniqueId uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+	byteKey := types.KeyPrefix(types.NextUniqueIdKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, nextUniqueId)
+	store.Set(byteKey, bz)
+}
+
 // AppendNft appends a nft in the store with a new id and update the count
 func (k Keeper) AppendNft(
 	ctx sdk.Context,
@@ -39,9 +63,10 @@ func (k Keeper) AppendNft(
 ) uint64 {
 	// Create the nft
 	count := k.GetNftCount(ctx)
+	id := k.GetNextUniqueId(ctx)
 
 	// Set the ID of the appended value
-	nft.Id = count
+	nft.Id = id
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.NftKey))
 	appendedValue := k.cdc.MustMarshal(&nft)
@@ -49,8 +74,9 @@ func (k Keeper) AppendNft(
 
 	// Update nft count
 	k.SetNftCount(ctx, count+1)
+	k.SetNextUniqueId(ctx, id+1)
 
-	return count
+	return id
 }
 
 // SetNft set a specific nft in the store

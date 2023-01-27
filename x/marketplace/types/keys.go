@@ -62,6 +62,7 @@ const (
 const (
 	NftKey             = "Nft-value-"
 	NftCountKey        = "Nft-count-"
+	NextUniqueIdKey    = "Next-unique-id-"
 	NftDenomTokenIDKey = "Nft-denom-token-id-"
 )
 
