@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/CosmWasm/wasmd v0.25.0
-	github.com/CosmWasm/wasmvm v1.0.0-beta10 // indirect
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
 	github.com/containerd/continuity v0.2.2 // indirect
 	github.com/cosmos/cosmos-sdk v0.45.3
@@ -37,7 +36,6 @@ require (
 	google.golang.org/grpc v1.50.1
 	gopkg.in/ini.v1 v1.66.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 
 )
 
@@ -46,9 +44,9 @@ require (
 // replace github.com/tendermint/tendermint => ../tendermint
 // replace github.com/cosmos/ibc-go/v2 => ../ibc-go
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20220908134551-c82e5d5a6ac3
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230130131817-0381039012d6
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220816082327-65532d606824
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220914094638-cb70cee184ee
 
 // replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
