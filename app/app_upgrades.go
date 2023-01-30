@@ -47,6 +47,8 @@ func setHandlerForVersion_1_1(app *App) {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
+			delete(fromVM, addressbookTypes.ModuleName)
+			delete(fromVM, marketplaceTypes.ModuleName)
 
 			if _, ok := fromVM[nfttypes.ModuleName]; ok {
 				if fromVM[nfttypes.ModuleName] == 2 {
