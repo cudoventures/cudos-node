@@ -173,7 +173,7 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) (typ
 		return types.Nft{}, err
 	}
 
-	k.nftKeeper.TransferNftInternal(ctx, nft.DenomId, nft.TokenId, sdk.AccAddress(nft.Owner), buyer, baseNft)
+	k.nftKeeper.TransferNftInternal(ctx, nft.DenomId, nft.TokenId, baseNft.GetOwner(), buyer, baseNft)
 
 	return nft, nil
 }
