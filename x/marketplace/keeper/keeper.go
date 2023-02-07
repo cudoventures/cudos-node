@@ -156,6 +156,7 @@ func (k Keeper) BuyNFT(ctx sdk.Context, nftID uint64, buyer sdk.AccAddress) (typ
 	k.RemoveNft(ctx, nftID)
 	store := ctx.KVStore(k.storeKey)
 	store.Delete(types.KeyNftDenomTokenID(nft.DenomId, nft.TokenId))
+
 	return nft, nil
 }
 
@@ -682,7 +683,23 @@ func (k Keeper) dutchAuctionEndBlocker(ctx sdk.Context, a *types.DutchAuction) e
 		store.Delete(types.KeyNftDenomTokenID(a.DenomId, a.TokenId))
 	} else if a.IsDiscountTime(ctx.BlockTime()) {
 		a.ApplyPriceDiscount()
-		return k.SetAuction(ctx, a)
+
+		if err := k.SetAuction(ctx, a); err != nil {
+			return err
+		}
+
+		auctionInfo, err := a.MarshalJSON()
+		if err != nil {
+			return err
+		}
+
+		ctx.EventManager().EmitEvents(sdk.Events{sdk.NewEvent(
+			types.EventDutchAuctionPriceDiscountType,
+			sdk.NewAttribute(types.AttributeAuctionID, strconv.FormatUint(a.Id, 10)),
+			sdk.NewAttribute(types.AttributeAuctionInfo, string(auctionInfo)),
+		)})
+
+		return nil
 	}
 
 	return nil
@@ -721,6 +738,6 @@ func (k Keeper) doTrade(
 		return err
 	}
 
-	k.nftKeeper.TransferNftInternal(ctx, denomId, tokenId, seller, buyer, baseNft)
+	k.nftKeeper.TransferNftInternal(ctx, denomId, tokenId, baseNft.GetOwner(), buyer, baseNft)
 	return nil
 }

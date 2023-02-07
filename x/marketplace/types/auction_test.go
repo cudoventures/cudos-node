@@ -16,6 +16,7 @@ type InvalidAuction struct {
 }
 
 func (a *InvalidAuction) SetBaseAuction(ba *types.BaseAuction) {}
+func (a *InvalidAuction) MarshalJSON() ([]byte, error)         { return nil, nil }
 
 var (
 	startPrice   = sdk.NewCoin("acudos", sdk.NewIntFromUint64(100))
@@ -230,4 +231,38 @@ func TestDutchAuction_ApplyPriceDiscount(t *testing.T) {
 	a.CurrentPrice = nil
 	require.Equal(t, discountTime, *a.NextDiscountTime)
 	require.Nil(t, a.CurrentPrice)
+}
+
+func TestAuction_MarshalJSON(t *testing.T) {
+	for _, tc := range []struct {
+		desc     string
+		auction  types.Auction
+		wantJson string
+	}{
+		{
+			desc: "english auction",
+			auction: &types.EnglishAuction{
+				BaseAuction: &types.BaseAuction{StartTime: now, EndTime: endTime},
+				MinPrice:    minPrice,
+			},
+			wantJson: `{"@type":"/cudoventures.cudosnode.marketplace.EnglishAuction","minPrice":{"denom":"acudos","amount":"1"}}`,
+		},
+		{
+			desc: "dutch auction",
+			auction: &types.DutchAuction{
+				BaseAuction:      &types.BaseAuction{StartTime: now, EndTime: endTime},
+				StartPrice:       startPrice,
+				MinPrice:         minPrice,
+				CurrentPrice:     &startPrice,
+				NextDiscountTime: &discountTime,
+			},
+			wantJson: `{"@type":"/cudoventures.cudosnode.marketplace.DutchAuction","startPrice":{"denom":"acudos","amount":"100"},"minPrice":{"denom":"acudos","amount":"1"},"currentPrice":{"denom":"acudos","amount":"100"},"nextDiscountTime":"2222-01-01T02:00:00Z"}`,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			haveJson, err := tc.auction.MarshalJSON()
+			require.NoError(t, err)
+			require.Equal(t, tc.wantJson, string(haveJson))
+		})
+	}
 }

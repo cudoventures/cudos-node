@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"time"
 
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
@@ -27,6 +28,7 @@ type Auction interface {
 	SetId(id uint64)
 	SetCreator(creator string)
 	SetBaseAuction(a *BaseAuction)
+	MarshalJSON() ([]byte, error)
 }
 
 func AuctionFromMsgPublishAuction(
@@ -209,6 +211,18 @@ func (a *EnglishAuction) SetBaseAuction(ba *BaseAuction) {
 	a.BaseAuction = ba
 }
 
+type englishAuctionJson struct {
+	Type     string   `json:"@type"`
+	MinPrice sdk.Coin `json:"minPrice"`
+}
+
+func (a *EnglishAuction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(englishAuctionJson{
+		Type:     "/cudoventures.cudosnode.marketplace.EnglishAuction",
+		MinPrice: a.MinPrice,
+	})
+}
+
 func NewDutchAuction(
 	creator string,
 	denomId string,
@@ -260,6 +274,24 @@ func (a *DutchAuction) ValidateBasic() error {
 
 func (a *DutchAuction) SetBaseAuction(ba *BaseAuction) {
 	a.BaseAuction = ba
+}
+
+type dutchAuctionJson struct {
+	Type             string     `json:"@type"`
+	StartPrice       sdk.Coin   `json:"startPrice"`
+	MinPrice         sdk.Coin   `json:"minPrice"`
+	CurrentPrice     *sdk.Coin  `json:"currentPrice"`
+	NextDiscountTime *time.Time `json:"nextDiscountTime"`
+}
+
+func (a *DutchAuction) MarshalJSON() ([]byte, error) {
+	return json.Marshal(dutchAuctionJson{
+		Type:             "/cudoventures.cudosnode.marketplace.DutchAuction",
+		StartPrice:       a.StartPrice,
+		MinPrice:         a.MinPrice,
+		CurrentPrice:     a.CurrentPrice,
+		NextDiscountTime: a.NextDiscountTime,
+	})
 }
 
 func (a *DutchAuction) IsDiscountTime(time time.Time) bool {

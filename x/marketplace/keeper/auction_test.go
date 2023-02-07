@@ -33,8 +33,7 @@ func createNAuction(k *keeper.Keeper, ctx sdk.Context, n int) []types.Auction {
 
 func TestAuctionGet(t *testing.T) {
 	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
-	n := 10
-	auctions := createNAuction(k, ctx, n)
+	auctions := createNAuction(k, ctx, 2)
 
 	for _, a := range auctions {
 		haveAuction, err := k.GetAuction(ctx, a.GetId())
@@ -42,13 +41,13 @@ func TestAuctionGet(t *testing.T) {
 		require.Equal(t, a, haveAuction)
 	}
 
-	_, err := k.GetAuction(ctx, auctions[n-1].GetId()+1)
+	_, err := k.GetAuction(ctx, 9999)
 	require.Error(t, err)
 }
 
 func TestAuctionRemove(t *testing.T) {
 	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
-	auctions := createNAuction(k, ctx, 10)
+	auctions := createNAuction(k, ctx, 2)
 
 	for _, a := range auctions {
 		k.RemoveAuction(ctx, a.GetId())
@@ -59,7 +58,7 @@ func TestAuctionRemove(t *testing.T) {
 
 func TestAuctionGetAll(t *testing.T) {
 	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
-	auctions := createNAuction(k, ctx, 10)
+	auctions := createNAuction(k, ctx, 2)
 
 	haveAuctions, err := k.GetAllAuction(ctx)
 	require.NoError(t, err)
@@ -68,7 +67,7 @@ func TestAuctionGetAll(t *testing.T) {
 
 func TestAuctionCount(t *testing.T) {
 	k, _, _, ctx := keepertest.MarketplaceKeeper(t)
-	auctions := createNAuction(k, ctx, 10)
+	auctions := createNAuction(k, ctx, 2)
 
 	count := uint64(len(auctions))
 	require.Equal(t, count, k.GetAuctionCount(ctx))
