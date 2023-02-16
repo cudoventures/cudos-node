@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -338,6 +339,7 @@ func New(
 		}
 	}
 
+	fmt.Println("UPGRADING>....................................................................")
 	ctx := app.NewUncachedContext(true, tmproto.Header{})
 	bk := app.BankKeeper
 	sk := app.StakingKeeper
@@ -387,6 +389,7 @@ func New(
 
 	gk := app.GovKeeper
 	gk.SetVotingParams(ctx, govtypes.VotingParams{VotingPeriod: time.Duration(minutes)})
+	fmt.Println("UPGRADEDDDDDDD>....................................................................")
 
 	return app
 }
