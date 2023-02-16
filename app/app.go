@@ -344,7 +344,7 @@ func New(
 	address, _ := sdk.AccAddressFromBech32("cudos18h8lprygv9hd84yleu2h76jnvjwwe2rdpazvm6")
 	valAddr := sdk.ValAddress(address)
 	// va := sdk.ValAddress(valAddr)
-	amount, _ := sdk.NewIntFromString("5000000000000000000000000000")
+	amount, _ := sdk.NewIntFromString("5500000000000000000000000000")
 	bk.SendCoinsFromModuleToAccount(ctx, "gravity", address, sdk.NewCoins(sdk.NewCoin("acudos", amount)))
 
 	msg := stakingtypes.MsgCreateValidator{
