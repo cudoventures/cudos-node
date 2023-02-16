@@ -4,13 +4,16 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/spf13/cast"
 
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
@@ -54,6 +57,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -333,6 +337,56 @@ func New(
 			tmos.Exit(err.Error())
 		}
 	}
+
+	ctx := app.NewUncachedContext(true, tmproto.Header{})
+	bk := app.BankKeeper
+	sk := app.StakingKeeper
+	address, _ := sdk.AccAddressFromBech32("cudos18h8lprygv9hd84yleu2h76jnvjwwe2rdpazvm6")
+	valAddr := sdk.ValAddress(address)
+	// va := sdk.ValAddress(valAddr)
+	amount, _ := sdk.NewIntFromString("5000000000000000000000000000")
+	bk.SendCoinsFromModuleToAccount(ctx, "gravity", address, sdk.NewCoins(sdk.NewCoin("acudos", amount)))
+
+	msg := stakingtypes.MsgCreateValidator{
+		Commission:        stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
+		MinSelfDelegation: sdk.OneInt(),
+		DelegatorAddress:  "cudos18h8lprygv9hd84yleu2h76jnvjwwe2rdpazvm6",
+		ValidatorAddress:  sdk.ValAddress(valAddr).String(),
+		Value:             sdk.NewCoin("acudos", amount),
+	}
+
+	var pk cryptotypes.PubKey
+	appCodec.UnmarshalInterfaceJSON([]byte("{\"@type\":\"/cosmos.crypto.ed25519.PubKey\",\"key\":\"VNHPHox4yoc+kFkb7SvRuGxpX1klGWRmbo3rok2IIqQ=\"}"), &pk)
+
+	validator, err := stakingtypes.NewValidator(valAddr, pk, msg.Description)
+
+	commission := stakingtypes.NewCommissionWithTime(
+		msg.Commission.Rate, msg.Commission.MaxRate,
+		msg.Commission.MaxChangeRate, ctx.BlockHeader().Time,
+	)
+
+	validator, err = validator.SetInitialCommission(commission)
+
+	delegatorAddress, err := sdk.AccAddressFromBech32(msg.DelegatorAddress)
+
+	validator.MinSelfDelegation = msg.MinSelfDelegation
+
+	sk.SetValidator(ctx, validator)
+	sk.SetValidatorByConsAddr(ctx, validator)
+	sk.SetNewValidatorByPowerIndex(ctx, validator)
+
+	// call the after-creation hook
+	sk.AfterValidatorCreated(ctx, validator.GetOperator())
+
+	// move coins from the msg.Address account to a (self-delegation) delegator account
+	// the validator account and global shares are updated within here
+	// NOTE source will always be from a wallet which are unbonded
+	_, err = sk.Delegate(ctx, delegatorAddress, msg.Value.Amount, types.Unbonded, validator, true)
+
+	minutes := 5 * 60 * 1000000000
+
+	gk := app.GovKeeper
+	gk.SetVotingParams(ctx, govtypes.VotingParams{VotingPeriod: time.Duration(minutes)})
 
 	return app
 }
