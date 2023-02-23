@@ -31,7 +31,7 @@ var (
 )
 
 // NewMsgIssueDenom is a constructor function for MsgIssueDenom
-func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol string) *MsgIssueDenom {
+func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner, symbol, traits, minter, description, data string) *MsgIssueDenom {
 	return &MsgIssueDenom{
 		Sender:                sender,
 		Id:                    denomID,
@@ -39,6 +39,10 @@ func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner,
 		Schema:                schema,
 		ContractAddressSigner: contractAddressSigner, // field is only populated when the request is coming from a contract, in other cases its empty string
 		Symbol:                symbol,
+		Traits:                traits,
+		Minter:                minter,
+		Description:           description,
+		Data:                  data,
 	}
 }
 
@@ -63,6 +67,26 @@ func (msg MsgIssueDenom) ValidateBasic() error {
 	}
 
 	if err := ValidateDenomSymbol(msg.Symbol); err != nil {
+		return err
+	}
+
+	if err := ValidateSchema(msg.Schema); err != nil {
+		return err
+	}
+
+	if err := ValidateDenomTraits(msg.Traits); err != nil {
+		return err
+	}
+
+	if err := ValidateMinter(msg.Minter); err != nil {
+		return err
+	}
+
+	if err := ValidateDescription(msg.Description); err != nil {
+		return err
+	}
+
+	if err := ValidateDenomData(msg.Data); err != nil {
 		return err
 	}
 
@@ -440,14 +464,15 @@ func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
 
-	if msg.Name == "" {
-		return sdkerrors.Wrapf(ErrInvalidNftName, "name field cannot be empty")
-	}
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.Recipient); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid receipt address (%s)", err)
+	}
+
+	if err := ValidateTokenName(msg.Name); err != nil {
+		return err
 	}
 	if err := ValidateDenomID(msg.DenomId); err != nil {
 		return err

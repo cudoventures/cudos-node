@@ -92,6 +92,14 @@ import (
 
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
+
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -130,6 +138,7 @@ var (
 		bank.AppModuleBasic{},
 		capability.AppModuleBasic{},
 		staking.AppModuleBasic{},
+		// mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler,
@@ -154,6 +163,8 @@ var (
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
+		addressbook.AppModuleBasic{},
+		marketplace.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -166,6 +177,7 @@ var (
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
+		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{
@@ -210,8 +222,6 @@ type App struct {
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	GravityKeeper        gravitykeeper.Keeper
-	NftKeeper            nftmodulekeeper.Keeper
-	GroupKeeper          groupkeeper.Keeper
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
@@ -219,6 +229,11 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
+	NftKeeper         nftmodulekeeper.Keeper
+	GroupKeeper       groupkeeper.Keeper
+	AddressbookKeeper addressbookkeeper.Keeper
+	MarketplaceKeeper marketplacekeeper.Keeper
+	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
 }
@@ -240,6 +255,8 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
+
+	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
@@ -256,6 +273,8 @@ func (app *App) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
+// BlockedAddrs returns all the app's module account addresses that are not
+// allowed to receive external tokens.
 func (app *App) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
@@ -356,9 +375,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
-	paramsKeeper.Subspace(authz.ModuleName)
-	paramsKeeper.Subspace(feegrant.ModuleName)
-	paramsKeeper.Subspace(group.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
@@ -371,6 +387,11 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
+	paramsKeeper.Subspace(addressbooktypes.ModuleName)
+	paramsKeeper.Subspace(marketplacetypes.ModuleName)
+	paramsKeeper.Subspace(authz.ModuleName)
+	paramsKeeper.Subspace(feegrant.ModuleName)
+	paramsKeeper.Subspace(group.ModuleName)
 
 	return paramsKeeper
 }

@@ -44,7 +44,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		// 10% of accounts own an NFT
 		if simState.Rand.Intn(100) < 10 {
 			baseNFT := types.NewBaseNFT(
-				RandnNFTID(simState.Rand, types.MinDenomLen, types.MaxDenomLen), // id
+				RandnNFTID(simState.Rand, types.MinDenomIdLen, types.MaxDenomIdLen), // id
 				simtypes.RandStringOfLength(simState.Rand, 10),
 				acc.Address,
 				simtypes.RandStringOfLength(simState.Rand, 45), // tokenURI

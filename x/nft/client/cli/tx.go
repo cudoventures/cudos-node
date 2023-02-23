@@ -52,9 +52,11 @@ func GetCmdIssueDenom() *cobra.Command {
 			"$ %s tx nft issue <denom-id> "+
 				"--name=<denom-name> "+
 				"--symbol=<symbol-name> "+
-				"--from=<key-name> "+
 				"--schema=<schema-content or path to schema.json> "+
-				"--chain-id=<chain-id> ",
+				"--traits=<traits>"+
+				"--description=<description>"+
+				"--minter=<minter>"+
+				"--data=<data>",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
@@ -68,11 +70,33 @@ func GetCmdIssueDenom() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			schema, err := cmd.Flags().GetString(FlagSchema)
 			if err != nil {
 				return err
 			}
+
 			symbol, err := cmd.Flags().GetString(FlagDenomSymbol)
+			if err != nil {
+				return err
+			}
+
+			traits, err := cmd.Flags().GetString(FlagTraits)
+			if err != nil {
+				return err
+			}
+
+			minter, err := cmd.Flags().GetString(FlagMinter)
+			if err != nil {
+				return err
+			}
+
+			description, err := cmd.Flags().GetString(FlagDescription)
+			if err != nil {
+				return err
+			}
+
+			data, err := cmd.Flags().GetString(FlagData)
 			if err != nil {
 				return err
 			}
@@ -89,6 +113,10 @@ func GetCmdIssueDenom() *cobra.Command {
 				clientCtx.GetFromAddress().String(),
 				"",
 				symbol,
+				traits,
+				minter,
+				description,
+				data,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -109,12 +137,11 @@ func GetCmdMintNFT() *cobra.Command {
 		Short: "Mint a new NFT from a denom.",
 		Long:  "Mint a NFT and set the owner to the recipient. Only the denom creator can mint a new NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft mint <denom-id> "+
-				"--recipient=<recipient> "+
-				"--from=<key-name> "+
-				"--uri=<uri> "+
-				"--chain-id=<chain-id> ",
-			version.AppName,
+			"$ %s tx nft mint <denom-id> " +
+				"--recipient=<recipient> " +
+				"--name=<name> " +
+				"--uri=<uri> " +
+				version.AppName,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -183,9 +210,7 @@ func GetCmdEditNFT() *cobra.Command {
 		Short: "Edit the token data of an NFT.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft edit <denom-id> <token-id> "+
-				"--from=<key-name> "+
-				"--uri=<uri> "+
-				"--chain-id=<chain-id> ",
+				"--uri=<uri> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),
@@ -236,9 +261,7 @@ func GetCmdTransferNft() *cobra.Command {
 		Long:  "Transfer a NFT to a recipient.",
 		Example: fmt.Sprintf(
 			"$ %s tx nft transfer <from> <to> <denom-id> <token-id> "+
-				"--from=<key-name> "+
-				"--uri=<uri> "+
-				"--chain-id=<chain-id> ",
+				"--uri=<uri> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(4),
@@ -281,9 +304,7 @@ func GetCmdApproveNft() *cobra.Command {
 		Short: "Adds an address to the approved list.",
 		Long:  "Adds an address to the approved list of a NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft approve <approvedAddress> <denom-id> <token-id> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> ",
+			"$ %s tx nft approve <approvedAddress> <denom-id> <token-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(3),
@@ -329,9 +350,7 @@ func GetCmdApproveAllNFT() *cobra.Command {
 		Short: "Adds operator address to the globally approved list",
 		Long:  "Adds operatorToBeApproved address to the globally approved list of sender.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft approveAll <operator> <true/false> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> ",
+			"$ %s tx nft approveAll <operator> <true/false> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),
@@ -374,9 +393,7 @@ func GetCmdRevokeNft() *cobra.Command {
 		Short: "Revokes permition to transfer a NFT",
 		Long:  "Revokes a previously granted permission to transfer the given an NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft revoke <addressToRevoke> <denom-id> <token-id>"+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> ",
+			"$ %s tx nft revoke <addressToRevoke> <denom-id> <token-id>",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(3),
@@ -422,9 +439,7 @@ func GetCmdBurnNFT() *cobra.Command {
 		Short: "Burn an NFT.",
 		Long:  "Burn an NFT.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft burn <denom-id> <token-id> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> ",
+			"$ %s tx nft burn <denom-id> <token-id> ",
 			version.AppName,
 		),
 		Args: cobra.ExactArgs(2),
@@ -458,9 +473,7 @@ func GetCmdTransferDenom() *cobra.Command {
 		Short: "Transfer NFT collection.",
 		Long:  "Transfer a denom collection of NFTs to a recipient.",
 		Example: fmt.Sprintf(
-			"$ %s tx nft transfer-denom <recipient> <denom-id> "+
-				"--from=<key-name> "+
-				"--chain-id=<chain-id> ",
+			"$ %s tx nft transfer-denom <recipient> <denom-id> ",
 			version.AppName,
 		),
 

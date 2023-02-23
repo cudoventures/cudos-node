@@ -129,3 +129,49 @@ func (k Keeper) GetNFTApprovedAddresses(ctx sdk.Context, denomID, tokenID string
 
 	return nft.ApprovedAddresses, nil
 }
+
+func (k Keeper) getSoftLockOwner(ctx sdk.Context, denomID, tokenID string) string {
+	store := ctx.KVStore(k.storeKey)
+	bLockOwnerID := store.Get(types.KeyNFTLockOwner(denomID, tokenID))
+	if bLockOwnerID == nil {
+		return ""
+	}
+	return string(bLockOwnerID)
+}
+
+func (k Keeper) SoftLockNFT(ctx sdk.Context, lockOwner, denomID, tokenID string) error {
+	currentLockOwner := k.getSoftLockOwner(ctx, denomID, tokenID)
+	if currentLockOwner != "" {
+		return sdkerrors.Wrapf(types.ErrAlreadySoftLocked, "Failed to acquire soft lock on Denom %s NFT %s for %s because already acquired by %s",
+			denomID, tokenID, lockOwner, currentLockOwner)
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Set(types.KeyNFTLockOwner(denomID, tokenID), []byte(lockOwner))
+
+	return nil
+}
+
+func (k Keeper) SoftUnlockNFT(ctx sdk.Context, lockOwner, denomID, tokenID string) error {
+	currentLockOwner := k.getSoftLockOwner(ctx, denomID, tokenID)
+	if currentLockOwner == "" {
+		return sdkerrors.Wrapf(types.ErrNotSoftLocked, "Failed to release soft lock because Denom %s NFT %s is not locked", denomID, tokenID)
+	}
+
+	if currentLockOwner != lockOwner {
+		return sdkerrors.Wrapf(types.ErrNotOwnerOfSoftLock, "Failed to release soft lock on Denom %s NFT %s for %s because its acquired by %s",
+			denomID, tokenID, lockOwner, currentLockOwner)
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	store.Delete(types.KeyNFTLockOwner(denomID, tokenID))
+
+	return nil
+}
+
+func (k Keeper) IsSoftLocked(ctx sdk.Context, denomID, tokenID string) error {
+	if currentLockOwner := k.getSoftLockOwner(ctx, denomID, tokenID); currentLockOwner != "" {
+		return sdkerrors.Wrapf(types.ErrSoftLocked, "token id %s from denom with id %s is soft locked by %s", tokenID, denomID, currentLockOwner)
+	}
+	return nil
+}

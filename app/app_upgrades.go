@@ -1,26 +1,62 @@
 package app
 
 import (
+	"strings"
+
+	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/group"
+
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func (app *App) SetUpgradeHandlers() {
-	setV110Handler(app)
+	setHandlerForVersion_1_0(app)
+	setHandlerForVersion_1_1(app)
 }
 
-func setV110Handler(app *App) {
-	const upgradeVersion string = "v1.1.0"
+func setHandlerForVersion_1_0(app *App) {
+	app.UpgradeKeeper.SetUpgradeHandler("v1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ss, ok := app.ParamsKeeper.GetSubspace(cudoMinttypes.ModuleName)
+		if ok {
+			bpd := ss.GetRaw(ctx, []byte("BlocksPerDay"))
+
+			bpdString := strings.ReplaceAll(string(bpd), "\"", "")
+
+			bpdInt, parseOk := sdk.NewIntFromString(bpdString)
+			if parseOk {
+				ss.Set(ctx, []byte("IncrementModifier"), bpdInt)
+			}
+		}
+
+		return fromVM, nil
+	})
+}
+
+func setHandlerForVersion_1_1(app *App) {
+	const upgradeVersion string = "v1.1"
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		if len(fromVM) == 0 {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
+			delete(fromVM, addressbookTypes.ModuleName)
+			delete(fromVM, marketplaceTypes.ModuleName)
+
+			if _, ok := fromVM[nfttypes.ModuleName]; ok {
+				if fromVM[nfttypes.ModuleName] == 2 {
+					fromVM[nfttypes.ModuleName] = 1
+				}
+			} else {
+				fromVM[nfttypes.ModuleName] = 1
+			}
 		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
@@ -33,7 +69,7 @@ func setV110Handler(app *App) {
 
 	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, group.ModuleName},
+			Added: []string{authz.ModuleName, group.ModuleName, addressbookTypes.ModuleName, marketplaceTypes.ModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))

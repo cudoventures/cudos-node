@@ -35,8 +35,8 @@ var (
 	PrefixApprovedAddresses       = []byte{0x06} // key for globally approved operator addresses
 	PrefixCollectionTotalNftCount = []byte{0x07} // key for total nft count
 	PrefixDenomSymbol             = []byte{0x08} // key for denom name of the nft
-
-	delimiter = []byte("/")
+	PrefixNFTLockOwner            = []byte{0x09} // key for owner of nft lock
+	delimiter                     = []byte("/")
 )
 
 // SplitKeyOwner return the address,denom,id from the key of stored owner
@@ -137,4 +137,11 @@ func KeyApprovedAddresses(address string) []byte {
 func KeyCollectionTotalNfts(denomID string) []byte {
 	key := append(PrefixCollectionTotalNftCount, delimiter...)
 	return append(key, []byte(denomID)...)
+}
+
+func KeyNFTLockOwner(denomID, tokenID string) []byte {
+	key := append(PrefixNFTLockOwner, delimiter...)
+	key = append(key, []byte(denomID)...)
+	key = append(key, delimiter...)
+	return append(key, []byte(tokenID)...)
 }

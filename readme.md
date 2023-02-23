@@ -184,6 +184,99 @@ The module gives the user the ability to either write(via transaction) or read(v
 ## Usage from inside a CosmWasm smart contract
 You can check how to use the module from a rust smart contract in the [`cudos-cosmwasm-bindings`](https://github.com/CudoVentures/cudos-cosmwasm-bindings)
 
+## Object types:
+
+### NFT
+```go
+// NFT non fungible token interface
+type NFT interface {
+    GetID() string              // unique identifier of the NFT
+    GetName() string            // return the name of BaseNFT
+    GetOwner() sdk.AccAddress   // gets owner account of the NFT
+    GetURI() string             // tokenData field: URI to retrieve the of chain tokenData of the NFT
+    GetData() string            // return the Data of BaseNFT
+    GetApprovedAddresses() map[string]bool// returns the approved addresses of BaseNFT
+
+}
+```
+
+### NFT implementation
+```go
+type BaseNFT struct {
+	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
+	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
+	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+}
+```
+
+## Collections
+
+>As all NFTs belong to a specific `Collection` under `{denomID}/{tokenID}`
+
+```go
+// Collection of non fungible tokens
+type Collection struct {
+    Denom Denom     `json:"denom"`  // Denom of the collection; not exported to clients
+    NFTs  []BaseNFT `json:"nfts"`   // NFTs that belongs to a collection
+}
+```
+
+## Owners
+
+>Owner holds the address of the user and his collection of NFTs
+
+```go
+// Owner of non fungible tokens
+type Owner struct {
+    Address       string            `json:"address"`
+    IDCollections []IDCollection    `json:"id_collections"`
+}
+```
+
+## IDCollection
+>IDCollection holds the denomId and the Ids of the NFTs(insted of the full object)
+
+```go
+// IDCollection of non fungible tokens
+type IDCollection struct {
+    DenomId string   `json:"denom_id"`
+    TokenIds []string `json:"token_ids"`
+}
+
+```
+
+## Denom
+
+> The denomination is used to group NFTs under it
+
+```go
+// Denom defines a type of NFT
+type Denom struct {
+	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
+	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+```
+
+## Events
+> The events that are emitted after certain operations
+```go
+	EventTypeIssueDenom    = "issue_denom"
+	EventTypeTransferNft   = "transfer_nft"
+  EventTypeTransferDenom = "transfer_denom"
+	EventTypeApproveNft    = "approve_nft"
+	EventTypeApproveAllNft = "approve_all_nft"
+	EventTypeRevokeNft     = "revoke_nft"
+	EventTypeEditNFT       = "edit_nft"
+	EventTypeMintNFT       = "mint_nft"
+	EventTypeBurnNFT       = "burn_nft"
+```
+
 ## Full commands info:
 
 ### Transaction commands
@@ -199,7 +292,10 @@ You can check how to use the module from a rust smart contract in the [`cudos-co
   - `--symbol` `string` `The unique symbol of the denom.` `required: true`
   - `--from` `string` `The address that is issuing the denom. Will be set as denom creator. Can be either an address or alias to that address` `required: true`
   - `--schema` `string` `Metadata about the NFT. Schema-content or path to schema.json.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required`
+  - `--traits` `string` [`Traits`](./x/nft/types/traits.go)` that define the denom behavior and restrictions` `required: false`
+  - `--description` `string` `Text description of the denom` `required: false`
+  - `--data` `string` `Denom metadata` `required: false`
+  - `--minter` `string` `Address that will be allowed to mint NFTs from this denom other than the owner` `required: false`
 
 **Example:**
 
@@ -219,7 +315,6 @@ $ cudos-noded tx nft issue <denom-id> --from=<key-name> --name=<denom-name> --sy
     - `--from` `string` `The address that is minting the NFT. Must be denom creator. Can be either an address or alias to that address` `required: true`
     - `--recipient` `string` `The user(owner) that will receive the NFT` `required: true`
     - `--uri` `string` `The URI of the NFT.` `required: false`
-    - `--chain-id` `string` `The name of the network.` `required: true`
  
 
 **Example:**
@@ -239,7 +334,6 @@ $ cudos-noded tx nft mint <denom-id> <token-id> --recipient=<recipient> --from=<
 - flags:
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -256,7 +350,6 @@ $ cudos-noded tx nft edit <denom-id> <token-id>  --from=<key-name> --uri=<uri> -
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is editing the NFT. Can be either an address or alias to that address` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -276,7 +369,6 @@ $ cudos-noded tx nft burn <denom-id> <token-id> --from=<key-name> --chain-id=<ch
 - flags:
   - `--from` `string` `The address that is requesting the transfer of the NFT. Can be either an address or alias to that address. must be either the owner, approved address on NFT or globally approved operator.` `required: true`
   - `--uri` `string` `The URI of the NFT.` `required: false`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -292,8 +384,6 @@ $ cudos-noded tx nft transfer <from> <to> <denom-id> <token-id>  --from=<key-nam
   - `denom-id` `string` `The denomId of the transferred NFT classification` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the transfer of the NFT collection. Must be the owner.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
-  - `--fees` `string` `The specified fee for the operation` `required: true`
 
 **Example:**
 
@@ -312,7 +402,6 @@ $ cudos-noded tx nft transfer-denom <recipient> <denom-id> --from=<key-name> --c
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the approval. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -330,7 +419,6 @@ $ cudos-noded tx nft approve <approvedAddress> <denom-id> <token-id> --from=<key
   - `token-id` `string` `Unique Id that identifies the token. Must be all lowercase` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the removal of approval. Can be either an address or alias to that address. Must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -347,7 +435,6 @@ $ cudos-noded tx nft revoke <addressToRevoke> <denom-id> <token-id>--uri=<uri> -
   - `approved` `string` `Boolean value indicating if the addres is approved: can be true or false` `required: true`
 - flags:
   - `--from` `string` `The address that is requesting the approval. The approved address will be able to handle the transfers of --from assets. Can be either an address or alias to that address. must be either the owner  or globally approved operator.` `required: true`
-  - `--chain-id` `string` `The name of the network.` `required: true`
 
 **Example:**
 
@@ -384,7 +471,7 @@ $ cudos-noded query nft denom <denomId>
 **Example:**
 
 ``` bash
-$ cudos-noded query nft denom <denomName>
+$ cudos-noded query nft denom-by-name <denomName>
 ```
 
 ### `denom-by-symbol`
@@ -399,7 +486,7 @@ $ cudos-noded query nft denom <denomName>
 **Example:**
 
 ``` bash
-$ cudos-noded query nft denom <symbol>
+$ cudos-noded query nft denom-by-symbol <symbol>
 ```
 
 
@@ -510,98 +597,6 @@ $ cudos-noded query nft approvals <denomId> <tokenId>
 ``` bash
 $ cudos-noded query nft isApprovedForAll <owner> <operator>
 ```
-
-## Object types:
-
-### NFT
-```go
-// NFT non fungible token interface
-type NFT interface {
-    GetID() string              // unique identifier of the NFT
-    GetName() string            // return the name of BaseNFT
-    GetOwner() sdk.AccAddress   // gets owner account of the NFT
-    GetURI() string             // tokenData field: URI to retrieve the of chain tokenData of the NFT
-    GetData() string            // return the Data of BaseNFT
-    GetApprovedAddresses() map[string]bool// returns the approved addresses of BaseNFT
-
-}
-```
-
-### NFT implementation
-```go
-type BaseNFT struct {
-	Id                string          `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name              string          `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	URI               string          `protobuf:"bytes,3,opt,name=uri,proto3" json:"uri,omitempty"`
-	Data              string          `protobuf:"bytes,4,opt,name=data,proto3" json:"data,omitempty"`
-	Owner             string          `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
-	ApprovedAddresses map[string]bool `protobuf:"bytes,6,rep,name=approvedAddresses,proto3" json:"approvedAddresses,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-}
-```
-
-## Collections
-
->As all NFTs belong to a specific `Collection` under `{denomID}/{tokenID}`
-
-```go
-// Collection of non fungible tokens
-type Collection struct {
-    Denom Denom     `json:"denom"`  // Denom of the collection; not exported to clients
-    NFTs  []BaseNFT `json:"nfts"`   // NFTs that belongs to a collection
-}
-```
-
-## Owners
-
->Owner holds the address of the user and his collection of NFTs
-
-```go
-// Owner of non fungible tokens
-type Owner struct {
-    Address       string            `json:"address"`
-    IDCollections []IDCollection    `json:"id_collections"`
-}
-```
-
-## IDCollection
->IDCollection holds the denomId and the Ids of the NFTs(insted of the full object)
-
-```go
-// IDCollection of non fungible tokens
-type IDCollection struct {
-    DenomId string   `json:"denom_id"`
-    TokenIds []string `json:"token_ids"`
-}
-
-```
-
-## Denom
-> The denomination is used to group NFTs under it
-```go
-// Denom defines a type of NFT
-type Denom struct {
-	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name    string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Symbol    string `protobuf:"bytes,2,opt,name=name,proto3" json:"symbol,omitempty"`
-	Schema  string `protobuf:"bytes,3,opt,name=schema,proto3" json:"schema,omitempty"`
-	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
-}
-```
-
-## Events
-> The events that are emitted after certain operations
-```go
-	EventTypeIssueDenom    = "issue_denom"
-	EventTypeTransferNft   = "transfer_nft"
-  EventTypeTransferDenom = "transfer_denom"
-	EventTypeApproveNft    = "approve_nft"
-	EventTypeApproveAllNft = "approve_all_nft"
-	EventTypeRevokeNft     = "revoke_nft"
-	EventTypeEditNFT       = "edit_nft"
-	EventTypeMintNFT       = "mint_nft"
-	EventTypeBurnNFT       = "burn_nft"
-```
-
 ## API Endpoints
 > default API local url: localhost:1317
 

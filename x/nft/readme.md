@@ -71,6 +71,7 @@ message MsgIssueDenom {
     string sender = 4;
     string contractAddressSigner = 5;
     string symbol = 6;
+    string traits = 7;
 }
 ```
 

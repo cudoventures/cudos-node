@@ -16,6 +16,22 @@ import (
 
 var _ types.QueryServer = Keeper{}
 
+func (k Keeper) CollectionsByDenomIds(c context.Context, request *types.QueryCollectionsByIdsRequest) (*types.QueryCollectionByIdsResponse, error) {
+	var collectionWithNfts []*types.Collection
+	ctx := sdk.UnwrapSDKContext(c)
+
+	for _, denomId := range request.DenomIds {
+		collection, err := k.GetCollection(ctx, denomId)
+		if err != nil {
+			return nil, err
+		}
+		collectionWithNfts = append(collectionWithNfts, &collection)
+	}
+
+	return &types.QueryCollectionByIdsResponse{Collections: collectionWithNfts}, nil
+
+}
+
 func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*types.QuerySupplyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 

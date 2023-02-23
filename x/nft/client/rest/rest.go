@@ -23,11 +23,15 @@ const (
 )
 
 type issueDenomReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	ID      string       `json:"id"`
-	Name    string       `json:"name"`
-	Schema  string       `json:"schema"`
-	Symbol  string       `json:"symbol"`
+	BaseReq     rest.BaseReq `json:"base_req"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	Schema      string       `json:"schema"`
+	Symbol      string       `json:"symbol"`
+	Traits      string       `json:"traits"`
+	Minter      string       `json:"minter"`
+	Description string       `json:"description"`
+	Data        string       `json:"data"`
 }
 
 type mintNFTReq struct {
@@ -96,6 +100,10 @@ type queryDenomsRequest struct {
 type queryCollectionRequest struct {
 	DenomId    string            `json:"denom_id"`
 	Pagination query.PageRequest `json:"pagination"`
+}
+
+type queryCollectionsByDenomIdsRequest struct {
+	DenomIds []string `json:"denom_ids"`
 }
 
 type queryOwnerRequest struct {

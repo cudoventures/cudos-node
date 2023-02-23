@@ -1,0 +1,15 @@
+syntax = "proto3";
+package cudoventures.cudosnode.marketplace;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
+
+
+message Royalty {
+    option (gogoproto.equal) = true;
+  
+    string address = 1;
+    string percent = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  }
+  

@@ -27,6 +27,10 @@ message Denom {
     string schema = 3 [(gogoproto.jsontag) = "schema"];
     string creator = 4 [(gogoproto.jsontag) = "creator"];
     string symbol = 5 [(gogoproto.jsontag) = "symbol"];
+    string traits = 6 [(gogoproto.jsontag) = "traits"];
+    string minter = 7 [(gogoproto.jsontag) = "minter"];
+    string description = 8 [(gogoproto.jsontag) = "description"];
+    string data = 9 [(gogoproto.jsontag) = "data"];
 }
 
 // IDCollection defines a type of collection with specified ID
@@ -56,8 +60,6 @@ message Collection {
 message ApprovedAddresses {
     option (gogoproto.equal) = true;
     map<string, ApprovedAddressesData> approvedAddresses = 1;
-
-
 }
 
 message ApprovedAddressesData {

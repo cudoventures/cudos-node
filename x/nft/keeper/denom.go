@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -41,9 +43,10 @@ func (k Keeper) SetDenom(ctx sdk.Context, denom types.Denom) error {
 
 	store := ctx.KVStore(k.storeKey)
 	bz := k.cdc.MustMarshal(&denom)
-	store.Set(types.KeyDenomID(denom.Id), bz)
-	store.Set(types.KeyDenomName(denom.Name), bz)
-	store.Set(types.KeyDenomSymbol(denom.Symbol), bz)
+	keyByDenomID := types.KeyDenomID(denom.Id)
+	store.Set(keyByDenomID, bz)
+	store.Set(types.KeyDenomName(denom.Name), keyByDenomID)
+	store.Set(types.KeyDenomSymbol(denom.Symbol), keyByDenomID)
 	return nil
 }
 
@@ -64,23 +67,32 @@ func (k Keeper) GetDenom(ctx sdk.Context, id string) (denom types.Denom, err err
 func (k Keeper) GetDenomByName(ctx sdk.Context, name string) (denom types.Denom, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.KeyDenomName(name))
-	if len(bz) == 0 {
+	keyDenomID := store.Get(types.KeyDenomName(name))
+	if len(keyDenomID) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom name: %s", name)
+	}
+
+	bz := store.Get(keyDenomID)
+	if len(bz) == 0 {
+		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom by denom id key: %s", string(keyDenomID))
 	}
 
 	k.cdc.MustUnmarshal(bz, &denom)
 	return denom, nil
-
 }
 
 // GetDenomBySymbol returns the denom by symbol
 func (k Keeper) GetDenomBySymbol(ctx sdk.Context, symbol string) (denom types.Denom, err error) {
 	store := ctx.KVStore(k.storeKey)
 
-	bz := store.Get(types.KeyDenomSymbol(symbol))
-	if len(bz) == 0 {
+	keyDenomID := store.Get(types.KeyDenomSymbol(symbol))
+	if len(keyDenomID) == 0 {
 		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom symbol: %s", symbol)
+	}
+
+	bz := store.Get(keyDenomID)
+	if len(bz) == 0 {
+		return denom, sdkerrors.Wrapf(types.ErrInvalidDenom, "not found denom by denom id key: %s", string(keyDenomID))
 	}
 
 	k.cdc.MustUnmarshal(bz, &denom)
@@ -111,14 +123,47 @@ func (k Keeper) IsDenomCreator(ctx sdk.Context, denomID string, address sdk.AccA
 
 	creator, err := sdk.AccAddressFromBech32(denom.Creator)
 	if err != nil {
-		panic(err)
+		return types.Denom{}, err
 	}
 
 	if !creator.Equals(address) {
-		return types.Denom{}, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the creator of %s", address, denomID)
+		return denom, sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the creator of %s", address, denomID)
 	}
 
 	return denom, nil
+}
+
+func (k Keeper) IsDenomMinter(denom types.Denom, address sdk.AccAddress) error {
+	if denom.Minter == "" {
+		return nil
+	}
+
+	minter, err := sdk.AccAddressFromBech32(denom.Minter)
+	if err != nil {
+		return err
+	}
+
+	if !minter.Equals(address) {
+		return sdkerrors.Wrapf(types.ErrUnauthorized, "%s is not the minter of %s", address, denom.Id)
+	}
+
+	return nil
+}
+
+func (k Keeper) IsEditable(ctx sdk.Context, denomID string) error {
+	denom, err := k.GetDenom(ctx, denomID)
+	if err != nil {
+		return err
+	}
+
+	traits := strings.Split(denom.Traits, ",")
+	for _, trait := range traits {
+		if types.DenomTraitsMapStrToType[trait] == types.NotEditable {
+			return sdkerrors.Wrapf(types.ErrNotEditable, "denom '%s' has not editable trait", denomID)
+		}
+	}
+
+	return nil
 }
 
 // UpdateDenom is responsible for updating the definition of denom
