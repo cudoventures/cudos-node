@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -165,8 +166,13 @@ func New(
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
+	wasmVM, err := NewWasmVM(homePath, appOpts)
+	if err != nil {
+		panic(fmt.Errorf("error while creating wasmVM: %w", err))
+	}
+
 	// add keepers
-	app.AddKeepers(skipUpgradeHeights, homePath, appOpts)
+	app.AddKeepers(skipUpgradeHeights, homePath, appOpts, wasmVM)
 
 	// set upgrades
 	app.SetUpgradeHandlers()
@@ -327,6 +333,13 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
+
+	if manager := app.SnapshotManager(); manager != nil {
+		wasmSnapshotter := NewWasmSnapshotter(app.CommitMultiStore(), &app.wasmKeeper, wasmVM)
+		if err := manager.RegisterExtensions(wasmSnapshotter); err != nil {
+			panic(fmt.Errorf("failed to register snapshot extension: %s", err))
+		}
+	}
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {

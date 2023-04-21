@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
@@ -68,7 +69,7 @@ import (
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
-func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
+func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions, wasmVM wasmtypes.WasmerEngine) {
 	app.ParamsKeeper = InitParamsKeeper(app.appCodec, app.cdc, app.keys[paramstypes.StoreKey], app.tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
@@ -163,6 +164,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
 	wasmOpts := append(customEncoderOptions, customQueryOptions...)
+	wasmOpts = append(wasmOpts, wasm.WithWasmEngine(wasmVM))
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks

@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/CosmWasm/wasmd v0.25.0
+	github.com/CosmWasm/wasmvm v1.0.0-beta10
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
 	github.com/containerd/continuity v0.2.2 // indirect
 	github.com/cosmos/cosmos-sdk v0.45.3
