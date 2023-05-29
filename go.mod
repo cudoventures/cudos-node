@@ -44,7 +44,7 @@ require (
 // replace github.com/tendermint/tendermint => ../tendermint
 // replace github.com/cosmos/ibc-go/v2 => ../ibc-go
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230130131817-0381039012d6
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230529052150-9d0f5e8f3656
 
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220914094638-cb70cee184ee
 

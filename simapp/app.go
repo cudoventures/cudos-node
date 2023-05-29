@@ -46,7 +46,9 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
-	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -158,6 +160,7 @@ var (
 	ModuleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
+		vesting.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		capability.AppModuleBasic{},
@@ -526,6 +529,7 @@ func NewSimApp(
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
@@ -564,6 +568,7 @@ func NewSimApp(
 		stakingtypes.ModuleName,
 		authtypes.ModuleName,
 		authz.ModuleName,
+		vestingtypes.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
 		crisistypes.ModuleName,
@@ -587,6 +592,7 @@ func NewSimApp(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		authz.ModuleName,
+		vestingtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -615,6 +621,7 @@ func NewSimApp(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		authz.ModuleName,
+		vestingtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -636,7 +643,6 @@ func NewSimApp(
 		nftmoduletypes.ModuleName,
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
-		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
 		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
