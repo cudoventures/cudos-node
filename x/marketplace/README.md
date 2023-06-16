@@ -105,7 +105,7 @@ type Nft struct {
   - `--mint-royalties` `string` `Royalties that will be distributed when NFTs are minted on demand via the marketplace.` `required: false`
   - `--resale-royalties` `string` `Royalties that will be distributed when reselling NFTs on the marketplace.` `required: false`
 
-Royalties are represented in the format `"address1:percent,address2:percent"`. For resale royalties first royalties are paid and whatever is left is paid to the seller. If there are no royalties set, the full amount is paid to the seller. Mint royalties are required to sum to 100% because for some cases we could have one owner of collection onchain that manages it and someone else who should receive the bigger part of the amount (ex. Aura Pool).
+Royalties are represented in the format `"address1:percent,address2:percent"`. For resale royalties first royalties are paid and whatever is left is paid to the seller. If there are no royalties set, the full amount is paid to the seller. Mint royalties are required to sum to 100% because for some cases we could have one owner of collection onchain that manages it and someone else who should receive the bigger part of the amount (ex. CUDOS Markets).
 
 ```bash
 cudos-noded tx marketplace publish-collection <denom-id> --mint-royalties="cudos1kztarv5vlckzt5j7z3y5u0dj6q6q6axyz4pe60;0.01,cudos14vjzkqs505xvs4tp3kdkzq3mzh6vutngnlqamz:11.22" --resale-royalties="cudos18687hmplu9mfxr47um0adne6ml29turydgm64j:50" --keyring-backend=<keyring> --chain-id=<chain-id> --gas=auto --gas-adjustment=1.3 --gas-prices=5000000000000acudos --from=<from-key>

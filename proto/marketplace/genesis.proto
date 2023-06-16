@@ -19,9 +19,10 @@ message GenesisState {
   uint64 collectionCount = 3;
   repeated Nft nftList = 4 [(gogoproto.nullable) = false];
   uint64 nftCount = 5;
-  repeated google.protobuf.Any auctionList = 6 [
+  uint64 nextUniqueId = 6;
+  repeated google.protobuf.Any auctionList = 7 [
     (cosmos_proto.accepts_interface) = "Auction"
   ];
-  uint64 auctionCount = 7;
+  uint64 auctionCount = 8;
   // this line is used by starport scaffolding # genesis/proto/state
 }

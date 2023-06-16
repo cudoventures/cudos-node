@@ -254,7 +254,7 @@ func TestAfterPublishNftShouldNotBeAbleToTransferTheNft(t *testing.T) {
 
 	publishedID, err := kp.PublishNFT(ctx, types.NewNft("1", "testdenom", owner.String(), sdk.NewCoin("acudos", sdk.NewInt(10000))))
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), publishedID)
+	require.Equal(t, uint64(1), publishedID)
 
 	newOwner, err := sdk.AccAddressFromBech32(genAddresses(1)[0])
 	require.NoError(t, err)
@@ -278,7 +278,7 @@ func TestPublishNftShouldFailIfAlreadyPublished(t *testing.T) {
 
 	publishedID, err := kp.PublishNFT(ctx, types.NewNft("1", "testdenom", owner.String(), sdk.NewCoin("acudos", sdk.NewInt(10000))))
 	require.NoError(t, err)
-	require.Equal(t, uint64(0), publishedID)
+	require.Equal(t, uint64(1), publishedID)
 
 	_, err = kp.PublishNFT(ctx, types.NewNft("1", "testdenom", owner.String(), sdk.NewCoin("acudos", sdk.NewInt(10000))))
 	require.Equal(t, "nft with token id (1) from denom (testdenom) already published for sale: nft already published", err.Error())
@@ -755,7 +755,7 @@ func TestSetNftPriceShouldFailIfNotOwner(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = kp.SetNftPrice(ctx, setter.String(), nftId, sdk.NewCoin("acudos", sdk.NewInt(5)))
-	require.Equal(t, fmt.Sprintf("owner of NFT 0 is %s, not %s: not collection owner", owner.String(), setter.String()), err.Error())
+	require.Equal(t, fmt.Sprintf("owner of NFT 1 is %s, not %s: not collection owner", owner.String(), setter.String()), err.Error())
 }
 
 func TestSetNftPrice(t *testing.T) {

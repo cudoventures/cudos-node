@@ -24,6 +24,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Set nft count
 	k.SetNftCount(ctx, genState.NftCount)
 
+	// Set nextuniqueId
+	k.SetNextUniqueId(ctx, genState.NextUniqueId)
+
 	// Set all the auctions
 	auctions, err := types.UnpackAuctions(genState.AuctionList)
 	if err != nil {
@@ -51,6 +54,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.CollectionCount = k.GetCollectionCount(ctx)
 	genesis.NftList = k.GetAllNft(ctx)
 	genesis.NftCount = k.GetNftCount(ctx)
+	genesis.NextUniqueId = k.GetNextUniqueId(ctx)
 
 	auctions, err := k.GetAllAuction(ctx)
 	if err != nil {
