@@ -160,9 +160,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 
 	supportedFeatures := "iterator,staking,stargate"
-	customEncoderOptions := GetCustomMsgEncodersOptions()
-	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
-	wasmOpts := append(customEncoderOptions, customQueryOptions...)
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -183,7 +180,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmOpts...,
+		GetCustomPlugins(app.NftKeeper, app.MarketplaceKeeper)...,
 	)
 
 	app.adminKeeper = *adminkeeper.NewKeeper(

@@ -54,6 +54,12 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 				return nil, err
 			}
 			return json.Marshal(collection)
+		case custom.QueryCollectionsByDenomIds != nil:
+			collections, err := keeper.CollectionsByDenomIds(sdk.WrapSDKContext(ctx), &nftTypes.QueryCollectionsByIdsRequest{DenomIds: custom.QueryCollectionsByDenomIds.DenomIds})
+			if err != nil {
+				return nil, err
+			}
+			return json.Marshal(collections)
 		case custom.QuerySupply != nil:
 			denom, err := keeper.GetDenom(ctx, custom.QuerySupply.DenomId) // Otherwise queries for non-existing denom ID's will return 0, instead of erro.
 			if err != nil {
@@ -108,16 +114,17 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 }
 
 type nftCustomQuery struct {
-	QueryDenomById      *QueryDenomById      `json:"query_denom_by_id,omitempty"`
-	QueryDenomByName    *QueryDenomByName    `json:"query_denom_by_name,omitempty"`
-	QueryDenomBySymbol  *QueryDenomBySymbol  `json:"query_denom_by_symbol,omitempty"`
-	QueryDenoms         *QueryAllDenoms      `json:"query_denoms,omitempty"`
-	QueryCollection     *QueryCollection     `json:"query_collection,omitempty"`
-	QuerySupply         *QuerySupply         `json:"query_supply,omitempty"`
-	QueryOwner          *QueryOwner          `json:"query_owner,omitempty"`
-	QueryToken          *QueryToken          `json:"query_token,omitempty"`
-	QueryApprovals      *QueryApprovals      `json:"query_approvals,omitempty"`
-	QueryApprovedForAll *QueryApprovedForAll `json:"query_approved_for_all,omitempty"`
+	QueryDenomById             *QueryDenomById             `json:"query_denom_by_id,omitempty"`
+	QueryDenomByName           *QueryDenomByName           `json:"query_denom_by_name,omitempty"`
+	QueryDenomBySymbol         *QueryDenomBySymbol         `json:"query_denom_by_symbol,omitempty"`
+	QueryDenoms                *QueryAllDenoms             `json:"query_denoms,omitempty"`
+	QueryCollection            *QueryCollection            `json:"query_collection,omitempty"`
+	QueryCollectionsByDenomIds *QueryCollectionsByDenomIds `json:"query_collections_by_denom_ids,omitempty"`
+	QuerySupply                *QuerySupply                `json:"query_supply,omitempty"`
+	QueryOwner                 *QueryOwner                 `json:"query_owner,omitempty"`
+	QueryToken                 *QueryToken                 `json:"query_token,omitempty"`
+	QueryApprovals             *QueryApprovals             `json:"query_approvals,omitempty"`
+	QueryApprovedForAll        *QueryApprovedForAll        `json:"query_approved_for_all,omitempty"`
 }
 
 type QueryDenomById struct {
@@ -139,6 +146,10 @@ type QueryAllDenoms struct {
 type QueryCollection struct {
 	DenomId    string             `json:"denom_id"`
 	Pagination *query.PageRequest `json:"pagination,omitempty"`
+}
+
+type QueryCollectionsByDenomIds struct {
+	DenomIds []string `json:"denom_ids"`
 }
 
 type QuerySupply struct {
