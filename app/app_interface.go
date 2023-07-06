@@ -24,6 +24,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/consensus"
 
 	// authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -161,6 +162,7 @@ var (
 		slashing.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
+		consensus.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		wasm.AppModuleBasic{},
