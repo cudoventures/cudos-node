@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"testing"
 	"time"
@@ -15,11 +16,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -28,10 +29,8 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -41,8 +40,8 @@ import (
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
 // SimApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -63,7 +62,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*SimApp, GenesisState) {
 	encCdc := MakeTestEncodingConfig()
 	app := NewSimApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
 	if withGenesis {
-		return app, NewDefaultGenesisState(encCdc.Marshaler)
+		return app, NewDefaultGenesisState(encCdc.Codec)
 	}
 	return app, GenesisState{}
 }
@@ -93,26 +92,28 @@ func Setup(isCheckTx bool) *SimApp {
 
 func NewConfig() network.Config {
 	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
-	cfg := network.DefaultConfig()
+	cfg := network.DefaultConfig(func() network.TestFixture {
+		return network.TestFixture{}
+	})
 	encCfg := MakeTestEncodingConfig()
-	cfg.Codec = encCfg.Marshaler
+	cfg.Codec = encCfg.Codec
 	cfg.TxConfig = encCfg.TxConfig
 	cfg.LegacyAmino = encCfg.Amino
 	cfg.InterfaceRegistry = encCfg.InterfaceRegistry
-	cfg.AppConstructor = SimAppConstructor
+	// cfg.AppConstructor = SimAppConstructor
 	cfg.GenesisState = NewDefaultGenesisState(cfg.Codec)
-	cfg.PatchGenesis = PatchGravityBridgeGenesis
+	// cfg.PatchGenesis = PatchGravityBridgeGenesis
 	return cfg
 }
 
-func SimAppConstructor(val network.Validator) servertypes.Application {
-	return NewSimApp(
-		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool),
-		val.Ctx.Config.RootDir, 0, MakeTestEncodingConfig(), EmptyAppOptions{},
-		bam.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-		bam.SetMinGasPrices(val.AppConfig.MinGasPrices),
-	)
-}
+// func SimAppConstructor(val network.Validator) servertypes.Application {
+// 	return NewSimApp(
+// 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool),
+// 		val.Ctx.Config.RootDir, 0, MakeTestEncodingConfig(), EmptyAppOptions{},
+// 		bam.SetPruning(pruningtypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
+// 		bam.SetMinGasPrices(val.AppConfig.MinGasPrices),
+// 	)
+// }
 
 // SetupWithGenesisValSet initializes a new SimApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
@@ -163,7 +164,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	}
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -202,7 +203,7 @@ func SetupWithGenesisAccounts(genAccs []authtypes.GenesisAccount, balances ...ba
 		totalSupply = totalSupply.Add(b.Coins...)
 	}
 
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -248,7 +249,7 @@ func createIncrementalAccounts(accNum int) []sdk.AccAddress {
 		buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") //base address string
 
 		buffer.WriteString(numString) //adding on final two digits to make addresses unique
-		res, _ := sdk.AccAddressFromHex(buffer.String())
+		res, _ := sdk.AccAddressFromHexUnsafe(buffer.String())
 		bech := res.String()
 		addr, _ := TestAddr(buffer.String(), bech)
 
@@ -317,7 +318,7 @@ func ConvertAddrsToValAddrs(addrs []sdk.AccAddress) []sdk.ValAddress {
 }
 
 func TestAddr(addr string, bech string) (sdk.AccAddress, error) {
-	res, err := sdk.AccAddressFromHex(addr)
+	res, err := sdk.AccAddressFromHexUnsafe(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -352,11 +353,13 @@ func SignCheckDeliver(
 	chainID string, accNums, accSeqs []uint64, expSimPass, expPass bool, priv ...cryptotypes.PrivKey,
 ) (sdk.GasInfo, *sdk.Result, error) {
 
-	tx, err := helpers.GenTx(
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	tx, err := simtestutil.GenSignedMockTx(
+		r,
 		txCfg,
 		msgs,
 		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
-		helpers.DefaultGenTxGas,
+		simtestutil.DefaultGenTxGas,
 		chainID,
 		accNums,
 		accSeqs,
@@ -379,7 +382,7 @@ func SignCheckDeliver(
 
 	// Simulate a sending a transaction and committing a block
 	app.BeginBlock(abci.RequestBeginBlock{Header: header})
-	gInfo, res, err := app.Deliver(txCfg.TxEncoder(), tx)
+	gInfo, res, err := app.SimDeliver(txCfg.TxEncoder(), tx)
 
 	if expPass {
 		require.NoError(t, err)
@@ -400,13 +403,17 @@ func SignCheckDeliver(
 // every transaction.
 func GenSequenceOfTxs(txGen client.TxConfig, msgs []sdk.Msg, accNums []uint64, initSeqNums []uint64, numToGenerate int, priv ...cryptotypes.PrivKey) ([]sdk.Tx, error) {
 	txs := make([]sdk.Tx, numToGenerate)
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var err error
+
 	for i := 0; i < numToGenerate; i++ {
-		txs[i], err = helpers.GenTx(
+		txs[i], err = simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			msgs,
 			sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			"",
 			accNums,
 			initSeqNums,

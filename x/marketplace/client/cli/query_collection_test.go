@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	tmcli "github.com/cometbft/cometbft/libs/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -51,7 +51,8 @@ func (s *QueryCollectionIntegrationTestSuite) SetupSuite() {
 	require.NoError(s.T(), err)
 	cfg.GenesisState[types.ModuleName] = buf
 
-	s.network = network.New(s.T(), cfg)
+	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
 
 	_, err = s.network.WaitForHeight(3) // The network is fully initialized after 3 blocks
 	s.Require().NoError(err)

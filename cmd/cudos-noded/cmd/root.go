@@ -11,12 +11,13 @@ import (
 	"github.com/CudoVentures/cudos-node/app/params"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
+	dbm "github.com/cometbft/cometbft-db"
+	tmcfg "github.com/cometbft/cometbft/config"
+	tmcli "github.com/cometbft/cometbft/libs/cli"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/CudoVentures/cudos-node/app"
 	gravitycmd "github.com/althea-net/cosmos-gravity-bridge/module/cmd/gravity/cmd"
@@ -28,6 +29,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
@@ -44,13 +46,13 @@ var ChainID string
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithJSONCodec(encodingConfig.Codec).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
-		WithBroadcastMode(flags.BroadcastBlock).
+		WithBroadcastMode(flags.BroadcastSync).
 		WithHomeDir(app.DefaultNodeHome)
 
 	rootCmd := &cobra.Command{
@@ -61,7 +63,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			return server.InterceptConfigsPreRunHandler(cmd, "", nil, tmcfg.DefaultConfig())
 		},
 	}
 
@@ -84,7 +86,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		gravitycmd.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
-		AddGenesisWasmMsgCmd(app.DefaultNodeHome),
+		// AddGenesisWasmMsgCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 	)
@@ -180,7 +182,8 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
+	// snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
+	snapshotDB, err := dbm.NewDB("metadata", server.GetAppDBBackend(appOpts), snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -188,6 +191,10 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	if err != nil {
 		panic(err)
 	}
+	snapshotOptions := snapshottypes.NewSnapshotOptions(
+		cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)),
+		cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)),
+	)
 
 	return app.New(
 		logger, db, traceStore, true, skipUpgradeHeights,
@@ -203,16 +210,14 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
-		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshot(snapshotStore, snapshotOptions),
 	)
 }
 
 // appExport creates a new simapp (optionally at a given height)
 func (a appCreator) appExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
-	appOpts servertypes.AppOptions) (servertypes.ExportedApp, error) {
+	appOpts servertypes.AppOptions, modulesToExport []string) (servertypes.ExportedApp, error) {
 
 	var anApp *app.App
 

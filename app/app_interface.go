@@ -8,13 +8,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+
+	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
 
 	"github.com/CudoVentures/cudos-node/x/admin"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
@@ -22,12 +24,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+
+	// authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/group"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
@@ -45,7 +50,9 @@ import (
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+
+	// distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	tmjson "github.com/cometbft/cometbft/libs/json"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
@@ -69,14 +76,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v2/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
-	tmjson "github.com/tendermint/tendermint/libs/json"
+	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v7/modules/core"
+	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
@@ -100,6 +106,7 @@ import (
 	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -141,12 +148,13 @@ var (
 		// mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler,
-			distrclient.ProposalHandler,
-			upgradeclient.ProposalHandler,
-			upgradeclient.CancelProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler,
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler,
+				upgradeclient.LegacyCancelProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler,
+			},
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -200,30 +208,32 @@ type App struct {
 	invCheckPeriod uint
 
 	// keys to access the substores
-	keys    map[string]*sdk.KVStoreKey
-	tkeys   map[string]*sdk.TransientStoreKey
-	memKeys map[string]*sdk.MemoryStoreKey
+	keys    map[string]*storetypes.KVStoreKey
+	tkeys   map[string]*storetypes.TransientStoreKey
+	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper        authkeeper.AccountKeeper
-	AuthzKeeper          authzkeeper.Keeper
-	BankKeeper           bankkeeper.Keeper
-	CapabilityKeeper     *capabilitykeeper.Keeper
-	StakingKeeper        stakingkeeper.Keeper
-	SlashingKeeper       slashingkeeper.Keeper
-	DistrKeeper          distrkeeper.Keeper
-	GovKeeper            govkeeper.Keeper
-	CrisisKeeper         crisiskeeper.Keeper
-	UpgradeKeeper        upgradekeeper.Keeper
-	ParamsKeeper         paramskeeper.Keeper
-	IBCKeeper            *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	EvidenceKeeper       evidencekeeper.Keeper
-	TransferKeeper       ibctransferkeeper.Keeper
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	GravityKeeper        gravitykeeper.Keeper
+	AccountKeeper         authkeeper.AccountKeeper
+	AuthzKeeper           authzkeeper.Keeper
+	BankKeeper            bankkeeper.Keeper
+	CapabilityKeeper      *capabilitykeeper.Keeper
+	StakingKeeper         stakingkeeper.Keeper
+	SlashingKeeper        slashingkeeper.Keeper
+	DistrKeeper           distrkeeper.Keeper
+	GovKeeper             govkeeper.Keeper
+	CrisisKeeper          *crisiskeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
+	ParamsKeeper          paramskeeper.Keeper
+	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCFeeKeeper          ibcfeekeeper.Keeper
+	EvidenceKeeper        evidencekeeper.Keeper
+	TransferKeeper        ibctransferkeeper.Keeper
+	ScopedIBCKeeper       capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper  capabilitykeeper.ScopedKeeper
+	GravityKeeper         gravitykeeper.Keeper
+	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
-	wasmKeeper     wasm.Keeper
+	WasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
 	cudoMintKeeper cudoMintkeeper.Keeper
 	feegrantKeeper feegrantkeeper.Keeper
@@ -307,21 +317,21 @@ func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *App) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *App) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *App) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *App) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *App) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
@@ -337,16 +347,12 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 // API server.
 func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
-	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
-	// Register legacy tx routes.
-	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 	// Register new tendermint queries routes from grpc-gateway.
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 }
 
@@ -357,7 +363,16 @@ func (app *App) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *App) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
+	tmservice.RegisterTendermintService(
+		clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
+		app.interfaceRegistry,
+		app.Query,
+	)
+}
+
+func (app *App) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // GetMaccPerms returns a copy of the module account permissions
@@ -370,7 +385,7 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
+func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
@@ -378,10 +393,10 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
+	paramsKeeper.Subspace(govtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)

@@ -6,14 +6,12 @@ import (
 
 	// this line is used by starport scaffolding # 1
 
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -75,11 +73,6 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return genState.Validate()
 }
 
-// RegisterRESTRoutes registers the capability module's REST service handlers.
-func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Router) {
-	rest.RegisterRoutes(clientCtx, rtr)
-}
-
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	// this line is used by starport scaffolding # 2
@@ -118,18 +111,8 @@ func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
 
-// Route returns the capability module's message routing key.
-func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper))
-}
-
 // QuerierRoute returns the capability module's query routing key.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
-
-// LegacyQuerierHandler returns the capability module's Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
-	return keeper.NewQuerier(am.keeper, legacyQuerierCdc)
-}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +16,7 @@ import (
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
 func (app *SimApp) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
+	forZeroHeight bool, jailAllowedAddrs []string, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 
 	// as if they could withdraw from the start of the next block
@@ -30,13 +30,13 @@ func (app *SimApp) ExportAppStateAndValidators(
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := app.mm.ExportGenesis(ctx, app.appCodec)
+	genState := app.mm.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
+	validators, err := staking.WriteValidators(ctx, &app.StakingKeeper)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
@@ -50,7 +50,8 @@ func (app *SimApp) ExportAppStateAndValidators(
 
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
-//      in favour of export at a block height
+//
+//	in favour of export at a block height
 func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 

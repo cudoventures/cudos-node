@@ -4,11 +4,12 @@ import (
 	"path/filepath"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -27,12 +28,13 @@ import (
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
+
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
@@ -41,13 +43,13 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
-	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
@@ -66,19 +68,23 @@ import (
 
 	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
 	app.ParamsKeeper = InitParamsKeeper(app.appCodec, app.cdc, app.keys[paramstypes.StoreKey], app.tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
-	app.BaseApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
+	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(app.appCodec, app.keys[consensusparamstypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	app.BaseApp.SetParamStore(&app.ConsensusParamsKeeper)
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(app.appCodec, app.keys[capabilitytypes.StoreKey], app.memKeys[capabilitytypes.MemStoreKey])
 
 	// grant capabilities for the ibc and ibc-transfer modules
-	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 
@@ -89,21 +95,21 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
-		app.appCodec, app.keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+		app.appCodec, app.keys[authtypes.StoreKey], authtypes.ProtoBaseAccount, maccPerms, sdk.Bech32MainPrefix, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter())
+	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter(), app.AccountKeeper)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
-		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
+		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.BlockedAddrs(), authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
-		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, app.GetSubspace(stakingtypes.ModuleName),
+		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
-		app.appCodec, app.keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, bankKeeper,
-		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		app.appCodec, app.keys[distrtypes.StoreKey], app.AccountKeeper, bankKeeper,
+		stakingKeeper, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	bankKeeper.SetDistrKeeper(app.DistrKeeper)
@@ -111,24 +117,25 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	app.BankKeeper = bankKeeper
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
-		app.appCodec, app.keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
+		app.appCodec, app.cdc, app.keys[slashingtypes.StoreKey], stakingKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
-		app.GetSubspace(crisistypes.ModuleName), app.invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
+		app.appCodec, app.keys[crisistypes.StoreKey], app.invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
+	stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
+	app.StakingKeeper = *stakingKeeper
 
 	app.feegrantKeeper = feegrantkeeper.NewKeeper(app.appCodec, app.keys[feegrant.StoreKey], app.AccountKeeper)
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
-		app.appCodec, app.keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
+		app.appCodec, app.keys[ibcexported.StoreKey], app.GetSubspace(ibcexported.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -159,6 +166,13 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.NftKeeper,
 	)
 
+	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		app.appCodec, app.keys[ibcfeetypes.StoreKey],
+		app.IBCKeeper.ChannelKeeper, // may be replaced with IBC middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper, app.AccountKeeper, app.BankKeeper,
+	)
+
 	supportedFeatures := "iterator,staking,stargate"
 	customEncoderOptions := GetCustomMsgEncodersOptions()
 	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
@@ -166,14 +180,14 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	app.wasmKeeper = wasm.NewKeeper(
+	app.WasmKeeper = wasm.NewKeeper(
 		app.appCodec,
 		app.keys[wasm.StoreKey],
-		app.GetSubspace(wasm.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.DistrKeeper,
+		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCFeeKeeper,
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
@@ -183,6 +197,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
 	)
 
@@ -191,29 +206,33 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.DistrKeeper, app.BankKeeper,
 	)
 
-	govKeeper := govtypes.NewRouter()
-
+	govRouter := govv1beta1.NewRouter()
 	// The gov proposal types can be individually enabled
 	if len(GetEnabledProposals()) != 0 {
-		govKeeper.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, GetEnabledProposals()))
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetEnabledProposals()))
 	}
-
 	// register the proposal types
-	govKeeper.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
-	app.GovKeeper = govkeeper.NewKeeper(
-		app.appCodec, app.keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govKeeper,
+	govConfig := govtypes.DefaultConfig()
+
+	govKeeper := govkeeper.NewKeeper(
+		app.appCodec, app.keys[govtypes.StoreKey], app.AccountKeeper, app.BankKeeper, stakingKeeper, app.MsgServiceRouter(), govConfig, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+	govKeeper.SetLegacyRouter(govRouter)
+	app.GovKeeper = *govKeeper.SetHooks(
+		govtypes.NewMultiGovHooks(
+		// register the governance hooks
+		),
 	)
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		app.appCodec, app.keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
+		app.IBCFeeKeeper, app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
 

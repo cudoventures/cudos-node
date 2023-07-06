@@ -5,13 +5,17 @@ import (
 	"os"
 	"path/filepath"
 
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 	"github.com/spf13/cast"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	dbm "github.com/tendermint/tm-db"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmos "github.com/cometbft/cometbft/libs/os"
+	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
@@ -24,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
@@ -57,11 +62,11 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core"
-	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v7/modules/core"
+	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
@@ -129,7 +134,7 @@ func New(
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
 		paramstypes.StoreKey,
-		ibchost.StoreKey,
+		ibcexported.StoreKey,
 		upgradetypes.StoreKey,
 		evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey,
@@ -177,29 +182,37 @@ func New(
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
+	var transferStack porttypes.IBCModule
+	transferStack = transfer.NewIBCModule(app.TransferKeeper)
+	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.IBCFeeKeeper)
+
+	var wasmStack porttypes.IBCModule
+	wasmStack = wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper, app.IBCFeeKeeper)
+	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, app.IBCFeeKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.IBCKeeper.ChannelKeeper))
+	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferStack)
+	ibcRouter.AddRoute(wasm.ModuleName, wasmStack)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
-		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-		crisis.NewAppModule(&app.CrisisKeeper, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))),
-		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
+		crisis.NewAppModule(app.CrisisKeeper, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), app.GetSubspace(crisistypes.ModuleName)),
+		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+		staking.NewAppModule(appCodec, &app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMint.NewAppModule(appCodec, app.cudoMintKeeper),
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
@@ -234,7 +247,7 @@ func New(
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		nftmoduletypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
@@ -261,7 +274,7 @@ func New(
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		nftmoduletypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
@@ -292,7 +305,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
@@ -305,9 +318,15 @@ func New(
 		marketplacetypes.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.mm.RegisterServices(app.configurator)
+	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.mm.Modules))
+
+	reflectionSvc, err := runtimeservices.NewReflectionService()
+	if err != nil {
+		panic(err)
+	}
+	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{

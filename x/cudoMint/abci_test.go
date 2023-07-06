@@ -7,9 +7,9 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestCalculateMintedCoins(t *testing.T) {

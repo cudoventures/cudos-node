@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"math/rand"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
@@ -50,11 +50,12 @@ func SimulateMsgPublishCollection(
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -64,7 +65,7 @@ func SimulateMsgPublishCollection(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishCollectionType, err.Error()), nil, err
 		}
 

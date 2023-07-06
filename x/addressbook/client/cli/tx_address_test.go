@@ -59,7 +59,7 @@ func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
 			args: []string{
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, valAddr),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+				fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 				fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(network.Config.BondDenom, sdk.NewInt(10))).String()),
 			},
 		},
@@ -96,7 +96,7 @@ func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
 	common := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, valAddr),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(network.Config.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -151,7 +151,7 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 	common := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, valAddr),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(network.Config.BondDenom, sdk.NewInt(10))).String()),
 	}
 
@@ -194,7 +194,10 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 }
 
 func runNetwork(t *testing.T, cfg network.Config) (*network.Network, error) {
-	network := network.New(t, cfg)
+	network, err := network.New(t, t.TempDir(), cfg)
+	if err != nil {
+		return nil, err
+	}
 
 	if _, err := network.WaitForHeight(3); err != nil {
 		return nil, err

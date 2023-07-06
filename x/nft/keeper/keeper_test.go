@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -598,7 +598,7 @@ func CreateTestAddrs(numAddrs int) []sdk.AccAddress {
 		buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") //base address string
 
 		buffer.WriteString(numString) //adding on final two digits to make addresses unique
-		res, _ := sdk.AccAddressFromHex(buffer.String())
+		res, _ := sdk.AccAddressFromHexUnsafe(buffer.String())
 		bech := res.String()
 		addresses = append(addresses, testAddr(buffer.String(), bech))
 		buffer.Reset()
@@ -609,7 +609,7 @@ func CreateTestAddrs(numAddrs int) []sdk.AccAddress {
 
 // for incode address generation
 func testAddr(addr string, bech string) sdk.AccAddress {
-	res, err := sdk.AccAddressFromHex(addr)
+	res, err := sdk.AccAddressFromHexUnsafe(addr)
 	if err != nil {
 		panic(err)
 	}

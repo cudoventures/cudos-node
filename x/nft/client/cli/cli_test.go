@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 
-	"github.com/tendermint/tendermint/crypto"
+	"github.com/cometbft/cometbft/crypto"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
@@ -35,9 +35,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	cfg.NumValidators = 1
 
 	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	network, err := network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
+	s.network = network
 
-	_, err := s.network.WaitForHeight(3) // The network is fully initialized after 3 blocks
+	_, err = s.network.WaitForHeight(3) // The network is fully initialized after 3 blocks
 	s.Require().NoError(err)
 }
 
@@ -77,7 +79,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagSchema, schema),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -120,7 +122,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, tokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -182,7 +184,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, newTokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -213,7 +215,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, newTokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -249,7 +251,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, tokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -266,7 +268,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	args = []string{
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -298,7 +300,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	args = []string{
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -326,7 +328,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenName, newTokenName),
 
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -349,7 +351,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 	}
 
 	args = append(args, gasArgs...)
@@ -373,7 +375,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastSync),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 

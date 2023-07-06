@@ -8,18 +8,18 @@ import (
 	"math/rand"
 	"time"
 
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmtypes "github.com/tendermint/tendermint/types"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	tmtypes "github.com/cometbft/cometbft/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	sdksimapp "github.com/cosmos/cosmos-sdk/simapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -33,10 +33,10 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 		appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time,
 	) {
 
-		if sdksimapp.FlagGenesisTimeValue == 0 {
+		if simcli.FlagGenesisTimeValue == 0 {
 			genesisTimestamp = simtypes.RandTimestamp(r)
 		} else {
-			genesisTimestamp = time.Unix(sdksimapp.FlagGenesisTimeValue, 0)
+			genesisTimestamp = time.Unix(simcli.FlagGenesisTimeValue, 0)
 		}
 
 		chainID = config.ChainID
@@ -48,7 +48,7 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 			// override the default chain-id from simapp to set it later to the config
 			genesisDoc, accounts := AppStateFromGenesisFileFn(r, cdc, config.GenesisFile)
 
-			if sdksimapp.FlagGenesisTimeValue == 0 {
+			if simcli.FlagGenesisTimeValue == 0 {
 				// use genesis timestamp if no custom timestamp is provided (i.e no random timestamp)
 				genesisTimestamp = genesisDoc.GenesisTime
 			}
@@ -154,13 +154,13 @@ func AppStateRandomizedFn(
 	var numInitiallyBonded int64
 	minSelfDeleg := sdk.TokensFromConsensusPower(2000000, sdk.DefaultPowerReduction)
 	appParams.GetOrGenerate(
-		cdc, simappparams.StakePerAccount, &initialStake, r,
+		cdc, simtestutil.StakePerAccount, &initialStake, r,
 		func(r *rand.Rand) {
 			initialStake = minSelfDeleg.Add(sdk.NewInt(r.Int63n(10)).Mul(sdk.NewInt(10000000)).Mul(minSelfDeleg))
 		},
 	)
 	appParams.GetOrGenerate(
-		cdc, simappparams.InitiallyBondedValidators, &numInitiallyBonded, r,
+		cdc, simtestutil.InitiallyBondedValidators, &numInitiallyBonded, r,
 		func(r *rand.Rand) { numInitiallyBonded = int64(r.Intn(300)) },
 	)
 
