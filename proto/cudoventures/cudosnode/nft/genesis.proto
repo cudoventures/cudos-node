@@ -1,8 +1,8 @@
 syntax = "proto3";
-package cudosnode.cudosnode.nft;
+package cudoventures.cudosnode.nft;
 
 import "gogoproto/gogo.proto";
-import "nft/nft.proto";
+import "cudoventures/cudosnode/nft/nft.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/nft/types";
 

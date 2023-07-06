@@ -1,7 +1,7 @@
 syntax = "proto3";
-package cudos.cudoMint;
+package cudoventures.cudosnode.cudoMint;
 
-import "cudos/cudoMint/mint.proto";
+import "cudoventures/cudosnode/cudoMint/mint.proto";
 import "gogoproto/gogo.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 

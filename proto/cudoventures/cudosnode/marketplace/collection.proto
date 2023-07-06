@@ -1,7 +1,7 @@
 syntax = "proto3";
 package cudoventures.cudosnode.marketplace;
 
-import "marketplace/royalty.proto";
+import "cudoventures/cudosnode/marketplace/royalty.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";

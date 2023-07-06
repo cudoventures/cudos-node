@@ -187,7 +187,7 @@ require (
 // replace github.com/cometbft/cometbft => ../tendermint
 // replace github.com/cosmos/ibc-go/v7 => ../ibc-go
 
-replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230629114225-fdf91ed4c5a0
+replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230706071203-07fefdab0de7
 
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20230628122035-744b6e4f35cb
 

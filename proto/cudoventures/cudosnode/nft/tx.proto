@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudosnode.cudosnode.nft;
+package cudoventures.cudosnode.nft;
 
 import "gogoproto/gogo.proto";
 

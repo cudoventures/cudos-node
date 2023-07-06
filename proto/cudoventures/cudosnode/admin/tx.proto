@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudosnode.cudosnode.pocbasecosmos;
+package cudoventures.cudosnode.admin;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "gogoproto/gogo.proto";

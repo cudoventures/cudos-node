@@ -29,5 +29,8 @@ go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
 		GO111MODULE=on go mod verify
 
+proto-gen:
+	docker run --rm -v $(CURDIR):/workspace --workdir /workspace ghcr.io/cosmos/proto-builder:0.12.1 sh ./scripts/protocgen.sh
+
 test:
 	@go test -v -mod=readonly $(PACKAGES)

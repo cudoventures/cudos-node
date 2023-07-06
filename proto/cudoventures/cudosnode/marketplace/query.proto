@@ -4,9 +4,9 @@ package cudoventures.cudosnode.marketplace;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "marketplace/params.proto";
-import "marketplace/collection.proto";
-import "marketplace/nft.proto";
+import "cudoventures/cudosnode/marketplace/params.proto";
+import "cudoventures/cudosnode/marketplace/collection.proto";
+import "cudoventures/cudosnode/marketplace/nft.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";

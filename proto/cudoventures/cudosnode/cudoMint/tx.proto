@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudos.cudoMint;
+package cudoventures.cudosnode.cudoMint;
 
 // this line is used by starport scaffolding # proto/tx/import
 
