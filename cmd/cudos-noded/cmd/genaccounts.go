@@ -18,7 +18,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 )
 
-// AddGenesisAccountCmd returns add-genesis-account cobra Command.
 func AddGenesisAccountCmd(defaultNodeHome string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-genesis-account [address_or_key_name] [coin][,[coin]]",
@@ -33,9 +32,6 @@ contain valid denominations.
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
-
-			// depCdc := clientCtx.JSONCodec
-			// cdc := depCdc.(codec.Codec)
 
 			config.SetRoot(clientCtx.HomeDir)
 

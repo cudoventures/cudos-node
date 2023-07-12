@@ -16,7 +16,16 @@ var (
 	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
 )
 
-func SetConfig() {
+func InitializeSdk() {
+	initializePowerReduction()
+	initializeSdkConfig()
+}
+
+func initializePowerReduction() {
+	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
+}
+
+func initializeSdkConfig() {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(ValidatorAddressPrefix, ValidatorPubKeyPrefix)
