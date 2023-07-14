@@ -347,8 +347,11 @@ func (app *CudosApp) AddKeepers(appOpts servertypes.AppOptions) {
 
 	// AdminKeeper
 	app.AdminKeeper = *adminkeeper.NewKeeper(
-		app.appCodec, app.keys[admintypes.StoreKey], app.keys[admintypes.MemStoreKey],
-		app.DistrKeeper, app.BankKeeper,
+		app.appCodec,
+		app.keys[admintypes.StoreKey],
+		app.keys[admintypes.MemStoreKey],
+		app.DistrKeeper,
+		app.BankKeeper,
 	)
 
 	// CudoMintKeeper
