@@ -1,4 +1,4 @@
-package app
+package simapp
 
 import (
 	"encoding/json"
@@ -6,42 +6,44 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-
-	abci "github.com/cometbft/cometbft/abci/types"
-
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/CudoVentures/cudos-node/x/admin"
+	"github.com/CudoVentures/cudos-node/x/cudoMint"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
+	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/consensus"
-
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
-
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/capability"
+	"github.com/cosmos/cosmos-sdk/x/consensus"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-
-	tmjson "github.com/cometbft/cometbft/libs/json"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	feegrantmod "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -50,26 +52,12 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
-
-	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
-
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -163,19 +151,19 @@ var (
 	}
 )
 
-func (app *CudosApp) Name() string {
+func (app *CudosSimApp) Name() string {
 	return app.BaseApp.Name()
 }
 
-func (app *CudosApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *CudosSimApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
 
-func (app *CudosApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *CudosSimApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
-func (app *CudosApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *CudosSimApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
@@ -185,7 +173,7 @@ func (app *CudosApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abc
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
-func (app *CudosApp) LoadHeight(height int64) error {
+func (app *CudosSimApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
@@ -193,7 +181,7 @@ func (app *CudosApp) LoadHeight(height int64) error {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *CudosApp) LegacyAmino() *codec.LegacyAmino {
+func (app *CudosSimApp) LegacyAmino() *codec.LegacyAmino {
 	return app.legacyAminoCodec
 }
 
@@ -201,61 +189,61 @@ func (app *CudosApp) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *CudosApp) AppCodec() codec.Codec {
+func (app *CudosSimApp) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
-func (app *CudosApp) InterfaceRegistry() types.InterfaceRegistry {
+func (app *CudosSimApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // TxConfig returns CudosApp's TxConfig
-func (app *CudosApp) TxConfig() client.TxConfig {
+func (app *CudosSimApp) TxConfig() client.TxConfig {
 	return app.txConfig
 }
 
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
-func (app *CudosApp) DefaultGenesis() map[string]json.RawMessage {
+func (app *CudosSimApp) DefaultGenesis() map[string]json.RawMessage {
 	return ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *CudosApp) GetKey(storeKey string) *storetypes.KVStoreKey {
+func (app *CudosSimApp) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *CudosApp) GetTKey(storeKey string) *storetypes.TransientStoreKey {
+func (app *CudosSimApp) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *CudosApp) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
+func (app *CudosSimApp) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *CudosApp) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *CudosSimApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *CudosApp) SimulationManager() *module.SimulationManager {
+func (app *CudosSimApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *CudosApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (app *CudosSimApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -268,12 +256,12 @@ func (app *CudosApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
-func (app *CudosApp) RegisterTxService(clientCtx client.Context) {
+func (app *CudosSimApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
-func (app *CudosApp) RegisterTendermintService(clientCtx client.Context) {
+func (app *CudosSimApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(
 		clientCtx,
 		app.BaseApp.GRPCQueryRouter(),
@@ -282,7 +270,7 @@ func (app *CudosApp) RegisterTendermintService(clientCtx client.Context) {
 	)
 }
 
-func (app *CudosApp) RegisterNodeService(clientCtx client.Context) {
+func (app *CudosSimApp) RegisterNodeService(clientCtx client.Context) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
@@ -297,7 +285,7 @@ func GetMaccPerms() map[string][]string {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *CudosApp) BlockedAddrs() map[string]bool {
+func (app *CudosSimApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]

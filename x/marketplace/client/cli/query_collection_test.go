@@ -32,7 +32,7 @@ func TestQueryCollectionIntegrationTestSuite(t *testing.T) {
 func (s *QueryCollectionIntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up query collection integration test suite")
 
-	cfg := simapp.NewConfig()
+	cfg := simapp.NewConfig(s.T().TempDir())
 	cfg.NumValidators = 1
 
 	state := types.GenesisState{}

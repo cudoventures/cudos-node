@@ -183,7 +183,7 @@ require (
 )
 
 // replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
-// replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
+// replace github.com/cosmos/cosmos-sdk => ../CudosCosmosSdk
 // replace github.com/cometbft/cometbft => ../tendermint
 // replace github.com/cosmos/ibc-go/v7 => ../ibc-go
 
@@ -203,4 +203,4 @@ replace (
 
 replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230706071203-07fefdab0de7
 
-replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20230628122035-744b6e4f35cb
+replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20230717140133-df4d8422a08d

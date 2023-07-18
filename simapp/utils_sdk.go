@@ -1,4 +1,4 @@
-package app
+package simapp
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,12 +16,13 @@ var (
 	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
 )
 
+// Currently not used anythere
 func InitializeSdk() {
-	initializeSdkConstnts()
+	initializeSdkConstants()
 	initializeSdkConfig()
 }
 
-func initializeSdkConstnts() {
+func initializeSdkConstants() {
 	sdk.DefaultBondDenom = "cudos"
 	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
 }

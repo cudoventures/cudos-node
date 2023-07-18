@@ -33,7 +33,7 @@ func TestQueryAddressIntegrationTestSuite(t *testing.T) {
 func (s *QueryAddressIntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up query address integration test suite")
 
-	cfg := simapp.NewConfig()
+	cfg := simapp.NewConfig(s.T().TempDir())
 	cfg.NumValidators = 1
 
 	state := types.GenesisState{}

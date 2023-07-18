@@ -57,7 +57,7 @@ func TestQueryNftIntegrationTestSuite(t *testing.T) {
 func (s *QueryNftIntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up query nft integration test suite")
 
-	cfg := simapp.NewConfig()
+	cfg := simapp.NewConfig(s.T().TempDir())
 	cfg.NumValidators = 1
 
 	state := types.GenesisState{}

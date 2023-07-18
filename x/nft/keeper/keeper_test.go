@@ -60,14 +60,13 @@ type IntegrationTestKeeperSuite struct {
 	legacyAmino *codec.LegacyAmino
 	ctx         sdk.Context
 	keeper      keeper.Keeper
-	app         *simapp.SimApp
+	app         *simapp.CudosSimApp
 
 	queryClient types.QueryClient
 }
 
 func (suite *IntegrationTestKeeperSuite) SetupTest() {
-
-	app := simapp.Setup(isCheckTx)
+	app := simapp.Setup(suite.T(), isCheckTx)
 
 	suite.app = app
 	suite.legacyAmino = app.LegacyAmino()
