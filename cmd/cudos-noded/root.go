@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 
 	"github.com/CudoVentures/cudos-node/app"
 	gravitycmd "github.com/althea-net/cosmos-gravity-bridge/module/cmd/gravity/cmd"
@@ -23,7 +22,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -76,10 +74,10 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
-	overwriteFlagDefaults(rootCmd, map[string]string{
-		// flags.FlagChainID:        ChainID,
-		flags.FlagKeyringBackend: keyring.BackendOS,
-	})
+	// overwriteFlagDefaults(rootCmd, map[string]string{
+	// 	// flags.FlagChainID:        ChainID,
+	// 	flags.FlagKeyringBackend: keyring.BackendOS,
+	// })
 
 	return rootCmd, encodingConfig
 }
@@ -149,7 +147,7 @@ func queryCommand() *cobra.Command {
 	)
 
 	app.ModuleBasics.AddQueryCommands(cmd)
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
+	// cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
@@ -178,23 +176,23 @@ func txCommand() *cobra.Command {
 	)
 
 	app.ModuleBasics.AddTxCommands(cmd)
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
+	// cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
 
-func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
-	set := func(s *pflag.FlagSet, key, val string) {
-		if f := s.Lookup(key); f != nil {
-			f.DefValue = val
-			f.Value.Set(val)
-		}
-	}
-	for key, val := range defaults {
-		set(c.Flags(), key, val)
-		set(c.PersistentFlags(), key, val)
-	}
-	for _, c := range c.Commands() {
-		overwriteFlagDefaults(c, defaults)
-	}
-}
+// func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
+// 	set := func(s *pflag.FlagSet, key, val string) {
+// 		if f := s.Lookup(key); f != nil {
+// 			f.DefValue = val
+// 			f.Value.Set(val)
+// 		}
+// 	}
+// 	for key, val := range defaults {
+// 		set(c.Flags(), key, val)
+// 		set(c.PersistentFlags(), key, val)
+// 	}
+// 	for _, c := range c.Commands() {
+// 		overwriteFlagDefaults(c, defaults)
+// 	}
+// }
