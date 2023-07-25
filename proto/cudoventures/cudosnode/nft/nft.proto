@@ -1,0 +1,69 @@
+syntax = "proto3";
+package cudoventures.cudosnode.nft;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/CudoVentures/cudos-node/x/nft/types";
+option (gogoproto.goproto_getters_all) = false;
+
+// BaseNFT defines a non-fungible token
+message BaseNFT {
+    option (gogoproto.equal) = true;
+
+    string id = 1 ;
+    string name = 2;
+    string uri = 3 [ (gogoproto.customname) = "URI", (gogoproto.jsontag) = "uri" ];
+    string data = 4 [(gogoproto.jsontag) = "data"];
+    string owner = 5;
+    repeated string approvedAddresses = 6 [(gogoproto.jsontag) = "approved_addresses,omitempty"];
+}
+
+// Denom defines a type of NFT
+message Denom {
+    option (gogoproto.equal) = true;
+
+    string id = 1  [(gogoproto.jsontag) = "id"];
+    string name = 2 [(gogoproto.jsontag) = "name"];
+    string schema = 3 [(gogoproto.jsontag) = "schema"];
+    string creator = 4 [(gogoproto.jsontag) = "creator"];
+    string symbol = 5 [(gogoproto.jsontag) = "symbol"];
+    string traits = 6 [(gogoproto.jsontag) = "traits"];
+    string minter = 7 [(gogoproto.jsontag) = "minter"];
+    string description = 8 [(gogoproto.jsontag) = "description"];
+    string data = 9 [(gogoproto.jsontag) = "data"];
+}
+
+// IDCollection defines a type of collection with specified ID
+message IDCollection {
+    option (gogoproto.equal) = true;
+
+    string denom_id = 1 [ (gogoproto.moretags) = "yaml:\"denom_id\"" ];
+    repeated string token_ids = 2 [ (gogoproto.moretags) = "yaml:\"token_ids\"" ];
+}
+
+// Owner defines a type of owner
+message Owner {
+    option (gogoproto.equal) = true;
+
+    string address = 1;
+    repeated IDCollection id_collections = 2 [ (gogoproto.moretags) = "yaml:\"idcs\"", (gogoproto.customname) = "IDCollections", (gogoproto.nullable) = false ];
+}
+
+// Collection defines a type of collection
+message Collection {
+    option (gogoproto.equal) = true;
+
+    Denom denom = 1 [ (gogoproto.nullable) = false ];
+    repeated BaseNFT nfts = 2 [ (gogoproto.customname) = "NFTs", (gogoproto.nullable) = false ];
+}
+
+message ApprovedAddresses {
+    option (gogoproto.equal) = true;
+    map<string, ApprovedAddressesData> approvedAddresses = 1;
+}
+
+message ApprovedAddressesData {
+    option (gogoproto.equal) = true;
+
+    map<string, bool> approvedAddressesData = 1;
+}

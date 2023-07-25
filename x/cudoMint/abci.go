@@ -3,6 +3,7 @@ package cudoMint
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -102,7 +103,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		panic(err)
 	}
 	minter.NormTimePassed = minter.NormTimePassed.Add(incr)
-	minter.MintRemainder = mintAmountDec.Sub(mintAmountInt.ToDec())
+	minter.MintRemainder = mintAmountDec.Sub(sdkmath.LegacyNewDecFromInt(mintAmountInt))
 	k.SetMinter(ctx, minter)
 
 	// send the minted coins to the fee collector account

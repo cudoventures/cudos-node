@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	tmcli "github.com/cometbft/cometbft/libs/cli"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -21,7 +21,9 @@ import (
 
 func networkWithNftObjects(t *testing.T, n int) (*network.Network, []types.Nft) {
 	t.Helper()
-	cfg := network.DefaultConfig()
+	cfg := network.DefaultConfig(func() network.TestFixture {
+		return network.TestFixture{}
+	})
 	state := types.GenesisState{}
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], &state))
 
@@ -35,7 +37,11 @@ func networkWithNftObjects(t *testing.T, n int) (*network.Network, []types.Nft) 
 	buf, err := cfg.Codec.MarshalJSON(&state)
 	require.NoError(t, err)
 	cfg.GenesisState[types.ModuleName] = buf
-	return network.New(t, cfg), state.NftList
+
+	network, err := network.New(t, t.TempDir(), cfg)
+	require.NoError(t, err)
+
+	return network, state.NftList
 }
 
 type QueryNftIntegrationTestSuite struct {
@@ -51,7 +57,7 @@ func TestQueryNftIntegrationTestSuite(t *testing.T) {
 func (s *QueryNftIntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up query nft integration test suite")
 
-	cfg := simapp.NewConfig()
+	cfg := simapp.NewConfig(s.T().TempDir())
 	cfg.NumValidators = 1
 
 	state := types.GenesisState{}
@@ -70,7 +76,8 @@ func (s *QueryNftIntegrationTestSuite) SetupSuite() {
 	require.NoError(s.T(), err)
 	cfg.GenesisState[types.ModuleName] = buf
 
-	s.network = network.New(s.T(), cfg)
+	s.network, err = network.New(s.T(), s.T().TempDir(), cfg)
+	s.Require().NoError(err)
 
 	_, err = s.network.WaitForHeight(3) // The network is fully initialized after 3 blocks
 	s.Require().NoError(err)

@@ -3,10 +3,11 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	// this line is used by starport scaffolding # ibc/keeper/import
@@ -15,8 +16,8 @@ import (
 type (
 	Keeper struct {
 		cdc              codec.Codec
-		storeKey         sdk.StoreKey
-		memKey           sdk.StoreKey
+		storeKey         storetypes.StoreKey
+		memKey           storetypes.StoreKey
 		bankKeeper       types.BankKeeper
 		feeCollectorName string
 		paramSpace       paramtypes.Subspace
@@ -27,7 +28,7 @@ type (
 func NewKeeper(
 	cdc codec.Codec,
 	storeKey,
-	memKey sdk.StoreKey,
+	memKey storetypes.StoreKey,
 	bk types.BankKeeper,
 	ak types.AccountKeeper,
 	paramSpace paramtypes.Subspace,

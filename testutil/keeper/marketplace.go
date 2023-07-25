@@ -9,6 +9,9 @@ import (
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -18,11 +21,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 )
 
 func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankkeeper.BaseKeeper, sdk.Context) {
@@ -33,7 +34,7 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankke
 	cdc := codec.NewProtoCodec(registry)
 
 	maccPerms := simapp.GetMaccPerms()
-	appCodec := simapp.MakeTestEncodingConfig().Marshaler
+	appCodec := simapp.MakeTestEncodingConfig().Codec
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 
@@ -41,12 +42,14 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankke
 	require.NoError(t, err)
 
 	maccPerms[types.ModuleName] = []string{authtypes.Minter}
-	authKeeper := authkeeper.NewAccountKeeper(appCodec, authModuleStore.storeKey, authModuleStore.paramSubspace, authtypes.ProtoBaseAccount, maccPerms)
+	authKeeper := authkeeper.NewAccountKeeper(appCodec, authModuleStore.storeKey, authtypes.ProtoBaseAccount, maccPerms, sdk.Bech32MainPrefix, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	bankModuleStore, err := setupModuleStore(t, cdc, db, stateStore, banktypes.StoreKey)
 	require.NoError(t, err)
 
-	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, bankModuleStore.storeKey, authKeeper, bankModuleStore.paramSubspace, nil)
+	// bankKeeper := bankkeeper.NewBaseKeeper(appCodec, bankModuleStore.storeKey, authKeeper, bankModuleStore.paramSubspace, nil)
+	blockedAddr := make(map[string]bool)
+	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, bankModuleStore.storeKey, authKeeper, blockedAddr, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	nftModuleStore, err := setupModuleStore(t, cdc, db, stateStore, nfttypes.StoreKey)
 	require.NoError(t, err)
@@ -72,8 +75,8 @@ func setupModuleStore(t testing.TB, cdc *codec.ProtoCodec, db *tmdb.MemDB, state
 	memStoreKey := storetypes.NewMemoryStoreKey(fmt.Sprintf("mem_%s", storeKeyName))
 	paramsSubspace := typesparams.NewSubspace(cdc, types.Amino, storeKey, memStoreKey, fmt.Sprintf("%sParams", storeKeyName))
 
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 
 	return moduleStore{
 		storeKey:      storeKey,

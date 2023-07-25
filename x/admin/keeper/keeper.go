@@ -3,24 +3,25 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type (
 	Keeper struct {
 		cdc                codec.Codec
-		storeKey           sdk.StoreKey
-		memKey             sdk.StoreKey
+		storeKey           storetypes.StoreKey
+		memKey             storetypes.StoreKey
 		distributionKeeper types.DistributionKeeper
 		bankKeeper         types.BankKeeper
 	}
 )
 
-func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey,
+func NewKeeper(cdc codec.Codec, storeKey, memKey storetypes.StoreKey,
 	dk types.DistributionKeeper, bk types.BankKeeper) *Keeper {
 	return &Keeper{
 		cdc:                cdc,

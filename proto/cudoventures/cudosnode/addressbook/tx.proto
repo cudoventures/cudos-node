@@ -1,0 +1,40 @@
+syntax = "proto3";
+package cudoventures.cudosnode.addressbook;
+
+import "cudoventures/cudosnode/addressbook/address.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc CreateAddress(MsgCreateAddress) returns (MsgCreateAddressResponse);
+  rpc UpdateAddress(MsgUpdateAddress) returns (MsgUpdateAddressResponse);
+  rpc DeleteAddress(MsgDeleteAddress) returns (MsgDeleteAddressResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgCreateAddress {
+  string creator = 1;
+  string network = 2;
+  string label = 3;
+  string value = 4;
+}
+message MsgCreateAddressResponse {}
+
+message MsgUpdateAddress {
+  string creator = 1;
+  string network = 2;
+  string label = 3;
+  string value = 4;
+}
+message MsgUpdateAddressResponse {}
+
+message MsgDeleteAddress {
+  string creator = 1;
+  string network = 2;
+  string label = 3;
+}
+message MsgDeleteAddressResponse {}
+
+// this line is used by starport scaffolding # proto/tx/message
