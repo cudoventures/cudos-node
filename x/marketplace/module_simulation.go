@@ -1,9 +1,10 @@
 package marketplace
 
 import (
-	"math/rand"
 
 	// simappparams "cosmossdk.io/simapp/params"
+	"math/rand"
+
 	"github.com/CudoVentures/cudos-node/testutil/sample"
 	marketplacesimulation "github.com/CudoVentures/cudos-node/x/marketplace/simulation"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
@@ -77,13 +78,8 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
 	marketplaceGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
-		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&marketplaceGenesis)
 }
@@ -93,6 +89,9 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	denomsRandomizer := marketplacesimulation.NewDenomsRandomizer()
+	tokensRandomizer := marketplacesimulation.NewTokensRandomizer()
+
 	operations := make([]simtypes.WeightedOperation, 0)
 
 	var weightMsgPublishCollection int
@@ -103,7 +102,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishCollection,
-		marketplacesimulation.SimulateMsgPublishCollection(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgPublishCollection(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper, denomsRandomizer),
 	))
 
 	var weightMsgPublishNft int
@@ -114,7 +113,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPublishNft,
-		marketplacesimulation.SimulateMsgPublishNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgPublishNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper, tokensRandomizer),
 	))
 
 	var weightMsgBuyNft int
@@ -125,7 +124,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgBuyNft,
-		marketplacesimulation.SimulateMsgBuyNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgBuyNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper, tokensRandomizer),
 	))
 
 	var weightMsgMintNft int
@@ -136,7 +135,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgMintNft,
-		marketplacesimulation.SimulateMsgMintNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper),
+		marketplacesimulation.SimulateMsgMintNft(am.accountKeeper, am.bankKeeper, am.nftKeeper, am.keeper, denomsRandomizer),
 	))
 
 	var weightMsgRemoveNft int
@@ -226,8 +225,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgRemoveAdmin,
 		marketplacesimulation.SimulateMsgRemoveAdmin(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
-	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
 }

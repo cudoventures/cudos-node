@@ -29,6 +29,7 @@ func SimulateMsgCreateAddress(
 		msg := &types.MsgCreateAddress{
 			Creator: simAccount.Address.String(),
 			Network: "ETH",
+			Value:   "ETH_Value",
 			Label:   fmt.Sprintf("%d@mydenom", r.Int()),
 		}
 

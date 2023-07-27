@@ -7,7 +7,6 @@ import (
 	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,10 +18,11 @@ func SimulateMsgPublishCollection(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
+	dr *DenomsRandomizer,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ownerAddr, denom, _ := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
+		ownerAddr, denom := dr.GetRandomDenomIdWithOwner(ctx, nk, r, true)
 		if ownerAddr.Empty() {
 			err := fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishCollectionType, err.Error()), nil, err

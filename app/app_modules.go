@@ -12,7 +12,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -65,7 +64,7 @@ func (app *CudosApp) addModules(appOpts servertypes.AppOptions) {
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, txConfig),
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, randomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
@@ -92,7 +91,26 @@ func (app *CudosApp) addModules(appOpts servertypes.AppOptions) {
 		admin.NewAppModule(appCodec, app.AdminKeeper),
 		cudoMint.NewAppModule(appCodec, app.CudoMintKeeper),
 		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
-		marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper),
+		marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper, app.NftKeeper),
 		addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper),
 	)
+}
+
+func (app *CudosApp) orderSimulationModules() {
+	var gravityModuleIndex int = -1
+	for i, module := range app.sm.Modules {
+		if _, ok := module.(gravity.AppModule); ok {
+			gravityModuleIndex = i
+			break
+		}
+	}
+
+	if gravityModuleIndex != -1 {
+		modulesSize := len(app.sm.Modules)
+		gravityModule := app.sm.Modules[gravityModuleIndex]
+		for i := gravityModuleIndex; i < modulesSize-1; i++ {
+			app.sm.Modules[i] = app.sm.Modules[i+1]
+		}
+		app.sm.Modules[modulesSize-1] = gravityModule
+	}
 }

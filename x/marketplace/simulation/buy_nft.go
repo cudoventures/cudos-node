@@ -7,7 +7,6 @@ import (
 	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,29 +18,32 @@ func SimulateMsgBuyNft(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
+	tr *TokensRandomizer,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		buyerAcc, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, buyerAcc.Address)
 
 		// Publish NFT for sale
-
-		sellerAddr, denom, nftID := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
+		sellerAddr, denom, nftID := tr.GetRandomTokenIdWithOwner(ctx, nk, r, true, buyerAcc.Address.String())
 		if sellerAddr.Empty() {
 			err := fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventBuyNftType, err.Error()), nil, err
 		}
 
-		nft := types.NewNft(nftID, denom, sellerAddr.String(), sdk.NewCoin("acudos", sdk.NewInt(100000000)))
+		nftPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(r.Int63n(100)+1))
+		nft := types.NewNft(nftID, denom, sellerAddr.String(), nftPrice)
 		publishedNftID, err := k.PublishNFT(ctx, nft)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventBuyNftType, err.Error()), nil, err
 		}
 
 		// Buy the NFT
+		// buyerAcc, _ := simtypes.RandomAcc(r, accs)
+		// account := ak.GetAccount(ctx, buyerAcc.Address)
 
-		buyerAcc, _ := simtypes.RandomAcc(r, accs)
-		account := ak.GetAccount(ctx, buyerAcc.Address)
-
+		fundAcc(ctx, bk, account.GetAddress(), nftPrice)
 		msg := types.NewMsgBuyNft(buyerAcc.Address.String(), publishedNftID)
 
 		spendable := bk.SpendableCoins(ctx, buyerAcc.Address)

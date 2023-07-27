@@ -1,6 +1,7 @@
 package addressbook
 
 import (
+	"fmt"
 	"math/rand"
 
 	// simappparams "cosmossdk.io/simapp/params"
@@ -41,25 +42,16 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
 	addressbookGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		AddressList: []types.Address{
-			{
-				Creator: sample.AccAddress(),
-				Network: "BTC",
-				Label:   "1@testdenom",
-			},
-			{
-				Creator: sample.AccAddress(),
-				Network: "ETH",
-				Label:   "2@newdenom",
-			},
-		},
-		// this line is used by starport scaffolding # simapp/module/genesisState
+		Params:      types.DefaultParams(),
+		AddressList: []types.Address{},
+	}
+	for i, acc := range simState.Accounts {
+		addressbookGenesis.AddressList = append(addressbookGenesis.AddressList, types.Address{
+			Creator: acc.Address.String(),
+			Network: "BTC",
+			Label:   fmt.Sprintf("%d@testdenom", i+1),
+		})
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&addressbookGenesis)
 }

@@ -113,7 +113,7 @@ func SimulateMsgTransferNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.Ba
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := getRandomNotSoftLockedNftWithOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeTransferNft, err.Error()), nil, err
@@ -174,7 +174,7 @@ func SimulateMsgEditNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := getRandomNotSoftLockedNftWithOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("account invalid")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeEditNFT, err.Error()), nil, err
@@ -295,7 +295,7 @@ func SimulateMsgBurnNFT(k keeper.Keeper, ak types.AccountKeeper, bk types.BankKe
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-		ownerAddr, denom, nftID := GetRandomNFTFromOwner(ctx, k, r)
+		ownerAddr, denom, nftID := getRandomNotSoftLockedNftWithOwner(ctx, k, r)
 		if ownerAddr.Empty() {
 			err = fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventTypeBurnNFT, err.Error()), nil, err
@@ -462,10 +462,38 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	}
 }
 
-func GetRandomNFTFromOwner(ctx sdk.Context, k NftKeeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
-	owners, err := k.GetOwners(ctx)
+func getRandomNotSoftLockedNftWithOwner(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) (address sdk.AccAddress, denomID, tokenID string) {
+	allOwners, err := k.GetOwners(ctx)
 	if err != nil {
 		return nil, "", ""
+	}
+
+	var owners types.Owners
+	for _, owner := range allOwners {
+		var idcs []types.IDCollection
+		for _, col := range owner.IDCollections {
+			var tokenIds []string
+			for _, token := range col.TokenIds {
+				if err := k.IsSoftLocked(ctx, col.DenomId, token); err == nil {
+					tokenIds = append(tokenIds, token)
+				}
+			}
+			if len(tokenIds) > 0 {
+				idcs = append(idcs, types.IDCollection{
+					DenomId:  col.DenomId,
+					TokenIds: tokenIds,
+				})
+			}
+		}
+		if len(idcs) > 0 {
+			owners = append(
+				owners,
+				types.Owner{
+					Address:       owner.Address,
+					IDCollections: idcs,
+				},
+			)
+		}
 	}
 
 	ownersLen := len(owners)
@@ -504,12 +532,4 @@ func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) types.Denom 
 	var denoms = k.GetDenoms(ctx)
 	i := r.Intn(len(denoms))
 	return denoms[i]
-}
-
-func genRandomBool(r *rand.Rand) bool {
-	return r.Int()%2 == 0
-}
-
-type NftKeeper interface {
-	GetOwners(ctx sdk.Context) (owners types.Owners, err error)
 }

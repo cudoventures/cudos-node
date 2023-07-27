@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -18,30 +19,12 @@ const (
 
 // RandomizedGenState generates a random GenesisState for nft
 func RandomizedGenState(simState *module.SimulationState) {
-	collections := types.NewCollections(
-		types.NewCollection(
-			types.Denom{
-				Id:      letters,
-				Name:    letters,
-				Schema:  "",
-				Creator: "",
-				Symbol:  simtypes.RandStringOfLength(simState.Rand, 10),
-			},
-			types.NFTs{},
-		),
-		types.NewCollection(
-			types.Denom{
-				Id:      numbers,
-				Name:    numbers,
-				Schema:  "",
-				Creator: "",
-				Symbol:  simtypes.RandStringOfLength(simState.Rand, 10),
-			},
-			types.NFTs{}),
-	)
+	var collections []types.Collection
+	var denom string
+
 	for i, acc := range simState.Accounts {
-		// 10% of accounts own an NFT
-		if simState.Rand.Intn(100) < 10 {
+		// 70% of accounts own an NFT
+		if simState.Rand.Intn(100) < 70 {
 			baseNFT := types.NewBaseNFT(
 				strconv.FormatInt(int64(i), 10), // id
 				simtypes.RandStringOfLength(simState.Rand, 10),
@@ -52,12 +35,20 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 			// 50% letters and 50% numbers
 			if simState.Rand.Intn(100) < 50 {
-				collections[0].Denom.Creator = baseNFT.Owner
-				collections[0] = collections[0].AddNFT(baseNFT)
+				denom = fmt.Sprintf("%s%s", letters, strings.ToLower(simtypes.RandStringOfLength(simState.Rand, 10)))
 			} else {
-				collections[1].Denom.Creator = baseNFT.Owner
-				collections[1] = collections[1].AddNFT(baseNFT)
+				denom = fmt.Sprintf("%s%s", numbers, strings.ToLower(simtypes.RandStringOfLength(simState.Rand, 10)))
 			}
+			collections = append(collections, types.NewCollection(
+				types.Denom{
+					Id:      denom,
+					Name:    denom,
+					Schema:  "",
+					Creator: baseNFT.Owner,
+					Symbol:  simtypes.RandStringOfLength(simState.Rand, 10),
+				},
+				types.NewNFTs(baseNFT),
+			))
 		}
 	}
 

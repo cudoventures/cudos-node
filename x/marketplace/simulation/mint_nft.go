@@ -8,7 +8,6 @@ import (
 	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,27 +19,25 @@ func SimulateMsgMintNft(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
+	dr *DenomsRandomizer,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
-		// Publish collection
-
-		ownerAddr, denom, _ := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
+		ownerAddr, denom := dr.GetRandomDenomIdWithOwner(ctx, nk, r, true)
 		if ownerAddr.Empty() {
 			err := fmt.Errorf("invalid account")
-			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishCollectionType, err.Error()), nil, err
 		}
 
-		collection := types.NewCollection(denom, []types.Royalty{}, []types.Royalty{}, ownerAddr.String(), false)
+		collection := types.NewCollection(denom, []types.Royalty{}, []types.Royalty{}, ownerAddr.String(), true)
 		_, err := k.PublishCollection(ctx, collection)
 		if err != nil {
-			err := fmt.Errorf("failed to publish collection")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
 		}
 
 		// Mint NFT
-
+		nftPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(r.Int63n(100)+1))
+		fundAcc(ctx, bk, ownerAddr, nftPrice)
 		name := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		uri := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		data := strings.ToLower(simtypes.RandStringOfLength(r, 10))
@@ -55,7 +52,7 @@ func SimulateMsgMintNft(
 			uri,
 			data,
 			"",
-			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
+			nftPrice,
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)
