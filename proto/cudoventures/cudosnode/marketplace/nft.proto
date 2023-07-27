@@ -9,7 +9,7 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // NFT listed for sale in the marketplace
 message Nft {
-  uint64 id = 1;
+  uint64 id = 1 [(gogoproto.jsontag) = "id"];
   string tokenId = 2; 
   string denomId = 3; 
   cosmos.base.v1beta1.Coin price = 4 
