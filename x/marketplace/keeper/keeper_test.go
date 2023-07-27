@@ -517,7 +517,7 @@ func TestBuyNftShouldFailWhenInsufficientFunds(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = kp.BuyNFT(ctx, publishedId, buyer)
-	require.Equal(t, "0acudos is smaller than 10000acudos: insufficient funds", err.Error())
+	require.Equal(t, "spendable balance  is smaller than 10000acudos: insufficient funds", err.Error())
 }
 
 func TestMintNftShouldFailIfDenomNotFound(t *testing.T) {
@@ -631,7 +631,7 @@ func TestMintNftShouldFailWhenInsufficientFunds(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = kp.MintNFT(ctx, "testdenom", "testname", "testuri", "", sdk.NewCoin("acudos", sdk.NewInt(10000)), owner, owner)
-	require.Equal(t, "0acudos is smaller than 10000acudos: insufficient funds", err.Error())
+	require.Equal(t, "spendable balance  is smaller than 10000acudos: insufficient funds", err.Error())
 }
 
 func TestCreateCollection(t *testing.T) {

@@ -4,16 +4,22 @@ import (
 	"os"
 
 	"github.com/CudoVentures/cudos-node/app"
-	"github.com/CudoVentures/cudos-node/cmd/cudos-noded/cmd"
+	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func main() {
-	sdk.DefaultPowerReduction = sdk.NewIntFromUint64(1000000000000000000)
-	app.SetConfig()
-	rootCmd, _ := cmd.NewRootCmd()
-	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {
-		os.Exit(1)
+	app.InitializeSdk()
+	app.InitializeGlobalAppVariables()
+
+	rootCmd, _ := NewRootCmd()
+	if err := svrcmd.Execute(rootCmd, "", app.DefaultNodeHome); err != nil {
+		switch e := err.(type) {
+		case server.ErrorCode:
+			os.Exit(e.Code)
+
+		default:
+			os.Exit(1)
+		}
 	}
 }

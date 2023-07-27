@@ -1,13 +1,14 @@
 package addressbook
 
 import (
+	"fmt"
 	"math/rand"
 
+	// simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/testutil/sample"
 	addressbooksimulation "github.com/CudoVentures/cudos-node/x/addressbook/simulation"
 	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -18,7 +19,7 @@ import (
 var (
 	_ = sample.AccAddress
 	_ = addressbooksimulation.FindAccount
-	_ = simappparams.StakePerAccount
+	// _ = simappparams.StakePerAccount
 	_ = simulation.MsgEntryKind
 	_ = baseapp.Paramspace
 )
@@ -41,38 +42,18 @@ const (
 
 // GenerateGenesisState creates a randomized GenState of the module
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	accs := make([]string, len(simState.Accounts))
-	for i, acc := range simState.Accounts {
-		accs[i] = acc.Address.String()
-	}
 	addressbookGenesis := types.GenesisState{
-		Params: types.DefaultParams(),
-		AddressList: []types.Address{
-			{
-				Creator: sample.AccAddress(),
-				Network: "BTC",
-				Label:   "1@testdenom",
-			},
-			{
-				Creator: sample.AccAddress(),
-				Network: "ETH",
-				Label:   "2@newdenom",
-			},
-		},
-		// this line is used by starport scaffolding # simapp/module/genesisState
+		Params:      types.DefaultParams(),
+		AddressList: []types.Address{},
+	}
+	for i, acc := range simState.Accounts {
+		addressbookGenesis.AddressList = append(addressbookGenesis.AddressList, types.Address{
+			Creator: acc.Address.String(),
+			Network: "BTC",
+			Label:   fmt.Sprintf("%d@testdenom", i+1),
+		})
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&addressbookGenesis)
-}
-
-// ProposalContents doesn't return any content functions for governance proposals
-func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-// RandomizedParams creates randomized  param changes for the simulator
-func (am AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange {
-
-	return []simtypes.ParamChange{}
 }
 
 // RegisterStoreDecoder registers a decoder

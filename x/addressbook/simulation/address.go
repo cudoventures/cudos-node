@@ -5,10 +5,10 @@ import (
 	"math/rand"
 	"strconv"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/addressbook/keeper"
 	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -29,6 +29,7 @@ func SimulateMsgCreateAddress(
 		msg := &types.MsgCreateAddress{
 			Creator: simAccount.Address.String(),
 			Network: "ETH",
+			Value:   "ETH_Value",
 			Label:   fmt.Sprintf("%d@mydenom", r.Int()),
 		}
 

@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"math/rand"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
@@ -19,20 +18,23 @@ func SimulateMsgPublishNft(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
+	tr *TokensRandomizer,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		ownerAddr, denom, nftID := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
+		ownerAddr, denom, nftID := tr.GetRandomTokenIdWithOwner(ctx, nk, r, true, "")
 		if ownerAddr.Empty() {
 			err := fmt.Errorf("invalid account")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishNftType, err.Error()), nil, err
 		}
 
+		nftPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(r.Int63n(100)+1))
+		fundAcc(ctx, bk, ownerAddr, nftPrice)
 		msg := types.NewMsgPublishNft(
 			ownerAddr.String(),
 			nftID,
 			denom,
-			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
+			nftPrice,
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)
@@ -50,11 +52,12 @@ func SimulateMsgPublishNft(
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -64,7 +67,7 @@ func SimulateMsgPublishNft(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishNftType, err.Error()), nil, err
 		}
 

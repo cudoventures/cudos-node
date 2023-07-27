@@ -3,7 +3,7 @@ package types
 // DONTCOVER
 
 import (
-	gogotypes "github.com/gogo/protobuf/types"
+	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -12,6 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 
 	"github.com/CudoVentures/cudos-node/x/nft/exported"
+
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
+	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
+	groupcodec "github.com/cosmos/cosmos-sdk/x/group/codec"
 )
 
 var (
@@ -20,15 +24,21 @@ var (
 )
 
 func init() {
-	RegisterCodec(amino)
+	RegisterLegacyAminoCodec(amino)
 	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
+
+	// Register all Amino interfaces and concrete types on the authz and gov Amino codec so that this can later be
+	// used to properly serialize MsgGrant, MsgExec and MsgSubmitProposal instances
+	RegisterLegacyAminoCodec(authzcodec.Amino)
+	RegisterLegacyAminoCodec(govcodec.Amino)
+	RegisterLegacyAminoCodec(groupcodec.Amino)
 }
 
 // RegisterLegacyAminoCodec concrete types on codec
 // (Amino is still needed for Ledger at the moment)
 // nolint: staticcheck
-func RegisterCodec(cdc *codec.LegacyAmino) {
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgIssueDenom{}, "github.com/CudoVentures/cudos-node/nft/MsgIssueDenom", nil)
 	cdc.RegisterConcrete(&MsgTransferNft{}, "github.com/CudoVentures/cudos-node/nft/MsgTransferNft", nil)
 	cdc.RegisterConcrete(&MsgApproveNft{}, "github.com/CudoVentures/cudos-node/nft/MsgApproveNft", nil)

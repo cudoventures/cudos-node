@@ -5,12 +5,11 @@ import (
 	"math/rand"
 	"strings"
 
+	simappparams "cosmossdk.io/simapp/params"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
@@ -20,27 +19,25 @@ func SimulateMsgMintNft(
 	bk types.BankKeeper,
 	nk types.NftKeeper,
 	k keeper.Keeper,
+	dr *DenomsRandomizer,
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
-		// Publish collection
-
-		ownerAddr, denom, _ := nftsim.GetRandomNFTFromOwner(ctx, nk, r)
+		ownerAddr, denom := dr.GetRandomDenomIdWithOwner(ctx, nk, r, true)
 		if ownerAddr.Empty() {
 			err := fmt.Errorf("invalid account")
-			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, types.EventPublishCollectionType, err.Error()), nil, err
 		}
 
-		collection := types.NewCollection(denom, []types.Royalty{}, []types.Royalty{}, ownerAddr.String(), false)
+		collection := types.NewCollection(denom, []types.Royalty{}, []types.Royalty{}, ownerAddr.String(), true)
 		_, err := k.PublishCollection(ctx, collection)
 		if err != nil {
-			err := fmt.Errorf("failed to publish collection")
 			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
 		}
 
 		// Mint NFT
-
+		nftPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(r.Int63n(100)+1))
+		fundAcc(ctx, bk, ownerAddr, nftPrice)
 		name := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		uri := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		data := strings.ToLower(simtypes.RandStringOfLength(r, 10))
@@ -55,7 +52,7 @@ func SimulateMsgMintNft(
 			uri,
 			data,
 			"",
-			sdk.NewCoin("acudos", sdk.NewInt(100000000000)),
+			nftPrice,
 		)
 
 		account := ak.GetAccount(ctx, ownerAddr)
@@ -73,11 +70,12 @@ func SimulateMsgMintNft(
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
+		tx, err := simtestutil.GenSignedMockTx(
+			r,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			helpers.DefaultGenTxGas,
+			simtestutil.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -87,7 +85,7 @@ func SimulateMsgMintNft(
 			return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "unable to generate mock tx"), nil, err
 		}
 
-		if _, _, err = app.Deliver(txGen.TxEncoder(), tx); err != nil {
+		if _, _, err = app.SimDeliver(txGen.TxEncoder(), tx); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.EventMintNftType, err.Error()), nil, err
 		}
 
