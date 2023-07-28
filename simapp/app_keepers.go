@@ -318,9 +318,6 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		panic("error while reading wasm config: " + err.Error())
 	}
 	supportedFeatures := "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2"
-	customEncoderOptions := GetCustomMsgEncodersOptions()
-	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
-	wasmOpts := append(customEncoderOptions, customQueryOptions...)
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -342,7 +339,7 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		wasmConfig,
 		supportedFeatures,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		wasmOpts...,
+		GetCustomPlugins(app.NftKeeper, app.MarketplaceKeeper)...,
 	)
 
 	// AdminKeeper
