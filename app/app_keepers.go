@@ -256,6 +256,16 @@ func (app *CudosApp) AddKeepers(appOpts servertypes.AppOptions) {
 		app.keys[nftmoduletypes.MemStoreKey],
 	)
 
+	// MarketplaceKeeper
+	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
+		app.appCodec,
+		app.keys[marketplacetypes.StoreKey],
+		app.keys[marketplacetypes.MemStoreKey],
+		app.GetSubspace(marketplacetypes.ModuleName),
+		app.BankKeeper,
+		app.NftKeeper,
+	)
+
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -368,16 +378,6 @@ func (app *CudosApp) AddKeepers(appOpts servertypes.AppOptions) {
 		app.keys[addressbooktypes.StoreKey],
 		app.keys[addressbooktypes.MemStoreKey],
 		app.GetSubspace(addressbooktypes.ModuleName),
-	)
-
-	// MarketplaceKeeper
-	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
-		app.appCodec,
-		app.keys[marketplacetypes.StoreKey],
-		app.keys[marketplacetypes.MemStoreKey],
-		app.GetSubspace(marketplacetypes.ModuleName),
-		app.BankKeeper,
-		app.NftKeeper,
 	)
 }
 
