@@ -266,6 +266,14 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		app.NftKeeper,
 	)
 
+	// AddressbookKeeper
+	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
+		app.appCodec,
+		app.keys[addressbooktypes.StoreKey],
+		app.keys[addressbooktypes.MemStoreKey],
+		app.GetSubspace(addressbooktypes.ModuleName),
+	)
+
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -349,7 +357,7 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		wasmConfig,
 		supportedFeatures,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		GetCustomPlugins(app.NftKeeper, app.MarketplaceKeeper)...,
+		GetCustomPlugins(app.NftKeeper, app.MarketplaceKeeper, app.AddressbookKeeper)...,
 	)
 
 	// AdminKeeper
@@ -370,14 +378,6 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		app.AccountKeeper,
 		app.GetSubspace(cudoMinttypes.ModuleName),
 		authtypes.FeeCollectorName,
-	)
-
-	// AddressbookKeeper
-	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
-		app.appCodec,
-		app.keys[addressbooktypes.StoreKey],
-		app.keys[addressbooktypes.MemStoreKey],
-		app.GetSubspace(addressbooktypes.ModuleName),
 	)
 }
 
