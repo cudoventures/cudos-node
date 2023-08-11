@@ -16,7 +16,7 @@ func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest)
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-	var addresss []types.Address
+	var addresses []types.Address
 	ctx := sdk.UnwrapSDKContext(c)
 
 	store := ctx.KVStore(k.storeKey)
@@ -28,7 +28,7 @@ func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest)
 			return err
 		}
 
-		addresss = append(addresss, address)
+		addresses = append(addresses, address)
 		return nil
 	})
 
@@ -36,7 +36,7 @@ func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllAddressResponse{Address: addresss, Pagination: pageRes}, nil
+	return &types.QueryAllAddressResponse{Address: addresses, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Address(c context.Context, req *types.QueryGetAddressRequest) (*types.QueryGetAddressResponse, error) {
