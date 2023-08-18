@@ -52,6 +52,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	transfer "github.com/cosmos/ibc-go/v7/modules/apps/transfer"
@@ -119,7 +121,7 @@ var (
 		transfer.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		// ibctm.AppModuleBasic{},
-		// ica.AppModuleBasic{},
+		ica.AppModuleBasic{},
 		// external
 		gravity.AppModuleBasic{},
 		wasm.AppModuleBasic{},
@@ -139,11 +141,11 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		ibcfeetypes.ModuleName:         nil,
-		// icatypes.ModuleName:            nil,
-		gravitytypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
-		wasmtypes.ModuleName:        {authtypes.Burner},
-		cudoMinttypes.ModuleName:    {authtypes.Minter},
-		marketplacetypes.ModuleName: nil,
+		icatypes.ModuleName:            nil,
+		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
+		wasmtypes.ModuleName:           {authtypes.Burner},
+		cudoMinttypes.ModuleName:       {authtypes.Minter},
+		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{

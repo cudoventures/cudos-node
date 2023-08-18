@@ -22,6 +22,11 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
@@ -116,18 +121,18 @@ type CudosApp struct {
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
 	// ibc keepers
-	IBCKeeper      *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	IBCFeeKeeper   ibcfeekeeper.Keeper
-	TransferKeeper ibctransferkeeper.Keeper
-	// ICAControllerKeeper icacontrollerkeeper.Keeper
-	// ICAHostKeeper       icahostkeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCFeeKeeper        ibcfeekeeper.Keeper
+	TransferKeeper      ibctransferkeeper.Keeper
+	ICAControllerKeeper icacontrollerkeeper.Keeper
+	ICAHostKeeper       icahostkeeper.Keeper
 
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	ScopedIBCFeeKeeper   capabilitykeeper.ScopedKeeper
-	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
-	// ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
-	// ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
+	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
+	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
 	// external keeprs
 	GravityKeeper gravitykeeper.Keeper
@@ -188,8 +193,8 @@ func NewCudosApp(
 		ibcexported.StoreKey,
 		ibctransfertypes.StoreKey,
 		ibcfeetypes.StoreKey,
-		// icahosttypes.StoreKey,
-		// icacontrollertypes.StoreKey,
+		icahosttypes.StoreKey,
+		icacontrollertypes.StoreKey,
 		// external
 		gravitytypes.StoreKey,
 		wasm.StoreKey,
@@ -244,7 +249,7 @@ func NewCudosApp(
 		consensusparamtypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
-		// icatypes.ModuleName,
+		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		gravitytypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -274,7 +279,7 @@ func NewCudosApp(
 		consensusparamtypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
-		// icatypes.ModuleName,
+		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		gravitytypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -311,7 +316,7 @@ func NewCudosApp(
 		consensusparamtypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
-		// icatypes.ModuleName,
+		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,

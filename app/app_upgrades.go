@@ -30,6 +30,10 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
@@ -123,8 +127,10 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
 		case ibctransfertypes.ModuleName:
 			keyTable = ibctransfertypes.ParamKeyTable()
-		case ibcexported.ModuleName:
-			keyTable = ibctransfertypes.ParamKeyTable()
+		case icahosttypes.SubModuleName:
+			keyTable = icahosttypes.ParamKeyTable()
+		case icacontrollertypes.SubModuleName:
+			keyTable = icacontrollertypes.ParamKeyTable()
 		case wasmtypes.ModuleName:
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case gravitytypes.ModuleName:
@@ -147,14 +153,28 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// ibc 2 -> 3
+		fromVM[icatypes.ModuleName] = app.mm.Modules[icatypes.ModuleName].(module.HasConsensusVersion).ConsensusVersion()
+		controllerParams := icacontrollertypes.Params{
+			ControllerEnabled: true,
+		}
+		hostParams := icahosttypes.Params{
+			HostEnabled:   true,
+			AllowMessages: []string{"/cosmos.bank.v1beta1.MsgSend"},
+		}
+		app.mm.Modules[icatypes.ModuleName].(ica.AppModule).InitModule(ctx, controllerParams, hostParams)
+
+		// ibc 6 -> 7
 		// prune expired tendermint consensus states to save storage space
 		_, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, app.appCodec, app.IBCKeeper.ClientKeeper)
 		if err != nil {
 			return nil, err
 		}
 
+		// cosmos-sdk 46 -> 47 (ibc 6 -> 7 as wel)
 		baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
 
+		// ibc 7 -> 7.1
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := app.IBCKeeper.ClientKeeper.GetParams(ctx)
 		params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
@@ -174,8 +194,8 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 				crisistypes.ModuleName,
 				consensustypes.ModuleName,
 				ibcfeetypes.ModuleName,
-				// icahosttypes.SubModuleName,
-				// icacontrollertypes.SubModuleName,
+				icahosttypes.SubModuleName,
+				icacontrollertypes.SubModuleName,
 				admintypes.ModuleName,
 			},
 		}
