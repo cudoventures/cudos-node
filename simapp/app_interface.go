@@ -60,6 +60,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
+	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -120,7 +121,7 @@ var (
 		ibc.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
-		// ibctm.AppModuleBasic{},
+		ibctm.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		// external
 		gravity.AppModuleBasic{},
