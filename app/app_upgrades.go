@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 
 	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
@@ -153,7 +154,7 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 	baseAppLegacySS := app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// ibc 2 -> 3
+		// IBC 2 -> 3
 		fromVM[icatypes.ModuleName] = app.mm.Modules[icatypes.ModuleName].(module.HasConsensusVersion).ConsensusVersion()
 		controllerParams := icacontrollertypes.Params{
 			ControllerEnabled: true,
@@ -164,21 +165,46 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 		}
 		app.mm.Modules[icatypes.ModuleName].(ica.AppModule).InitModule(ctx, controllerParams, hostParams)
 
-		// ibc 6 -> 7
+		// IBC 6 -> 7
 		// prune expired tendermint consensus states to save storage space
 		_, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, app.appCodec, app.IBCKeeper.ClientKeeper)
 		if err != nil {
 			return nil, err
 		}
 
-		// cosmos-sdk 46 -> 47 (ibc 6 -> 7 as wel)
+		// COSMOS-SDK 46 -> 47 AND IBC 6 -> 7
 		baseapp.MigrateParams(ctx, baseAppLegacySS, &app.ConsensusParamsKeeper)
 
-		// ibc 7 -> 7.1
+		// IBC 7 -> 7.1
 		// explicitly update the IBC 02-client params, adding the localhost client type
 		params := app.IBCKeeper.ClientKeeper.GetParams(ctx)
 		params.AllowedClients = append(params.AllowedClients, ibcexported.Localhost)
 		app.IBCKeeper.ClientKeeper.SetParams(ctx, params)
+
+		// MIGRATE GRAVITY TOKEN CONTRACT ADDRESS (IF APPLICABLE) FROM RINKEBY TO SEPOLIA
+		cudosDenom := "acudos"
+		tokenContractEthAddress, found := app.GravityKeeper.GetCosmosOriginatedERC20(ctx, cudosDenom)
+		if !found {
+			return nil, fmt.Errorf("unable to find token to erc20 token mapping by searching for denom %s", cudosDenom)
+		}
+		// if it is a testnet then change the token contract address
+		if tokenContractEthAddress.GetAddress() == strings.ToLower("0x28ea52f3ee46CaC5a72f72e8B3A387C0291d586d") || tokenContractEthAddress.GetAddress() == strings.ToLower("0x12d474723cb8c02bcbf46cd335a3bb4c75e9de44") {
+			store := ctx.KVStore(app.keys[gravitytypes.StoreKey])
+
+			// delete old values
+			store.Delete(gravitytypes.GetDenomToERC20Key(cudosDenom))
+			store.Delete(gravitytypes.GetERC20ToDenomKey(*tokenContractEthAddress))
+
+			// set new token contract address
+			tokenContractEthAddress, errorSetAddress := gravitytypes.NewEthAddress("0xE92f6A5b005B8f98F30313463Ada5cb35500a919")
+			if errorSetAddress != nil {
+				return nil, errorSetAddress
+			}
+
+			// set new values
+			store.Set(gravitytypes.GetDenomToERC20Key(cudosDenom), []byte(tokenContractEthAddress.GetAddress()))
+			store.Set(gravitytypes.GetERC20ToDenomKey(*tokenContractEthAddress), []byte(cudosDenom))
+		}
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
