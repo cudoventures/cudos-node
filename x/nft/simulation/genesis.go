@@ -24,9 +24,9 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	for i, acc := range simState.Accounts {
 		// 70% of accounts own an NFT
-		if simState.Rand.Intn(100) < 70 {
+		if simState.Rand.Intn(100) < 57 {
 			baseNFT := types.NewBaseNFT(
-				strconv.FormatInt(int64(i), 10), // id
+				strconv.FormatInt(int64(i+1), 10), // id
 				simtypes.RandStringOfLength(simState.Rand, 10),
 				acc.Address,
 				simtypes.RandStringOfLength(simState.Rand, 45), // tokenURI

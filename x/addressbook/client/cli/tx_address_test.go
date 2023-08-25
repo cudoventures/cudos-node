@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/testutil"
 	"github.com/CudoVentures/cudos-node/x/addressbook/client/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 )
@@ -37,7 +38,7 @@ func (s *TxAddressIntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
-	network, err := runNetwork(s.T(), s.config)
+	network, err := testutil.RunNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 
 	ctx := network.Validators[0].ClientCtx
@@ -67,8 +68,8 @@ func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
 			args = append(args, tc.args...)
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAddress(), args)
 			require.NoError(t, err)
-			simapp.WaitForBlock()
-			txResp, err := simapp.QueryJustBroadcastedTx(ctx, out)
+			testutil.WaitForBlock()
+			txResp, err := testutil.QueryJustBroadcastedTx(ctx, out)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -82,7 +83,7 @@ func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
-	network, err := runNetwork(s.T(), s.config)
+	network, err := testutil.RunNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 
 	ctx := network.Validators[0].ClientCtx
@@ -99,7 +100,7 @@ func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
 
 	_, err = clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAddress(), append(existingKey, common...))
 	require.NoError(s.T(), err)
-	simapp.WaitForBlock()
+	testutil.WaitForBlock()
 
 	for _, tc := range []struct {
 		desc string
@@ -123,8 +124,8 @@ func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
 		s.T().Run(tc.desc, func(t *testing.T) {
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdUpdateAddress(), tc.args)
 			require.NoError(t, err)
-			simapp.WaitForBlock()
-			txResp, err := simapp.QueryJustBroadcastedTx(ctx, out)
+			testutil.WaitForBlock()
+			txResp, err := testutil.QueryJustBroadcastedTx(ctx, out)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -138,7 +139,7 @@ func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
-	network, err := runNetwork(s.T(), s.config)
+	network, err := testutil.RunNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 
 	ctx := network.Validators[0].ClientCtx
@@ -155,7 +156,7 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 
 	_, err = clitestutil.ExecTestCLICmd(ctx, cli.CmdCreateAddress(), append(append(existingKey, "value"), common...))
 	require.NoError(s.T(), err)
-	simapp.WaitForBlock()
+	testutil.WaitForBlock()
 
 	for _, tc := range []struct {
 		desc string
@@ -179,8 +180,8 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 		s.T().Run(tc.desc, func(t *testing.T) {
 			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdDeleteAddress(), tc.args)
 			require.NoError(t, err)
-			simapp.WaitForBlock()
-			txResp, err := simapp.QueryJustBroadcastedTx(ctx, out)
+			testutil.WaitForBlock()
+			txResp, err := testutil.QueryJustBroadcastedTx(ctx, out)
 			if tc.err != nil {
 				require.ErrorIs(t, err, tc.err)
 			} else {
@@ -191,17 +192,4 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 	}
 
 	network.Cleanup()
-}
-
-func runNetwork(t *testing.T, cfg network.Config) (*network.Network, error) {
-	network, err := network.New(t, t.TempDir(), cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := network.WaitForHeight(3); err != nil {
-		return nil, err
-	}
-
-	return network, nil
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 
 	sdkmath "cosmossdk.io/math"
+	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/CudoVentures/cudos-node/x/nft/exported"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -367,12 +368,12 @@ func (k Keeper) isCudosAdmin(ctx sdk.Context, address string) error {
 		return err
 	}
 
-	balance := k.bankKeeper.GetBalance(ctx, accAddr, types.AdminDenom)
+	balance := k.bankKeeper.GetBalance(ctx, accAddr, admintypes.AdminDenom)
 	if balance.IsPositive() {
 		return nil
 	}
 
-	return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "Insufficient permissions. Address '%s' has no %s tokens", address, types.AdminDenom)
+	return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "Insufficient permissions. Address '%s' has no %s tokens", address, admintypes.AdminDenom)
 }
 
 func (k Keeper) setAdmins(ctx sdk.Context, admins []string) {

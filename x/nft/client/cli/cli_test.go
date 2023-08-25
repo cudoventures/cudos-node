@@ -15,6 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/testutil"
 	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
 	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
 	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
@@ -88,8 +89,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err := nfttestutil.IssueDenomExec(val.ClientCtx, from.String(), denom, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err := simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err := testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 	denomID := gjson.Get(txResp.RawLog, "0.events.#(type==\"issue_denom\").attributes.#(key==\"denom_id\").value").String()
@@ -127,8 +128,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 	tokenID := gjson.Get(txResp.RawLog, "0.events.#(type==\"mint_nft\").attributes.#(key==\"token_id\").value").String()
@@ -188,8 +189,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.EditNFTExec(val.ClientCtx, from.String(), denomID, tokenID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
@@ -218,8 +219,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.TransferNFTExec(val.ClientCtx, from.String(), recipient.String(), denomID, tokenID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
@@ -253,8 +254,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 	tokenID2 := gjson.Get(txResp.RawLog, "0.events.#(type==\"mint_nft\").attributes.#(key==\"token_id\").value").String()
@@ -268,8 +269,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.ApproveNFTExec(val.ClientCtx, from.String(), approvedAddress.String(), denomID, tokenID2, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
@@ -300,8 +301,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.ApproveAll(val.ClientCtx, from.String(), approvedAddress.String(), "true", args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
@@ -327,8 +328,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.MintNFTExec(val.ClientCtx, from.String(), denomID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 	newTokenId := gjson.Get(txResp.RawLog, "0.events.#(type==\"mint_nft\").attributes.#(key==\"token_id\").value").String()
@@ -349,8 +350,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.BurnNFTExec(val.ClientCtx, from.String(), denomID, newTokenId, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
@@ -372,8 +373,8 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	bz, err = nfttestutil.TransferDenomExec(val.ClientCtx, from.String(), denomRecipient.String(), denomID, args...)
 	s.Require().NoError(err)
-	simapp.WaitForBlock()
-	txResp, err = simapp.QueryJustBroadcastedTx(val.ClientCtx, bz)
+	testutil.WaitForBlock()
+	txResp, err = testutil.QueryJustBroadcastedTx(val.ClientCtx, bz)
 	s.Require().NoError(err)
 	s.Require().Equal(expectedCode, txResp.Code)
 
