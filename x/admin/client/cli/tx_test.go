@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/testutil"
@@ -53,20 +50,17 @@ func (s *TxTestSuite) TestAdminSpendCommunityPool() {
 	clientCtx := network.Validators[0].ClientCtx
 	valAddr := network.Validators[0].Address.String()
 
-	s.T().Run("community sped", func(t *testing.T) {
+	s.T().Run("AdminSpendCommunityPool", func(t *testing.T) {
 		txRes, txErr := clitestutil.ExecTestCLICmd(clientCtx, distrcli.GetCmdQueryCommunityPool(), make([]string, 0))
 		require.NoError(s.T(), txErr)
 
 		var queryCommunityPoolResponse distrtypes.QueryCommunityPoolResponse
 		require.NoError(t, network.Config.Codec.UnmarshalJSON(txRes.Bytes(), &queryCommunityPoolResponse))
 
-		args := []string{
+		args := testutil.AppendDefaultTxFlags(valAddr, network.Config.BondDenom, []string{
 			communityPoolReceiver,
 			fmt.Sprintf("%s%s", queryCommunityPoolResponse.Pool[0].Amount.RoundInt().String(), queryCommunityPoolResponse.Pool[0].Denom),
-			fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, valAddr),
-			fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(network.Config.BondDenom, sdk.NewInt(10))).String()),
-		}
+		})
 		txRes, txErr = clitestutil.ExecTestCLICmd(clientCtx, cli.CmdAdminSpendCommunityPool(), args)
 		require.NoError(s.T(), txErr)
 		testutil.WaitForBlock()

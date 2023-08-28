@@ -1,9 +1,11 @@
 package testutil
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 
 	"github.com/cosmos/gogoproto/proto"
@@ -13,6 +15,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+)
+
+const (
+	TxFees = 10
 )
 
 func RunNetwork(t *testing.T, cfg network.Config) (*network.Network, error) {
@@ -52,4 +58,26 @@ func QueryJustBroadcastedTx(clientCtx client.Context, bz testutil.BufferWriter) 
 
 	return respType.(*sdk.TxResponse), nil
 
+}
+
+func AppendDefaultTxFlags(fromAddr, feeDenom string, args []string) []string {
+	return append(args, []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, fromAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(feeDenom, sdk.NewInt(TxFees))).String()),
+	}...)
+}
+
+func GetEventValue(txResp *sdk.TxResponse, eventType, eventKey string) (string, bool) {
+	for _, event := range txResp.Events {
+		if event.Type == eventType {
+			for _, attribute := range event.Attributes {
+				if attribute.Key == eventKey {
+					return attribute.Value, true
+				}
+			}
+		}
+	}
+
+	return "", false
 }
