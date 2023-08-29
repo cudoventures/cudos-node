@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdMintNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mint-nft [denom-id] [recipient] [price] [name] [uri] [data]",
+		Use:   "mint-nft [denom-id] [recipient] [price] [name]",
 		Short: "Mint NFT via marketplace",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

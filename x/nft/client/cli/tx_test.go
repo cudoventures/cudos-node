@@ -66,7 +66,6 @@ func (s *TxTestSuite) TestNftCommands() {
 			"--name=testdenom_name",
 			"--symbol=testdenom_symbol",
 			"--schema=testdenom_schema",
-			// "--traits=NotEditable",
 			"--description=testdenom_description",
 			fmt.Sprintf("--minter=%s", valAddr),
 			"--data=data",

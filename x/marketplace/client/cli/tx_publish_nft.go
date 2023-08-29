@@ -15,11 +15,11 @@ var _ = strconv.Itoa(0)
 
 func CmdPublishNft() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "publish-nft [nft-id] [denom-id] [price]",
+		Use:   "publish-nft [token-id] [denom-id] [price]",
 		Short: "Publish NFT for sale",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			nftId := args[0]
+			tokenId := args[0]
 			denomId := args[1]
 			argPrice := args[2]
 
@@ -35,7 +35,7 @@ func CmdPublishNft() *cobra.Command {
 
 			msg := types.NewMsgPublishNft(
 				clientCtx.GetFromAddress().String(),
-				nftId,
+				tokenId,
 				denomId,
 				price,
 			)
