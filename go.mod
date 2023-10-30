@@ -206,4 +206,4 @@ replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVen
 
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20230717140133-df4d8422a08d
 
-replace github.com/cometbft/cometbft => github.com/CudoVentures/cometbft v0.0.0-20231005083331-d628b638d33a
+replace github.com/cometbft/cometbft => github.com/cometbft/cometbft v0.0.0-20231026105035-60ee8cab0d25
