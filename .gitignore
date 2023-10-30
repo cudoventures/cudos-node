@@ -1,4 +1,5 @@
 /cudos*data/
+cudos-data
 node_modules
 .idea
 .vscode
