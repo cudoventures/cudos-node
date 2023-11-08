@@ -6,11 +6,11 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	// this line is used by starport scaffolding # ibc/keeper/import
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
@@ -20,7 +20,6 @@ type (
 		storeKey sdk.StoreKey
 		memKey   sdk.StoreKey
 		// this line is used by starport scaffolding # ibc/keeper/attribute
-
 	}
 )
 
@@ -30,7 +29,6 @@ func NewKeeper(
 	storeKey,
 	memKey sdk.StoreKey,
 	// this line is used by starport scaffolding # ibc/keeper/parameter
-
 ) *Keeper {
 	return &Keeper{
 		cdc:      cdc,
@@ -59,7 +57,8 @@ func (k Keeper) MintNFTUnverified(
 	tokenNm,
 	tokenURI,
 	tokenData string,
-	owner sdk.AccAddress) (string, error) {
+	owner sdk.AccAddress,
+) (string, error) {
 	if !k.HasDenomID(ctx, denomID) {
 		return "", sdkerrors.Wrapf(types.ErrInvalidDenom, "denom ID %s not exists", denomID)
 	}
@@ -89,7 +88,6 @@ func (k Keeper) MintNFT(
 	ctx sdk.Context, denomID string, tokenNm,
 	tokenURI, tokenData string, sender, owner sdk.AccAddress,
 ) (string, error) {
-
 	denom, err := k.IsDenomCreator(ctx, denomID, sender)
 	if denom.Minter == "" && err != nil {
 		return "", err
@@ -243,7 +241,6 @@ func (k Keeper) BurnNFT(ctx sdk.Context, denomID, tokenID string, owner sdk.AccA
 }
 
 func (k Keeper) AddApproval(ctx sdk.Context, denomID, tokenID string, sender sdk.AccAddress, approvedAddress sdk.AccAddress) error {
-
 	nft, err := k.GetBaseNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return err

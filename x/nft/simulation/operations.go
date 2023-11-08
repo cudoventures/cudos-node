@@ -339,7 +339,6 @@ func SimulateMsgTransferDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-
 		denomId := getRandomDenom(ctx, k, r)
 		denom, err := k.GetDenom(ctx, denomId)
 		if err != nil {
@@ -400,7 +399,6 @@ func SimulateMsgIssueDenom(k keeper.Keeper, ak types.AccountKeeper, bk types.Ban
 	) (
 		opMsg simtypes.OperationMsg, fOps []simtypes.FutureOperation, err error,
 	) {
-
 		denomId := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		denomName := strings.ToLower(simtypes.RandStringOfLength(r, 10))
 		denomSymbol := strings.ToLower(simtypes.RandStringOfLength(r, 10))
@@ -496,7 +494,7 @@ func GetRandomNFTFromOwner(ctx sdk.Context, k NftKeeper, r *rand.Rand) (address 
 }
 
 func getRandomDenom(ctx sdk.Context, k keeper.Keeper, r *rand.Rand) string {
-	var denoms = []string{numbers, letters}
+	denoms := []string{numbers, letters}
 	i := r.Intn(len(denoms))
 	return denoms[i]
 }

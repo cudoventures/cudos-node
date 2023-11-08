@@ -6,9 +6,8 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"github.com/tidwall/gjson"
-
 	"github.com/tendermint/tendermint/crypto"
+	"github.com/tidwall/gjson"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
@@ -264,7 +263,6 @@ func (s *IntegrationTestSuite) TestNft() {
 	tokenID2 := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
 
 	args = []string{
-
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}
@@ -296,7 +294,6 @@ func (s *IntegrationTestSuite) TestNft() {
 	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
 
 	args = []string{
-
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 	}

@@ -244,9 +244,8 @@ func (m msgServer) ApproveNft(goCtx context.Context, msg *types.MsgApproveNft) (
 	return &types.MsgApproveNftResponse{}, nil
 }
 
-// ApproveAllNft adds an adress to the globally approved list
+// ApproveAllNft adds an address to the globally approved list
 func (m msgServer) ApproveAllNft(goCtx context.Context, msg *types.MsgApproveAllNft) (*types.MsgApproveAllNftResponse, error) {
-
 	operator, err := sdk.AccAddressFromBech32(msg.Operator)
 	if err != nil {
 		return nil, err

@@ -14,6 +14,7 @@ const (
 var _ sdk.Msg = &MsgAdminSpendCommunityPool{}
 
 // NewMsgSend - construct a msg to send coins from one account to another.
+//
 //nolint:interfacer
 func NewMsgAdminSpendCommunityPool(fromAddr, toAddr sdk.AccAddress, amount sdk.Coins) *MsgAdminSpendCommunityPool {
 	return &MsgAdminSpendCommunityPool{Initiator: fromAddr.String(), ToAddress: toAddr.String(), Coins: amount}

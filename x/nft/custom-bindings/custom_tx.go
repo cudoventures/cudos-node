@@ -5,16 +5,17 @@ import (
 
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
-	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // fromReflectRawMsg decodes msg.Data to an sdk.Msg using proto Any and json encoding.
 // this needs to be registered on the Encoders
 func EncodeNftMessage() wasmKeeper.CustomEncoder {
 	return func(_sender sdk.AccAddress, msg json.RawMessage) ([]sdk.Msg, error) {
-
 		var nftCustomMsg nftCustomMsg
 		err := json.Unmarshal(msg, &nftCustomMsg)
 		if err != nil {

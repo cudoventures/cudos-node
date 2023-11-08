@@ -1,9 +1,10 @@
 package keeper
 
 import (
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (k Keeper) GetApprovedAddresses(ctx sdk.Context, sender sdk.AccAddress) (*types.ApprovedAddressesData, error) {
@@ -16,7 +17,6 @@ func (k Keeper) GetApprovedAddresses(ctx sdk.Context, sender sdk.AccAddress) (*t
 	k.cdc.MustUnmarshal(bz, &approvedAddress)
 
 	return approvedAddress.ApprovedAddresses[sender.String()], nil
-
 }
 
 func (k Keeper) IsApprovedOperator(ctx sdk.Context, owner, operator sdk.AccAddress) bool {
@@ -30,7 +30,6 @@ func (k Keeper) IsApprovedOperator(ctx sdk.Context, owner, operator sdk.AccAddre
 }
 
 func (k Keeper) SetApprovedAddress(ctx sdk.Context, sender, operator sdk.AccAddress, approved bool) {
-
 	store := ctx.KVStore(k.storeKey)
 	bz := store.Get(types.KeyApprovedAddresses(sender.String())) // all types.ApprovedAddresses
 
@@ -63,7 +62,8 @@ func initApprovedAddresses(
 	sender sdk.AccAddress,
 	approved bool,
 	k Keeper,
-	store sdk.KVStore) {
+	store sdk.KVStore,
+) {
 	// init inner map
 	approvedAddressesData.ApprovedAddressesData = map[string]bool{operator.String(): approved}
 	// init main map and set inner map as its value

@@ -3,13 +3,15 @@ package keeper
 import (
 	"context"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k Keeper) NftAll(c context.Context, req *types.QueryAllNftRequest) (*types.QueryAllNftResponse, error) {
@@ -32,7 +34,6 @@ func (k Keeper) NftAll(c context.Context, req *types.QueryAllNftRequest) (*types
 		nfts = append(nfts, nft)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

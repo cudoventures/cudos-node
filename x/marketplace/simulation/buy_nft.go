@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 )
 
 func SimulateMsgBuyNft(
@@ -22,7 +23,6 @@ func SimulateMsgBuyNft(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		// Publish NFT for sale
 
 		sellerAddr, denom, nftID := nftsim.GetRandomNFTFromOwner(ctx, nk, r)

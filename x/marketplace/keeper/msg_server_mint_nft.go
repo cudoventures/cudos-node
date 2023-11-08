@@ -3,8 +3,9 @@ package keeper
 import (
 	"context"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k msgServer) MintNft(goCtx context.Context, msg *types.MsgMintNft) (*types.MsgMintNftResponse, error) {

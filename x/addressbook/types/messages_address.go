@@ -125,6 +125,7 @@ func NewMsgDeleteAddress(creator, network, label string) *MsgDeleteAddress {
 		Label:   label,
 	}
 }
+
 func (msg *MsgDeleteAddress) Route() string {
 	return RouterKey
 }

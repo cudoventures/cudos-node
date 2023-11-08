@@ -1,9 +1,10 @@
 package types
 
 import (
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const TypeMsgPublishCollection = "publish_collection"
@@ -41,7 +42,6 @@ func (msg *MsgPublishCollection) GetSignBytes() []byte {
 }
 
 func (msg *MsgPublishCollection) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(msg.Creator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}

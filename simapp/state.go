@@ -32,7 +32,6 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 	) (
 		appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time,
 	) {
-
 		if sdksimapp.FlagGenesisTimeValue == 0 {
 			genesisTimestamp = simtypes.RandTimestamp(r)
 		} else {

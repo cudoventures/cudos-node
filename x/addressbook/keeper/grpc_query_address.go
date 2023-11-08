@@ -3,12 +3,14 @@ package keeper
 import (
 	"context"
 
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest) (*types.QueryAllAddressResponse, error) {
@@ -31,7 +33,6 @@ func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest)
 		addresss = append(addresss, address)
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}

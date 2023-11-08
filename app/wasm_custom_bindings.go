@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	nftCustomBindings "github.com/CudoVentures/cudos-node/x/nft/custom-bindings"
 	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 )

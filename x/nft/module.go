@@ -6,13 +6,9 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/CudoVentures/cudos-node/x/nft/simulation"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -20,12 +16,13 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/CudoVentures/cudos-node/x/nft/client/cli"
 	"github.com/CudoVentures/cudos-node/x/nft/client/rest"
 	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/CudoVentures/cudos-node/x/nft/types"
-	// this line is used by starport scaffolding # ibc/module/import
 )
 
 const ConsensusVersion = 2

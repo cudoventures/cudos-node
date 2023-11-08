@@ -3,10 +3,11 @@ package addressbook
 import (
 	"fmt"
 
-	"github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // NewHandler ...

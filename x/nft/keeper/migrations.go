@@ -1,8 +1,9 @@
 package keeper
 
 import (
-	v2 "github.com/CudoVentures/cudos-node/x/nft/migrations/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	v2 "github.com/CudoVentures/cudos-node/x/nft/migrations/v2"
 )
 
 type Migrator struct {

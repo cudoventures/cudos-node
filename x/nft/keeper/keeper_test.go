@@ -5,16 +5,14 @@ import (
 	"strconv"
 	"testing"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/x/nft/keeper"
@@ -66,7 +64,6 @@ type IntegrationTestKeeperSuite struct {
 }
 
 func (suite *IntegrationTestKeeperSuite) SetupTest() {
-
 	app := simapp.Setup(isCheckTx)
 
 	suite.app = app
@@ -77,7 +74,6 @@ func (suite *IntegrationTestKeeperSuite) SetupTest() {
 	queryHelper := baseapp.NewQueryServerTestHelper(suite.ctx, app.InterfaceRegistry())
 	types.RegisterQueryServer(queryHelper, app.NftKeeper)
 	suite.queryClient = types.NewQueryClient(queryHelper)
-
 }
 
 func TestKeeperSuite(t *testing.T) {
@@ -114,7 +110,6 @@ func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldCorrectly_SetDenom
 }
 
 func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldError_WhenSenderIsNotDenomCreator() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -153,7 +148,6 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_MintNewNFT(
 
 	nftSuccessfullyMinted := suite.keeper.HasNFT(suite.ctx, denomID, tokenId)
 	assert.Equal(suite.T(), true, nftSuccessfullyMinted)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() {
@@ -182,7 +176,6 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() 
 	}
 
 	assert.Equal(suite.T(), true, isOwnerCorrectlySavedInDb)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTotalSupply() {
@@ -195,7 +188,6 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_IncreasesTo
 	supplyAfterMinting := suite.keeper.GetTotalSupply(suite.ctx, denomID)
 
 	assert.Greater(suite.T(), supplyAfterMinting, supplyBeforeMinting)
-
 }
 
 // TODO:
@@ -245,7 +237,6 @@ func (suite *IntegrationTestKeeperSuite) TestEditNFT_ShouldCorrectly_UpdateNFTPr
 	assert.NotEqual(suite.T(), originalNFT.GetName(), editedNFT.GetName())
 	assert.NotEqual(suite.T(), originalNFT.GetData(), editedNFT.GetData())
 	assert.NotEqual(suite.T(), originalNFT.GetURI(), editedNFT.GetURI())
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenDenomDoesNotExist() {
@@ -254,7 +245,6 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenDenom
 }
 
 func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldError_WhenNFTDoesNotBelongToFromAddress() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
 	suite.NoError(err)
 
@@ -288,7 +278,6 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_Trans
 }
 
 func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOnNFT() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
 	suite.NoError(err)
 
@@ -303,7 +292,6 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_Trans
 
 	nft, err := suite.keeper.GetBaseNFT(suite.ctx, denomID, tokenId)
 	assert.Equal(suite.T(), nft.Owner, address2.String())
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_TransferWhenSenderIsApprovedOperatorAllForNFTOwner() {
@@ -349,7 +337,6 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_SwapO
 	}
 
 	assert.Equal(suite.T(), true, isOwnerCorrectlySwappedInDb)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestAddApproval_ShouldError_WhenSenderIsNotOwnerOfNftOrIsNotApproved() {
@@ -519,7 +506,6 @@ func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFTOw
 	}
 
 	assert.Equal(suite.T(), false, isOwnerCorrectlySwappedInDb)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DecreaseSupply() {
@@ -595,9 +581,8 @@ func CreateTestAddrs(numAddrs int) []sdk.AccAddress {
 	// start at 100 so we can make up to 999 test addresses with valid test addresses
 	for i := 100; i < (numAddrs + 100); i++ {
 		numString := strconv.Itoa(i)
-		buffer.WriteString("A58856F0FD53BF058B4909A21AEC019107BA6") //base address string
 
-		buffer.WriteString(numString) //adding on final two digits to make addresses unique
+		buffer.WriteString(numString) // adding on final two digits to make addresses unique
 		res, _ := sdk.AccAddressFromHex(buffer.String())
 		bech := res.String()
 		addresses = append(addresses, testAddr(buffer.String(), bech))

@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (k msgServer) CreateAddress(goCtx context.Context, msg *types.MsgCreateAddress) (*types.MsgCreateAddressResponse, error) {
@@ -22,7 +23,7 @@ func (k msgServer) CreateAddress(goCtx context.Context, msg *types.MsgCreateAddr
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
 	}
 
-	var address = types.Address{
+	address := types.Address{
 		Creator: msg.Creator,
 		Network: msg.Network,
 		Label:   msg.Label,
@@ -53,7 +54,7 @@ func (k msgServer) UpdateAddress(goCtx context.Context, msg *types.MsgUpdateAddr
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	var address = types.Address{
+	address := types.Address{
 		Creator: msg.Creator,
 		Network: msg.Network,
 		Label:   msg.Label,

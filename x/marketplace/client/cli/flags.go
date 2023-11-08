@@ -26,10 +26,12 @@ const (
 	FlagUpdateResaleRoyalties = "resale-royalties"
 )
 
-var FsPublishCollection = flag.NewFlagSet("", flag.ContinueOnError)
-var FsMintNFT = flag.NewFlagSet("", flag.ContinueOnError)
-var FsCreateCollection = flag.NewFlagSet("", flag.ContinueOnError)
-var FsUpdateRoyalties = flag.NewFlagSet("", flag.ContinueOnError)
+var (
+	FsPublishCollection = flag.NewFlagSet("", flag.ContinueOnError)
+	FsMintNFT           = flag.NewFlagSet("", flag.ContinueOnError)
+	FsCreateCollection  = flag.NewFlagSet("", flag.ContinueOnError)
+	FsUpdateRoyalties   = flag.NewFlagSet("", flag.ContinueOnError)
+)
 
 func init() {
 	FsPublishCollection.String(FlagPublishCollectionMintRoyalties, "", "Collection mint royalties")

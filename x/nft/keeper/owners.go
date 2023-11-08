@@ -20,7 +20,6 @@ func (k Keeper) GetOwner(ctx sdk.Context, address sdk.AccAddress, denom string) 
 
 	for ; iterator.Valid(); iterator.Next() {
 		_, denomID, tokenID, err := types.SplitKeyOwner(iterator.Key())
-
 		if err != nil {
 			return types.Owner{}, err
 		}
@@ -53,7 +52,6 @@ func (k Keeper) GetOwners(ctx sdk.Context) (owners types.Owners, err error) {
 	for ; iterator.Valid(); iterator.Next() {
 		key := iterator.Key()
 		address, denom, id, err := types.SplitKeyOwner(key)
-
 		if err != nil {
 			return types.Owners{}, err
 		}
@@ -83,7 +81,8 @@ func (k Keeper) deleteOwner(ctx sdk.Context, denomID, tokenID string, owner sdk.
 
 func (k Keeper) setOwner(ctx sdk.Context,
 	denomID, tokenID string,
-	owner sdk.AccAddress) {
+	owner sdk.AccAddress,
+) {
 	store := ctx.KVStore(k.storeKey)
 
 	bz := types.MustMarshalTokenID(k.cdc, tokenID)
@@ -91,7 +90,6 @@ func (k Keeper) setOwner(ctx sdk.Context,
 }
 
 func (k Keeper) swapOwner(ctx sdk.Context, denomID, tokenID string, srcOwner, dstOwner sdk.AccAddress) {
-
 	// delete old owner key
 	k.deleteOwner(ctx, denomID, tokenID, srcOwner)
 

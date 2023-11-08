@@ -1,13 +1,14 @@
 package keeper
 
 import (
-	// this line is used by starport scaffolding # 1
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	abci "github.com/tendermint/tendermint/abci/types"
+	// this line is used by starport scaffolding # 1
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {

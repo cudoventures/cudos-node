@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -21,7 +22,6 @@ func TestGenesisState_Validate(t *testing.T) {
 		{
 			desc: "valid genesis state",
 			genState: &types.GenesisState{
-
 				CollectionList: []types.Collection{
 					{
 						Id: 0,

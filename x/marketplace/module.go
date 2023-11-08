@@ -8,17 +8,17 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
-	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 var (

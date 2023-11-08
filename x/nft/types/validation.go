@@ -167,5 +167,4 @@ func isUint64(v string) (bool, error) {
 	}
 
 	return false, sdkerrors.Wrapf(ErrInvalidTokenID, "The tokenId must be a positive integer, you passed [%s]", v)
-
 }

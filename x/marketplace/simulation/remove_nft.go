@@ -3,11 +3,12 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func SimulateMsgRemoveNft(

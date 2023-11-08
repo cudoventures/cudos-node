@@ -5,7 +5,6 @@ import (
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetOwners_ReturnsCorrect_Owners() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
 	suite.NoError(err)
 

@@ -1,11 +1,13 @@
 package cli
 
 import (
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cobra"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func CmdCreateAddress() *cobra.Command {
@@ -14,7 +16,6 @@ func CmdCreateAddress() *cobra.Command {
 		Short: "Create a new address",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
 			// Get indexes
 			indexNetwork := args[0]
 			indexLabel := args[1]

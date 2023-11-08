@@ -67,7 +67,6 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 // Get the collections by denom ids with their nfts
 func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var req queryCollectionsByDenomIdsRequest
 		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
@@ -121,7 +120,6 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 // Get the total supply of a collection or owner
 func querySupply(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		denomID := mux.Vars(r)[RestParamDenomID]
 		err := types.ValidateDenomID(denomID)
 		if err != nil {
@@ -176,7 +174,6 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 // Get the collections of NFTs owned by an address
 func queryOwner(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var req queryOwnerRequest
 		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
@@ -238,7 +235,6 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 // Get all the NFTs from a given collection
 func queryCollection(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		var req queryCollectionRequest
 		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
@@ -350,7 +346,6 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 		res, height, err := cliCtx.QueryWithData(
 			queryPath, bz,
 		)
-
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -391,7 +386,6 @@ func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 		res, height, err := cliCtx.QueryWithData(
 			queryPath, bz,
 		)
-
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

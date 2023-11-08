@@ -118,7 +118,6 @@ func (msg MsgIssueDenom) GetSigners() []sdk.AccAddress {
 	}
 	signers = append(signers, from)
 	return signers
-
 }
 
 // NewMsgTransferNft is a constructor function for MsgTransferNft
@@ -208,7 +207,6 @@ func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveAllNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgApproveAllNft) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(msg.Operator); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid operator address (%s)", err)
 	}
@@ -463,7 +461,6 @@ func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid sender address (%s)", err)
 	}

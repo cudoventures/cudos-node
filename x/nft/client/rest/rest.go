@@ -1,10 +1,10 @@
 package rest
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/gorilla/mux"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 

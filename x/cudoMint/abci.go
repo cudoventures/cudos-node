@@ -3,10 +3,11 @@ package cudoMint
 import (
 	"time"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 // Minting based on the formula f(t)=358 - 53 * t + 1.8 * t^2, where t is number of years passed since the release = 150mil, 7 sec - 150mils/(7)

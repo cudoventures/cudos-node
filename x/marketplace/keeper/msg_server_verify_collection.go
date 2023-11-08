@@ -4,9 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k msgServer) VerifyCollection(goCtx context.Context, msg *types.MsgVerifyCollection) (*types.MsgVerifyCollectionResponse, error) {

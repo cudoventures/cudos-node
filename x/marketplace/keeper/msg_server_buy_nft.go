@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k msgServer) BuyNft(goCtx context.Context, msg *types.MsgBuyNft) (*types.MsgBuyNftResponse, error) {
@@ -23,7 +24,6 @@ func (k msgServer) BuyNft(goCtx context.Context, msg *types.MsgBuyNft) (*types.M
 	}
 
 	nft, err := k.Keeper.BuyNFT(ctx, msg.Id, buyer)
-
 	if err != nil {
 		return &types.MsgBuyNftResponse{}, err
 	}

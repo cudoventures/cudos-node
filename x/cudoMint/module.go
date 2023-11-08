@@ -4,24 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 
-	// this line is used by starport scaffolding # 1
-
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	// this line is used by starport scaffolding # ibc/module/import
+
+	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 var (
@@ -135,7 +132,6 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // module-specific GRPC queries.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-
 }
 
 // RegisterInvariants registers the capability module's invariants.

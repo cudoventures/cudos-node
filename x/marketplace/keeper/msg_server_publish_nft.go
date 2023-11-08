@@ -4,8 +4,9 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k msgServer) PublishNft(goCtx context.Context, msg *types.MsgPublishNft) (*types.MsgPublishNftResponse, error) {

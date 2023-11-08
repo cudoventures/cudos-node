@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldCorrectly_ReturnNFT() {
@@ -58,7 +59,6 @@ func (suite *IntegrationTestKeeperSuite) TestHasNFT_ReturnsCorrect_WhenNFTDoesEx
 }
 
 func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -77,7 +77,6 @@ func (suite *IntegrationTestKeeperSuite) TestApproveNFT_ReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -100,11 +99,9 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsCorrect() 
 
 	suite.NoError(err)
 	assert.Equal(suite.T(), []string([]string(nil)), nft.ApprovedAddresses)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenUserHasNoApprovedAddresses() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -116,11 +113,9 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_When
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address2, denomID2)
 	suite.ErrorIs(err, types.ErrNoApprovedAddresses)
-
 }
 
 func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_WhenApprovedAddressIsNotFound() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID2, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -138,5 +133,4 @@ func (suite *IntegrationTestKeeperSuite) TestRevokeApprovalNFT_ReturnsError_When
 
 	err = suite.keeper.RevokeApprovalNFT(suite.ctx, nft, address3, denomID2)
 	suite.ErrorIs(err, types.ErrNoApprovedAddresses)
-
 }

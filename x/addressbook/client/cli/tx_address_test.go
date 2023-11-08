@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+	"github.com/cosmos/cosmos-sdk/testutil/network"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/x/addressbook/client/cli"
 	"github.com/CudoVentures/cudos-node/x/addressbook/types"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
 )
 
 type TxAddressIntegrationTestSuite struct {
@@ -39,7 +40,6 @@ func (s *TxAddressIntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
-
 	network, err := runNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 
@@ -84,7 +84,6 @@ func (s *TxAddressIntegrationTestSuite) TestCreateAddress() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
-
 	network, err := runNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 
@@ -139,7 +138,6 @@ func (s *TxAddressIntegrationTestSuite) TestUpdateAddress() {
 }
 
 func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
-
 	network, err := runNetwork(s.T(), s.config)
 	require.NoError(s.T(), err)
 

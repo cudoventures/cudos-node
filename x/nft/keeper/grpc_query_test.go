@@ -40,7 +40,6 @@ func (suite *IntegrationTestKeeperSuite) TestOwner_ReturnsCorrect() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestCollection_ReturnsCorrect() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
 	suite.NoError(err)
 
@@ -88,7 +87,6 @@ func (suite *IntegrationTestKeeperSuite) TestDenoms_ReturnsCorrectCollection() {
 }
 
 func (suite *IntegrationTestKeeperSuite) TestNFT_ReturnsCorrect() {
-
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address2)
 	suite.NoError(err)
 

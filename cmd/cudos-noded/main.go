@@ -3,10 +3,11 @@ package main
 import (
 	"os"
 
-	"github.com/CudoVentures/cudos-node/app"
-	"github.com/CudoVentures/cudos-node/cmd/cudos-noded/cmd"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/app"
+	"github.com/CudoVentures/cudos-node/cmd/cudos-noded/cmd"
 )
 
 func main() {

@@ -5,14 +5,15 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftsim "github.com/CudoVentures/cudos-node/x/nft/simulation"
 )
 
 func SimulateMsgMintNft(
@@ -23,7 +24,6 @@ func SimulateMsgMintNft(
 ) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-
 		// Publish collection
 
 		ownerAddr, denom, _ := nftsim.GetRandomNFTFromOwner(ctx, nk, r)

@@ -29,7 +29,6 @@ func (k Keeper) CollectionsByDenomIds(c context.Context, request *types.QueryCol
 	}
 
 	return &types.QueryCollectionByIdsResponse{Collections: collectionWithNfts}, nil
-
 }
 
 func (k Keeper) Supply(c context.Context, request *types.QuerySupplyRequest) (*types.QuerySupplyResponse, error) {
@@ -89,7 +88,6 @@ func (k Keeper) Owner(c context.Context, request *types.QueryOwnerRequest) (*typ
 		}
 		return nil
 	})
-
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "paginate: %v", err)
 	}

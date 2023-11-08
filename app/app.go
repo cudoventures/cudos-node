@@ -7,17 +7,19 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	// this line is used by starport scaffolding # stargate/app/moduleImport
+	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v2/modules/core"
+	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	"github.com/spf13/cast"
-
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	appparams "github.com/CudoVentures/cudos-node/app/params"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	"github.com/CudoVentures/cudos-node/x/admin"
-	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,12 +27,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-
 	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -44,11 +44,12 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantmod "github.com/cosmos/cosmos-sdk/x/feegrant/module"
-
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/cosmos-sdk/x/group"
+	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -57,32 +58,23 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v2/modules/core"
-	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 
-	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
-
+	appparams "github.com/CudoVentures/cudos-node/app/params"
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	"github.com/CudoVentures/cudos-node/x/admin"
+	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 const Name = "cudos-node"
 
-var (
-	DefaultNodeHome string
-)
+var DefaultNodeHome string
 
 var (
 	_ CosmosApp               = (*App)(nil)
@@ -110,7 +102,6 @@ func New(
 	homePath string, invCheckPeriod uint, encodingConfig appparams.EncodingConfig,
 	appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -273,7 +264,7 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
-	// NOTE: Gravity module must occur before genutils so that the pool are propertly initiallized
+	// NOTE: Gravity module must occur before genutils so that the pool are property initiallized
 	// before gextxs
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
@@ -286,7 +277,7 @@ func New(
 		govtypes.ModuleName,
 		cudominttypes.ModuleName,
 		crisistypes.ModuleName,
-		gravitytypes.ModuleName, //MUST BE BEFORE GENUTIL!!!!
+
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,

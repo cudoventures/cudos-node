@@ -150,7 +150,7 @@ func GetCmdMintNFT() *cobra.Command {
 				return err
 			}
 
-			var sender = clientCtx.GetFromAddress().String()
+			sender := clientCtx.GetFromAddress().String()
 
 			recipient, err := cmd.Flags().GetString(FlagRecipient)
 			if err != nil {
@@ -314,7 +314,7 @@ func GetCmdApproveNft() *cobra.Command {
 				return err
 			}
 
-			var sender = clientCtx.GetFromAddress().String()
+			sender := clientCtx.GetFromAddress().String()
 			approvedAddress := args[0]
 			denomId := args[1]
 			tokenId := args[2]

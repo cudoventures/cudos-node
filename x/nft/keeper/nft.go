@@ -93,7 +93,6 @@ func (k Keeper) ApproveNFT(ctx sdk.Context, nft types.BaseNFT, approvedAddress s
 }
 
 func (k Keeper) RevokeApprovalNFT(ctx sdk.Context, nft types.BaseNFT, addressToRevoke sdk.AccAddress, denomID string) error {
-
 	if nft.ApprovedAddresses == nil {
 		return sdkerrors.Wrapf(types.ErrNoApprovedAddresses, "No approved address (%s) for nft with denomId (%s) / tokenId (%s)", addressToRevoke.String(), denomID, nft.GetID())
 	}

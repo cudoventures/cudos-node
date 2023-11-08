@@ -43,7 +43,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-
 }
 
 // ParamSetPairs Implements params.ParamSet

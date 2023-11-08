@@ -20,7 +20,6 @@ func ParamKeyTable() paramtypes.KeyTable {
 func NewParams(
 	incrementModifier sdk.Int,
 ) Params {
-
 	return Params{
 		IncrementModifier: incrementModifier,
 	}
@@ -40,7 +39,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-
 }
 
 // ParamSetPairs Implements params.ParamSet

@@ -5,9 +5,10 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/admin/types"
 )
 
 type (
@@ -21,7 +22,8 @@ type (
 )
 
 func NewKeeper(cdc codec.Codec, storeKey, memKey sdk.StoreKey,
-	dk types.DistributionKeeper, bk types.BankKeeper) *Keeper {
+	dk types.DistributionKeeper, bk types.BankKeeper,
+) *Keeper {
 	return &Keeper{
 		cdc:                cdc,
 		storeKey:           storeKey,
