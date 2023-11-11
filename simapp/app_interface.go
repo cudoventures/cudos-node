@@ -6,13 +6,9 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -129,9 +125,6 @@ var (
 		// cudos
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
-		nftmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
-		marketplace.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -146,7 +139,6 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
-		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{
