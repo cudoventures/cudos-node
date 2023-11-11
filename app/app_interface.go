@@ -62,17 +62,11 @@ import (
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -141,9 +135,6 @@ var (
 		// cudos
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
-		nftmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
-		marketplace.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -158,7 +149,6 @@ var (
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
-		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{
