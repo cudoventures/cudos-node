@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -17,9 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/group"
 
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
@@ -42,6 +37,10 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
+
+const AddressBookModuleName = "addressbook"
+const NftModuleName = "nft"
+const MarketplaceModuleName = "marketplace"
 
 func (app *CudosApp) RegisterUpgradeHandlers() {
 	setHandlerForVersion_1_0(app)
@@ -75,15 +74,15 @@ func setHandlerForVersion_1_1(app *CudosApp) {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
-			delete(fromVM, addressbookTypes.ModuleName)
-			delete(fromVM, marketplaceTypes.ModuleName)
+			delete(fromVM, AddressBookModuleName)
+			delete(fromVM, MarketplaceModuleName)
 
-			if _, ok := fromVM[nfttypes.ModuleName]; ok {
-				if fromVM[nfttypes.ModuleName] == 2 {
-					fromVM[nfttypes.ModuleName] = 1
+			if _, ok := fromVM[NftModuleName]; ok {
+				if fromVM[NftModuleName] == 2 {
+					fromVM[NftModuleName] = 1
 				}
 			} else {
-				fromVM[nfttypes.ModuleName] = 1
+				fromVM[NftModuleName] = 1
 			}
 		}
 
@@ -97,7 +96,7 @@ func setHandlerForVersion_1_1(app *CudosApp) {
 
 	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, group.ModuleName, addressbookTypes.ModuleName, marketplaceTypes.ModuleName},
+			Added: []string{authz.ModuleName, group.ModuleName, AddressBookModuleName, MarketplaceModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
@@ -136,12 +135,8 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case gravitytypes.ModuleName:
 			keyTable = gravitytypes.ParamKeyTable() //nolint:staticcheck
-		case addressbooktypes.ModuleName:
-			keyTable = addressbooktypes.ParamKeyTable() //nolint:staticcheck
 		case cudominttypes.ModuleName:
 			keyTable = cudominttypes.ParamKeyTable() //nolint:staticcheck
-		case marketplacetypes.ModuleName:
-			keyTable = marketplacetypes.ParamKeyTable() //nolint:staticcheck
 		default:
 			continue
 		}
@@ -223,6 +218,11 @@ func setHandlerForVersion_1_2(app *CudosApp) {
 				icahosttypes.SubModuleName,
 				icacontrollertypes.SubModuleName,
 				admintypes.ModuleName,
+			},
+			Deleted: []string{
+				AddressBookModuleName,
+				NftModuleName,
+				MarketplaceModuleName,
 			},
 		}
 
