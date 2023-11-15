@@ -139,18 +139,19 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-// replace github.com/althea-net/cosmos-gravity-bridge/module => ../CudosGravityBridge/module
-// replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
-// replace github.com/tendermint/tendermint => ../tendermint
-// replace github.com/cosmos/ibc-go/v2 => ../ibc-go
-
+// use cudos customized gravit bridge
+// TODO: replace with pure mainline gravity bridge module
 replace github.com/althea-net/cosmos-gravity-bridge/module => github.com/CudoVentures/cosmos-gravity-bridge/module v0.0.0-20230130131817-0381039012d6
 
+// use cudos customized cosmos sdk
+// TODO: replace with pure mainline cosmos sdk
 replace github.com/cosmos/cosmos-sdk => github.com/CudoVentures/cosmos-sdk v0.0.0-20220914094638-cb70cee184ee
 
-// replace globally the grpc version (https://docs.cosmos.network/v0.44/basics/app-anatomy.html#dependencies-and-makefile)
+// replace globally the grpc version
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
+// use protocol buffers for cosmos
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
+// prevent dragonberry issues
 replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
