@@ -120,7 +120,7 @@ func (k Keeper) GetAllNft(ctx sdk.Context) (list []types.Nft) {
 		list = append(list, val)
 	}
 
-	return
+	return list
 }
 
 // GetNftIDBytes returns the byte representation of the ID

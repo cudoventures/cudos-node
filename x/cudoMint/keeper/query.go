@@ -8,7 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	// this line is used by starport scaffolding # 1
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint/types"
 )
 
 func NewQuerier(k Keeper, legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {

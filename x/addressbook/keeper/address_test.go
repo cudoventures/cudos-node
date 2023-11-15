@@ -34,12 +34,12 @@ func TestAddressGet(t *testing.T) {
 	keeper, ctx := keepertest.AddressbookKeeper(t)
 	items := createNAddress(keeper, ctx, 10)
 	for _, item := range items {
+		item := item
 		rst, found := keeper.GetAddress(ctx,
 			item.Creator,
 			item.Network,
 			item.Label,
 		)
-		tc := tc
 		require.True(t, found)
 		require.Equal(t,
 			nullify.Fill(&item),

@@ -18,11 +18,11 @@ func NewMsgPublishNft(creator, tokenId, denomId string, price sdk.Coin) *MsgPubl
 	}
 }
 
-func (msg *MsgPublishNft) Route() string {
+func (*MsgPublishNft) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgPublishNft) Type() string {
+func (*MsgPublishNft) Type() string {
 	return TypeMsgPublishNft
 }
 

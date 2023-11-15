@@ -1,7 +1,7 @@
 syntax = "proto3";
-package cudos.cudoMint;
+package cudos.cudomint;
 
-option go_package = "github.com/CudoVentures/cudos-node/x/cudoMint/types";
+option go_package = "github.com/CudoVentures/cudos-node/x/cudomint/types";
 
 import "gogoproto/gogo.proto";
 

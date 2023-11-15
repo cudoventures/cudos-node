@@ -29,11 +29,11 @@ func NewMsgCreateAddress(creator, network, label, value string) *MsgCreateAddres
 	}
 }
 
-func (msg *MsgCreateAddress) Route() string {
+func (*MsgCreateAddress) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCreateAddress) Type() string {
+func (*MsgCreateAddress) Type() string {
 	return TypeMsgCreateAddress
 }
 
@@ -78,11 +78,11 @@ func NewMsgUpdateAddress(creator, network, label, value string) *MsgUpdateAddres
 	}
 }
 
-func (msg *MsgUpdateAddress) Route() string {
+func (*MsgUpdateAddress) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdateAddress) Type() string {
+func (*MsgUpdateAddress) Type() string {
 	return TypeMsgUpdateAddress
 }
 

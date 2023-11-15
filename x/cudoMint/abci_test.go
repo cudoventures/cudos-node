@@ -1,4 +1,4 @@
-package cudoMint_test
+package cudomint_test
 
 import (
 	"testing"
@@ -9,8 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/CudoVentures/cudos-node/simapp"
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint"
+	"github.com/CudoVentures/cudos-node/x/cudomint/types"
 )
 
 func TestCalculateMintedCoins(t *testing.T) {
@@ -21,7 +21,7 @@ func TestCalculateMintedCoins(t *testing.T) {
 	totalBlocks := int64(100000)
 	for height := int64(1); height <= totalBlocks; height++ {
 		ctx = ctx.WithBlockHeight(height)
-		cudoMint.BeginBlocker(ctx, app.CudoMintKeeper)
+		cudomint.BeginBlocker(ctx, app.CudoMintKeeper)
 	}
 
 	expectedNormTimePassed, _ := sdk.NewDecFromStr("10.0003")

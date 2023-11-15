@@ -200,10 +200,10 @@ func NewMsgApproveAllNft(operator, sender, contractAddressSigner string, approve
 }
 
 // Route Implements Msg
-func (msg MsgApproveAllNft) Route() string { return RouterKey }
+func (MsgApproveAllNft) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgApproveAllNft) Type() string { return TypeMsgApproveAllNft }
+func (MsgApproveAllNft) Type() string { return TypeMsgApproveAllNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgApproveAllNft) ValidateBasic() error {
@@ -258,10 +258,10 @@ func NewMsgApproveNft(tokenID, denomID, sender, approvedAddress, contractAddress
 }
 
 // Route Implements Msg
-func (msg MsgApproveNft) Route() string { return RouterKey }
+func (MsgApproveNft) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgApproveNft) Type() string { return TypeMsgApproveNft }
+func (MsgApproveNft) Type() string { return TypeMsgApproveNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgApproveNft) ValidateBasic() error {
@@ -321,10 +321,10 @@ func NewMsgRevokeNft(
 }
 
 // Route Implements Msg
-func (msg MsgRevokeNft) Route() string { return RouterKey }
+func (MsgRevokeNft) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgRevokeNft) Type() string { return TypeMsgRevokeNft }
+func (MsgRevokeNft) Type() string { return TypeMsgRevokeNft }
 
 // ValidateBasic Implements Msg.
 func (msg MsgRevokeNft) ValidateBasic() error {
@@ -386,10 +386,10 @@ func NewMsgEditNFT(
 }
 
 // Route Implements Msg
-func (msg MsgEditNFT) Route() string { return RouterKey }
+func (MsgEditNFT) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgEditNFT) Type() string { return TypeMsgEditNFT }
+func (MsgEditNFT) Type() string { return TypeMsgEditNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgEditNFT) ValidateBasic() error {
@@ -454,10 +454,10 @@ func NewMsgMintNFT(denomID, tokenName, tokenURI, tokenData, sender, recipient, c
 }
 
 // Route Implements Msg
-func (msg MsgMintNFT) Route() string { return RouterKey }
+func (MsgMintNFT) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgMintNFT) Type() string { return TypeMsgMintNFT }
+func (MsgMintNFT) Type() string { return TypeMsgMintNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgMintNFT) ValidateBasic() error {
@@ -519,10 +519,10 @@ func NewMsgBurnNFT(sender, tokenID, denomID, contractAddressSigner string) *MsgB
 }
 
 // Route Implements Msg
-func (msg MsgBurnNFT) Route() string { return RouterKey }
+func (MsgBurnNFT) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgBurnNFT) Type() string { return TypeMsgBurnNFT }
+func (MsgBurnNFT) Type() string { return TypeMsgBurnNFT }
 
 // ValidateBasic Implements Msg.
 func (msg MsgBurnNFT) ValidateBasic() error {
@@ -573,10 +573,10 @@ func NewMsgTransferDenom(denomId, sender, recipient, contractAddressSigner strin
 }
 
 // Route Implements Msg
-func (msg MsgTransferDenom) Route() string { return RouterKey }
+func (MsgTransferDenom) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgTransferDenom) Type() string { return TypeMsgTransferDenom }
+func (MsgTransferDenom) Type() string { return TypeMsgTransferDenom }
 
 // ValidateBasic Implements Msg.
 func (msg MsgTransferDenom) ValidateBasic() error {

@@ -48,7 +48,7 @@ func NewKeeper(
 	}
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+func (Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
@@ -79,7 +79,7 @@ func (k Keeper) PublishCollection(ctx sdk.Context, collection types.Collection) 
 	return collectionID, nil
 }
 
-func (k Keeper) isApprovedNftAddress(nftVal exported.NFT, owner string) bool {
+func (Keeper) isApprovedNftAddress(nftVal exported.NFT, owner string) bool {
 	approvedAddresses := nftVal.GetApprovedAddresses()
 	for _, addr := range approvedAddresses {
 		if addr == owner {

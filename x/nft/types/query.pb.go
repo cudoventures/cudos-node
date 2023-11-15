@@ -32,7 +32,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // QuerySupplyRequest is the request type for the Query/HTLC RPC method
 type QuerySupplyRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	Owner   string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
@@ -69,9 +69,9 @@ func (m *QuerySupplyRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySupplyRequest proto.InternalMessageInfo
 
-func (m *QuerySupplyRequest) GetDenomId() string {
+func (m *QuerySupplyRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -130,7 +130,7 @@ func (m *QuerySupplyResponse) GetAmount() uint64 {
 
 // QueryOwnerRequest is the request type for the Query/Owner RPC method
 type QueryOwnerRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	Owner   string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -169,9 +169,9 @@ func (m *QueryOwnerRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryOwnerRequest proto.InternalMessageInfo
 
-func (m *QueryOwnerRequest) GetDenomId() string {
+func (m *QueryOwnerRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -245,7 +245,7 @@ func (m *QueryOwnerResponse) GetPagination() *query.PageResponse {
 
 // QueryCollectionRequest is the request type for the Query/Collection RPC method
 type QueryCollectionRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -283,9 +283,9 @@ func (m *QueryCollectionRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCollectionRequest proto.InternalMessageInfo
 
-func (m *QueryCollectionRequest) GetDenomId() string {
+func (m *QueryCollectionRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -352,7 +352,7 @@ func (m *QueryCollectionResponse) GetPagination() *query.PageResponse {
 
 // QueryCollectionsByIdsRequest is the request type for the Query/CollectionsByIds RPC method
 type QueryCollectionsByIdsRequest struct {
-	DenomIds []string `protobuf:"bytes,1,rep,name=denom_ids,json=denomIds,proto3" json:"denom_ids,omitempty" yaml:"denom_ids"`
+	DenomIDs []string `protobuf:"bytes,1,rep,name=denom_ids,json=denomIds,proto3" json:"denom_ids,omitempty" yaml:"denom_ids"`
 }
 
 func (m *QueryCollectionsByIdsRequest) Reset()         { *m = QueryCollectionsByIdsRequest{} }
@@ -388,9 +388,9 @@ func (m *QueryCollectionsByIdsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCollectionsByIdsRequest proto.InternalMessageInfo
 
-func (m *QueryCollectionsByIdsRequest) GetDenomIds() []string {
+func (m *QueryCollectionsByIdsRequest) GetDenomIDs() []string {
 	if m != nil {
-		return m.DenomIds
+		return m.DenomIDs
 	}
 	return nil
 }
@@ -442,7 +442,7 @@ func (m *QueryCollectionByIdsResponse) GetCollections() []*Collection {
 
 // QueryDenomRequest is the request type for the Query/Denom RPC method
 type QueryDenomRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 }
 
 func (m *QueryDenomRequest) Reset()         { *m = QueryDenomRequest{} }
@@ -478,9 +478,9 @@ func (m *QueryDenomRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDenomRequest proto.InternalMessageInfo
 
-func (m *QueryDenomRequest) GetDenomId() string {
+func (m *QueryDenomRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -811,7 +811,7 @@ func (m *QueryDenomsResponse) GetPagination() *query.PageResponse {
 
 // QueryNFTRequest is the request type for the Query/NFT RPC method
 type QueryNFTRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" yaml:"token_id"`
 }
 
@@ -848,9 +848,9 @@ func (m *QueryNFTRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryNFTRequest proto.InternalMessageInfo
 
-func (m *QueryNFTRequest) GetDenomId() string {
+func (m *QueryNFTRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -909,7 +909,7 @@ func (m *QueryNFTResponse) GetNFT() *BaseNFT {
 
 // QueryApprovalsNFTRequest is the request type for the Query/NFT RPC method
 type QueryApprovalsNFTRequest struct {
-	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty" yaml:"token_id"`
 }
 
@@ -946,9 +946,9 @@ func (m *QueryApprovalsNFTRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryApprovalsNFTRequest proto.InternalMessageInfo
 
-func (m *QueryApprovalsNFTRequest) GetDenomId() string {
+func (m *QueryApprovalsNFTRequest) GetDenomID() string {
 	if m != nil {
-		return m.DenomId
+		return m.DenomID
 	}
 	return ""
 }
@@ -1232,7 +1232,7 @@ type QueryClient interface {
 	// Collection queries the NFTs of the specified denom
 	Collection(ctx context.Context, in *QueryCollectionRequest, opts ...grpc.CallOption) (*QueryCollectionResponse, error)
 	// Collection queries the NFTs of the specified denom
-	CollectionsByDenomIds(ctx context.Context, in *QueryCollectionsByIdsRequest, opts ...grpc.CallOption) (*QueryCollectionByIdsResponse, error)
+	CollectionsByDenomIDs(ctx context.Context, in *QueryCollectionsByIdsRequest, opts ...grpc.CallOption) (*QueryCollectionByIdsResponse, error)
 	// Denom queries the definition of a given denom
 	Denom(ctx context.Context, in *QueryDenomRequest, opts ...grpc.CallOption) (*QueryDenomResponse, error)
 	// DenomByName queries the definition of a given denom by name
@@ -1284,9 +1284,9 @@ func (c *queryClient) Collection(ctx context.Context, in *QueryCollectionRequest
 	return out, nil
 }
 
-func (c *queryClient) CollectionsByDenomIds(ctx context.Context, in *QueryCollectionsByIdsRequest, opts ...grpc.CallOption) (*QueryCollectionByIdsResponse, error) {
+func (c *queryClient) CollectionsByDenomIDs(ctx context.Context, in *QueryCollectionsByIdsRequest, opts ...grpc.CallOption) (*QueryCollectionByIdsResponse, error) {
 	out := new(QueryCollectionByIdsResponse)
-	err := c.cc.Invoke(ctx, "/cudosnode.cudosnode.nft.Query/CollectionsByDenomIds", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cudosnode.cudosnode.nft.Query/CollectionsByDenomIDs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1365,7 +1365,7 @@ type QueryServer interface {
 	// Collection queries the NFTs of the specified denom
 	Collection(context.Context, *QueryCollectionRequest) (*QueryCollectionResponse, error)
 	// Collection queries the NFTs of the specified denom
-	CollectionsByDenomIds(context.Context, *QueryCollectionsByIdsRequest) (*QueryCollectionByIdsResponse, error)
+	CollectionsByDenomIDs(context.Context, *QueryCollectionsByIdsRequest) (*QueryCollectionByIdsResponse, error)
 	// Denom queries the definition of a given denom
 	Denom(context.Context, *QueryDenomRequest) (*QueryDenomResponse, error)
 	// DenomByName queries the definition of a given denom by name
@@ -1395,8 +1395,8 @@ func (*UnimplementedQueryServer) Owner(ctx context.Context, req *QueryOwnerReque
 func (*UnimplementedQueryServer) Collection(ctx context.Context, req *QueryCollectionRequest) (*QueryCollectionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Collection not implemented")
 }
-func (*UnimplementedQueryServer) CollectionsByDenomIds(ctx context.Context, req *QueryCollectionsByIdsRequest) (*QueryCollectionByIdsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CollectionsByDenomIds not implemented")
+func (*UnimplementedQueryServer) CollectionsByDenomIDs(ctx context.Context, req *QueryCollectionsByIdsRequest) (*QueryCollectionByIdsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CollectionsByDenomIDs not implemented")
 }
 func (*UnimplementedQueryServer) Denom(ctx context.Context, req *QueryDenomRequest) (*QueryDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Denom not implemented")
@@ -1478,20 +1478,20 @@ func _Query_Collection_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_CollectionsByDenomIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Query_CollectionsByDenomIDs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryCollectionsByIdsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).CollectionsByDenomIds(ctx, in)
+		return srv.(QueryServer).CollectionsByDenomIDs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cudosnode.cudosnode.nft.Query/CollectionsByDenomIds",
+		FullMethod: "/cudosnode.cudosnode.nft.Query/CollectionsByDenomIDs",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).CollectionsByDenomIds(ctx, req.(*QueryCollectionsByIdsRequest))
+		return srv.(QueryServer).CollectionsByDenomIDs(ctx, req.(*QueryCollectionsByIdsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1639,8 +1639,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Collection_Handler,
 		},
 		{
-			MethodName: "CollectionsByDenomIds",
-			Handler:    _Query_CollectionsByDenomIds_Handler,
+			MethodName: "CollectionsByDenomIDs",
+			Handler:    _Query_CollectionsByDenomIDs_Handler,
 		},
 		{
 			MethodName: "Denom",
@@ -1702,10 +1702,10 @@ func (m *QuerySupplyRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1779,10 +1779,10 @@ func (m *QueryOwnerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1868,10 +1868,10 @@ func (m *QueryCollectionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1945,11 +1945,11 @@ func (m *QueryCollectionsByIdsRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	_ = i
 	var l int
 	_ = l
-	if len(m.DenomIds) > 0 {
-		for iNdEx := len(m.DenomIds) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.DenomIds[iNdEx])
-			copy(dAtA[i:], m.DenomIds[iNdEx])
-			i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomIds[iNdEx])))
+	if len(m.DenomIDs) > 0 {
+		for iNdEx := len(m.DenomIDs) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.DenomIDs[iNdEx])
+			copy(dAtA[i:], m.DenomIDs[iNdEx])
+			i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomIDs[iNdEx])))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -2014,10 +2014,10 @@ func (m *QueryDenomRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2300,10 +2300,10 @@ func (m *QueryNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2372,10 +2372,10 @@ func (m *QueryApprovalsNFTRequest) MarshalToSizedBuffer(dAtA []byte) (int, error
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2501,7 +2501,7 @@ func (m *QuerySupplyRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2530,7 +2530,7 @@ func (m *QueryOwnerRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2568,7 +2568,7 @@ func (m *QueryCollectionRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2602,8 +2602,8 @@ func (m *QueryCollectionsByIdsRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.DenomIds) > 0 {
-		for _, s := range m.DenomIds {
+	if len(m.DenomIDs) > 0 {
+		for _, s := range m.DenomIDs {
 			l = len(s)
 			n += 1 + l + sovQuery(uint64(l))
 		}
@@ -2632,7 +2632,7 @@ func (m *QueryDenomRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2742,7 +2742,7 @@ func (m *QueryNFTRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2772,7 +2772,7 @@ func (m *QueryApprovalsNFTRequest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -2864,7 +2864,7 @@ func (m *QuerySupplyRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2892,7 +2892,7 @@ func (m *QuerySupplyRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3053,7 +3053,7 @@ func (m *QueryOwnerRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3081,7 +3081,7 @@ func (m *QueryOwnerRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3331,7 +3331,7 @@ func (m *QueryCollectionRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3359,7 +3359,7 @@ func (m *QueryCollectionRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3577,7 +3577,7 @@ func (m *QueryCollectionsByIdsRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomIds", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomIDs", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3605,7 +3605,7 @@ func (m *QueryCollectionsByIdsRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomIds = append(m.DenomIds, string(dAtA[iNdEx:postIndex]))
+			m.DenomIDs = append(m.DenomIDs, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3749,7 +3749,7 @@ func (m *QueryDenomRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3777,7 +3777,7 @@ func (m *QueryDenomRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -4483,7 +4483,7 @@ func (m *QueryNFTRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4511,7 +4511,7 @@ func (m *QueryNFTRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4689,7 +4689,7 @@ func (m *QueryApprovalsNFTRequest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4717,7 +4717,7 @@ func (m *QueryApprovalsNFTRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {

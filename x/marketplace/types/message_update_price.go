@@ -17,11 +17,11 @@ func NewMsgUpdatePrice(creator string, id uint64, price sdk.Coin) *MsgUpdatePric
 	}
 }
 
-func (msg *MsgUpdatePrice) Route() string {
+func (*MsgUpdatePrice) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUpdatePrice) Type() string {
+func (*MsgUpdatePrice) Type() string {
 	return TypeMsgUpdatePrice
 }
 

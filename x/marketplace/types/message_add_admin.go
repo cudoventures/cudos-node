@@ -16,11 +16,11 @@ func NewMsgAddAdmin(creator string, address string) *MsgAddAdmin {
 	}
 }
 
-func (msg *MsgAddAdmin) Route() string {
+func (*MsgAddAdmin) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgAddAdmin) Type() string {
+func (*MsgAddAdmin) Type() string {
 	return TypeMsgAddAdmin
 }
 

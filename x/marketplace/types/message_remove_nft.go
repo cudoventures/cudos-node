@@ -16,11 +16,11 @@ func NewMsgRemoveNft(creator string, id uint64) *MsgRemoveNft {
 	}
 }
 
-func (msg *MsgRemoveNft) Route() string {
+func (*MsgRemoveNft) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgRemoveNft) Type() string {
+func (*MsgRemoveNft) Type() string {
 	return TypeMsgRemoveNft
 }
 

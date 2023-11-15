@@ -36,7 +36,7 @@ func SupplyInvariant(k Keeper) sdk.Invariant {
 
 		for _, owner := range owners {
 			for _, idCollection := range owner.IDCollections {
-				ownersCollectionsSupply[idCollection.DenomId] += uint64(idCollection.Supply())
+				ownersCollectionsSupply[idCollection.DenomID] += uint64(idCollection.Supply())
 			}
 		}
 

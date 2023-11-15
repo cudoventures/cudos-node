@@ -16,11 +16,11 @@ func NewMsgBuyNft(creator string, id uint64) *MsgBuyNft {
 	}
 }
 
-func (msg *MsgBuyNft) Route() string {
+func (*MsgBuyNft) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgBuyNft) Type() string {
+func (*MsgBuyNft) Type() string {
 	return TypeMsgBuyNft
 }
 

@@ -192,6 +192,7 @@ func (s *TxAddressIntegrationTestSuite) TestDeleteAddress() {
 }
 
 func runNetwork(t *testing.T, cfg network.Config) (*network.Network, error) {
+	t.Helper()
 	network := network.New(t, cfg)
 
 	if _, err := network.WaitForHeight(3); err != nil {

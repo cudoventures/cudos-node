@@ -39,23 +39,23 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankke
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 
-	authModuleStore, err := setupModuleStore(t, cdc, db, stateStore, authtypes.StoreKey)
+	authModuleStore, err := setupModuleStore(cdc, db, stateStore, authtypes.StoreKey)
 	require.NoError(t, err)
 
 	maccPerms[types.ModuleName] = []string{authtypes.Minter}
 	authKeeper := authkeeper.NewAccountKeeper(appCodec, authModuleStore.storeKey, authModuleStore.paramSubspace, authtypes.ProtoBaseAccount, maccPerms)
 
-	bankModuleStore, err := setupModuleStore(t, cdc, db, stateStore, banktypes.StoreKey)
+	bankModuleStore, err := setupModuleStore(cdc, db, stateStore, banktypes.StoreKey)
 	require.NoError(t, err)
 
 	bankKeeper := bankkeeper.NewBaseKeeper(appCodec, bankModuleStore.storeKey, authKeeper, bankModuleStore.paramSubspace, nil)
 
-	nftModuleStore, err := setupModuleStore(t, cdc, db, stateStore, nfttypes.StoreKey)
+	nftModuleStore, err := setupModuleStore(cdc, db, stateStore, nfttypes.StoreKey)
 	require.NoError(t, err)
 
 	nftKeeper := nftkeeper.NewKeeper(cdc, nftModuleStore.storeKey, nftModuleStore.memStoreKey)
 
-	moduleStore, err := setupModuleStore(t, cdc, db, stateStore, types.StoreKey)
+	moduleStore, err := setupModuleStore(cdc, db, stateStore, types.StoreKey)
 	require.NoError(t, err)
 
 	k := keeper.NewKeeper(cdc, moduleStore.storeKey, moduleStore.memStoreKey, moduleStore.paramSubspace, bankKeeper, nftKeeper)
@@ -69,7 +69,7 @@ func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankke
 	return k, nftKeeper, &bankKeeper, ctx
 }
 
-func setupModuleStore(t testing.TB, cdc *codec.ProtoCodec, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore, storeKeyName string) (moduleStore, error) {
+func setupModuleStore(cdc *codec.ProtoCodec, db *tmdb.MemDB, stateStore storetypes.CommitMultiStore, storeKeyName string) (moduleStore, error) {
 	storeKey := sdk.NewKVStoreKey(storeKeyName)
 	memStoreKey := storetypes.NewMemoryStoreKey(fmt.Sprintf("mem_%s", storeKeyName))
 	paramsSubspace := typesparams.NewSubspace(cdc, types.Amino, storeKey, memStoreKey, fmt.Sprintf("%sParams", storeKeyName))

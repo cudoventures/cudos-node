@@ -80,7 +80,7 @@ func TestKeeperSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestKeeperSuite))
 }
 
-func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomIdAlreadyExists() {
+func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomIDAlreadyExists() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, schema, denomSymbol, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 
@@ -104,7 +104,7 @@ func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldError_WhenDenomSym
 	suite.ErrorIs(err, types.ErrInvalidDenom)
 }
 
-func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldCorrectly_SetDenomIdAndNameAndSymbol() {
+func (suite *IntegrationTestKeeperSuite) TestIssueDenom_ShouldCorrectly_SetDenomIDAndNameAndSymbol() {
 	err := suite.keeper.IssueDenom(suite.ctx, denomID, denomNm, denomSymbol, schema, denomTraits, denomMinter, denomDescription, denomData, address)
 	suite.NoError(err)
 }
@@ -166,7 +166,7 @@ func (suite *IntegrationTestKeeperSuite) TestMintNFT_ShouldCorrectly_SetOwner() 
 	isOwnerCorrectlySavedInDb := false
 
 	for _, collection := range owner.IDCollections {
-		if collection.DenomId == denomID {
+		if collection.DenomID == denomID {
 			for _, ownedTokenId := range collection.TokenIds {
 				if ownedTokenId == tokenID {
 					isOwnerCorrectlySavedInDb = true
@@ -327,7 +327,7 @@ func (suite *IntegrationTestKeeperSuite) TestTransferOwner_ShouldCorrectly_SwapO
 	isOwnerCorrectlySwappedInDb := false
 
 	for _, collection := range owner.IDCollections {
-		if collection.DenomId == denomID {
+		if collection.DenomID == denomID {
 			for _, ownedTokenId := range collection.TokenIds {
 				if ownedTokenId == tokenID {
 					isOwnerCorrectlySwappedInDb = true
@@ -441,7 +441,7 @@ func (suite *IntegrationTestKeeperSuite) TestTransferDenom() {
 	suite.Equal(denom.Creator, address3.String())
 }
 
-func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldError_WhenDenomIdDoesNotExist() {
+func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldError_WhenDenomIDDoesNotExist() {
 	err := suite.keeper.BurnNFT(suite.ctx, denomID, "1234", address)
 	suite.ErrorIs(err, types.ErrInvalidDenom)
 }
@@ -496,7 +496,7 @@ func (suite *IntegrationTestKeeperSuite) TestBurnNFT_ShouldCorrectly_DeleteNFTOw
 	isOwnerCorrectlySwappedInDb := false
 
 	for _, collection := range owner.IDCollections {
-		if collection.DenomId == denomID {
+		if collection.DenomID == denomID {
 			for _, ownedTokenId := range collection.TokenIds {
 				if ownedTokenId == tokenID {
 					isOwnerCorrectlySwappedInDb = true

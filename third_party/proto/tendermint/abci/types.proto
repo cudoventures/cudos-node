@@ -16,7 +16,7 @@ import "gogoproto/gogo.proto";
 // NOTE: When using custom types, mind the warnings.
 // https://github.com/gogo/protobuf/blob/master/custom_types.md#warnings-and-issues
 
-//----------------------------------------
+// ----------------------------------------
 // Request types
 
 message Request {
@@ -125,7 +125,7 @@ message RequestApplySnapshotChunk {
   string sender = 3;
 }
 
-//----------------------------------------
+// ----------------------------------------
 // Response types
 
 message Response {
@@ -276,7 +276,7 @@ message ResponseApplySnapshotChunk {
   }
 }
 
-//----------------------------------------
+// ----------------------------------------
 // Misc.
 
 // ConsensusParams contains all consensus-relevant parameters
@@ -329,7 +329,7 @@ message TxResult {
   ResponseDeliverTx result = 4 [(gogoproto.nullable) = false];
 }
 
-//----------------------------------------
+// ----------------------------------------
 // Blockchain Types
 
 // Validator
@@ -374,7 +374,7 @@ message Evidence {
   int64 total_voting_power = 5;
 }
 
-//----------------------------------------
+// ----------------------------------------
 // State Sync Types
 
 message Snapshot {
@@ -385,7 +385,7 @@ message Snapshot {
   bytes  metadata = 5;  // Arbitrary application metadata
 }
 
-//----------------------------------------
+// ----------------------------------------
 // Service Definition
 
 service ABCIApplication {

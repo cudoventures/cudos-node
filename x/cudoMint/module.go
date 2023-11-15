@@ -1,4 +1,4 @@
-package cudoMint
+package cudomint
 
 import (
 	"encoding/json"
@@ -15,10 +15,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint/client/cli"
+	"github.com/CudoVentures/cudos-node/x/cudomint/client/rest"
+	"github.com/CudoVentures/cudos-node/x/cudomint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudomint/types"
 )
 
 var (

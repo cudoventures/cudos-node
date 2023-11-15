@@ -114,7 +114,7 @@ var xxx_messageInfo_Denom proto.InternalMessageInfo
 
 // IDCollection defines a type of collection with specified ID
 type IDCollection struct {
-	DenomId  string   `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
+	DenomID  string   `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	TokenIds []string `protobuf:"bytes,2,rep,name=token_ids,json=tokenIds,proto3" json:"token_ids,omitempty" yaml:"token_ids"`
 }
 
@@ -479,7 +479,7 @@ func (this *IDCollection) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.DenomId != that1.DenomId {
+	if this.DenomID != that1.DenomID {
 		return false
 	}
 	if len(this.TokenIds) != len(that1.TokenIds) {
@@ -796,10 +796,10 @@ func (m *IDCollection) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.DenomId) > 0 {
-		i -= len(m.DenomId)
-		copy(dAtA[i:], m.DenomId)
-		i = encodeVarintNft(dAtA, i, uint64(len(m.DenomId)))
+	if len(m.DenomID) > 0 {
+		i -= len(m.DenomID)
+		copy(dAtA[i:], m.DenomID)
+		i = encodeVarintNft(dAtA, i, uint64(len(m.DenomID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1088,7 +1088,7 @@ func (m *IDCollection) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.DenomId)
+	l = len(m.DenomID)
 	if l > 0 {
 		n += 1 + l + sovNft(uint64(l))
 	}
@@ -1799,7 +1799,7 @@ func (m *IDCollection) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DenomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DenomID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1827,7 +1827,7 @@ func (m *IDCollection) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.DenomId = string(dAtA[iNdEx:postIndex])
+			m.DenomID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {

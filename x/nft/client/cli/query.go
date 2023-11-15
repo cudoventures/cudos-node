@@ -31,7 +31,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryDenomBySymbol(),
 		GetCmdQueryDenoms(),
 		GetCmdQueryCollection(),
-		GetCmdQueryCollectionsByDenomIds(),
+		GetCmdQueryCollectionsByDenomIDs(),
 		GetCmdQuerySupply(),
 		GetCmdQueryOwner(),
 		GetCmdQueryNFT(),
@@ -75,7 +75,7 @@ func GetCmdQuerySupply() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Supply(context.Background(), &types.QuerySupplyRequest{
-				DenomId: args[0],
+				DenomID: args[0],
 				Owner:   owner.String(),
 			})
 			if err != nil {
@@ -118,7 +118,7 @@ func GetCmdQueryOwner() *cobra.Command {
 			}
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Owner(context.Background(), &types.QueryOwnerRequest{
-				DenomId:    denomID,
+				DenomID:    denomID,
 				Owner:      args[0],
 				Pagination: pageReq,
 			})
@@ -160,7 +160,7 @@ func GetCmdQueryCollection() *cobra.Command {
 			resp, err := queryClient.Collection(
 				context.Background(),
 				&types.QueryCollectionRequest{
-					DenomId:    args[0],
+					DenomID:    args[0],
 					Pagination: pageReq,
 				},
 			)
@@ -176,13 +176,13 @@ func GetCmdQueryCollection() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryCollectionsByDenomIds queries for all the collections matching a set of denom ids
-func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
+// GetCmdQueryCollectionsByDenomIDs queries for all the collections matching a set of denom ids
+func GetCmdQueryCollectionsByDenomIDs() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "collection [denom-id1,denom-id2,denom-id3..]",
 		Short:   "Query Collections by denom ids",
 		Long:    "Get all the collections for given denom ids.",
-		Example: fmt.Sprintf("$ %s query nft collectionByDenomIds <denom-id,denom-id2, denom-id3>", version.AppName),
+		Example: fmt.Sprintf("$ %s query nft collectionByDenomIDs <denom-id,denom-id2, denom-id3>", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -203,8 +203,8 @@ func GetCmdQueryCollectionsByDenomIds() *cobra.Command {
 				}
 			}
 			queryClient := types.NewQueryClient(clientCtx)
-			resp, err := queryClient.CollectionsByDenomIds(context.Background(), &types.QueryCollectionsByIdsRequest{
-				DenomIds: denomIds,
+			resp, err := queryClient.CollectionsByDenomIDs(context.Background(), &types.QueryCollectionsByIdsRequest{
+				DenomIDs: denomIds,
 			})
 			if err != nil {
 				return err
@@ -268,7 +268,7 @@ func GetCmdQueryDenom() *cobra.Command {
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.Denom(
 				context.Background(),
-				&types.QueryDenomRequest{DenomId: args[0]},
+				&types.QueryDenomRequest{DenomID: args[0]},
 			)
 			if err != nil {
 				return err
@@ -374,7 +374,7 @@ func GetCmdQueryNFT() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.NFT(context.Background(), &types.QueryNFTRequest{
-				DenomId: args[0],
+				DenomID: args[0],
 				TokenId: args[1],
 			})
 			if err != nil {
@@ -391,10 +391,10 @@ func GetCmdQueryNFT() *cobra.Command {
 // GetCmdQueryApprovedNFT queries the NFT and returns its approved operators list
 func GetCmdQueryApprovedNFT() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "approvals [denomId] [tokenId]",
+		Use:     "approvals [denomId] [tokenID]",
 		Short:   "Query the approved addresses for a NFT.",
 		Long:    "Get the approved addresses for the NFT.",
-		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenId>", version.AppName),
+		Example: fmt.Sprintf("$ %s query nft approvals <denomId> <tokenID>", version.AppName),
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -407,15 +407,15 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 				return err
 			}
 
-			tokenId := args[1]
-			if err := types.ValidateTokenID(tokenId); err != nil {
+			tokenID := args[1]
+			if err := types.ValidateTokenID(tokenID); err != nil {
 				return err
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 			resp, err := queryClient.GetApprovalsNFT(context.Background(), &types.QueryApprovalsNFTRequest{
-				DenomId: denomId,
-				TokenId: tokenId,
+				DenomID: denomId,
+				TokenId: tokenID,
 			})
 			if err != nil {
 				return err

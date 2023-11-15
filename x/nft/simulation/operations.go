@@ -480,7 +480,7 @@ func GetRandomNFTFromOwner(ctx sdk.Context, k NftKeeper, r *rand.Rand) (address 
 	// get random collection from owner's balance
 	i = r.Intn(idCollectionsLen)
 	idCollection := owner.IDCollections[i] // nfts IDs
-	denomID = idCollection.DenomId
+	denomID = idCollection.DenomID
 
 	idsLen := len(idCollection.TokenIds)
 	if idsLen == 0 {

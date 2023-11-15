@@ -11,7 +11,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudomint/types"
 	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
@@ -23,7 +23,7 @@ func (app *App) SetUpgradeHandlers() {
 
 func setHandlerForVersion_1_0(app *App) {
 	app.UpgradeKeeper.SetUpgradeHandler("v1.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ss, ok := app.ParamsKeeper.GetSubspace(cudoMinttypes.ModuleName)
+		ss, ok := app.ParamsKeeper.GetSubspace(cudominttypes.ModuleName)
 		if ok {
 			bpd := ss.GetRaw(ctx, []byte("BlocksPerDay"))
 

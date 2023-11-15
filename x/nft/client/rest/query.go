@@ -26,7 +26,7 @@ const (
 	QueryNFTRoute              = "NFT"
 	QueryApprovalsNFTRoute     = "GetApprovalsNFT"
 	QueryIsApprovedForAll      = "QueryApprovalsIsApprovedForAll"
-	QueryCollectionsByDenomIds = "CollectionsByDenomIds"
+	QueryCollectionsByDenomIDs = "CollectionsByDenomIDs"
 )
 
 func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
@@ -61,24 +61,24 @@ func registerQueryRoutes(cliCtx client.Context, r *mux.Router) {
 	r.HandleFunc(fmt.Sprintf("/%s/isApprovedForAll", types.ModuleName), queryIsApprovedForAll(cliCtx)).Methods("POST")
 
 	// Query for collections by denomIds
-	r.HandleFunc(fmt.Sprintf("/%s/collectionsByDenomIds", types.ModuleName), queryCollectionsByDenomIds(cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s/collectionsByDenomIDs", types.ModuleName), queryCollectionsByDenomIDs(cliCtx)).Methods("POST")
 }
 
 // Get the collections by denom ids with their nfts
-func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
+func queryCollectionsByDenomIDs(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req queryCollectionsByDenomIdsRequest
+		var req queryCollectionsByDenomIDsRequest
 		if !rest.ReadRESTReq(w, r, cliCtx.LegacyAmino, &req) {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
 			return
 		}
 
-		if len(req.DenomIds) == 0 {
+		if len(req.DenomIDs) == 0 {
 			err := errors.New("denomIds array is empty")
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		for _, id := range req.DenomIds {
+		for _, id := range req.DenomIDs {
 			if err := types.ValidateDenomID(id); err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
@@ -86,7 +86,7 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		request := types.QueryCollectionsByIdsRequest{
-			DenomIds: req.DenomIds,
+			DenomIDs: req.DenomIDs,
 		}
 
 		bz, err := request.Marshal()
@@ -100,7 +100,7 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryCollectionsByDenomIds)
+		queryPath := fmt.Sprintf("/%s/%s", QueryGlobalRoutePrefix, QueryCollectionsByDenomIDs)
 		res, height, err := cliCtx.QueryWithData(
 			queryPath, bz,
 		)
@@ -137,7 +137,7 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		request := types.QuerySupplyRequest{
-			DenomId: denomID,
+			DenomID: denomID,
 			Owner:   ownerStr,
 		}
 
@@ -180,8 +180,8 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 
 		// We want to check a particular DenomID only if such is provided,
 		// otherwise we skip the check in order to return all associated NFTs from all denoms.
-		if req.DenomId != "" {
-			if err := types.ValidateDenomID(req.DenomId); err != nil {
+		if req.DenomID != "" {
+			if err := types.ValidateDenomID(req.DenomID); err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
@@ -196,7 +196,7 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 			}
 		}
 		request := types.QueryOwnerRequest{
-			DenomId:    req.DenomId,
+			DenomID:    req.DenomID,
 			Owner:      req.OwnerAddress,
 			Pagination: &req.Pagination,
 		}
@@ -238,13 +238,13 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		if err := types.ValidateDenomID(req.DenomId); err != nil {
+		if err := types.ValidateDenomID(req.DenomID); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		request := types.QueryCollectionRequest{
-			DenomId:    req.DenomId,
+			DenomID:    req.DenomID,
 			Pagination: &req.Pagination,
 		}
 
@@ -290,7 +290,7 @@ func queryDenom(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		request := types.QueryDenomRequest{DenomId: denomID}
+		request := types.QueryDenomRequest{DenomID: denomID}
 		bz, err := request.Marshal()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -451,7 +451,7 @@ func queryNFT(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		request := types.QueryNFTRequest{
-			DenomId: denomID,
+			DenomID: denomID,
 			TokenId: tokenID,
 		}
 		bz, err := request.Marshal()
@@ -500,7 +500,7 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 		}
 
 		request := types.QueryApprovalsNFTRequest{
-			DenomId: denomID,
+			DenomID: denomID,
 			TokenId: tokenID,
 		}
 

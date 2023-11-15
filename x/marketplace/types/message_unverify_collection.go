@@ -16,11 +16,11 @@ func NewMsgUnverifyCollection(creator string, id uint64) *MsgUnverifyCollection 
 	}
 }
 
-func (msg *MsgUnverifyCollection) Route() string {
+func (*MsgUnverifyCollection) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgUnverifyCollection) Type() string {
+func (*MsgUnverifyCollection) Type() string {
 	return TypeMsgUnverifyCollection
 }
 

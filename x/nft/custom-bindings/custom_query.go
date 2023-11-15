@@ -24,7 +24,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 
 		switch {
 		case custom.QueryDenomById != nil:
-			denom, err := keeper.GetDenom(ctx, custom.QueryDenomById.DenomId)
+			denom, err := keeper.GetDenom(ctx, custom.QueryDenomById.DenomID)
 			if err != nil {
 				return nil, err
 			}
@@ -49,7 +49,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			return json.Marshal(denoms)
 		case custom.QueryCollection != nil:
 			collection, err := keeper.Collection(sdk.WrapSDKContext(ctx), &nftTypes.QueryCollectionRequest{
-				DenomId:    custom.QueryCollection.DenomId,
+				DenomID:    custom.QueryCollection.DenomID,
 				Pagination: custom.QueryCollection.Pagination,
 			})
 			if err != nil {
@@ -57,7 +57,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			}
 			return json.Marshal(collection)
 		case custom.QuerySupply != nil:
-			denom, err := keeper.GetDenom(ctx, custom.QuerySupply.DenomId) // Otherwise queries for non-existing denom ID's will return 0, instead of erro.
+			denom, err := keeper.GetDenom(ctx, custom.QuerySupply.DenomID) // Otherwise queries for non-existing denom ID's will return 0, instead of erro.
 			if err != nil {
 				return nil, err
 			}
@@ -66,7 +66,7 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 		case custom.QueryOwner != nil:
 			if len(custom.QueryOwner.Address) > 0 {
 				owner, err := keeper.Owner(sdk.WrapSDKContext(ctx), &nftTypes.QueryOwnerRequest{
-					DenomId:    custom.QueryOwner.DenomId,
+					DenomID:    custom.QueryOwner.DenomID,
 					Owner:      custom.QueryOwner.Address,
 					Pagination: custom.QueryOwner.Pagination,
 				})
@@ -77,13 +77,13 @@ func PerformCustomNftQuery(keeper nftKeeper.Keeper) wasmKeeper.CustomQuerier {
 			}
 			return nil, sdkerrors.Wrap(types.ErrInvalidMsg, "Owner address is empty!")
 		case custom.QueryToken != nil:
-			nft, err := keeper.GetBaseNFT(ctx, custom.QueryToken.DenomId, custom.QueryToken.TokenId)
+			nft, err := keeper.GetBaseNFT(ctx, custom.QueryToken.DenomID, custom.QueryToken.TokenId)
 			if err != nil {
 				return nil, err
 			}
 			return json.Marshal(nftTypes.QueryNFTResponse{NFT: &nft})
 		case custom.QueryApprovals != nil:
-			approvedAddressesForNft, err := keeper.GetNFTApprovedAddresses(ctx, custom.QueryApprovals.DenomId, custom.QueryApprovals.TokenId)
+			approvedAddressesForNft, err := keeper.GetNFTApprovedAddresses(ctx, custom.QueryApprovals.DenomID, custom.QueryApprovals.TokenId)
 			if err != nil {
 				return nil, err
 			}
@@ -123,7 +123,7 @@ type nftCustomQuery struct {
 }
 
 type QueryDenomById struct {
-	DenomId string `json:"denom_id"`
+	DenomID string `json:"denom_id"`
 }
 
 type QueryDenomByName struct {
@@ -139,27 +139,27 @@ type QueryAllDenoms struct {
 }
 
 type QueryCollection struct {
-	DenomId    string             `json:"denom_id"`
+	DenomID    string             `json:"denom_id"`
 	Pagination *query.PageRequest `json:"pagination,omitempty"`
 }
 
 type QuerySupply struct {
-	DenomId string `json:"denom_id"`
+	DenomID string `json:"denom_id"`
 }
 
 type QueryOwner struct {
 	Address    string             `json:"address"`
-	DenomId    string             `json:"denom_id,omitempty"`
+	DenomID    string             `json:"denom_id,omitempty"`
 	Pagination *query.PageRequest `json:"pagination,omitempty"`
 }
 
 type QueryToken struct {
-	DenomId string `json:"denom_id"`
+	DenomID string `json:"denom_id"`
 	TokenId string `json:"token_id"`
 }
 
 type QueryApprovals struct {
-	DenomId string `json:"denom_id"`
+	DenomID string `json:"denom_id"`
 	TokenId string `json:"token_id"`
 }
 

@@ -59,11 +59,11 @@ type transferNFTReq struct {
 type transferDenomReq struct {
 	BaseReq   rest.BaseReq `json:"base_req"`
 	Recipient string       `json:"recipient"`
-	DenomId   string       `json:"denom_id"`
+	DenomID   string       `json:"denom_id"`
 }
 
 type approveNFTReq struct {
-	DenomId          string       `json:"denom_id"`
+	DenomID          string       `json:"denom_id"`
 	TokenID          string       `json:"token_id"`
 	AddressToApprove string       `json:"address_to_approve"`
 	BaseReq          rest.BaseReq `json:"base_req"`
@@ -72,7 +72,7 @@ type approveNFTReq struct {
 type revokeNFTReq struct {
 	BaseReq         rest.BaseReq `json:"base_req"`
 	AddressToRevoke string       `json:"address_to_revoke"`
-	DenomId         string       `json:"denom_id"`
+	DenomID         string       `json:"denom_id"`
 	TokenID         string       `json:"token_id"`
 }
 
@@ -98,16 +98,16 @@ type queryDenomsRequest struct {
 }
 
 type queryCollectionRequest struct {
-	DenomId    string            `json:"denom_id"`
+	DenomID    string            `json:"denom_id"`
 	Pagination query.PageRequest `json:"pagination"`
 }
 
-type queryCollectionsByDenomIdsRequest struct {
-	DenomIds []string `json:"denom_ids"`
+type queryCollectionsByDenomIDsRequest struct {
+	DenomIDs []string `json:"denom_ids"`
 }
 
 type queryOwnerRequest struct {
-	DenomId      string            `json:"denom_id,omitempty"`
+	DenomID      string            `json:"denom_id,omitempty"`
 	OwnerAddress string            `json:"owner_address"`
 	Pagination   query.PageRequest `json:"pagination"`
 }

@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) TestNft() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(1))).String()),
 	}
 
-	//------test GetCmdIssueDenom()-------------
+	// ------test GetCmdIssueDenom()-------------
 	args := []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagDenomName, denomName),
 		fmt.Sprintf("--%s=%s", nftcli.FlagDenomSymbol, denomSymbol),
@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) TestNft() {
 
 	denomID := gjson.Get(txResp.RawLog, "0.events.0.attributes.0.value").String()
 
-	//------test GetCmdQueryDenom()-------------
+	// ------test GetCmdQueryDenom()-------------
 	respType = proto.Message(&nfttypes.Denom{})
 	bz, err = nfttestutil.QueryDenomExec(val.ClientCtx, denomID)
 	s.Require().NoError(err)
@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(denomSymbol, denomItem.Symbol)
 	s.Require().Equal(schema, denomItem.Schema)
 
-	//------test GetCmdQueryDenoms()-------------
+	// ------test GetCmdQueryDenoms()-------------
 	respType = proto.Message(&nfttypes.QueryDenomsResponse{})
 	bz, err = nfttestutil.QueryDenomsExec(val.ClientCtx)
 	s.Require().NoError(err)
@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(1, len(denomsResp.Denoms))
 	s.Require().Equal(denomID, denomsResp.Denoms[0].Id)
 
-	//------test GetCmdMintNFT()-------------
+	// ------test GetCmdMintNFT()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenData, tokenData),
 		fmt.Sprintf("--%s=%s", nftcli.FlagRecipient, from.String()),
@@ -133,7 +133,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(expectedCode, txResp.Code)
 	tokenID := gjson.Get(txResp.RawLog, "0.events.1.attributes.0.value").String()
 
-	//------test GetCmdQuerySupply()-------------
+	// ------test GetCmdQuerySupply()-------------
 	respType = proto.Message(&nfttypes.QuerySupplyResponse{})
 	bz, err = nfttestutil.QuerySupplyExec(val.ClientCtx, denomID)
 	s.Require().NoError(err)
@@ -141,7 +141,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	supplyResp := respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(1), supplyResp.Amount)
 
-	//------test GetCmdQueryNFT()-------------
+	// ------test GetCmdQueryNFT()-------------
 	respType = proto.Message(&nfttypes.BaseNFT{})
 	bz, err = nfttestutil.QueryNFTExec(val.ClientCtx, denomID, tokenID)
 	s.Require().NoError(err)
@@ -153,17 +153,17 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(tokenData, nftItem.Data)
 	s.Require().Equal(from.String(), nftItem.Owner)
 
-	//------test GetCmdQueryOwner()-------------
+	// ------test GetCmdQueryOwner()-------------
 	respType = proto.Message(&nfttypes.QueryOwnerResponse{})
 	bz, err = nfttestutil.QueryOwnerExec(val.ClientCtx, from.String())
 	s.Require().NoError(err)
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(bz.Bytes(), respType))
 	ownerResp := respType.(*nfttypes.QueryOwnerResponse)
 	s.Require().Equal(from.String(), ownerResp.Owner.Address)
-	s.Require().Equal(denom, ownerResp.Owner.IDCollections[0].DenomId)
+	s.Require().Equal(denom, ownerResp.Owner.IDCollections[0].DenomID)
 	s.Require().Equal(tokenID, ownerResp.Owner.IDCollections[0].TokenIds[0])
 
-	//------test GetCmdQueryCollection()-------------
+	// ------test GetCmdQueryCollection()-------------
 	respType = proto.Message(&nfttypes.QueryCollectionResponse{})
 	bz, err = nfttestutil.QueryCollectionExec(val.ClientCtx, denomID)
 	s.Require().NoError(err)
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	collectionItem := respType.(*nfttypes.QueryCollectionResponse)
 	s.Require().Equal(1, len(collectionItem.Collection.NFTs))
 
-	//------test GetCmdEditNFT()-------------
+	// ------test GetCmdEditNFT()-------------
 	newTokenData := "newdata"
 	newTokenURI := "newuri"
 	newTokenName := "new Test Token"
@@ -203,7 +203,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(newTokenURI, newNftItem.URI)
 	s.Require().Equal(newTokenData, newNftItem.Data)
 
-	//------test GetCmdTransferNFT()-------------
+	// ------test GetCmdTransferNFT()-------------
 	recipient := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
 
 	args = []string{
@@ -236,7 +236,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	s.Require().Equal(newTokenData, nftItem.Data)
 	s.Require().Equal(recipient.String(), nftItem.Owner)
 
-	//------test GetCmdApproveNFT() GetCmdQueryApproveNFT() -------------
+	// ------test GetCmdApproveNFT() GetCmdQueryApproveNFT() -------------
 
 	approvedAddress := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
 
@@ -291,7 +291,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	isApprovedNft := respType.(*nfttypes.QueryApprovalsNFTResponse)
 	s.Assert().Contains(isApprovedNft.ApprovedAddresses, approvedAddress.String())
 
-	//------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
+	// ------test GetCmdApproveAll  GetCmdQueryApproveAll-------------
 
 	args = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -315,7 +315,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	isApprovedAllResponse := respType.(*nfttypes.QueryApprovalsIsApprovedForAllResponse)
 	s.Require().Equal(isApprovedAllResponse.IsApproved, true)
 
-	//------test GetCmdBurnNFT()-------------
+	// ------test GetCmdBurnNFT()-------------
 	args = []string{
 		fmt.Sprintf("--%s=%s", nftcli.FlagTokenData, newTokenData),
 		fmt.Sprintf("--%s=%s", nftcli.FlagRecipient, from.String()),
@@ -365,7 +365,7 @@ func (s *IntegrationTestSuite) TestNft() {
 	supplyResp = respType.(*nfttypes.QuerySupplyResponse)
 	s.Require().Equal(uint64(2), supplyResp.Amount)
 
-	//------test GetCmdTransferDenom()-------------
+	// ------test GetCmdTransferDenom()-------------
 	denomRecipient := sdk.AccAddress(crypto.AddressHash([]byte("dgsbl")))
 
 	args = []string{

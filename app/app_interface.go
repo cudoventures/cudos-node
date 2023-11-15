@@ -83,9 +83,9 @@ import (
 	"github.com/CudoVentures/cudos-node/x/admin"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint"
+	cudomintkeeper "github.com/CudoVentures/cudos-node/x/cudomint/keeper"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudomint/types"
 	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
@@ -149,7 +149,7 @@ var (
 		transfer.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		admin.AppModuleBasic{},
-		cudoMint.AppModuleBasic{},
+		cudomint.AppModuleBasic{},
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
@@ -166,7 +166,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		cudoMinttypes.ModuleName:       {authtypes.Minter},
+		cudominttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
 		marketplacetypes.ModuleName:    nil,
@@ -217,7 +217,7 @@ type App struct {
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
-	cudoMintKeeper cudoMintkeeper.Keeper
+	cudomintKeeper cudomintkeeper.Keeper
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
@@ -256,7 +256,7 @@ func (app *App) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
-func (app *App) ModuleAccountAddrs() map[string]bool {
+func (*App) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
@@ -267,7 +267,7 @@ func (app *App) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *App) BlockedAddrs() map[string]bool {
+func (*App) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
@@ -327,7 +327,7 @@ func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (*App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	// Register legacy tx routes.
@@ -377,7 +377,7 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
-	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
+	paramsKeeper.Subspace(cudominttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(addressbooktypes.ModuleName)
 	paramsKeeper.Subspace(marketplacetypes.ModuleName)

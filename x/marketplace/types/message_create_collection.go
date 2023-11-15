@@ -28,11 +28,11 @@ func NewMsgCreateCollection(creator, id, name, schema, symbol, traits, descripti
 	}
 }
 
-func (msg *MsgCreateCollection) Route() string {
+func (*MsgCreateCollection) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgCreateCollection) Type() string {
+func (*MsgCreateCollection) Type() string {
 	return TypeMsgCreateCollection
 }
 

@@ -53,8 +53,8 @@ import (
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	cudomintkeeper "github.com/CudoVentures/cudos-node/x/cudomint/keeper"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudomint/types"
 	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
@@ -216,13 +216,13 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.appCodec, app.keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
 	)
 
-	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
+	app.cudomintKeeper = *cudomintkeeper.NewKeeper(
 		app.appCodec,
-		app.keys[cudoMinttypes.StoreKey],
-		app.keys[cudoMinttypes.MemStoreKey],
+		app.keys[cudominttypes.StoreKey],
+		app.keys[cudominttypes.MemStoreKey],
 		app.BankKeeper,
 		app.AccountKeeper,
-		app.GetSubspace(cudoMinttypes.ModuleName),
+		app.GetSubspace(cudominttypes.ModuleName),
 		authtypes.FeeCollectorName,
 	)
 

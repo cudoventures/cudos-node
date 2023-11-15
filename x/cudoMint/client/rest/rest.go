@@ -10,7 +10,7 @@ const (
 	MethodGet = "GET"
 )
 
-// RegisterRoutes registers cudoMint-related REST handlers to a router
+// RegisterRoutes registers cudomint-related REST handlers to a router
 func RegisterRoutes(clientCtx client.Context, r *mux.Router) {
 	// this line is used by starport scaffolding # 2
 }

@@ -1,4 +1,4 @@
-package cudoMint
+package cudomint
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudomint/types"
 )
 
 // NewHandler ...

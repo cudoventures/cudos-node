@@ -9,7 +9,7 @@ import (
 // NewIDCollection creates a new IDCollection instance
 func NewIDCollection(denomID string, tokenIDs []string) IDCollection {
 	return IDCollection{
-		DenomId:  denomID,
+		DenomID:  denomID,
 		TokenIds: tokenIDs,
 	}
 }
@@ -32,13 +32,13 @@ type IDCollections []IDCollection
 // Add adds an ID to the idCollection
 func (idcs IDCollections) Add(denomID, tokenID string) IDCollections {
 	for i, idc := range idcs {
-		if idc.DenomId == denomID {
+		if idc.DenomID == denomID {
 			idcs[i] = idc.AddID(tokenID)
 			return idcs
 		}
 	}
 	return append(idcs, IDCollection{
-		DenomId:  denomID,
+		DenomID:  denomID,
 		TokenIds: []string{tokenID},
 	})
 }

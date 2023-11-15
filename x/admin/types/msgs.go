@@ -21,10 +21,10 @@ func NewMsgAdminSpendCommunityPool(fromAddr, toAddr sdk.AccAddress, amount sdk.C
 }
 
 // Route Implements Msg.
-func (msg MsgAdminSpendCommunityPool) Route() string { return RouterKey }
+func (MsgAdminSpendCommunityPool) Route() string { return RouterKey }
 
 // Type Implements Msg.
-func (msg MsgAdminSpendCommunityPool) Type() string { return TypeMsgSend }
+func (MsgAdminSpendCommunityPool) Type() string { return TypeMsgSend }
 
 // ValidateBasic Implements Msg.
 func (msg MsgAdminSpendCommunityPool) ValidateBasic() error {

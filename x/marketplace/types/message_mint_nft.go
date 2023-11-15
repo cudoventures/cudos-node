@@ -24,11 +24,11 @@ func NewMsgMintNft(creator, denomId, recipient, name, uri, data, uid string, pri
 	}
 }
 
-func (msg *MsgMintNft) Route() string {
+func (*MsgMintNft) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgMintNft) Type() string {
+func (*MsgMintNft) Type() string {
 	return TypeMsgMintNft
 }
 

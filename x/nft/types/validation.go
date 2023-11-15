@@ -12,8 +12,8 @@ import (
 const (
 	DoNotModify = "[do-not-modify]"
 
-	MinDenomIdLen          = 3
-	MaxDenomIdLen          = 64
+	MinDenomIDLen          = 3
+	MaxDenomIDLen          = 64
 	MinDenomNameLen        = 3
 	MaxDenomNameLen        = 64
 	MinDenomSymbolLen      = 3
@@ -38,8 +38,8 @@ var (
 
 // ValidateDenomID verifies whether the  parameters are legal
 func ValidateDenomID(denomID string) error {
-	if len(denomID) < MinDenomIdLen || len(denomID) > MaxDenomIdLen {
-		return sdkerrors.Wrapf(ErrInvalidDenom, "the length of denom id(%s) only accepts value [%d, %d]", denomID, MinDenomIdLen, MaxDenomIdLen)
+	if len(denomID) < MinDenomIDLen || len(denomID) > MaxDenomIDLen {
+		return sdkerrors.Wrapf(ErrInvalidDenom, "the length of denom id(%s) only accepts value [%d, %d]", denomID, MinDenomIDLen, MaxDenomIDLen)
 	}
 	if !IsBeginWithAlpha(denomID) || !IsAlphaNumeric(denomID) {
 		return sdkerrors.Wrapf(ErrInvalidDenom, "the denom(%s) only accepts lowercase alphanumeric characters, and begin with an english letter", denomID)

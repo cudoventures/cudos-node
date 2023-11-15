@@ -65,8 +65,8 @@ import (
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	"github.com/CudoVentures/cudos-node/x/cudomint"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudomint/types"
 	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
@@ -193,7 +193,7 @@ func New(
 		transferModule,
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
-		cudoMint.NewAppModule(appCodec, app.cudoMintKeeper),
+		cudomint.NewAppModule(appCodec, app.cudomintKeeper),
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
