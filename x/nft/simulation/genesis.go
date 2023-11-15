@@ -6,10 +6,10 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const (

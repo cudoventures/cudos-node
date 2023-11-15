@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -10,8 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func (k Keeper) CollectionAll(c context.Context, req *types.QueryAllCollectionRequest) (*types.QueryAllCollectionResponse, error) {

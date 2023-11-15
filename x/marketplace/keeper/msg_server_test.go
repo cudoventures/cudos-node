@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {

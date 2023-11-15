@@ -5,6 +5,21 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	"github.com/CudoVentures/cudos-node/x/admin"
+	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
+	// this line is used by starport scaffolding # stargate/app/moduleImport
+	"github.com/CudoVentures/cudos-node/x/cudoMint"
+	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
+	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
@@ -75,22 +90,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	"github.com/CudoVentures/cudos-node/x/admin"
-	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
-	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile

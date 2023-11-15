@@ -64,7 +64,7 @@ type transferDenomReq struct {
 
 type approveNFTReq struct {
 	DenomId          string       `json:"denom_id"`
-	TokenId          string       `json:"token_id"`
+	TokenID          string       `json:"token_id"`
 	AddressToApprove string       `json:"address_to_approve"`
 	BaseReq          rest.BaseReq `json:"base_req"`
 }
@@ -73,13 +73,13 @@ type revokeNFTReq struct {
 	BaseReq         rest.BaseReq `json:"base_req"`
 	AddressToRevoke string       `json:"address_to_revoke"`
 	DenomId         string       `json:"denom_id"`
-	TokenId         string       `json:"token_id"`
+	TokenID         string       `json:"token_id"`
 }
 
 type burnNFTReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	DnomId  string       `json:"denom_id"`
-	TokenId string       `json:"token_id"`
+	TokenID string       `json:"token_id"`
 }
 
 type approveAllRequest struct {

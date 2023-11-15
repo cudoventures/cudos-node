@@ -3,15 +3,14 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 type (

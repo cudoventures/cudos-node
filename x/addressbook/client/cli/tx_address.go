@@ -1,13 +1,12 @@
 package cli
 
 import (
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func CmdCreateAddress() *cobra.Command {

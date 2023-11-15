@@ -3,14 +3,13 @@ package cli
 import (
 	"strconv"
 
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 var _ = strconv.Itoa(0)
@@ -21,9 +20,9 @@ func CmdUpdatePrice() *cobra.Command {
 		Short: "Update NFT price",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argId := args[0]
+			argID := args[0]
 
-			nftID, err := strconv.ParseUint(argId, 10, 64)
+			nftID, err := strconv.ParseUint(argID, 10, 64)
 			if err != nil {
 				return err
 			}

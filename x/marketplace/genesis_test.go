@@ -3,12 +3,11 @@ package marketplace_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/testutil/nullify"
 	"github.com/CudoVentures/cudos-node/x/marketplace"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {

@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/CudoVentures/cudos-node/app"
+	"github.com/CudoVentures/cudos-node/app/params"
 	gravitycmd "github.com/althea-net/cosmos-gravity-bridge/module/cmd/gravity/cmd"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -31,9 +33,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-
-	"github.com/CudoVentures/cudos-node/app"
-	"github.com/CudoVentures/cudos-node/app/params"
 )
 
 var ChainID string
@@ -43,7 +42,7 @@ var ChainID string
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithJSONCodec(encodingConfig.Codec).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).

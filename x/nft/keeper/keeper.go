@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine

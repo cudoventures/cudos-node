@@ -3,10 +3,10 @@ package keeper
 import (
 	"strings"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // HasDenomID returns whether the specified denom ID exists

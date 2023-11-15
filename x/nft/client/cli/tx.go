@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -13,8 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // NewTxCmd returns the transaction commands for this module
@@ -274,12 +273,12 @@ func GetCmdTransferNft() *cobra.Command {
 			from := args[0]
 			to := args[1]
 			denomId := args[2]
-			tokenId := args[3]
+			tokenID := args[3]
 			msgSender := clientCtx.GetFromAddress().String()
 
 			msg := types.NewMsgTransferNft(
 				denomId,
-				tokenId,
+				tokenID,
 				from,
 				to,
 				msgSender,
@@ -317,15 +316,14 @@ func GetCmdApproveNft() *cobra.Command {
 			sender := clientCtx.GetFromAddress().String()
 			approvedAddress := args[0]
 			denomId := args[1]
-			tokenId := args[2]
+			tokenID := args[2]
 
-			// nolint: govet
 			if _, err := sdk.AccAddressFromBech32(approvedAddress); err != nil {
 				return err
 			}
 
 			msg := types.NewMsgApproveNft(
-				tokenId,
+				tokenID,
 				denomId,
 				sender,
 				approvedAddress,
@@ -405,10 +403,9 @@ func GetCmdRevokeNft() *cobra.Command {
 
 			addressToRevoke := args[0]
 			denomId := args[1]
-			tokenId := args[2]
+			tokenID := args[2]
 			sender := clientCtx.GetFromAddress().String()
 
-			// nolint: govet
 			if _, err := sdk.AccAddressFromBech32(addressToRevoke); err != nil {
 				return err
 			}
@@ -417,7 +414,7 @@ func GetCmdRevokeNft() *cobra.Command {
 				addressToRevoke,
 				sender,
 				denomId,
-				tokenId,
+				tokenID,
 				"",
 			)
 			if err := msg.ValidateBasic(); err != nil {

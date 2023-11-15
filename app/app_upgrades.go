@@ -3,17 +3,17 @@ package app
 import (
 	"strings"
 
+	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (app *App) SetUpgradeHandlers() {

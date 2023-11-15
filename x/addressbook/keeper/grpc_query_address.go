@@ -3,14 +3,13 @@ package keeper
 import (
 	"context"
 
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (k Keeper) AddressAll(c context.Context, req *types.QueryAllAddressRequest) (*types.QueryAllAddressResponse, error) {

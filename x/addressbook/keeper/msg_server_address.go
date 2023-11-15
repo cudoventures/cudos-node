@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (k msgServer) CreateAddress(goCtx context.Context, msg *types.MsgCreateAddress) (*types.MsgCreateAddressResponse, error) {

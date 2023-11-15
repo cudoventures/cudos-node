@@ -1,10 +1,10 @@
 package keeper
 
 import (
+	"github.com/CudoVentures/cudos-node/x/nft/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (k Keeper) GetApprovedAddresses(ctx sdk.Context, sender sdk.AccAddress) (*types.ApprovedAddressesData, error) {

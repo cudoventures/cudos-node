@@ -3,16 +3,16 @@ package addressbook
 import (
 	"math/rand"
 
+	"github.com/CudoVentures/cudos-node/testutil/sample"
+	addressbooksimulation "github.com/CudoVentures/cudos-node/x/addressbook/simulation"
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-
-	"github.com/CudoVentures/cudos-node/testutil/sample"
-	addressbooksimulation "github.com/CudoVentures/cudos-node/x/addressbook/simulation"
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // avoid unused import issue

@@ -4,10 +4,10 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type msgServer struct {

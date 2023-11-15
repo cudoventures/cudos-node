@@ -3,9 +3,8 @@ package types
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/CudoVentures/cudos-node/testutil/sample"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMsgCreateCollection_ValidateBasic(t *testing.T) {

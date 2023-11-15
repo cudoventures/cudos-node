@@ -4,12 +4,11 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 // Query all collections listed for sale in the marketplace

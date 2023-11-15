@@ -3,6 +3,7 @@ package types
 // DONTCOVER
 
 import (
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -10,8 +11,6 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-
-	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 var (
@@ -27,7 +26,7 @@ func init() {
 
 // RegisterLegacyAminoCodec concrete types on codec
 // (Amino is still needed for Ledger at the moment)
-// nolint: staticcheck
+
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgIssueDenom{}, "github.com/CudoVentures/cudos-node/nft/MsgIssueDenom", nil)
 	cdc.RegisterConcrete(&MsgTransferNft{}, "github.com/CudoVentures/cudos-node/nft/MsgTransferNft", nil)

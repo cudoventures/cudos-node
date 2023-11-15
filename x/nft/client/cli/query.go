@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -13,8 +14,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -69,7 +68,6 @@ func GetCmdQuerySupply() *cobra.Command {
 				}
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomID(args[0]); err != nil {
 				return err
 			}
@@ -106,7 +104,6 @@ func GetCmdQueryOwner() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if _, err := sdk.AccAddressFromBech32(args[0]); err != nil {
 				return err
 			}
@@ -151,7 +148,6 @@ func GetCmdQueryCollection() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomID(args[0]); err != nil {
 				return err
 			}
@@ -264,7 +260,6 @@ func GetCmdQueryDenom() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomID(args[0]); err != nil {
 				return err
 			}
@@ -299,7 +294,6 @@ func GetCmdQueryDenomByName() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomName(args[0]); err != nil {
 				return err
 			}
@@ -334,7 +328,6 @@ func GetCmdQueryDenomBySymbol() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomSymbol(args[0]); err != nil {
 				return err
 			}
@@ -370,12 +363,10 @@ func GetCmdQueryNFT() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateDenomID(args[0]); err != nil {
 				return err
 			}
 
-			// nolint: govet
 			if err := types.ValidateTokenID(args[1]); err != nil {
 				return err
 			}
@@ -410,13 +401,11 @@ func GetCmdQueryApprovedNFT() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			denomId := args[0]
 			if err := types.ValidateDenomID(denomId); err != nil {
 				return err
 			}
 
-			// nolint: govet
 			tokenId := args[1]
 			if err := types.ValidateTokenID(tokenId); err != nil {
 				return err
@@ -453,7 +442,6 @@ func GetCmdQueryIsApprovedForAll() *cobra.Command {
 				return err
 			}
 
-			// nolint: govet
 			owner := args[0]
 			if _, err := sdk.AccAddressFromBech32(owner); err != nil {
 				return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid owner address (%s)", err)

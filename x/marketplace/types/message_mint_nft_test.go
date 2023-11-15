@@ -3,12 +3,11 @@ package types
 import (
 	"testing"
 
+	"github.com/CudoVentures/cudos-node/testutil/sample"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-	"github.com/CudoVentures/cudos-node/testutil/sample"
 )
 
 func TestMsgMintNft_ValidateBasic(t *testing.T) {

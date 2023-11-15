@@ -4,9 +4,9 @@ import (
 	"context"
 	"strconv"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) RemoveNft(goCtx context.Context, msg *types.MsgRemoveNft) (*types.MsgRemoveNftResponse, error) {

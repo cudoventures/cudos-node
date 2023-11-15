@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/gorilla/mux"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const (
@@ -95,7 +94,6 @@ func queryCollectionsByDenomIds(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -160,7 +158,6 @@ func querySupply(cliCtx client.Context) http.HandlerFunc {
 		var querySupplyResponse types.QuerySupplyResponse
 		cliCtx.Codec.MustUnmarshal(res, &querySupplyResponse)
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -221,7 +218,6 @@ func queryOwner(cliCtx client.Context) http.HandlerFunc {
 		var ownerResponse types.QueryOwnerResponse
 		cliCtx.Codec.MustUnmarshal(res, &ownerResponse)
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -257,7 +253,6 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -283,7 +278,6 @@ func queryCollection(cliCtx client.Context) http.HandlerFunc {
 // query a denom by denom id
 func queryDenom(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -323,7 +317,6 @@ func queryDenom(cliCtx client.Context) http.HandlerFunc {
 // Query the denom by name
 func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -363,7 +356,6 @@ func queryDenomByName(cliCtx client.Context) http.HandlerFunc {
 // Query the denom by symbol
 func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -402,7 +394,6 @@ func queryDenoBySymbol(cliCtx client.Context) http.HandlerFunc {
 // Query all denoms
 func queryDenoms(cliCtx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -468,7 +459,6 @@ func queryNFT(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -519,7 +509,6 @@ func queryApprovalsNFT(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
@@ -561,7 +550,6 @@ func queryIsApprovedForAll(cliCtx client.Context) http.HandlerFunc {
 			return
 		}
 
-		// nolint: govet
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return

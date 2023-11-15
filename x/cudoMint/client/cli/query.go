@@ -3,11 +3,10 @@ package cli
 import (
 	"fmt"
 
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

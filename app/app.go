@@ -7,6 +7,17 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	appparams "github.com/CudoVentures/cudos-node/app/params"
+	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	"github.com/CudoVentures/cudos-node/x/admin"
+	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
+	"github.com/CudoVentures/cudos-node/x/cudoMint"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
+	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
@@ -58,18 +69,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	appparams "github.com/CudoVentures/cudos-node/app/params"
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	"github.com/CudoVentures/cudos-node/x/admin"
-	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const Name = "cudos-node"
