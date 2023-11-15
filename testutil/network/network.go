@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/CudoVentures/cudos-node/app"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
@@ -18,6 +17,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	"github.com/CudoVentures/cudos-node/app"
 )
 
 type (

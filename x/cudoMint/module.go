@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -18,6 +14,11 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	"github.com/CudoVentures/cudos-node/x/cudoMint/client/cli"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/client/rest"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 var (

@@ -5,13 +5,14 @@ import (
 	"strconv"
 	"testing"
 
-	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
-	"github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
+	"github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // Prevent strconv unused error

@@ -1,11 +1,11 @@
 package types
 
 import (
-	"github.com/CudoVentures/cudos-node/x/nft/exported"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type NftKeeper interface {

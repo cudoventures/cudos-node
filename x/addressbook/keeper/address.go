@@ -1,11 +1,11 @@
 package keeper
 
 import (
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // CreateNewAddress set a specific address in the store from its index

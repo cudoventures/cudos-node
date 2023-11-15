@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -14,6 +13,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // NewTxCmd returns the transaction commands for this module

@@ -4,10 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp"
-	"github.com/CudoVentures/cudos-node/testutil/nullify"
-	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -17,6 +13,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+
+	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/testutil/nullify"
+	"github.com/CudoVentures/cudos-node/x/marketplace/client/cli"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 func networkWithNftObjects(t *testing.T, n int) (*network.Network, []types.Nft) {

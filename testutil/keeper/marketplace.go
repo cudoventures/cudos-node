@@ -4,11 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp"
-	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -24,6 +19,12 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftkeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func MarketplaceKeeper(t testing.TB) (*keeper.Keeper, *nftkeeper.Keeper, *bankkeeper.BaseKeeper, sdk.Context) {

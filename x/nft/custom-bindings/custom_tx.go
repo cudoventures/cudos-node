@@ -5,10 +5,11 @@ import (
 
 	wasmKeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmd/x/wasm/types"
-	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	nftTypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // fromReflectRawMsg decodes msg.Data to an sdk.Msg using proto Any and json encoding.

@@ -5,9 +5,6 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/CudoVentures/cudos-node/x/nft/keeper"
-	"github.com/CudoVentures/cudos-node/x/nft/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -15,6 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // Simulation operation weights constants

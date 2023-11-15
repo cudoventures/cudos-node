@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/kv"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // DecodeStore unmarshals the KVPair's Value to the corresponding gov type

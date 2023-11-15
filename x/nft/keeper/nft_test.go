@@ -1,8 +1,9 @@
 package keeper_test
 
 import (
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (suite *IntegrationTestKeeperSuite) TestGetNFT_ShouldCorrectly_ReturnNFT() {

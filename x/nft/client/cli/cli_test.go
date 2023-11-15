@@ -4,11 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp"
-	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
-	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
-	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	"github.com/tendermint/tendermint/crypto"
@@ -17,6 +12,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/simapp"
+	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
+	nfttestutil "github.com/CudoVentures/cudos-node/x/nft/client/testutil"
+	nftKeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 type IntegrationTestSuite struct {

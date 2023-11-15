@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/gorilla/mux"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const (

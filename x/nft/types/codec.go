@@ -3,7 +3,6 @@ package types
 // DONTCOVER
 
 import (
-	"github.com/CudoVentures/cudos-node/x/nft/exported"
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -11,6 +10,8 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 var (

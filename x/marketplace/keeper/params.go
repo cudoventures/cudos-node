@@ -1,9 +1,9 @@
 package keeper
 
 import (
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 // GetParams get all parameters as types.Params

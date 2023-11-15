@@ -4,11 +4,12 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 // List all nfts for sale in the marketplace

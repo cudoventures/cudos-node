@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -14,6 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp"
-	"github.com/CudoVentures/cudos-node/x/addressbook/client/cli"
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
@@ -15,6 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/x/addressbook/client/cli"
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 type TxAddressIntegrationTestSuite struct {

@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func TestMigrateStore(t *testing.T) {

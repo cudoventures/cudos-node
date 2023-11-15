@@ -3,11 +3,11 @@ package cudoMint
 import (
 	"fmt"
 
-	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	"github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 // NewHandler ...

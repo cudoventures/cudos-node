@@ -3,10 +3,10 @@ package keeper
 import (
 	"encoding/binary"
 
-	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/marketplace/types"
 )
 
 // GetCollectionCount get the total number of collection

@@ -3,13 +3,14 @@ package testutil
 import (
 	"fmt"
 
-	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
+
+	nftcli "github.com/CudoVentures/cudos-node/x/nft/client/cli"
 )
 
 // MsgRedelegateExec creates a redelegate message.

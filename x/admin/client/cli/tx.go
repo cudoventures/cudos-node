@@ -3,14 +3,15 @@ package cli
 import (
 	"fmt"
 
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	// "github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/CudoVentures/cudos-node/x/admin/types"
 )
 
 // GetTxCmd returns the transaction commands for this module

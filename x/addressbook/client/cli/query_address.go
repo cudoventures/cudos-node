@@ -3,11 +3,12 @@ package cli
 import (
 	"context"
 
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func CmdListAddress() *cobra.Command {

@@ -1,10 +1,10 @@
 package types
 
 import (
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const TypeMsgPublishCollection = "publish_collection"

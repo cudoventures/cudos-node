@@ -6,11 +6,6 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/CudoVentures/cudos-node/x/nft/client/cli"
-	"github.com/CudoVentures/cudos-node/x/nft/client/rest"
-	"github.com/CudoVentures/cudos-node/x/nft/keeper"
-	"github.com/CudoVentures/cudos-node/x/nft/simulation"
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -22,6 +17,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/CudoVentures/cudos-node/x/nft/client/cli"
+	"github.com/CudoVentures/cudos-node/x/nft/client/rest"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/simulation"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 const ConsensusVersion = 2

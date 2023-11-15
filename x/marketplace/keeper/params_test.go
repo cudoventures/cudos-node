@@ -3,9 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	testkeeper "github.com/CudoVentures/cudos-node/testutil/keeper"
 	"github.com/CudoVentures/cudos-node/x/marketplace/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGetParams(t *testing.T) {

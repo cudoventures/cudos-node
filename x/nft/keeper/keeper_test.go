@@ -5,9 +5,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp"
-	"github.com/CudoVentures/cudos-node/x/nft/keeper"
-	"github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -16,6 +13,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/simapp"
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 var (

@@ -3,9 +3,9 @@ package types
 import (
 	fmt "fmt"
 
-	"github.com/CudoVentures/cudos-node/x/nft/exported"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/CudoVentures/cudos-node/x/nft/exported"
 )
 
 var _ exported.NFT = BaseNFT{}

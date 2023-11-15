@@ -8,8 +8,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/CudoVentures/cudos-node/simapp/helpers"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -33,6 +31,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/CudoVentures/cudos-node/simapp/helpers"
+	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // Get flags every time the simulator is run

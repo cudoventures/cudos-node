@@ -4,16 +4,17 @@ import (
 	"strconv"
 	"testing"
 
-	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
-	"github.com/CudoVentures/cudos-node/testutil/nullify"
-	"github.com/CudoVentures/cudos-node/testutil/sample"
-	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
+	keepertest "github.com/CudoVentures/cudos-node/testutil/keeper"
+	"github.com/CudoVentures/cudos-node/testutil/nullify"
+	"github.com/CudoVentures/cudos-node/testutil/sample"
+	"github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // Prevent strconv unused error

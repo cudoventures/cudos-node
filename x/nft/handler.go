@@ -3,11 +3,11 @@ package nft
 import (
 	"fmt"
 
-	"github.com/CudoVentures/cudos-node/x/nft/keeper"
-	"github.com/CudoVentures/cudos-node/x/nft/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/CudoVentures/cudos-node/x/nft/keeper"
+	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 // NewHandler ...

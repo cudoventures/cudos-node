@@ -4,25 +4,8 @@ import (
 	"path/filepath"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
-	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	// this line is used by starport scaffolding # stargate/app/moduleImport
-	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
-	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -57,6 +40,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
+
+	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
+	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
+	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
+	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
+	// this line is used by starport scaffolding # stargate/app/moduleImport
+	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
+	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
+	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
+	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
