@@ -8,7 +8,7 @@ import (
 	"github.com/CudoVentures/cudos-node/x/nft/types"
 )
 
-func (k Keeper) IsApprovedAddress(nft *types.BaseNFT, sender string) bool {
+func (Keeper) IsApprovedAddress(nft *types.BaseNFT, sender string) bool {
 	for _, address := range nft.ApprovedAddresses {
 		if sender == address {
 			return true
@@ -64,7 +64,7 @@ func (k Keeper) GetNFTs(ctx sdk.Context, denom string) (nfts []exported.NFT) {
 
 // IsOwner checks if the sender is the owner of the given NFT
 // Return the NFT if true, an error otherwise
-func (k Keeper) IsOwner(nft types.BaseNFT, owner sdk.AccAddress) bool {
+func (Keeper) IsOwner(nft types.BaseNFT, owner sdk.AccAddress) bool {
 	if !owner.Equals(nft.GetOwner()) {
 		return false
 	}

@@ -47,10 +47,10 @@ func NewMsgIssueDenom(denomID, denomName, schema, sender, contractAddressSigner,
 }
 
 // Route Implements Msg
-func (msg MsgIssueDenom) Route() string { return RouterKey }
+func (MsgIssueDenom) Route() string { return RouterKey }
 
 // Type Implements Msg
-func (msg MsgIssueDenom) Type() string { return TypeMsgIssueDenom }
+func (MsgIssueDenom) Type() string { return TypeMsgIssueDenom }
 
 // ValidateBasic Implements Msg.
 func (msg MsgIssueDenom) ValidateBasic() error {

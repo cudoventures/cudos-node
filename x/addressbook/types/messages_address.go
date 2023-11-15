@@ -126,11 +126,11 @@ func NewMsgDeleteAddress(creator, network, label string) *MsgDeleteAddress {
 	}
 }
 
-func (msg *MsgDeleteAddress) Route() string {
+func (*MsgDeleteAddress) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgDeleteAddress) Type() string {
+func (*MsgDeleteAddress) Type() string {
 	return TypeMsgDeleteAddress
 }
 
