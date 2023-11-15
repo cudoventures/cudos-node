@@ -39,6 +39,7 @@ func TestAddressGet(t *testing.T) {
 			item.Network,
 			item.Label,
 		)
+		tc := tc
 		require.True(t, found)
 		require.Equal(t,
 			nullify.Fill(&item),

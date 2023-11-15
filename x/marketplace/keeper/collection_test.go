@@ -25,6 +25,7 @@ func TestCollectionGet(t *testing.T) {
 	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNCollection(keeper, ctx, 10)
 	for _, item := range items {
+		item := item
 		got, found := keeper.GetCollection(ctx, item.Id)
 		require.True(t, found)
 		require.Equal(t,

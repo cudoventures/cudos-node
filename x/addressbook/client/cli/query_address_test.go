@@ -101,6 +101,7 @@ func (s *QueryAddressIntegrationTestSuite) TestShowAddress() {
 		},
 	} {
 		s.T().Run(tc.desc, func(t *testing.T) {
+			tc := tc
 			args := []string{
 				tc.creator,
 				tc.network,

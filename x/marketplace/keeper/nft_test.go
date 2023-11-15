@@ -25,6 +25,7 @@ func TestNftGet(t *testing.T) {
 	keeper, _, _, ctx := keepertest.MarketplaceKeeper(t)
 	items := createNNft(keeper, ctx, 10)
 	for _, item := range items {
+		item := item
 		got, found := keeper.GetNft(ctx, item.Id)
 		require.True(t, found)
 		require.Equal(t,
