@@ -3,11 +3,8 @@ package app
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -106,9 +103,6 @@ func (app *CudosApp) addModules(appOpts servertypes.AppOptions) {
 		// cudos
 		admin.NewAppModule(appCodec, app.AdminKeeper),
 		cudoMint.NewAppModule(appCodec, app.CudoMintKeeper),
-		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
-		marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper, app.NftKeeper),
-		addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 }
 

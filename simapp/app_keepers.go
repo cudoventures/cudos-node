@@ -65,20 +65,12 @@ import (
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
-
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
@@ -253,31 +245,6 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 	govRouter.AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 	app.GovKeeper.SetLegacyRouter(govRouter)
 
-	// NftKeeper
-	app.NftKeeper = *nftmodulekeeper.NewKeeper(
-		app.appCodec,
-		app.keys[nftmoduletypes.StoreKey],
-		app.keys[nftmoduletypes.MemStoreKey],
-	)
-
-	// MarketplaceKeeper
-	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
-		app.appCodec,
-		app.keys[marketplacetypes.StoreKey],
-		app.keys[marketplacetypes.MemStoreKey],
-		app.GetSubspace(marketplacetypes.ModuleName),
-		app.BankKeeper,
-		app.NftKeeper,
-	)
-
-	// AddressbookKeeper
-	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
-		app.appCodec,
-		app.keys[addressbooktypes.StoreKey],
-		app.keys[addressbooktypes.MemStoreKey],
-		app.GetSubspace(addressbooktypes.ModuleName),
-	)
-
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
@@ -374,7 +341,6 @@ func (app *CudosSimApp) AddKeepers(appOpts servertypes.AppOptions) {
 		wasmConfig,
 		supportedFeatures,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		GetCustomPlugins(app.NftKeeper, app.MarketplaceKeeper, app.AddressbookKeeper)...,
 	)
 
 	// AdminKeeper
@@ -422,9 +388,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// cudos
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
-	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
-	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 
 	return paramsKeeper
 }

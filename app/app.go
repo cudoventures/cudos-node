@@ -31,12 +31,8 @@ import (
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -83,8 +79,6 @@ import (
 
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
@@ -141,9 +135,6 @@ type CudosApp struct {
 	// cudos keepers
 	AdminKeeper       adminkeeper.Keeper
 	CudoMintKeeper    cudoMintkeeper.Keeper
-	NftKeeper         nftmodulekeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
-	MarketplaceKeeper marketplacekeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -201,9 +192,6 @@ func NewCudosApp(
 		// cudos
 		admintypes.StoreKey,
 		cudominttypes.StoreKey,
-		nftmoduletypes.StoreKey,
-		addressbooktypes.StoreKey,
-		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -254,9 +242,6 @@ func NewCudosApp(
 		gravitytypes.ModuleName,
 		wasmtypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -284,9 +269,6 @@ func NewCudosApp(
 		gravitytypes.ModuleName,
 		wasmtypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -320,9 +302,6 @@ func NewCudosApp(
 		ibcfeetypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	}
 	app.mm.SetOrderInitGenesis(genesisModuleOrder...)
 	app.mm.SetOrderExportGenesis(genesisModuleOrder...)
