@@ -12,88 +12,89 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc PublishCollection(MsgPublishCollection) returns (MsgPublishCollectionResponse);
+  rpc PublishCollection(MsgPublishCollection)
+      returns (MsgPublishCollectionResponse);
   rpc PublishNft(MsgPublishNft) returns (MsgPublishNftResponse);
   rpc BuyNft(MsgBuyNft) returns (MsgBuyNftResponse);
   rpc MintNft(MsgMintNft) returns (MsgMintNftResponse);
   rpc RemoveNft(MsgRemoveNft) returns (MsgRemoveNftResponse);
-  rpc VerifyCollection(MsgVerifyCollection) returns (MsgVerifyCollectionResponse);
-  rpc UnverifyCollection(MsgUnverifyCollection) returns (MsgUnverifyCollectionResponse);
-  rpc CreateCollection(MsgCreateCollection) returns (MsgCreateCollectionResponse);
+  rpc VerifyCollection(MsgVerifyCollection)
+      returns (MsgVerifyCollectionResponse);
+  rpc UnverifyCollection(MsgUnverifyCollection)
+      returns (MsgUnverifyCollectionResponse);
+  rpc CreateCollection(MsgCreateCollection)
+      returns (MsgCreateCollectionResponse);
   rpc UpdateRoyalties(MsgUpdateRoyalties) returns (MsgUpdateRoyaltiesResponse);
   rpc UpdatePrice(MsgUpdatePrice) returns (MsgUpdatePriceResponse);
   rpc AddAdmin(MsgAddAdmin) returns (MsgAddAdminResponse);
   rpc RemoveAdmin(MsgRemoveAdmin) returns (MsgRemoveAdminResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgPublishCollection {
   string creator = 1;
   string denomId = 2;
-  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
-  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
+  repeated Royalty mintRoyalties = 3 [ (gogoproto.nullable) = false ];
+  repeated Royalty resaleRoyalties = 4 [ (gogoproto.nullable) = false ];
 }
 
-message MsgPublishCollectionResponse {
-}
+message MsgPublishCollectionResponse {}
 
 message MsgPublishNft {
   string creator = 1;
   string tokenId = 2;
   string denomId = 3;
-  cosmos.base.v1beta1.Coin price = 4 
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  cosmos.base.v1beta1.Coin price = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
-message MsgPublishNftResponse {
-}
+message MsgPublishNftResponse {}
 
 message MsgBuyNft {
   string creator = 1;
   uint64 id = 2;
 }
 
-message MsgBuyNftResponse {
-}
+message MsgBuyNftResponse {}
 
 message MsgMintNft {
   string creator = 1;
   string denomId = 2;
   string recipient = 3;
-  cosmos.base.v1beta1.Coin price = 4 
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  cosmos.base.v1beta1.Coin price = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
   string name = 5;
   string uri = 6;
   string data = 7;
   string uid = 8;
 }
 
-message MsgMintNftResponse {
-}
+message MsgMintNftResponse {}
 
 message MsgRemoveNft {
   string creator = 1;
   uint64 id = 2;
 }
 
-message MsgRemoveNftResponse {
-}
+message MsgRemoveNftResponse {}
 
 message MsgVerifyCollection {
   string creator = 1;
   uint64 id = 2;
 }
 
-message MsgVerifyCollectionResponse {
-}
+message MsgVerifyCollectionResponse {}
 
 message MsgUnverifyCollection {
   string creator = 1;
   uint64 id = 2;
 }
 
-message MsgUnverifyCollectionResponse {
-}
+message MsgUnverifyCollectionResponse {}
 
 message MsgCreateCollection {
   string creator = 1;
@@ -105,48 +106,45 @@ message MsgCreateCollection {
   string description = 7;
   string minter = 8;
   string data = 9;
-  repeated Royalty mintRoyalties = 10 [(gogoproto.nullable) = false];
-  repeated Royalty resaleRoyalties = 11[(gogoproto.nullable) = false];
+  repeated Royalty mintRoyalties = 10 [ (gogoproto.nullable) = false ];
+  repeated Royalty resaleRoyalties = 11 [ (gogoproto.nullable) = false ];
   bool verified = 12;
 }
 
-message MsgCreateCollectionResponse {
-}
+message MsgCreateCollectionResponse {}
 
 message MsgUpdateRoyalties {
   string creator = 1;
   uint64 id = 2;
-  repeated Royalty mintRoyalties = 3 [(gogoproto.nullable) = false];
-  repeated Royalty resaleRoyalties = 4 [(gogoproto.nullable) = false];
+  repeated Royalty mintRoyalties = 3 [ (gogoproto.nullable) = false ];
+  repeated Royalty resaleRoyalties = 4 [ (gogoproto.nullable) = false ];
 }
 
-message MsgUpdateRoyaltiesResponse {
-}
+message MsgUpdateRoyaltiesResponse {}
 
 message MsgUpdatePrice {
   string creator = 1;
   uint64 id = 2;
-  cosmos.base.v1beta1.Coin price = 4 
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  cosmos.base.v1beta1.Coin price = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
-message MsgUpdatePriceResponse {
-}
+message MsgUpdatePriceResponse {}
 
 message MsgAddAdmin {
   string creator = 1;
   string address = 2;
 }
 
-message MsgAddAdminResponse {
-}
+message MsgAddAdminResponse {}
 
 message MsgRemoveAdmin {
   string creator = 1;
   string address = 2;
 }
 
-message MsgRemoveAdminResponse {
-}
+message MsgRemoveAdminResponse {}
 
 // this line is used by starport scaffolding # proto/tx/message

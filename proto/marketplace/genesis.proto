@@ -11,10 +11,10 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 // GenesisState defines the marketplace module's genesis state.
 message GenesisState {
-  Params params = 1 [(gogoproto.nullable) = false];
-  repeated Collection collectionList = 2 [(gogoproto.nullable) = false];
+  Params params = 1 [ (gogoproto.nullable) = false ];
+  repeated Collection collectionList = 2 [ (gogoproto.nullable) = false ];
   uint64 collectionCount = 3;
-  repeated Nft nftList = 4 [(gogoproto.nullable) = false];
+  repeated Nft nftList = 4 [ (gogoproto.nullable) = false ];
   uint64 nftCount = 5;
   uint64 nextUniqueId = 6;
   // this line is used by starport scaffolding # genesis/proto/state

@@ -8,10 +8,10 @@ option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc CreateAddress(MsgCreateAddress) returns (MsgCreateAddressResponse);
+  rpc CreateAddress(MsgCreateAddress) returns (MsgCreateAddressResponse);
   rpc UpdateAddress(MsgUpdateAddress) returns (MsgUpdateAddressResponse);
   rpc DeleteAddress(MsgDeleteAddress) returns (MsgDeleteAddressResponse);
-// this line is used by starport scaffolding # proto/tx/rpc
+  // this line is used by starport scaffolding # proto/tx/rpc
 }
 
 message MsgCreateAddress {

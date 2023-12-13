@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 
 message Admins {
-    option (gogoproto.equal) = true;
+  option (gogoproto.equal) = true;
 
-    repeated string addresses = 1 [(gogoproto.nullable) = false];
+  repeated string addresses = 1 [ (gogoproto.nullable) = false ];
 }

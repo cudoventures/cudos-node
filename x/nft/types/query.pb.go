@@ -7,7 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	query "github.com/cosmos/cosmos-sdk/types/query"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -243,7 +243,8 @@ func (m *QueryOwnerResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryCollectionRequest is the request type for the Query/Collection RPC method
+// QueryCollectionRequest is the request type for the Query/Collection RPC
+// method
 type QueryCollectionRequest struct {
 	DenomId string `protobuf:"bytes,1,opt,name=denom_id,json=denomId,proto3" json:"denom_id,omitempty" yaml:"denom_id"`
 	// pagination defines an optional pagination for the request.
@@ -297,7 +298,8 @@ func (m *QueryCollectionRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryCollectionResponse is the response type for the Query/Collection RPC method
+// QueryCollectionResponse is the response type for the Query/Collection RPC
+// method
 type QueryCollectionResponse struct {
 	Collection *Collection         `protobuf:"bytes,1,opt,name=collection,proto3" json:"collection,omitempty"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -350,7 +352,8 @@ func (m *QueryCollectionResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryCollectionsByIdsRequest is the request type for the Query/CollectionsByIds RPC method
+// QueryCollectionsByIdsRequest is the request type for the
+// Query/CollectionsByIds RPC method
 type QueryCollectionsByIdsRequest struct {
 	DenomIds []string `protobuf:"bytes,1,rep,name=denom_ids,json=denomIds,proto3" json:"denom_ids,omitempty" yaml:"denom_ids"`
 }
@@ -395,7 +398,8 @@ func (m *QueryCollectionsByIdsRequest) GetDenomIds() []string {
 	return nil
 }
 
-// QueryCollectionResponse is the response type for the Query/CollectionsByIds RPC method
+// QueryCollectionResponse is the response type for the Query/CollectionsByIds
+// RPC method
 type QueryCollectionByIdsResponse struct {
 	Collections []*Collection `protobuf:"bytes,1,rep,name=collections,proto3" json:"collections,omitempty"`
 }
@@ -530,7 +534,8 @@ func (m *QueryDenomResponse) GetDenom() *Denom {
 	return nil
 }
 
-// QueryDenomByNameRequest is the request type for the Query/DenomByName RPC method
+// QueryDenomByNameRequest is the request type for the Query/DenomByName RPC
+// method
 type QueryDenomByNameRequest struct {
 	DenomName string `protobuf:"bytes,1,opt,name=denom_name,json=denomName,proto3" json:"denom_name,omitempty" yaml:"denom_name"`
 }
@@ -575,7 +580,8 @@ func (m *QueryDenomByNameRequest) GetDenomName() string {
 	return ""
 }
 
-// QueryDenomBySymbolRequest is the request type for the Query/DenomBySymbol RPC method
+// QueryDenomBySymbolRequest is the request type for the Query/DenomBySymbol RPC
+// method
 type QueryDenomBySymbolRequest struct {
 	Symbol string `protobuf:"bytes,1,opt,name=symbol,proto3" json:"symbol,omitempty" yaml:"symbol"`
 }
@@ -620,7 +626,8 @@ func (m *QueryDenomBySymbolRequest) GetSymbol() string {
 	return ""
 }
 
-// QueryDenomByNameResponse is the response type for the Query/DenomByName RPC method
+// QueryDenomByNameResponse is the response type for the Query/DenomByName RPC
+// method
 type QueryDenomByNameResponse struct {
 	Denom *Denom `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 }
@@ -665,7 +672,8 @@ func (m *QueryDenomByNameResponse) GetDenom() *Denom {
 	return nil
 }
 
-// QueryDenomByNameResponse is the response type for the Query/DenomByName RPC method
+// QueryDenomByNameResponse is the response type for the Query/DenomByName RPC
+// method
 type QueryDenomBySymbolResponse struct {
 	Denom *Denom `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 }
@@ -960,7 +968,8 @@ func (m *QueryApprovalsNFTRequest) GetTokenId() string {
 	return ""
 }
 
-// QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
+// QueryApprovalsNFTResponse is the response type for the
+// Query/ApprovalsNFTRequest RPC method
 type QueryApprovalsNFTResponse struct {
 	ApprovedAddresses []string `protobuf:"bytes,1,rep,name=ApprovedAddresses,proto3" json:"approved_addresses"`
 }
@@ -1005,7 +1014,8 @@ func (m *QueryApprovalsNFTResponse) GetApprovedAddresses() []string {
 	return nil
 }
 
-// QueryApprovalsIsApprovedForAllRequest is the request type for the Query/NFT RPC method
+// QueryApprovalsIsApprovedForAllRequest is the request type for the Query/NFT
+// RPC method
 type QueryApprovalsIsApprovedForAllRequest struct {
 	Owner    string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
@@ -1058,7 +1068,8 @@ func (m *QueryApprovalsIsApprovedForAllRequest) GetOperator() string {
 	return ""
 }
 
-// QueryApprovalsNFTResponse is the response type for the Query/ApprovalsNFTRequest RPC method
+// QueryApprovalsNFTResponse is the response type for the
+// Query/ApprovalsNFTRequest RPC method
 type QueryApprovalsIsApprovedForAllResponse struct {
 	IsApproved bool `protobuf:"varint,1,opt,name=isApproved,proto3" json:"is_approved"`
 }
@@ -2932,10 +2943,7 @@ func (m *QuerySupplyRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3004,10 +3012,7 @@ func (m *QuerySupplyResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3157,10 +3162,7 @@ func (m *QueryOwnerRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3282,10 +3284,7 @@ func (m *QueryOwnerResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3403,10 +3402,7 @@ func (m *QueryCollectionRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3528,10 +3524,7 @@ func (m *QueryCollectionResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3613,10 +3606,7 @@ func (m *QueryCollectionsByIdsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3700,10 +3690,7 @@ func (m *QueryCollectionByIdsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3785,10 +3772,7 @@ func (m *QueryDenomRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3874,10 +3858,7 @@ func (m *QueryDenomResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -3959,10 +3940,7 @@ func (m *QueryDenomByNameRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4044,10 +4022,7 @@ func (m *QueryDenomBySymbolRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4133,10 +4108,7 @@ func (m *QueryDenomByNameResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4222,10 +4194,7 @@ func (m *QueryDenomBySymbolResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4311,10 +4280,7 @@ func (m *QueryDenomsRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4434,10 +4400,7 @@ func (m *QueryDenomsResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4551,10 +4514,7 @@ func (m *QueryNFTRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4640,10 +4600,7 @@ func (m *QueryNFTResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4757,10 +4714,7 @@ func (m *QueryApprovalsNFTRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4842,10 +4796,7 @@ func (m *QueryApprovalsNFTResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -4959,10 +4910,7 @@ func (m *QueryApprovalsIsApprovedForAllRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {
@@ -5032,10 +4980,7 @@ func (m *QueryApprovalsIsApprovedForAllResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if (iNdEx + skippy) > l {

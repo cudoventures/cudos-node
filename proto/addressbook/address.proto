@@ -6,7 +6,6 @@ option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
 message Address {
   string network = 1;
   string label = 2;
-  string value = 3; 
+  string value = 3;
   string creator = 4;
 }
-

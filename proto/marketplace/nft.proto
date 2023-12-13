@@ -10,9 +10,12 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 // NFT listed for sale in the marketplace
 message Nft {
   uint64 id = 1;
-  string tokenId = 2; 
-  string denomId = 3; 
-  cosmos.base.v1beta1.Coin price = 4 
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];;
+  string tokenId = 2;
+  string denomId = 3;
+  cosmos.base.v1beta1.Coin price = 4 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  ;
   string owner = 5;
 }
