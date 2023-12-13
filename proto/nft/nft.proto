@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudosnode.cudosnode.nft;
+package nft;
 
 import "gogoproto/gogo.proto";
 
@@ -16,7 +16,7 @@ message BaseNFT {
       [ (gogoproto.customname) = "URI", (gogoproto.jsontag) = "uri" ];
   string data = 4 [ (gogoproto.jsontag) = "data" ];
   string owner = 5;
-  repeated string approvedAddresses = 6
+  repeated string approved_addresses = 6
       [ (gogoproto.jsontag) = "approved_addresses,omitempty" ];
 }
 
@@ -66,11 +66,11 @@ message Collection {
 
 message ApprovedAddresses {
   option (gogoproto.equal) = true;
-  map<string, ApprovedAddressesData> approvedAddresses = 1;
+  map<string, ApprovedAddressesData> approved_addresses = 1;
 }
 
 message ApprovedAddressesData {
   option (gogoproto.equal) = true;
 
-  map<string, bool> approvedAddressesData = 1;
+  map<string, bool> approved_address_data = 1;
 }

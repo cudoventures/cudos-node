@@ -1,9 +1,8 @@
 syntax = "proto3";
-package cudosnode.cudosnode.pocbasecosmos;
+package cudos.admin;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/admin/types";

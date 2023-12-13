@@ -1,9 +1,8 @@
 syntax = "proto3";
-package cudoventures.cudosnode.marketplace;
+package marketplace;
 
 import "marketplace/royalty.proto";
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 // this line is used by starport scaffolding # proto/tx/import
@@ -33,17 +32,17 @@ service Msg {
 
 message MsgPublishCollection {
   string creator = 1;
-  string denomId = 2;
-  repeated Royalty mintRoyalties = 3 [ (gogoproto.nullable) = false ];
-  repeated Royalty resaleRoyalties = 4 [ (gogoproto.nullable) = false ];
+  string denom_id = 2;
+  repeated Royalty mint_royalties = 3 [ (gogoproto.nullable) = false ];
+  repeated Royalty resale_royalties = 4 [ (gogoproto.nullable) = false ];
 }
 
 message MsgPublishCollectionResponse {}
 
 message MsgPublishNft {
   string creator = 1;
-  string tokenId = 2;
-  string denomId = 3;
+  string token_id = 2;
+  string denom_id = 3;
   cosmos.base.v1beta1.Coin price = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
@@ -61,7 +60,7 @@ message MsgBuyNftResponse {}
 
 message MsgMintNft {
   string creator = 1;
-  string denomId = 2;
+  string denom_id = 2;
   string recipient = 3;
   cosmos.base.v1beta1.Coin price = 4 [
     (gogoproto.nullable) = false,
@@ -106,8 +105,8 @@ message MsgCreateCollection {
   string description = 7;
   string minter = 8;
   string data = 9;
-  repeated Royalty mintRoyalties = 10 [ (gogoproto.nullable) = false ];
-  repeated Royalty resaleRoyalties = 11 [ (gogoproto.nullable) = false ];
+  repeated Royalty mint_royalties = 10 [ (gogoproto.nullable) = false ];
+  repeated Royalty resale_royalties = 11 [ (gogoproto.nullable) = false ];
   bool verified = 12;
 }
 
@@ -116,8 +115,8 @@ message MsgCreateCollectionResponse {}
 message MsgUpdateRoyalties {
   string creator = 1;
   uint64 id = 2;
-  repeated Royalty mintRoyalties = 3 [ (gogoproto.nullable) = false ];
-  repeated Royalty resaleRoyalties = 4 [ (gogoproto.nullable) = false ];
+  repeated Royalty mint_royalties = 3 [ (gogoproto.nullable) = false ];
+  repeated Royalty resale_royalties = 4 [ (gogoproto.nullable) = false ];
 }
 
 message MsgUpdateRoyaltiesResponse {}

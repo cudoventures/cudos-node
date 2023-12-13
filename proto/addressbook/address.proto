@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudoventures.cudosnode.addressbook;
+package addressbook;
 
 option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
 

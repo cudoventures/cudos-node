@@ -1,12 +1,11 @@
 syntax = "proto3";
-package cudoventures.cudosnode.addressbook;
+package addressbook;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "addressbook/params.proto";
 import "addressbook/address.proto";
-// this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/addressbook/types";
 
@@ -28,8 +27,6 @@ service Query {
     option (google.api.http).get =
         "/CudoVentures/cudos-node/addressbook/address";
   }
-
-  // this line is used by starport scaffolding # 2
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.

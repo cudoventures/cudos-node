@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudoventures.cudosnode.marketplace;
+package marketplace;
 
 import "gogoproto/gogo.proto";
 

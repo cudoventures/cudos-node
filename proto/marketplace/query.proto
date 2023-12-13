@@ -1,12 +1,13 @@
 syntax = "proto3";
-package cudoventures.cudosnode.marketplace;
+package marketplace;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "marketplace/params.proto";
 import "marketplace/collection.proto";
 import "marketplace/nft.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -72,7 +73,7 @@ message QueryParamsResponse {
 message QueryGetCollectionRequest { uint64 id = 1; }
 
 message QueryGetCollectionResponse {
-  Collection Collection = 1 [ (gogoproto.nullable) = false ];
+  Collection collection = 1 [ (gogoproto.nullable) = false ];
 }
 
 message QueryAllCollectionRequest {
@@ -80,33 +81,33 @@ message QueryAllCollectionRequest {
 }
 
 message QueryAllCollectionResponse {
-  repeated Collection Collection = 1 [ (gogoproto.nullable) = false ];
+  repeated Collection collection = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetNftRequest { uint64 id = 1; }
 
-message QueryGetNftResponse { Nft Nft = 1 [ (gogoproto.nullable) = false ]; }
+message QueryGetNftResponse { Nft nft = 1 [ (gogoproto.nullable) = false ]; }
 
 message QueryAllNftRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryAllNftResponse {
-  repeated Nft Nft = 1 [ (gogoproto.nullable) = false ];
+  repeated Nft nft = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryCollectionByDenomIdRequest { string denomId = 1; }
+message QueryCollectionByDenomIdRequest { string denom_id = 1; }
 
 message QueryCollectionByDenomIdResponse {
-  Collection Collection = 1 [ (gogoproto.nullable) = false ];
+  Collection collection = 1 [ (gogoproto.nullable) = false ];
 }
 
 message QueryListAdminsRequest {}
 
 message QueryListAdminsResponse {
-  repeated string Admins = 1 [ (gogoproto.nullable) = false ];
+  repeated string admins = 1 [ (gogoproto.nullable) = false ];
 }
 
 // this line is used by starport scaffolding # 3

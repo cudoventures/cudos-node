@@ -1,8 +1,7 @@
 syntax = "proto3";
-package cudoventures.cudosnode.marketplace;
+package marketplace;
 
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
@@ -10,8 +9,8 @@ option go_package = "github.com/CudoVentures/cudos-node/x/marketplace/types";
 // NFT listed for sale in the marketplace
 message Nft {
   uint64 id = 1;
-  string tokenId = 2;
-  string denomId = 3;
+  string token_id = 2;
+  string denom_id = 3;
   cosmos.base.v1beta1.Coin price = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
