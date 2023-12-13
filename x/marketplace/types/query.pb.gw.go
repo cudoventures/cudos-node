@@ -242,15 +242,15 @@ func request_Query_CollectionByDenomId_0(ctx context.Context, marshaler runtime.
 		_   = err
 	)
 
-	val, ok = pathParams["denomId"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denomId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
 	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denomId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	msg, err := client.CollectionByDenomId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -269,15 +269,15 @@ func local_request_Query_CollectionByDenomId_0(ctx context.Context, marshaler ru
 		_   = err
 	)
 
-	val, ok = pathParams["denomId"]
+	val, ok = pathParams["denom_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denomId")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "denom_id")
 	}
 
 	protoReq.DenomId, err = runtime.String(val)
 
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denomId", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "denom_id", err)
 	}
 
 	msg, err := server.CollectionByDenomId(ctx, &protoReq)
@@ -665,7 +665,7 @@ var (
 
 	pattern_Query_NftAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"CudoVentures", "cudos-node", "marketplace", "nft"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_CollectionByDenomId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"CudoVentures", "cudos-node", "marketplace", "collection_by_denom_id", "denomId"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_CollectionByDenomId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"CudoVentures", "cudos-node", "marketplace", "collection_by_denom_id", "denom_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_ListAdmins_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"CudoVentures", "cudos-node", "marketplace", "list_admins"}, "", runtime.AssumeColonVerbOpt(false)))
 )

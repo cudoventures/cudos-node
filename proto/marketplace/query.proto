@@ -48,8 +48,8 @@ service Query {
   // Queries a list of CollectionByDenomId items.
   rpc CollectionByDenomId(QueryCollectionByDenomIdRequest)
       returns (QueryCollectionByDenomIdResponse) {
-    option (google.api.http).get =
-        "/CudoVentures/cudos-node/marketplace/collection_by_denom_id/{denomId}";
+    option (google.api.http).get = "/CudoVentures/cudos-node/marketplace/"
+                                   "collection_by_denom_id/{denom_id}";
   }
 
   // Queries a list of ListAdmins items.

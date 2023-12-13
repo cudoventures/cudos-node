@@ -11,7 +11,7 @@ message Collection {
   uint64 id = 1;
   string denom_id = 2;
   repeated Royalty mint_royalties = 3 [ (gogoproto.nullable) = false ];
-  repeated Royalty resale_royalites = 4 [ (gogoproto.nullable) = false ];
+  repeated Royalty resale_royalties = 4 [ (gogoproto.nullable) = false ];
   bool verified = 5;
   string owner = 6;
 }

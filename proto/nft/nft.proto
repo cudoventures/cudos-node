@@ -72,5 +72,5 @@ message ApprovedAddresses {
 message ApprovedAddressesData {
   option (gogoproto.equal) = true;
 
-  map<string, bool> approved_address_data = 1;
+  map<string, bool> approved_addresses_data = 1;
 }

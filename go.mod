@@ -6,7 +6,6 @@ require (
 	github.com/CosmWasm/wasmd v0.25.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
 	github.com/containerd/continuity v0.2.2 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-alpha7
 	github.com/cosmos/cosmos-sdk v0.45.3
 	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/ibc-go/v2 v2.2.0
