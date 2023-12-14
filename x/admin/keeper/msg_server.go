@@ -12,7 +12,7 @@ type msgServer struct {
 	Keeper
 }
 
-func (m msgServer) AdminSpendCommunityPool(goCtx context.Context, proposal *types.MsgAdminSpendCommunityPool) (*types.MsgAdminSpendResponse, error) {
+func (m msgServer) AdminSpendCommunityPool(goCtx context.Context, proposal *types.MsgAdminSpendCommunityPool) (*types.MsgAdminSpendCommunityPoolResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	initiatorAddr, err := sdk.AccAddressFromBech32(proposal.Initiator)
@@ -35,7 +35,7 @@ func (m msgServer) AdminSpendCommunityPool(goCtx context.Context, proposal *type
 	if err != nil {
 		return nil, err
 	}
-	return &types.MsgAdminSpendResponse{}, nil
+	return &types.MsgAdminSpendCommunityPoolResponse{}, nil
 }
 
 // NewMsgServerImpl returns an implementation of the MsgServer interface
