@@ -1,15 +1,13 @@
 syntax = "proto3";
-package cudoventures.cudosnode.cudoMint;
+package cudoventures.cudosnode.cudo_mint;
 
-import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 // this line is used by starport scaffolding # 1
 
 option go_package = "github.com/CudoVentures/cudos-node/x/cudoMint/types";
 
 // Query defines the gRPC querier service.
 service Query {
-    // this line is used by starport scaffolding # 2
+  // this line is used by starport scaffolding # 2
 }
 
 // this line is used by starport scaffolding # 3

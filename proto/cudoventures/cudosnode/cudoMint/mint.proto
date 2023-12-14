@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cudoventures.cudosnode.cudoMint;
+package cudoventures.cudosnode.cudo_mint;
 
 option go_package = "github.com/CudoVentures/cudos-node/x/cudoMint/types";
 
@@ -7,16 +7,19 @@ import "gogoproto/gogo.proto";
 
 // Minter represents the minting state.
 message Minter {
-  string mint_remainder = 1
-  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  string mint_remainder = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
-  string norm_time_passed = 2
-  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  string norm_time_passed = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
 }
 
 message Params {
-  string increment_modifier = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string increment_modifier = 1 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable) = false
+  ];
 }

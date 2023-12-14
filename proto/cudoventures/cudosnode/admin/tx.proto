@@ -3,25 +3,26 @@ package cudoventures.cudosnode.admin;
 
 // this line is used by starport scaffolding # proto/tx/import
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/CudoVentures/cudos-node/x/admin/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
-  rpc AdminSpendCommunityPool(MsgAdminSpendCommunityPool) returns (MsgAdminSpendResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+  rpc AdminSpendCommunityPool(MsgAdminSpendCommunityPool)
+      returns (MsgAdminSpendCommunityPoolResponse);
 }
 
 // this line is used by starport scaffolding # proto/tx/message
 
-
 message MsgAdminSpendCommunityPool {
   string initiator = 1;
   string to_address = 2;
-  repeated cosmos.base.v1beta1.Coin coins = 3
-  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin coins = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
-message MsgAdminSpendResponse {}
+message MsgAdminSpendCommunityPoolResponse {}
