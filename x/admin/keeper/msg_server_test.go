@@ -12,10 +12,10 @@ import (
 
 func (s *KeeperTestSuite) TestMsgAdminSpendCommunityPool() {
 	communityPoolReceiver := sample.AccAddress()
-	bondDenom := s.app.StakingKeeper.BondDenom(s.ctx)
+	bondDenom := s.App.StakingKeeper.BondDenom(s.Ctx)
 	adminAddr := "cosmos1qae52r3vdtl92am2klvqe9rtn3534mllsf3sfj"
 	notAdminAddr := sample.AccAddress()
-	
+
 	testCases := []struct {
 		name           string
 		sender         string
@@ -52,29 +52,29 @@ func (s *KeeperTestSuite) TestMsgAdminSpendCommunityPool() {
 			s.SetupTest()
 			addrAcc, _ := sdk.AccAddressFromBech32(adminAddr)
 			adminCoins := sdk.NewCoins(sdk.NewCoin(bondDenom, sdk.NewInt(45)), sdk.NewCoin(admintypes.AdminDenom, sdk.OneInt()))
-			s.app.BankKeeper.MintCoins(s.ctx, cudominttypes.ModuleName, adminCoins)
-			s.app.BankKeeper.SendCoinsFromModuleToAccount(s.ctx, cudominttypes.ModuleName, addrAcc, adminCoins)
-		
-			msgServer := adminkeeper.NewMsgServerImpl(s.app.AdminKeeper)
+			s.App.BankKeeper.MintCoins(s.Ctx, cudominttypes.ModuleName, adminCoins)
+			s.App.BankKeeper.SendCoinsFromModuleToAccount(s.Ctx, cudominttypes.ModuleName, addrAcc, adminCoins)
+
+			msgServer := adminkeeper.NewMsgServerImpl(s.App.AdminKeeper)
 			newFeePool := distrtypes.FeePool{
 				CommunityPool: sdk.NewDecCoinsFromCoins(tc.feeAmount),
 			}
-			s.app.BankKeeper.MintCoins(s.ctx, cudominttypes.ModuleName, sdk.NewCoins(tc.feeAmount))
-			s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, cudominttypes.ModuleName, distrtypes.ModuleName, sdk.NewCoins(tc.feeAmount))
-			s.app.DistrKeeper.SetFeePool(s.ctx, newFeePool)
-			
+			s.App.BankKeeper.MintCoins(s.Ctx, cudominttypes.ModuleName, sdk.NewCoins(tc.feeAmount))
+			s.App.BankKeeper.SendCoinsFromModuleToModule(s.Ctx, cudominttypes.ModuleName, distrtypes.ModuleName, sdk.NewCoins(tc.feeAmount))
+			s.App.DistrKeeper.SetFeePool(s.Ctx, newFeePool)
+
 			msgAdminSpendCommunityPool := admintypes.MsgAdminSpendCommunityPool{
 				Initiator: tc.sender,
 				ToAddress: communityPoolReceiver,
 				Coins:     sdk.NewCoins(tc.withdrawAmount),
 			}
-			_, err := msgServer.AdminSpendCommunityPool(s.ctx, &msgAdminSpendCommunityPool)
-			comAcc, _:= sdk.AccAddressFromBech32(communityPoolReceiver)
+			_, err := msgServer.AdminSpendCommunityPool(s.Ctx, &msgAdminSpendCommunityPool)
+			comAcc, _ := sdk.AccAddressFromBech32(communityPoolReceiver)
 			if tc.expError {
 				s.Error(err)
 			} else {
 				s.NoError(err)
-				s.Equal(tc.withdrawAmount, s.app.BankKeeper.GetBalance(s.ctx, comAcc, bondDenom))
+				s.Equal(tc.withdrawAmount, s.App.BankKeeper.GetBalance(s.Ctx, comAcc, bondDenom))
 			}
 		})
 	}

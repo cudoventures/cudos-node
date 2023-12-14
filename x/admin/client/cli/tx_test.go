@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/CudoVentures/cudos-node/app/apptesting"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -22,7 +23,7 @@ import (
 )
 
 type TxTestSuite struct {
-	suite.Suite
+	apptesting.KeeperTestHelper
 	config network.Config
 }
 
@@ -32,7 +33,7 @@ func TestTxTestSuite(t *testing.T) {
 
 func (s *TxTestSuite) SetupSuite() {
 	s.T().Log("setting up tx test suite")
-
+	s.Setup()
 	s.config = simapp.NewConfig(s.T().TempDir())
 	s.config.NumValidators = 1
 }

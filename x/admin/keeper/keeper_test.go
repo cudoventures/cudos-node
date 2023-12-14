@@ -3,22 +3,18 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/CudoVentures/cudos-node/app/apptesting"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/CudoVentures/cudos-node/simapp"
 	"github.com/CudoVentures/cudos-node/testutil/sample"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
 type KeeperTestSuite struct {
-	suite.Suite
-
-	app simapp.CudosSimApp
-	ctx sdk.Context
+	apptesting.KeeperTestHelper
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -26,16 +22,13 @@ func TestKeeperTestSuite(t *testing.T) {
 }
 
 func (s *KeeperTestSuite) SetupTest() {
-	s.T().Log("setting up keeper test suite")
-	app := simapp.Setup(s.T(), false)
-	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	s.app, s.ctx = *app, ctx
+	s.T().Log("setting up admin keeper test suite")
+	s.Setup()
 }
 
 func (s *KeeperTestSuite) TestAdminSpendCommunityPool() {
 	communityPoolReceiver := sample.AccAddress()
-	bondDenom := s.app.StakingKeeper.BondDenom(s.ctx)
+	bondDenom := s.App.StakingKeeper.BondDenom(s.Ctx)
 
 	testCases := []struct {
 		name           string
@@ -70,16 +63,17 @@ func (s *KeeperTestSuite) TestAdminSpendCommunityPool() {
 			newFeePool := distrtypes.FeePool{
 				CommunityPool: sdk.NewDecCoinsFromCoins(tc.feeAmount),
 			}
-			s.app.BankKeeper.MintCoins(s.ctx, cudominttypes.ModuleName, sdk.NewCoins(tc.feeAmount))
-			s.app.BankKeeper.SendCoinsFromModuleToModule(s.ctx, cudominttypes.ModuleName, distrtypes.ModuleName, sdk.NewCoins(tc.feeAmount))
-			s.app.DistrKeeper.SetFeePool(s.ctx, newFeePool)
-
-			err := s.app.AdminKeeper.AdminDistributeFromFeePool(s.ctx, sdk.NewCoins(tc.withdrawAmount), sdk.AccAddress(communityPoolReceiver))
+			err := s.App.BankKeeper.MintCoins(s.Ctx, cudominttypes.ModuleName, sdk.NewCoins(tc.feeAmount))
+			s.Require().NoError(err)
+			err = s.App.BankKeeper.SendCoinsFromModuleToModule(s.Ctx, cudominttypes.ModuleName, distrtypes.ModuleName, sdk.NewCoins(tc.feeAmount))
+			s.Require().NoError(err)
+			s.App.DistrKeeper.SetFeePool(s.Ctx, newFeePool)
+			err = s.App.AdminKeeper.AdminDistributeFromFeePool(s.Ctx, sdk.NewCoins(tc.withdrawAmount), sdk.AccAddress(communityPoolReceiver))
 			if tc.expError {
 				s.Error(err)
 			} else {
 				s.NoError(err)
-				s.Require().Equal(tc.withdrawAmount.Amount, s.app.BankKeeper.GetBalance(s.ctx, sdk.AccAddress(communityPoolReceiver), bondDenom).Amount)
+				s.Require().Equal(tc.withdrawAmount.Amount, s.App.BankKeeper.GetBalance(s.Ctx, sdk.AccAddress(communityPoolReceiver), bondDenom).Amount)
 			}
 		})
 	}
