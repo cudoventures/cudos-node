@@ -65,4 +65,4 @@ proto-lint:
 	@$(DOCKER_BUF) lint --error-format=json
 
 proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against '$(HTTPS_GIT)#branch=main'
+	@$(DOCKER_BUF) breaking --against '$(HTTPS_GIT)#branch=cudos-master'
