@@ -1,3 +1,5 @@
+PACKAGES=$(shell go list ./... | grep -v '/simulation')
+
 VERSION := $(shell echo $(shell git describe --tags))
 COMMIT := $(shell git log -1 --format='%H')
 
@@ -9,6 +11,9 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=cudos-node \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(ldflags)'
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.28.1
+HTTPS_GIT := https://github.com/CudoVentures/cudos-node.git
 
 all: install
 
@@ -27,9 +32,6 @@ go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
 		GO111MODULE=on go mod verify
     
-proto-gen:
-	docker run --rm -v $(CURDIR):/workspace --workdir /workspace ghcr.io/cosmos/proto-builder:0.12.1 sh ./scripts/protocgen.sh
-
 test-all: test-unit test-sim-benchmark test-sim-determinism
 
 test-unit:
@@ -45,3 +47,22 @@ test-sim-determinism:
 	@echo "--> Running determinism sim tests"
 	@go test -v -mod=readonly -run ^TestAppStateDeterminism ./simapp \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -timeout 24h
+
+PROTO_BUILDER_IMAGE=ghcr.io/cosmos/proto-builder:0.14.0
+
+proto-all: proto-format proto-lint proto-gen
+
+proto-gen:
+	@echo "Generating Protobuf files"
+	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(PROTO_BUILDER_IMAGE) sh ./scripts/protocgen.sh
+
+proto-format:
+	@echo "Formatting Protobuf files"
+	@$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
+		find ./proto -name "*.proto" -exec clang-format -i {} \;
+	
+proto-lint:
+	@$(DOCKER_BUF) lint --error-format=json
+
+proto-check-breaking:
+	@$(DOCKER_BUF) breaking --against '$(HTTPS_GIT)#branch=main'
