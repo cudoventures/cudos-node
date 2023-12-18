@@ -32,21 +32,12 @@ go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
 		GO111MODULE=on go mod verify
     
-test-all: test-unit test-sim-benchmark test-sim-determinism
+test:
+	@go test -v -mod=readonly $(PACKAGES)
 
-test-unit:
-	@echo "--> Running unit tests"
-	@go test -v -mod=readonly -tags='cgo ledger test_ledger_mock norace' ./...
-
-test-sim-benchmark:
-	@echo "--> Running benchmark sim tests"
-	@go test -v -mod=readonly -benchmem -run ^BenchmarkFullAppSimulation -bench ^BenchmarkFullAppSimulation ./simapp \
-		-Enabled=true -NumBlocks=200 -BlockSize=200 -Commit=true -timeout 24h
-
-test-sim-determinism:
-	@echo "--> Running determinism sim tests"
-	@go test -v -mod=readonly -run ^TestAppStateDeterminism ./simapp \
-		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -timeout 24h
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
 
 PROTO_BUILDER_IMAGE=ghcr.io/cosmos/proto-builder:0.14.0
 
@@ -68,3 +59,4 @@ proto-check-breaking:
 	@$(DOCKER_BUF) breaking --against '$(HTTPS_GIT)#branch=cudos-master'
 
 .PHONY: proto-all proto-gen proto-format proto-lint proto-check-breaking 
+
