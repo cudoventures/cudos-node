@@ -61,9 +61,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
 	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
@@ -148,15 +145,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.keys[addressbooktypes.StoreKey],
 		app.keys[addressbooktypes.MemStoreKey],
 		app.GetSubspace(addressbooktypes.ModuleName),
-	)
-
-	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
-		app.appCodec,
-		app.keys[marketplacetypes.StoreKey],
-		app.keys[marketplacetypes.MemStoreKey],
-		app.GetSubspace(marketplacetypes.ModuleName),
-		app.BankKeeper,
-		app.NftKeeper,
 	)
 
 	supportedFeatures := "iterator,staking,stargate"

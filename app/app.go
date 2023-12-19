@@ -17,7 +17,6 @@ import (
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -57,7 +56,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
@@ -72,8 +71,7 @@ import (
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
+	"github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
@@ -142,7 +140,6 @@ func New(
 		feegrant.StoreKey,
 		group.StoreKey,
 		addressbooktypes.StoreKey,
-		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -170,8 +167,6 @@ func New(
 
 	// set upgrades
 	app.SetUpgradeHandlers()
-
-	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
 
 	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
 
@@ -206,7 +201,6 @@ func New(
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
-		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		addressbookModule,
 	)
@@ -239,7 +233,6 @@ func New(
 		wasmtypes.ModuleName,
 		group.ModuleName,
 		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -266,7 +259,6 @@ func New(
 		wasmtypes.ModuleName,
 		group.ModuleName,
 		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -286,7 +278,7 @@ func New(
 		govtypes.ModuleName,
 		cudominttypes.ModuleName,
 		crisistypes.ModuleName,
-		gravitytypes.ModuleName, //MUST BE BEFORE GENUTIL!!!!
+		gravitytypes.ModuleName, // MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
@@ -302,7 +294,6 @@ func New(
 		paramstypes.ModuleName,
 		group.ModuleName,
 		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
