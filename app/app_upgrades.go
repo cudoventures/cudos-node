@@ -5,7 +5,6 @@ import (
 
 	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	marketplaceTypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,6 +14,8 @@ import (
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
+
+const MarketplaceModuleName = "marketplace"
 
 func (app *App) SetUpgradeHandlers() {
 	setHandlerForVersion_1_0(app)
@@ -48,7 +49,7 @@ func setHandlerForVersion_1_1(app *App) {
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
 			delete(fromVM, addressbookTypes.ModuleName)
-			delete(fromVM, marketplaceTypes.ModuleName)
+			delete(fromVM, MarketplaceModuleName)
 
 			if _, ok := fromVM[nfttypes.ModuleName]; ok {
 				if fromVM[nfttypes.ModuleName] == 2 {
@@ -69,7 +70,7 @@ func setHandlerForVersion_1_1(app *App) {
 
 	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, group.ModuleName, addressbookTypes.ModuleName, marketplaceTypes.ModuleName},
+			Added: []string{authz.ModuleName, group.ModuleName, addressbookTypes.ModuleName, MarketplaceModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))

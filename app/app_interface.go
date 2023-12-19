@@ -69,7 +69,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
@@ -93,11 +93,7 @@ import (
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
+	"github.com/CudoVentures/cudos-node/x/addressbook"
 	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
 	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
@@ -164,7 +160,6 @@ var (
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
 		addressbook.AppModuleBasic{},
-		marketplace.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -177,7 +172,6 @@ var (
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
-		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{
@@ -232,7 +226,6 @@ type App struct {
 	NftKeeper         nftmodulekeeper.Keeper
 	GroupKeeper       groupkeeper.Keeper
 	AddressbookKeeper addressbookkeeper.Keeper
-	MarketplaceKeeper marketplacekeeper.Keeper
 	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
@@ -388,7 +381,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(addressbooktypes.ModuleName)
-	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)
 	paramsKeeper.Subspace(group.ModuleName)
