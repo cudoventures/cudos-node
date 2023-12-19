@@ -14,7 +14,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
@@ -69,11 +68,9 @@ import (
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
@@ -141,7 +138,6 @@ func New(
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 		group.StoreKey,
-		addressbooktypes.StoreKey,
 		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -172,8 +168,6 @@ func New(
 	app.SetUpgradeHandlers()
 
 	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
-
-	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
@@ -208,7 +202,6 @@ func New(
 		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		addressbookModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -238,7 +231,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 
@@ -265,7 +257,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -301,7 +292,6 @@ func New(
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 

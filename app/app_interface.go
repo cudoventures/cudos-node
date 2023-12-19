@@ -96,10 +96,6 @@ import (
 	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -163,7 +159,6 @@ var (
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
 		marketplace.AppModuleBasic{},
 	)
 
@@ -231,7 +226,6 @@ type App struct {
 
 	NftKeeper         nftmodulekeeper.Keeper
 	GroupKeeper       groupkeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
 	MarketplaceKeeper marketplacekeeper.Keeper
 	// the module manager
 	mm           *module.Manager
@@ -387,7 +381,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
 	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)

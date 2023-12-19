@@ -63,9 +63,6 @@ import (
 
 	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
@@ -141,13 +138,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.appCodec,
 		app.keys[nftmoduletypes.StoreKey],
 		app.keys[nftmoduletypes.MemStoreKey],
-	)
-
-	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
-		app.appCodec,
-		app.keys[addressbooktypes.StoreKey],
-		app.keys[addressbooktypes.MemStoreKey],
-		app.GetSubspace(addressbooktypes.ModuleName),
 	)
 
 	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(

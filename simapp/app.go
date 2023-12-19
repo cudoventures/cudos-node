@@ -105,10 +105,6 @@ import (
 	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
 	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-
 	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
 	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
@@ -181,7 +177,6 @@ var (
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		nftmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
 		marketplace.AppModuleBasic{},
 	)
 
@@ -275,7 +270,6 @@ type SimApp struct {
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	NftKeeper         nftmodulekeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
 	MarketplaceKeeper marketplacekeeper.Keeper
 
 	// the module manager
@@ -317,7 +311,6 @@ func NewSimApp(
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
-		addressbooktypes.StoreKey,
 		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -383,14 +376,6 @@ func NewSimApp(
 	)
 
 	app.feegrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
-
-	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
-		appCodec,
-		keys[addressbooktypes.StoreKey],
-		keys[addressbooktypes.MemStoreKey],
-		app.GetSubspace(addressbooktypes.ModuleName),
-	)
-	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
 
 	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
 		appCodec,
@@ -546,7 +531,6 @@ func NewSimApp(
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 		nftModule,
-		addressbookModule,
 		marketplaceModule,
 	)
 
@@ -576,7 +560,6 @@ func NewSimApp(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 
@@ -602,7 +585,6 @@ func NewSimApp(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 
@@ -638,7 +620,6 @@ func NewSimApp(
 		upgradetypes.ModuleName,
 		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
-		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
 	)
 
@@ -888,7 +869,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
 	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 
 	return paramsKeeper
