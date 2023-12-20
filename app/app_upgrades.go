@@ -3,9 +3,7 @@ package app
 import (
 	"strings"
 
-	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nfttypes "github.com/CudoVentures/cudos-node/x/nft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -15,6 +13,8 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
+const AddressBookModuleName = "addressbook"
+const NftModuleName = "nft"
 const MarketplaceModuleName = "marketplace"
 
 func (app *App) SetUpgradeHandlers() {
@@ -48,15 +48,15 @@ func setHandlerForVersion_1_1(app *App) {
 			fromVM = app.mm.GetVersionMap()
 			delete(fromVM, authz.ModuleName)
 			delete(fromVM, group.ModuleName)
-			delete(fromVM, addressbookTypes.ModuleName)
+			delete(fromVM, AddressBookModuleName)
 			delete(fromVM, MarketplaceModuleName)
 
-			if _, ok := fromVM[nfttypes.ModuleName]; ok {
-				if fromVM[nfttypes.ModuleName] == 2 {
-					fromVM[nfttypes.ModuleName] = 1
+			if _, ok := fromVM[NftModuleName]; ok {
+				if fromVM[NftModuleName] == 2 {
+					fromVM[NftModuleName] = 1
 				}
 			} else {
-				fromVM[nfttypes.ModuleName] = 1
+				fromVM[NftModuleName] = 1
 			}
 		}
 
@@ -70,7 +70,7 @@ func setHandlerForVersion_1_1(app *App) {
 
 	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, group.ModuleName, addressbookTypes.ModuleName, MarketplaceModuleName},
+			Added: []string{authz.ModuleName, group.ModuleName, AddressBookModuleName, MarketplaceModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))

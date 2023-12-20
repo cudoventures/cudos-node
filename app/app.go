@@ -68,8 +68,6 @@ import (
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/cosmos/cosmos-sdk/x/group"
@@ -133,7 +131,6 @@ func New(
 		ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		nftmoduletypes.StoreKey,
 		cudominttypes.StoreKey,
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
@@ -200,7 +197,6 @@ func New(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		addressbookModule,
 	)
@@ -227,7 +223,6 @@ func New(
 		paramstypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -253,7 +248,6 @@ func New(
 		upgradetypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -288,7 +282,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,

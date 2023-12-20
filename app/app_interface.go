@@ -82,9 +82,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
@@ -157,7 +154,6 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
 		addressbook.AppModuleBasic{},
 	)
@@ -223,7 +219,6 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper         nftmodulekeeper.Keeper
 	GroupKeeper       groupkeeper.Keeper
 	AddressbookKeeper addressbookkeeper.Keeper
 	// the module manager
@@ -377,7 +372,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(addressbooktypes.ModuleName)
