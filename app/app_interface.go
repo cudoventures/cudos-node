@@ -8,8 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/CudoVentures/cudos-node/x/admin"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -29,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
 
@@ -89,10 +88,6 @@ import (
 
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-
-	"github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -155,7 +150,6 @@ var (
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 		groupmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -219,8 +213,7 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	GroupKeeper       groupkeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
+	GroupKeeper groupkeeper.Keeper
 	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
@@ -374,7 +367,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)
 	paramsKeeper.Subspace(group.ModuleName)

@@ -14,7 +14,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	appparams "github.com/CudoVentures/cudos-node/app/params"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -69,7 +68,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 
-	"github.com/CudoVentures/cudos-node/x/addressbook"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
@@ -136,7 +134,6 @@ func New(
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 		group.StoreKey,
-		addressbooktypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -164,8 +161,6 @@ func New(
 
 	// set upgrades
 	app.SetUpgradeHandlers()
-
-	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
 
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
@@ -198,7 +193,6 @@ func New(
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		addressbookModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -227,7 +221,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -252,7 +245,6 @@ func New(
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -286,7 +278,6 @@ func New(
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
 		group.ModuleName,
-		addressbooktypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
