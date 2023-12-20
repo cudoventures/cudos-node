@@ -101,9 +101,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/CudoVentures/cudos-node/x/addressbook"
 	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
@@ -176,7 +173,6 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		nftmodule.AppModuleBasic{},
 		addressbook.AppModuleBasic{},
 	)
 
@@ -268,7 +264,6 @@ type SimApp struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper         nftmodulekeeper.Keeper
 	AddressbookKeeper addressbookkeeper.Keeper
 
 	// the module manager
@@ -305,7 +300,6 @@ func NewSimApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		nftmoduletypes.StoreKey,
 		cudoMinttypes.StoreKey,
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
@@ -464,13 +458,6 @@ func NewSimApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.NftKeeper = *nftmodulekeeper.NewKeeper(
-		appCodec,
-		keys[nftmoduletypes.StoreKey],
-		keys[nftmoduletypes.MemStoreKey],
-	)
-	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.CudoMintKeeper = *cudoMintkeeper.NewKeeper(
@@ -527,7 +514,6 @@ func NewSimApp(
 		gravityModule,
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
-		nftModule,
 		addressbookModule,
 	)
 
@@ -553,7 +539,6 @@ func NewSimApp(
 		paramstypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -578,7 +563,6 @@ func NewSimApp(
 		upgradetypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
@@ -612,7 +596,6 @@ func NewSimApp(
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
 		// vestingtypes.ModuleName,
@@ -643,7 +626,6 @@ func NewSimApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		nftModule,
 		// cudoMintModule, // needs interface
 		gravityModule,
 		feegrantModule,
@@ -863,7 +845,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(addressbooktypes.ModuleName)

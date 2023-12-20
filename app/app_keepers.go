@@ -52,8 +52,6 @@ import (
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
@@ -134,12 +132,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		panic("error while reading wasm config: " + err.Error())
 	}
 
-	app.NftKeeper = *nftmodulekeeper.NewKeeper(
-		app.appCodec,
-		app.keys[nftmoduletypes.StoreKey],
-		app.keys[nftmoduletypes.MemStoreKey],
-	)
-
 	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[addressbooktypes.StoreKey],
@@ -148,9 +140,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	)
 
 	supportedFeatures := "iterator,staking,stargate"
-	customEncoderOptions := GetCustomMsgEncodersOptions()
-	customQueryOptions := GetCustomMsgQueryOptions(app.NftKeeper)
-	wasmOpts := append(customEncoderOptions, customQueryOptions...)
 
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
@@ -171,7 +160,6 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmOpts...,
 	)
 
 	app.adminKeeper = *adminkeeper.NewKeeper(
