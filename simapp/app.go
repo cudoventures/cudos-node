@@ -86,7 +86,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
@@ -101,17 +101,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
-
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
@@ -180,9 +169,6 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		nftmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
-		marketplace.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -196,7 +182,6 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
-		marketplacetypes.ModuleName:    nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -274,10 +259,6 @@ type SimApp struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper         nftmodulekeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
-	MarketplaceKeeper marketplacekeeper.Keeper
-
 	// the module manager
 	mm *module.Manager
 
@@ -312,13 +293,10 @@ func NewSimApp(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
-		nftmoduletypes.StoreKey,
 		cudoMinttypes.StoreKey,
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
-		addressbooktypes.StoreKey,
-		marketplacetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -383,24 +361,6 @@ func NewSimApp(
 	)
 
 	app.feegrantKeeper = feegrantkeeper.NewKeeper(appCodec, keys[feegrant.StoreKey], app.AccountKeeper)
-
-	app.AddressbookKeeper = *addressbookkeeper.NewKeeper(
-		appCodec,
-		keys[addressbooktypes.StoreKey],
-		keys[addressbooktypes.MemStoreKey],
-		app.GetSubspace(addressbooktypes.ModuleName),
-	)
-	addressbookModule := addressbook.NewAppModule(appCodec, app.AddressbookKeeper, app.AccountKeeper, app.BankKeeper)
-
-	app.MarketplaceKeeper = *marketplacekeeper.NewKeeper(
-		appCodec,
-		keys[marketplacetypes.StoreKey],
-		keys[marketplacetypes.MemStoreKey],
-		app.GetSubspace(marketplacetypes.ModuleName),
-		app.BankKeeper,
-		app.NftKeeper,
-	)
-	marketplaceModule := marketplace.NewAppModule(appCodec, app.MarketplaceKeeper, app.AccountKeeper, app.BankKeeper)
 
 	// ... other modules keepers
 
@@ -482,13 +442,6 @@ func NewSimApp(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	app.NftKeeper = *nftmodulekeeper.NewKeeper(
-		appCodec,
-		keys[nftmoduletypes.StoreKey],
-		keys[nftmoduletypes.MemStoreKey],
-	)
-	nftModule := nftmodule.NewAppModule(appCodec, app.NftKeeper, app.AccountKeeper, app.BankKeeper)
-
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.CudoMintKeeper = *cudoMintkeeper.NewKeeper(
@@ -545,9 +498,6 @@ func NewSimApp(
 		gravityModule,
 		feegrantModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
-		nftModule,
-		addressbookModule,
-		marketplaceModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -572,12 +522,9 @@ func NewSimApp(
 		paramstypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -598,12 +545,9 @@ func NewSimApp(
 		upgradetypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -623,7 +567,7 @@ func NewSimApp(
 		cudoMinttypes.ModuleName,
 		crisistypes.ModuleName,
 
-		gravitytypes.ModuleName, //MUST BE BEFORE GENUTIL!!!!
+		gravitytypes.ModuleName, // MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
@@ -633,13 +577,10 @@ func NewSimApp(
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
-		nftmoduletypes.ModuleName,
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
 		// vestingtypes.ModuleName,
 		paramstypes.ModuleName,
-		addressbooktypes.ModuleName,
-		marketplacetypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -665,7 +606,6 @@ func NewSimApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		nftModule,
 		// cudoMintModule, // needs interface
 		gravityModule,
 		feegrantModule,
@@ -725,7 +665,7 @@ func (app *SimApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *SimApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	//old way of initializing gravity module account with funds
+	// old way of initializing gravity module account with funds
 
 	// if ctx.BlockHeight() == 1 {
 	// 	amount, _ := sdkTypes.NewIntFromString("10000000000000000000000000000")
@@ -885,11 +825,8 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
-	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 
 	return paramsKeeper
 }

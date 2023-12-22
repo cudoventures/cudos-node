@@ -8,8 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	"github.com/CudoVentures/cudos-node/x/admin"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -29,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
 
@@ -69,7 +68,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	transfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
@@ -82,9 +81,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-	nftmodule "github.com/CudoVentures/cudos-node/x/nft"
-	nftmodulekeeper "github.com/CudoVentures/cudos-node/x/nft/keeper"
-	nftmoduletypes "github.com/CudoVentures/cudos-node/x/nft/types"
 
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
@@ -92,14 +88,6 @@ import (
 
 	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
-
-	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
-	marketplacekeeper "github.com/CudoVentures/cudos-node/x/marketplace/keeper"
-	marketplacetypes "github.com/CudoVentures/cudos-node/x/marketplace/types"
-
-	addressbook "github.com/CudoVentures/cudos-node/x/addressbook"
-	addressbookkeeper "github.com/CudoVentures/cudos-node/x/addressbook/keeper"
-	addressbooktypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -161,10 +149,7 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		nftmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		addressbook.AppModuleBasic{},
-		marketplace.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -177,7 +162,6 @@ var (
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
 		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
-		marketplacetypes.ModuleName:    nil,
 	}
 
 	allowedReceivingModAcc = map[string]bool{
@@ -229,10 +213,7 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	NftKeeper         nftmodulekeeper.Keeper
-	GroupKeeper       groupkeeper.Keeper
-	AddressbookKeeper addressbookkeeper.Keeper
-	MarketplaceKeeper marketplacekeeper.Keeper
+	GroupKeeper groupkeeper.Keeper
 	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
@@ -384,11 +365,8 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
-	paramsKeeper.Subspace(nftmoduletypes.ModuleName)
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
-	paramsKeeper.Subspace(addressbooktypes.ModuleName)
-	paramsKeeper.Subspace(marketplacetypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)
 	paramsKeeper.Subspace(group.ModuleName)
