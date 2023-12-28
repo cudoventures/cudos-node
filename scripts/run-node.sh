@@ -72,6 +72,8 @@ update_test_genesis '.app_state["gov"]["deposit_params"]["min_deposit"]=[{"denom
 update_test_genesis '.app_state["crisis"]["constant_fee"]={"denom":"'$DENOM'","amount":"1000"}'
 update_test_genesis '.app_state["staking"]["params"]["bond_denom"]="'$DENOM'"'
 
+# add test0 to the static validator set(custom Cudos logic)
+update_test_genesis '.app_state["gravity"]["static_val_cosmos_addrs"]=[ "'$TEST0_ADDRESS'" ]'
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
 $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
