@@ -43,13 +43,16 @@ func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins)
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
 		if amt.Denom == burnDenom {
-			k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName))
+			return k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName))
 		} else {
 			burnAmts = burnAmts.Add(amt)
 		}
 	}
-	return k.BaseKeeper.BurnCoins(ctx, moduleName, burnAmts)
 
+	if len(burnAmts) > 0 {
+		return k.BaseKeeper.BurnCoins(ctx, moduleName, burnAmts)
+	}
+	return nil
 	// acc := k.ak.GetModuleAccount(ctx, moduleName)
 	// if acc == nil {
 	// 	panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
