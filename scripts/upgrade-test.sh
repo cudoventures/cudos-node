@@ -6,14 +6,14 @@ FORK=${FORK:-"false"}
 # $(curl --silent "https://api.github.com/repos/classic-terra/core/releases/latest" | jq -r '.tag_name')
 OLD_VERSION=v1.1.0
 UPGRADE_WAIT=${UPGRADE_WAIT:-20}
-HOME=mytestnet
+HOME=cudos-data
 ROOT=$(pwd)
 DENOM=acudos
-CHAIN_ID=localtestnet
+CHAIN_ID=cudos-node
 SOFTWARE_UPGRADE_NAME="v12"
 ADDITIONAL_PRE_SCRIPTS=${ADDITIONAL_PRE_SCRIPTS:-""}
 ADDITIONAL_AFTER_SCRIPTS=${ADDITIONAL_AFTER_SCRIPTS:-""}
-
+NEW_VERSION=v1.2.0
 if [[ "$FORK" == "true" ]]; then
     export cudos-noded_HALT_HEIGHT=20
 fi
@@ -32,7 +32,7 @@ fi
 
 # reinstall old binary
 if [ $# -eq 1 ] && [ $1 == "--reinstall-old" ] || ! command -v _build/old/cudos-noded &> /dev/null; then
-    cd ./_build/core-${OLD_VERSION:1}
+    cd ./_build/cudos-node-${OLD_VERSION:1}
     GOBIN="$ROOT/_build/old" go install -mod=readonly ./...
     cd ../..
 fi
@@ -40,8 +40,8 @@ fi
 # install new binary
 if ! command -v _build/new/cudos-noded &> /dev/null
 then
-    cd ./_build/core-${NEW_VERSION:1}
-    GOBIN="$ROOT/_build/new" go install -mod=readonly ./...
+    mkdir -p ./_build/cudos-node-${NEW_VERSION:1} && cd ./_build/cudos-node-${NEW_VERSION:1}
+    GOBIN="$ROOT/_build/new" go install -mod=readonly ../../...
     cd ../..
 fi
 
@@ -74,7 +74,7 @@ run_fork () {
     echo "forking"
 
     while true; do 
-        BLOCK_HEIGHT=$(./_build/old/cudos-noded status | jq '.SyncInfo.latest_block_height' -r)
+        BLOCK_HEIGHT=$(./_build/old/cudos-noded status 2> >(jq '.SyncInfo.latest_block_height' -r))
         # if BLOCK_HEIGHT is not empty
         if [ ! -z "$BLOCK_HEIGHT" ]; then
             echo "BLOCK_HEIGHT = $BLOCK_HEIGHT"
@@ -89,8 +89,9 @@ run_fork () {
 run_upgrade () {
     echo "upgrading"
 
-    STATUS_INFO=($(./_build/old/cudos-noded status --home $HOME | jq -r '.NodeInfo.network,.SyncInfo.latest_block_height'))
-    UPGRADE_HEIGHT=$((STATUS_INFO[1] + 20))
+    
+    STATUS_INFO=($(./_build/old/cudos-noded status --home $HOME  2> >(jq -r '.SyncInfo.latest_block_height')))
+    UPGRADE_HEIGHT=$((STATUS_INFO + 20))
 
     tar -cf ./_build/new/cudos-noded.tar -C ./_build/new cudos-noded
     SUM=$(shasum -a 256 ./_build/new/cudos-noded.tar | cut -d ' ' -f1)
@@ -103,7 +104,7 @@ run_upgrade () {
 
     ./_build/old/cudos-noded keys list --home $HOME --keyring-backend test
 
-    ./_build/old/cudos-noded tx gov submit-legacy-proposal software-upgrade "$SOFTWARE_UPGRADE_NAME" --upgrade-height $UPGRADE_HEIGHT --upgrade-info "$UPGRADE_INFO" --title "upgrade" --description "upgrade"  --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME -y
+    ./_build/old/cudos-noded tx gov submit-proposal software-upgrade "$SOFTWARE_UPGRADE_NAME" --upgrade-height $UPGRADE_HEIGHT --upgrade-info "$UPGRADE_INFO" --title "upgrade" --description "upgrade"  --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME -y
 
     sleep 5
 
@@ -121,7 +122,7 @@ run_upgrade () {
 
     # determine block_height to halt
     while true; do 
-        BLOCK_HEIGHT=$(./_build/old/cudos-noded status | jq '.SyncInfo.latest_block_height' -r)
+        BLOCK_HEIGHT=$(./_build/old/cudos-noded status 2> >(jq '.SyncInfo.latest_block_height' -r))
         if [ $BLOCK_HEIGHT = "$UPGRADE_HEIGHT" ]; then
             # assuming running only 1 cudos-noded
             echo "BLOCK HEIGHT = $UPGRADE_HEIGHT REACHED, KILLING OLD ONE"
