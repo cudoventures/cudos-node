@@ -43,7 +43,9 @@ func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins)
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
 		if amt.Denom == burnDenom {
-			return k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName))
+			if err := k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName)); err != nil {
+				return err
+			}
 		} else {
 			burnAmts = burnAmts.Add(amt)
 		}
