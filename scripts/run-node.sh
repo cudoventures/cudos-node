@@ -2,7 +2,7 @@
 
 BINARY=$1
 CONTINUE=${CONTINUE:-"false"}
-HOME_DIR=mytestnet
+HOME_DIR=cudos-data
 ENV=${ENV:-""}
 
 if [ "$CONTINUE" == "true" ]; then
@@ -10,15 +10,15 @@ if [ "$CONTINUE" == "true" ]; then
     exit 0
 fi
 
-rm -rf mytestnet
+rm -rf cudos-data
 pkill cudos-noded
 
 # check DENOM is set. If not, set to uluna
-DENOM=${2:-acudos}
+DENOM=${2:-stake}
 
 COMMISSION_RATE=0.01
 COMMISSION_MAX_RATE=0.02
-
+MIN_SELF_DELEGATION=2000000000000000000000000
 SED_BINARY=sed
 # check if this is OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -38,7 +38,7 @@ if [ -z "$BINARY" ]; then
     BINARY=build/cudos-noded
 fi
 
-CHAIN_ID="localtestnet"
+CHAIN_ID="cudos-node"
 KEYRING="test"
 KEY="test0"
 KEY1="test1"
@@ -56,10 +56,15 @@ $BINARY keys add $KEY --keyring-backend $KEYRING --home $HOME_DIR
 $BINARY keys add $KEY1 --keyring-backend $KEYRING --home $HOME_DIR
 $BINARY keys add $KEY2 --keyring-backend $KEYRING --home $HOME_DIR
 
+# Get the generated addresses
+TEST0_ADDRESS=$($BINARY keys show $KEY -a --keyring-backend $KEYRING --home $HOME_DIR)
+TEST1_ADDRESS=$($BINARY keys show $KEY1 -a --keyring-backend $KEYRING --home $HOME_DIR)
+TEST2_ADDRESS=$($BINARY keys show $KEY2 -a --keyring-backend $KEYRING --home $HOME_DIR)
+
 # Allocate genesis accounts (cosmos formatted addresses)
-$BINARY add-genesis-account "$($BINARY keys show $KEY -a --keyring-backend $KEYRING --home $HOME_DIR)" "2000000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account "$($BINARY keys show $KEY1 -a --keyring-backend $KEYRING --home $HOME_DIR)" "2000000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account "$($BINARY keys show $KEY2 -a --keyring-backend $KEYRING --home $HOME_DIR)" "2000000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST0_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST1_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST2_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR 
 
 update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
@@ -72,12 +77,14 @@ $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
 $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
 
 # Sign genesis transaction
-$BINARY gentx $KEY "20000000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" "cudos1m5scw929nktw2hwwxpzf70ycuz3hgut3au8s4g" --commission-rate=$COMMISSION_RATE --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
+# TEST0 is the validator
+$BINARY gentx $KEY "20000000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 
 # Collect genesis tx
 $BINARY collect-gentxs --home $HOME_DIR
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
-$BINARY validate-genesis --home $HOME_DIR
+# This raises an error since Cudos has another Msg tx type: MsgSetOrchestratorAddress
+# $BINARY validate-genesis --home $HOME_DIR
 
 $BINARY start --home $HOME_DIR
