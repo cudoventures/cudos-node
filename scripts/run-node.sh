@@ -32,7 +32,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 fi
 
-# check BINARY is set. If not, build terrad and set BINARY
+# check BINARY is set. If not, build cudos-noded and set BINARY
 if [ -z "$BINARY" ]; then
     make build
     BINARY=build/cudos-noded

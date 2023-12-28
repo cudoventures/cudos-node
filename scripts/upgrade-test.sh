@@ -3,7 +3,6 @@
 # the upgrade is a fork, "true" otherwise
 FORK=${FORK:-"false"}
 
-# $(curl --silent "https://api.github.com/repos/classic-terra/core/releases/latest" | jq -r '.tag_name')
 OLD_VERSION=v1.1.0
 UPGRADE_WAIT=${UPGRADE_WAIT:-20}
 HOME=cudos-data
