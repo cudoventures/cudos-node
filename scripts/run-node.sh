@@ -13,8 +13,8 @@ fi
 rm -rf cudos-data
 pkill cudos-noded
 
-# check DENOM is set. If not, set to uluna
-DENOM=${2:-stake}
+# check DENOM is set. If not, set to acudos
+DENOM=${2:-"acudos"}
 
 COMMISSION_RATE=0.01
 COMMISSION_MAX_RATE=0.02
@@ -74,6 +74,10 @@ update_test_genesis '.app_state["staking"]["params"]["bond_denom"]="'$DENOM'"'
 
 # add test0 to the static validator set(custom Cudos logic)
 update_test_genesis '.app_state["gravity"]["static_val_cosmos_addrs"]=[ "'$TEST0_ADDRESS'" ]'
+# add a mapping demon to erc20 address [ "denom" : "erc20_address" ]
+ERC20_ADDR="0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
+update_test_genesis '.app_state["gravity"]["erc20_to_denoms"]=[{"erc20": "'$ERC20_ADDR'", "denom": "'$DENOM'" } ]'
+
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
 $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
@@ -86,7 +90,7 @@ $BINARY gentx $KEY "20000000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7
 $BINARY collect-gentxs --home $HOME_DIR
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
-# This raises an error since Cudos has another Msg tx type: MsgSetOrchestratorAddress
+# This raises an error since Cudos has an additional genesis Tx : MsgSetOrchestratorAddress
 # $BINARY validate-genesis --home $HOME_DIR
 
 $BINARY start --home $HOME_DIR
