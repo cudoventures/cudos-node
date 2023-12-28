@@ -1,4 +1,4 @@
-package bank
+package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
