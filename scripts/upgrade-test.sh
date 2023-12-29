@@ -9,7 +9,7 @@ HOME=cudos-data
 ROOT=$(pwd)
 DENOM=acudos
 CHAIN_ID=cudos-node
-SOFTWARE_UPGRADE_NAME="v12"
+SOFTWARE_UPGRADE_NAME="v1.2"
 ADDITIONAL_PRE_SCRIPTS=${ADDITIONAL_PRE_SCRIPTS:-""}
 ADDITIONAL_AFTER_SCRIPTS=${ADDITIONAL_AFTER_SCRIPTS:-""}
 NEW_VERSION=v1.2.0
@@ -88,10 +88,10 @@ run_fork () {
 run_upgrade () {
     echo "upgrading"
 
-    
-    STATUS_INFO=($(./_build/old/cudos-noded status --home $HOME  2> >(jq -r '.SyncInfo.latest_block_height')))
+    STATUS_INFO=$(./_build/old/cudos-noded status --home $HOME 2>&1 | jq -r '.SyncInfo.latest_block_height')
+    echo "STATUS_INFO = $STATUS_INFO"
     UPGRADE_HEIGHT=$((STATUS_INFO + 20))
-
+    echo "creating tar file for new binary"
     tar -cf ./_build/new/cudos-noded.tar -C ./_build/new cudos-noded
     SUM=$(shasum -a 256 ./_build/new/cudos-noded.tar | cut -d ' ' -f1)
     UPGRADE_INFO=$(jq -n '
@@ -102,12 +102,12 @@ run_upgrade () {
     }')
 
     ./_build/old/cudos-noded keys list --home $HOME --keyring-backend test
-
-    ./_build/old/cudos-noded tx gov submit-proposal software-upgrade "$SOFTWARE_UPGRADE_NAME" --upgrade-height $UPGRADE_HEIGHT --upgrade-info "$UPGRADE_INFO" --title "upgrade" --description "upgrade"  --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME -y
+    echo "submitting upgrade proposal"
+    ./_build/old/cudos-noded tx gov submit-proposal software-upgrade "$SOFTWARE_UPGRADE_NAME" --upgrade-height $UPGRADE_HEIGHT --upgrade-info "$UPGRADE_INFO" --title "upgrade" --description "upgrade"  --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME  -y
 
     sleep 5
 
-    ./_build/old/cudos-noded tx gov deposit 1 "20000000${DENOM}" --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME -y
+    ./_build/old/cudos-noded tx gov deposit 1 "40000000000000000000000000${DENOM}" --from test1 --keyring-backend test --chain-id $CHAIN_ID --home $HOME -y
 
     sleep 5
 
@@ -121,7 +121,7 @@ run_upgrade () {
 
     # determine block_height to halt
     while true; do 
-        BLOCK_HEIGHT=$(./_build/old/cudos-noded status 2> >(jq '.SyncInfo.latest_block_height' -r))
+        BLOCK_HEIGHT=$(./_build/old/cudos-noded status --home $HOME 2>&1 | jq -r '.SyncInfo.latest_block_height')
         if [ $BLOCK_HEIGHT = "$UPGRADE_HEIGHT" ]; then
             # assuming running only 1 cudos-noded
             echo "BLOCK HEIGHT = $UPGRADE_HEIGHT REACHED, KILLING OLD ONE"
