@@ -89,7 +89,6 @@ run_upgrade () {
     echo "upgrading"
 
     STATUS_INFO=$(./_build/old/cudos-noded status --home $HOME 2>&1 | jq -r '.SyncInfo.latest_block_height')
-    echo "STATUS_INFO = $STATUS_INFO"
     UPGRADE_HEIGHT=$((STATUS_INFO + 20))
     echo "creating tar file for new binary"
     tar -cf ./_build/new/cudos-noded.tar -C ./_build/new cudos-noded
