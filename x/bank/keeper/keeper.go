@@ -17,7 +17,9 @@ type Keeper struct {
 	bankkeeper.BaseKeeper
 
 	ak accountkeeper.AccountKeeper
-	dk distrkeeper.Keeper
+
+	dk    distrkeeper.Keeper
+	dkSet bool
 }
 
 var _ bankkeeper.Keeper = Keeper{}
@@ -26,23 +28,26 @@ func NewCustomKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	ak accountkeeper.AccountKeeper,
-	dk distrkeeper.Keeper,
 	paramSpace paramtypes.Subspace,
 	blockedAddrs map[string]bool,
 ) Keeper {
 	keeper := Keeper{
 		BaseKeeper: bankkeeper.NewBaseKeeper(cdc, storeKey, ak, paramSpace, blockedAddrs),
 		ak:         ak,
-		dk:         dk,
 	}
 	return keeper
+}
+
+func (k *Keeper) SetDistrKeeper(dk distrkeeper.Keeper) {
+	k.dk = dk
+	k.dkSet = true
 }
 
 // Migrate from https://github.com/CudoVentures/cosmos-sdk/blob/3816012a2d4ea5c9bbb3d8e6174d3b96ff91a039/x/bank/keeper/keeper.go#L439
 func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins) error {
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
-		if amt.Denom == burnDenom {
+		if k.dkSet && amt.Denom == burnDenom {
 			if err := k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName)); err != nil {
 				return err
 			}
