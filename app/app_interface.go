@@ -26,7 +26,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
@@ -85,9 +84,6 @@ import (
 	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
-
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -149,7 +145,6 @@ var (
 		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
-		groupmodule.AppModuleBasic{},
 	)
 
 	maccPerms = map[string][]string{
@@ -213,7 +208,6 @@ type App struct {
 	feegrantKeeper feegrantkeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
-	GroupKeeper groupkeeper.Keeper
 	// the module manager
 	mm           *module.Manager
 	configurator module.Configurator
@@ -369,7 +363,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)
-	paramsKeeper.Subspace(group.ModuleName)
 
 	return paramsKeeper
 }
