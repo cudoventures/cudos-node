@@ -83,7 +83,7 @@ var (
 func init() {
 	cudosHome, present := os.LookupEnv("CUDOS_HOME")
 	if !present {
-		userHomeDir, err := os.UserHomeDir()
+		userHomeDir, err := os.Getwd()
 		if err != nil {
 			panic(err)
 		}

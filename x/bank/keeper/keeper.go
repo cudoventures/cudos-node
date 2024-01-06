@@ -60,44 +60,4 @@ func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins)
 		return k.BaseKeeper.BurnCoins(ctx, moduleName, burnAmts)
 	}
 	return nil
-	// acc := k.ak.GetModuleAccount(ctx, moduleName)
-	// if acc == nil {
-	// 	panic(sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "module account %s does not exist", moduleName))
-	// }
-
-	// if !acc.HasPermission(authtypes.Burner) {
-	// 	panic(sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "module account %s does not have permissions to burn tokens", moduleName))
-	// }
-
-	// err := k.subUnlockedCoins(ctx, acc.GetAddress(), amounts)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for _, amount := range amounts {
-	// 	if amount.Denom == burnDenom {
-	// 		// transfer collected fees to the distribution module account
-	// 		err := k.addCoins(ctx, k.dk.GetDistributionAccount(ctx).GetAddress(), sdk.Coins{amount})
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-
-	// 		fp := k.dk.GetFeePool(ctx)
-	// 		fp.CommunityPool = fp.CommunityPool.Add(sdk.NewDecCoinFromCoin(amount))
-	// 		k.dk.SetFeePool(ctx, fp)
-	// 		// resultString = "moved tokens from module account to community pool"
-	// 	} else {
-	// 		supply := k.GetSupply(ctx, amount.GetDenom())
-	// 		supply = supply.Sub(amount)
-	// 		k.setSupply(ctx, supply)
-	// 		// resultString = "burned tokens from module account"
-	// 	}
-	// }
-
-	// // emit burn event
-	// ctx.EventManager().EmitEvent(
-	// 	types.NewCoinBurnEvent(acc.GetAddress(), amounts),
-	// )
-
-	// return nil
 }
