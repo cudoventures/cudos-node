@@ -55,14 +55,6 @@ var (
 	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
 )
 
-func SetConfig() {
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)
-	config.SetBech32PrefixForValidator(ValidatorAddressPrefix, ValidatorPubKeyPrefix)
-	config.SetBech32PrefixForConsensusNode(ConsNodeAddressPrefix, ConsNodePubKeyPrefix)
-	sdk.DefaultPowerReduction = DefaultPowerReduction
-}
-
 type KeeperTestHelper struct {
 	suite.Suite
 
@@ -105,7 +97,6 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 }
 
 func SetupApp(t *testing.T) *app.App {
-	SetConfig()
 	t.Helper()
 	privVal := NewPV()
 	pubKey, err := privVal.GetPubKey()
