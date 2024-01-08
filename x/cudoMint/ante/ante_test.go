@@ -2,7 +2,6 @@ package ante_test
 
 import (
 	"fmt"
-	"math/big"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -99,7 +98,7 @@ func (suite *AnteTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []
 	return suite.txBuilder.GetTx(), nil
 }
 
-func (suite *AnteTestSuite) CreateValidator(tokens *big.Int) (cryptotypes.PrivKey, cryptotypes.PubKey, stakingtypes.Validator, authtypes.AccountI) {
+func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey, cryptotypes.PubKey, stakingtypes.Validator, authtypes.AccountI, error) {
 	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
 	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
 	// at the end of commit, deliverTx is set to nil, which is why we need to get newest instance of deliverTx ctx here after committing
@@ -110,7 +109,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens *big.Int) (cryptotypes.PrivKe
 	consKey, valPub, _ := suite.Ed25519PubAddr()
 	valAddr := sdk.ValAddress(addr)
 
-	sendCoins := sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, sdk.NewIntFromBigInt(tokens.Mul(tokens, big.NewInt(2)))))
+	sendCoins := sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, tokens.Mul(sdk.NewInt(2))))
 	suite.FundAcc(addr, sendCoins)
 
 	// set account in account keeper
@@ -134,7 +133,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens *big.Int) (cryptotypes.PrivKe
 		sdk.NewDecWithPrec(1, 0),
 	)
 
-	delegationCoin := sdk.NewCoin(appparams.BondDenom, sdk.NewIntFromBigInt(tokens))
+	delegationCoin := sdk.NewCoin(appparams.BondDenom, tokens)
 	desc := stakingtypes.NewDescription("moniker", "", "", "", "")
 
 	msgCreateValidator, err := stakingtypes.NewMsgCreateValidator(
@@ -143,34 +142,43 @@ func (suite *AnteTestSuite) CreateValidator(tokens *big.Int) (cryptotypes.PrivKe
 		delegationCoin,
 		desc,
 		commissionRates,
-		sdk.NewIntFromBigInt(tokens),
+		tokens,
 	)
-	suite.Require().NoError(err)
+	if err != nil {
+		return nil, nil, stakingtypes.Validator{}, nil, err
+	}
 
 	// deliver Tx
 	_, _, err = simulation.GenAndDeliverTx(suite.App.BaseApp, suite.clientCtx.TxConfig, msgCreateValidator, sdk.NewCoins(), suite.Ctx, simAccount, suite.App.AccountKeeper, stakingtypes.ModuleName)
-	suite.Require().NoError(err)
+
+	if err != nil {
+		return nil, nil, stakingtypes.Validator{}, nil, err
+	}
+
 	fmt.Println("deliver tx success")
 	// turn block for validator updates
 	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
 	suite.App.Commit()
 
 	retval, found := suite.App.StakingKeeper.GetValidator(suite.Ctx, valAddr)
-	suite.Require().Equal(true, found)
+
+	if !found {
+		return nil, nil, stakingtypes.Validator{}, nil, fmt.Errorf("validator not found")
+	}
 
 	updatedAccount := suite.App.AccountKeeper.GetAccount(suite.Ctx, addr)
 
-	return priv, pub, retval, updatedAccount
+	return priv, pub, retval, updatedAccount, nil
 }
 
 func (suite *AnteTestSuite) TestAnte_HappyPathCreateValidator() {
-	const MinSelfDelegation = "2000000000000000000000000"
+	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
 	suite.SetupTest() // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 	suite.txBuilder.SetGasLimit(400_000)
 
-	msd, _ := new(big.Int).SetString(MinSelfDelegation, 10)
-	_, _, _, _ = suite.CreateValidator(msd)
+	_, _, _, _, err := suite.CreateValidator(MinSelfDelegation)
+	suite.Require().NoError(err)
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
 	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
@@ -178,6 +186,11 @@ func (suite *AnteTestSuite) TestAnte_HappyPathCreateValidator() {
 	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
 	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
 	suite.App.Commit()
+
+	// create validator tx with not enough min self delegation
+	_, _, _, _, err = suite.CreateValidator(MinSelfDelegation.Sub(sdk.NewInt(1)))
+	suite.Require().Error(err, "should not be able to create validator with less than min self delegation")
+
 	// tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv1}, []uint64{acc.GetAccountNumber()}, []uint64{acc.GetSequence()}, suite.Ctx.ChainID())
 	// suite.Require().NoError(err)
 	// dyncomm := suite.App.DyncommKeeper.CalculateDynCommission(suite.Ctx, val1)

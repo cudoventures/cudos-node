@@ -326,6 +326,6 @@ func (s *KeeperTestHelper) FundAcc(acc sdk.AccAddress, amounts sdk.Coins) {
 	s.Require().NoError(err)
 }
 
-func (s *KeeperTestHelper) SetStaticValSet(cosmosAddress string) {
-	s.App.GravityKeeper.SetStaticValCosmosAddr(s.Ctx, cosmosAddress)
-}
+// func (s *KeeperTestHelper) SetStaticValSet(cosmosAddress string) {
+// 	s.App.GravityKeeper.SetStaticValCosmosAddr(s.Ctx, cosmosAddress)
+// }
