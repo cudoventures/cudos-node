@@ -124,7 +124,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 		sdk.NewDecWithPrec(1, 0),
 	)
 
-	delegationCoin := sdk.NewCoin(appparams.BondDenom, tokens)
+	delegationCoin := sdk.NewCoin(appparams.BondDenom, tokens.Mul(sdk.NewInt(2)))
 	desc := stakingtypes.NewDescription("moniker", "", "", "", "")
 
 	msgCreateValidator, err := stakingtypes.NewMsgCreateValidator(
@@ -168,6 +168,59 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	return priv, pub, retval, updatedAccount, nil
 }
 
+func (suite *AnteTestSuite) EditValidator(tokens sdk.Int, priv cryptotypes.PrivKey) (stakingtypes.Validator, authtypes.AccountI, error) {
+	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
+	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
+	// at the end of commit, deliverTx is set to nil, which is why we need to get newest instance of deliverTx ctx here after committing
+	// update ctx to new deliver tx context
+	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
+	pub := priv.PubKey()
+	addr := sdk.AccAddress(pub.Address())
+	valAddr := sdk.ValAddress(addr)
+	account := suite.App.AccountKeeper.GetAccount(suite.Ctx, addr)
+	_, found := suite.App.StakingKeeper.GetValidator(suite.Ctx, valAddr)
+	if !found {
+		return stakingtypes.Validator{}, nil, fmt.Errorf("validator not found")
+	}
+
+	desc := stakingtypes.NewDescription("moniker", "", "", "", "")
+	msgEditValidator := stakingtypes.NewMsgEditValidator(
+		valAddr,
+		desc,
+		nil,
+		&tokens,
+	)
+	err := suite.txBuilder.SetMsgs(msgEditValidator)
+
+	if err != nil {
+		return stakingtypes.Validator{}, nil, err
+	}
+
+	tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv}, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()}, suite.Ctx.ChainID())
+	if err != nil {
+		return stakingtypes.Validator{}, nil, err
+	}
+	_, _, err = suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
+
+	if err != nil {
+		return stakingtypes.Validator{}, nil, err
+	}
+
+	// turn block for validator updates
+	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
+	suite.App.Commit()
+
+	retval, found := suite.App.StakingKeeper.GetValidator(suite.Ctx, valAddr)
+
+	if !found {
+		return stakingtypes.Validator{}, nil, fmt.Errorf("error after edit validator: validator not found in store")
+	}
+
+	updatedAccount := suite.App.AccountKeeper.GetAccount(suite.Ctx, addr)
+
+	return retval, updatedAccount, nil
+}
+
 func (suite *AnteTestSuite) TestAnte_CreateAndEditValidator() {
 	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
 	suite.SetupTest() // setup
@@ -175,15 +228,23 @@ func (suite *AnteTestSuite) TestAnte_CreateAndEditValidator() {
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 	suite.txBuilder.SetGasLimit(400_000_000)
 
-	_, _, _, _, err := suite.CreateValidator(MinSelfDelegation)
+	priv1, _, _, _, err := suite.CreateValidator(MinSelfDelegation)
+	suite.Require().NoError(err)
+	// try create validator with insufficient min self delegation
+
+	_, _, _, _, err = suite.CreateValidator(MinSelfDelegation.Sub(sdk.NewInt(1)))
+	suite.Require().Error(err)
+	// Revert the block height to the previous one, since the previous tx failed
+	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() - 1)
+	// try edit validator with sufficient min self delegation
+
+	_, _, err = suite.EditValidator(MinSelfDelegation.Add(sdk.NewInt(1)), priv1)
 	suite.Require().NoError(err)
 
-	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
-	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
-	// update ctx to new deliver tx context
-	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
-	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
-	suite.App.Commit()
+	// try edit validator with insufficient min self delegation
+
+	_, _, err = suite.EditValidator(MinSelfDelegation.Sub(sdk.NewInt(1)), priv1)
+	suite.Require().Error(err)
 
 }
 
