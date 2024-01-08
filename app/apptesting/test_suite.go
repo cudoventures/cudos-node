@@ -3,7 +3,6 @@ package apptesting
 import (
 	"encoding/json"
 	"fmt"
-	"math/big"
 	"testing"
 	"time"
 
@@ -44,9 +43,8 @@ const (
 )
 
 var (
-	bigint                   = &big.Int{}
-	DefaultPowerReduction, _ = bigint.SetString("1000000000000000000", 10)
-	MinSelfDelegation, _     = bigint.SetString("20000000000000000000000000", 10)
+	DefaultPowerReduction, _ = sdk.NewIntFromString("1000000000000000000")
+	MinSelfDelegation, _     = sdk.NewIntFromString("2000000000000000000000000")
 )
 
 var (
@@ -62,7 +60,7 @@ func SetConfig() {
 	config.SetBech32PrefixForAccount(AccountAddressPrefix, AccountPubKeyPrefix)
 	config.SetBech32PrefixForValidator(ValidatorAddressPrefix, ValidatorPubKeyPrefix)
 	config.SetBech32PrefixForConsensusNode(ConsNodeAddressPrefix, ConsNodePubKeyPrefix)
-	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(DefaultPowerReduction)
+	sdk.DefaultPowerReduction = DefaultPowerReduction
 }
 
 type KeeperTestHelper struct {
@@ -121,7 +119,7 @@ func SetupApp(t *testing.T) *app.App {
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, sdk.NewIntFromBigInt(MinSelfDelegation.Mul(MinSelfDelegation, big.NewInt(100))))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, MinSelfDelegation.Mul(sdk.NewIntFromUint64(10)))),
 	}
 	return SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
 }
@@ -196,7 +194,7 @@ func genesisStateWithValSet(t *testing.T,
 	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
 	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
 
-	bondAmt := sdk.NewIntFromBigInt(MinSelfDelegation)
+	bondAmt := MinSelfDelegation
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
 		require.NoError(t, err)
@@ -214,7 +212,7 @@ func genesisStateWithValSet(t *testing.T,
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
 			Commission:        stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
-			MinSelfDelegation: sdk.NewIntFromBigInt(MinSelfDelegation),
+			MinSelfDelegation: MinSelfDelegation,
 		}
 
 		validators = append(validators, validator)
