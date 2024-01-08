@@ -108,7 +108,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	priv, pub, addr := testdata.KeyTestPubAddr()
 	consKey, valPub, _ := suite.Ed25519PubAddr()
 	valAddr := sdk.ValAddress(addr)
-
+	fmt.Println("valAddr", valAddr.String())
 	sendCoins := sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, tokens.Mul(sdk.NewInt(2))))
 	suite.FundAcc(addr, sendCoins)
 
@@ -171,13 +171,13 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	return priv, pub, retval, updatedAccount, nil
 }
 
-func (suite *AnteTestSuite) TestAnte_HappyPathCreateValidator() {
+func (suite *AnteTestSuite) TestAnte_CreateAndEditValidator() {
 	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
 	suite.SetupTest() // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 	suite.txBuilder.SetGasLimit(400_000)
 
-	_, _, _, _, err := suite.CreateValidator(MinSelfDelegation)
+	priv1, _, val1, acc1, err := suite.CreateValidator(MinSelfDelegation)
 	suite.Require().NoError(err)
 
 	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
@@ -191,48 +191,82 @@ func (suite *AnteTestSuite) TestAnte_HappyPathCreateValidator() {
 	_, _, _, _, err = suite.CreateValidator(MinSelfDelegation.Sub(sdk.NewInt(1)))
 	suite.Require().Error(err, "should not be able to create validator with less than min self delegation")
 
-	// tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv1}, []uint64{acc.GetAccountNumber()}, []uint64{acc.GetSequence()}, suite.Ctx.ChainID())
-	// suite.Require().NoError(err)
-	// dyncomm := suite.App.DyncommKeeper.CalculateDynCommission(suite.Ctx, val1)
-	// invalidtarget := dyncomm.Mul(sdk.NewDecWithPrec(9, 1))
+	// Try to edit validator with not enough min self delegation
 
-	// // invalid tx fails, not updating account sequence in account keeper
-	// editmsg := stakingtypes.NewMsgEditValidator(
-	// 	val1.GetOperator(),
-	// 	val1.Description, &invalidtarget, &val1.MinSelfDelegation,
-	// )
+	tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv1}, []uint64{acc1.GetAccountNumber()}, []uint64{acc1.GetSequence()}, suite.Ctx.ChainID())
+	suite.Require().NoError(err)
+	invalidtarget := MinSelfDelegation.Sub(sdk.NewInt(1))
+	editmsg := stakingtypes.NewMsgEditValidator(
+		val1.GetOperator(),
+		val1.Description, &val1.Commission.Rate, &invalidtarget,
+	)
+	err = suite.txBuilder.SetMsgs(editmsg)
+	suite.Require().NoError(err)
 
-	// err := suite.txBuilder.SetMsgs(editmsg)
-	// suite.Require().NoError(err)
+	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
 
-	// // due to submitting a create validator tx before, thus account sequence is now 1
-	// for i := 0; i < 5; i++ {
-	// 	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
-	// 	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
-	// 	// update ctx to new deliver tx context
-	// 	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
+	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
+	_, checkRes, err := suite.App.Check(suite.clientCtx.TxConfig.TxEncoder(), tx)
 
-	// tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv1}, []uint64{acc.GetAccountNumber()}, []uint64{acc.GetSequence()}, suite.Ctx.ChainID())
-	// suite.Require().NoError(err)
+	fmt.Printf("Signer data: %+v \n", tx.GetSigners()[0].String())
+	fmt.Printf("check response: %+v, error = %v \n", checkRes, err)
+	suite.Require().Error(err, "should not be able to edit validator with less than min self delegation")
 
-	// 	_, checkRes, err := suite.App.SimCheck(suite.clientCtx.TxConfig.TxEncoder(), tx)
-	// 	fmt.Printf("check response: %+v, error = %v \n", checkRes, err)
-	// 	suite.Ctx = suite.Ctx.WithIsCheckTx(false)
-	// 	_, deliverRes, err := suite.App.SimDeliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
-	// 	fmt.Printf("deliver response: %+v, error = %v \n", deliverRes, err)
-	// 	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
-	// 	suite.App.Commit()
+	_, deliverRes, err := suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	fmt.Printf("deliver response: %+v, error = %v \n", deliverRes, err)
+	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
+	suite.App.Commit()
+	// check and update account keeper
+	acc := suite.App.AccountKeeper.GetAccount(suite.CheckCtx, acc1.GetAddress())
+	checkSeq := acc.GetSequence()
 
-	// 	// check and update account keeper
-	// 	acc = suite.App.AccountKeeper.GetAccount(suite.CheckCtx, acc.GetAddress())
-	// 	checkSeq := acc.GetSequence()
-	// 	// checkSeq not updated when checkTx fails
-	// 	suite.Require().Equal(uint64(1), checkSeq)
-	// 	acc = suite.App.AccountKeeper.GetAccount(suite.Ctx, acc.GetAddress())
-	// 	deliverSeq := acc.GetSequence()
-	// 	// deliverSeq not updated when deliverTx fails
-	// 	suite.Require().Equal(uint64(1), deliverSeq)
-	// }
+	// checkSeq not updated when checkTx fails
+	suite.Require().Equal(uint64(1), checkSeq)
+	acc = suite.App.AccountKeeper.GetAccount(suite.Ctx, acc.GetAddress())
+	deliverSeq := acc.GetSequence()
+
+	// deliverSeq not updated when deliverTx fails
+	suite.Require().Equal(uint64(1), deliverSeq)
+
+	// Try to edit validator with enough min self delegation
+	fmt.Println("try to edit validator with enough min self delegation")
+	tx, err = suite.CreateTestTx([]cryptotypes.PrivKey{priv1}, []uint64{acc1.GetAccountNumber()}, []uint64{acc1.GetSequence()}, suite.Ctx.ChainID())
+	suite.Require().NoError(err)
+	EnoughMinSelfDelegation := MinSelfDelegation.Add(sdk.NewInt(1))
+	editmsg = stakingtypes.NewMsgEditValidator(
+		val1.GetOperator(),
+		val1.Description, &val1.Commission.Rate, &EnoughMinSelfDelegation)
+	err = suite.txBuilder.SetMsgs(editmsg)
+	suite.Require().NoError(err)
+	fmt.Println("block height", suite.Ctx.BlockHeight())
+	suite.Ctx = suite.Ctx.WithBlockHeight(suite.Ctx.BlockHeight() + 1)
+	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
+
+	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
+	_, checkRes, err = suite.App.Check(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	fmt.Println("check tx", acc1.GetSequence())
+
+	fmt.Printf("check response: %+v, error = %v \n", checkRes, err)
+	suite.Require().NoError(err, "should be able to edit validator with enough min self delegation")
+
+	fmt.Println("deliver tx", suite.App.AccountKeeper.GetAccount(suite.Ctx, acc1.GetAddress()).GetSequence())
+	_, deliverRes, err = suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	fmt.Printf("deliver response: %+v, error = %v \n", deliverRes, err)
+	suite.App.EndBlock(abci.RequestEndBlock{Height: suite.Ctx.BlockHeight()})
+	suite.App.Commit()
+	// check and update account keeper
+	acc = suite.App.AccountKeeper.GetAccount(suite.CheckCtx, acc1.GetAddress())
+	checkSeq = acc.GetSequence()
+
+	// Account sequence updated when checkTx succeeds
+	suite.Require().Equal(uint64(2), checkSeq)
+
+	acc = suite.App.AccountKeeper.GetAccount(suite.Ctx, acc.GetAddress())
+	deliverSeq = acc.GetSequence()
+
+	// Account sequence updated when deliverTx succeeds
+	suite.Require().Equal(uint64(2), deliverSeq)
+
 }
 
 func TestAnteTestSuite(t *testing.T) {
