@@ -108,6 +108,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	priv, pub, addr := testdata.KeyTestPubAddr()
 	_, valPub, _ := suite.Ed25519PubAddr()
 	valAddr := sdk.ValAddress(addr)
+	fmt.Println("valAddr: ", valAddr.String())
 	sendCoins := sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, tokens.Mul(sdk.NewInt(2))))
 	suite.FundAcc(addr, sendCoins)
 
@@ -116,7 +117,8 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	account.SetPubKey(pub)
 	account.SetAccountNumber(0)
 	account.SetSequence(0)
-	// set account in deliver tx context
+	// set account in check tx and deliver tx context
+	suite.App.AccountKeeper.SetAccount(suite.CheckCtx, account)
 	suite.App.AccountKeeper.SetAccount(suite.Ctx, account)
 
 	commissionRates := stakingtypes.NewCommissionRates(
@@ -147,6 +149,11 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int) (cryptotypes.PrivKey
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
+
+	_, _, err = suite.App.Check(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	if err != nil {
+		return nil, nil, stakingtypes.Validator{}, nil, err
+	}
 	_, _, err = suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
 
 	if err != nil {
@@ -173,6 +180,7 @@ func (suite *AnteTestSuite) EditValidator(tokens sdk.Int, priv cryptotypes.PrivK
 	suite.App.BeginBlock(abci.RequestBeginBlock{Header: suite.Ctx.BlockHeader()})
 	// at the end of commit, deliverTx is set to nil, which is why we need to get newest instance of deliverTx ctx here after committing
 	// update ctx to new deliver tx context
+	suite.CheckCtx = suite.App.NewContext(true, suite.CheckCtx.BlockHeader())
 	suite.Ctx = suite.App.NewContext(false, suite.Ctx.BlockHeader())
 	pub := priv.PubKey()
 	addr := sdk.AccAddress(pub.Address())
@@ -200,7 +208,16 @@ func (suite *AnteTestSuite) EditValidator(tokens sdk.Int, priv cryptotypes.PrivK
 	if err != nil {
 		return stakingtypes.Validator{}, nil, err
 	}
+	fmt.Println("before check tx: ", suite.App.AccountKeeper.GetAccount(suite.CheckCtx, addr).GetSequence())
+	_, _, err = suite.App.Check(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	fmt.Println("after check tx: ", suite.App.AccountKeeper.GetAccount(suite.CheckCtx, addr).GetSequence())
+
+	if err != nil {
+		return stakingtypes.Validator{}, nil, err
+	}
+	fmt.Println("before deliver tx: ", suite.App.AccountKeeper.GetAccount(suite.Ctx, addr).GetSequence())
 	_, _, err = suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	fmt.Println("after deliver tx: ", suite.App.AccountKeeper.GetAccount(suite.Ctx, addr).GetSequence())
 
 	if err != nil {
 		return stakingtypes.Validator{}, nil, err
@@ -246,6 +263,34 @@ func (suite *AnteTestSuite) TestAnte_CreateAndEditValidator() {
 	_, _, err = suite.EditValidator(MinSelfDelegation.Sub(sdk.NewInt(1)), priv1)
 	suite.Require().Error(err)
 
+}
+
+func (suite *AnteTestSuite) TestAnte_CreateAndEditValidator_SeqNumber() {
+	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
+
+	suite.SetupTest() // setup
+	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
+	suite.txBuilder.SetGasLimit(400_000_000)
+
+	priv1, _, _, acc, err := suite.CreateValidator(MinSelfDelegation)
+	suite.Require().NoError(err)
+
+	// because successfully created validator, sequence number should be incremented
+	suite.Require().Equal(uint64(1), acc.GetSequence())
+
+	// try edit validator with sufficient min self delegation
+	_, _, err = suite.EditValidator(MinSelfDelegation.Add(sdk.NewInt(1)), priv1)
+	suite.Require().NoError(err)
+
+	// because edit validator succeeded, sequence number should be incremented
+	acc = suite.App.AccountKeeper.GetAccount(suite.CheckCtx, acc.GetAddress())
+	checkSeq := acc.GetSequence()
+	suite.Require().Equal(uint64(2), checkSeq)
+
+	// because edit validator succeeded, sequence number should be incremented
+	acc = suite.App.AccountKeeper.GetAccount(suite.Ctx, acc.GetAddress())
+	delivSeq := acc.GetSequence()
+	suite.Require().Equal(uint64(2), delivSeq)
 }
 
 func TestAnteTestSuite(t *testing.T) {
