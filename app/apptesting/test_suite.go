@@ -7,6 +7,7 @@ import (
 
 	"github.com/CudoVentures/cudos-node/app"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
+	cudoMintKeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -62,6 +63,8 @@ type KeeperTestHelper struct {
 	CheckCtx    sdk.Context
 	QueryHelper *baseapp.QueryServiceTestHelper
 	TestAccs    []sdk.AccAddress
+
+	CudoMintKeeper cudoMintKeeper.Keeper
 }
 
 func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
@@ -74,6 +77,11 @@ func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
 	}
 
 	s.TestAccs = s.RandomAccountAddresses(3)
+
+	// CudoMintKeeper is already initialized after SetupApp, but it is set as private field, so we need to set it again in the test helper for testing
+	keyCudoMint := sdk.NewKVStoreKey("someKey")
+	memstoreCudoMint := sdk.NewKVStoreKey("anotherKey")
+	s.CudoMintKeeper = *cudoMintKeeper.NewKeeper(s.App.AppCodec(), keyCudoMint, memstoreCudoMint, s.App.BankKeeper, s.App.AccountKeeper, s.App.ParamsKeeper.Subspace("cudomint2"), authtypes.FeeCollectorName)
 }
 
 // DefaultConsensusParams defines the default Tendermint consensus params used
