@@ -67,9 +67,6 @@ import (
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 const Name = "cudos-node"
@@ -133,7 +130,6 @@ func New(
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
-		group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -192,7 +188,6 @@ func New(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -220,7 +215,6 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		group.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -244,7 +238,6 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		group.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -277,7 +270,6 @@ func New(
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
-		group.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
