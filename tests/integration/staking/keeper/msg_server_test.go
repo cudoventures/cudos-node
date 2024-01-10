@@ -88,7 +88,6 @@ func (suite *AnteTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []
 
 		sigsV2 = append(sigsV2, sigV2)
 	}
-	fmt.Printf("sigsV2: %+v \n", sigsV2)
 
 	err = suite.txBuilder.SetSignatures(sigsV2...)
 	if err != nil {
@@ -109,7 +108,6 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryp
 	priv, pub, addr := testdata.KeyTestPubAddr()
 	_, valPub, _ := suite.Ed25519PubAddr()
 	valAddr := sdk.ValAddress(addr)
-	fmt.Println("valAddr: ", valAddr.String())
 	sendCoins := sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, tokens.Mul(sdk.NewInt(2))))
 	suite.FundAcc(addr, sendCoins)
 
@@ -226,9 +224,7 @@ func (suite *AnteTestSuite) TestAnte_CreateValidator_SeqNumber() {
 	delivSeq := acc.GetSequence()
 	suite.Require().Equal(uint64(1), delivSeq)
 
-	// create another validator
-	fmt.Println("account: ", suite.App.AccountKeeper.GetAllAccounts(suite.Ctx))
-
+	// create another validator with enough min self delegation
 	_, _, val, acc, err = suite.CreateValidator(MinSelfDelegation, 1)
 	suite.Require().NoError(err)
 

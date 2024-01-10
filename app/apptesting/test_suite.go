@@ -2,7 +2,6 @@ package apptesting
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 	"time"
 
@@ -277,7 +276,6 @@ func genesisStateWithValSet(t *testing.T,
 			},
 		},
 	}
-	fmt.Println("gravityGenesis", gravityGenesis.StaticValCosmosAddrs)
 	genesisState[gravitytypes.ModuleName] = app.AppCodec().MustMarshalJSON(gravityGenesis)
 
 	// Add gentxs, MsgCreateValidator and MsgSetOrchestratorAddress
