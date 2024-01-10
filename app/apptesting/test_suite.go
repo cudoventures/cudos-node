@@ -7,7 +7,10 @@ import (
 
 	"github.com/CudoVentures/cudos-node/app"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
+	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -17,6 +20,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
@@ -30,7 +35,23 @@ import (
 
 // SimAppChainID hardcoded chainID for simulation
 const (
-	SimAppChainID = "cudos-app"
+	SimAppChainID        = "cudos-app"
+	AccountAddressPrefix = "cudos"
+	DefaultEthAddress    = "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97"
+	CudosMainnetEthAddr  = "0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
+)
+
+var (
+	DefaultPowerReduction, _ = sdk.NewIntFromString("1000000000000000000")
+	MinSelfDelegation, _     = sdk.NewIntFromString("2000000000000000000000000")
+)
+
+var (
+	AccountPubKeyPrefix    = AccountAddressPrefix + "pub"
+	ValidatorAddressPrefix = AccountAddressPrefix + "valoper"
+	ValidatorPubKeyPrefix  = AccountAddressPrefix + "valoperpub"
+	ConsNodeAddressPrefix  = AccountAddressPrefix + "valcons"
+	ConsNodePubKeyPrefix   = AccountAddressPrefix + "valconspub"
 )
 
 type KeeperTestHelper struct {
@@ -88,9 +109,8 @@ func SetupApp(t *testing.T) *app.App {
 	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, MinSelfDelegation.Mul(sdk.NewIntFromUint64(10)))),
 	}
-
 	return SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
 }
 
@@ -105,9 +125,10 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	genesisState = genesisStateWithValSet(t, cudosApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
-	require.NoError(t, err)
 
+	require.NoError(t, err)
 	// init chain will set the validator set and initialize the genesis accounts
+
 	cudosApp.InitChain(
 		abci.RequestInitChain{
 			ChainId:         SimAppChainID,
@@ -160,17 +181,16 @@ func genesisStateWithValSet(t *testing.T,
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
-
 	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
 	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
 
-	bondAmt := sdk.DefaultPowerReduction
-
+	bondAmt := MinSelfDelegation
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
 		require.NoError(t, err)
 		pkAny, err := codectypes.NewAnyWithValue(pk)
 		require.NoError(t, err)
+		// Get account address from pubkey
 		validator := stakingtypes.Validator{
 			OperatorAddress:   sdk.ValAddress(val.Address).String(),
 			ConsensusPubkey:   pkAny,
@@ -182,12 +202,17 @@ func genesisStateWithValSet(t *testing.T,
 			UnbondingHeight:   int64(0),
 			UnbondingTime:     time.Unix(0, 0).UTC(),
 			Commission:        stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
-			MinSelfDelegation: sdk.ZeroInt(),
+			MinSelfDelegation: MinSelfDelegation,
 		}
+
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
 
 	}
+	pk, _ := cryptocodec.FromTmPubKeyInterface(valSet.Validators[0].PubKey)
+
+	accAddr := sdk.AccAddress(pk.Address())
+
 	// set validators and delegations
 	defaultStParams := stakingtypes.DefaultParams()
 	stParams := stakingtypes.NewParams(
@@ -229,6 +254,31 @@ func genesisStateWithValSet(t *testing.T,
 
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
+	// Custom Cudos logic for gravity module
+	// TODO: verify if true, maybe get the current snapshot of the gravity module genesis state
+
+	gravityGenesis := &gravitytypes.GenesisState{
+		Params: gravitytypes.DefaultParams(),
+		StaticValCosmosAddrs: []string{
+			accAddr.String(),
+		},
+		Erc20ToDenoms: []*gravitytypes.ERC20ToDenom{
+			{
+				Erc20: CudosMainnetEthAddr, // just for testing
+				Denom: "acudos",
+			},
+		},
+		DelegateKeys: []*gravitytypes.MsgSetOrchestratorAddress{
+			{
+				Validator:    sdk.ValAddress(valSet.Validators[0].Address).String(),
+				EthAddress:   DefaultEthAddress,
+				Orchestrator: genAccs[0].GetAddress().String(),
+			},
+		},
+	}
+
+	genesisState[gravitytypes.ModuleName] = app.AppCodec().MustMarshalJSON(gravityGenesis)
+
 	return genesisState
 }
 
@@ -246,4 +296,20 @@ func (s *KeeperTestHelper) RandomAccountAddresses(n int) []sdk.AccAddress {
 		addrsList[i] = addrs
 	}
 	return addrsList
+}
+
+// From https://github.com/cosmos/cosmos-sdk/blob/v0.46.14/x/bank/testutil/test_helpers.go
+func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := bankKeeper.MintCoins(ctx, cudoMinttypes.ModuleName, amounts); err != nil {
+		return err
+	}
+
+	return bankKeeper.SendCoinsFromModuleToAccount(ctx, cudoMinttypes.ModuleName, addr, amounts)
+
+}
+
+// FundAcc funds target address with specified amount.
+func (s *KeeperTestHelper) FundAcc(acc sdk.AccAddress, amounts sdk.Coins) {
+	err := fundAccount(s.App.BankKeeper, s.Ctx, acc, amounts)
+	s.Require().NoError(err)
 }
