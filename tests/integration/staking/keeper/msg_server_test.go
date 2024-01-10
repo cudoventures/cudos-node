@@ -7,10 +7,7 @@ import (
 	"github.com/CudoVentures/cudos-node/app"
 	"github.com/CudoVentures/cudos-node/app/apptesting"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -47,54 +44,6 @@ func (suite *AnteTestSuite) SetupEncoding() appparams.EncodingConfig {
 	encodingConfig.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
 
 	return encodingConfig
-}
-
-// CreateTestTx is a helper function to create a tx given multiple inputs.
-func (suite *AnteTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
-	// First round: we gather all the signer infos. We use the "set empty
-	// signature" hack to do that.
-	var sigsV2 []signing.SignatureV2
-	for i, priv := range privs {
-		sigV2 := signing.SignatureV2{
-			PubKey: priv.PubKey(),
-			Data: &signing.SingleSignatureData{
-				SignMode:  suite.clientCtx.TxConfig.SignModeHandler().DefaultMode(),
-				Signature: nil,
-			},
-			Sequence: accSeqs[i],
-		}
-
-		sigsV2 = append(sigsV2, sigV2)
-	}
-	err := suite.txBuilder.SetSignatures(sigsV2...)
-	if err != nil {
-		return nil, err
-	}
-	// Second round: all signer infos are set, so each signer can sign.
-	sigsV2 = []signing.SignatureV2{}
-	for i, priv := range privs {
-		signerData := xauthsigning.SignerData{
-			ChainID:       chainID,
-			AccountNumber: accNums[i],
-			Sequence:      accSeqs[i],
-		}
-
-		sigV2, err := tx.SignWithPrivKey(
-			suite.clientCtx.TxConfig.SignModeHandler().DefaultMode(), signerData,
-			suite.txBuilder, priv, suite.clientCtx.TxConfig, accSeqs[i])
-		if err != nil {
-			return nil, err
-		}
-
-		sigsV2 = append(sigsV2, sigV2)
-	}
-
-	err = suite.txBuilder.SetSignatures(sigsV2...)
-	if err != nil {
-		return nil, err
-	}
-
-	return suite.txBuilder.GetTx(), nil
 }
 
 func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryptotypes.PrivKey, cryptotypes.PubKey, stakingtypes.Validator, authtypes.AccountI, error) {
@@ -144,7 +93,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryp
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
-	tx, err := suite.CreateTestTx([]cryptotypes.PrivKey{priv}, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()}, suite.Ctx.ChainID())
+	tx, err := apptesting.CreateTestTx([]cryptotypes.PrivKey{priv}, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()}, suite.Ctx.ChainID(), suite.clientCtx, suite.txBuilder)
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
