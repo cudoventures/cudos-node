@@ -33,9 +33,9 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
+	custombankkeeper "github.com/CudoVentures/cudos-node/x/bank/keeper"
 	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
@@ -186,7 +186,7 @@ type App struct {
 	// keepers
 	AccountKeeper        authkeeper.AccountKeeper
 	AuthzKeeper          authzkeeper.Keeper
-	BankKeeper           bankkeeper.Keeper
+	BankKeeper           custombankkeeper.Keeper
 	CapabilityKeeper     *capabilitykeeper.Keeper
 	StakingKeeper        stakingkeeper.Keeper
 	SlashingKeeper       slashingkeeper.Keeper

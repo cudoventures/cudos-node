@@ -16,7 +16,7 @@ import (
 
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	custombankkeeper "github.com/CudoVentures/cudos-node/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -83,7 +83,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter())
 
-	bankKeeper := bankkeeper.NewBaseKeeper(
+	bankKeeper := custombankkeeper.NewCustomKeeper(
 		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
