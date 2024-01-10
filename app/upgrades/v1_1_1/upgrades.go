@@ -9,5 +9,6 @@ import (
 func UpdateWasmParams(ctx sdk.Context, gk wasm.Keeper) {
 	params := gk.GetParams(ctx)
 	params.CodeUploadAccess.Permission = wasmtypes.AccessTypeNobody
+	params.InstantiateDefaultPermission = wasmtypes.AccessTypeNobody
 	gk.SetParams(ctx, params)
 }
