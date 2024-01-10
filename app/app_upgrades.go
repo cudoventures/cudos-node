@@ -82,7 +82,8 @@ func setHandlerForVersion_1_1_1(app *App) {
 	app.UpgradeKeeper.SetUpgradeHandler(
 		v1_1_1.UpgradeName,
 		v1_1_1.CreateUpgradeHandler(
-			app.mm, app.configurator,
+			app.mm,
+			app.configurator,
 			app.wasmKeeper,
 		),
 	)
