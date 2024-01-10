@@ -6,8 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// CreateUpgradeHandler creates an SDK upgrade handler for v1
-
 func UpdateWasmParams(ctx sdk.Context, gk wasm.Keeper) {
 	params := gk.GetParams(ctx)
 	params.CodeUploadAccess.Permission = wasmtypes.AccessTypeNobody
