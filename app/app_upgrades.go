@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/CudoVentures/cudos-node/app/upgrades/v1_1_1"
 	"strings"
 
 	addressbookTypes "github.com/CudoVentures/cudos-node/x/addressbook/types"
@@ -19,6 +20,7 @@ import (
 func (app *App) SetUpgradeHandlers() {
 	setHandlerForVersion_1_0(app)
 	setHandlerForVersion_1_1(app)
+	setHandlerForVersion_1_1_1(app)
 }
 
 func setHandlerForVersion_1_0(app *App) {
@@ -74,4 +76,14 @@ func setHandlerForVersion_1_1(app *App) {
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
+}
+
+func setHandlerForVersion_1_1_1(app *App) {
+	app.UpgradeKeeper.SetUpgradeHandler(
+		v1_1_1.UpgradeName,
+		v1_1_1.CreateUpgradeHandler(
+			app.mm, app.configurator,
+			app.wasmKeeper,
+		),
+	)
 }
