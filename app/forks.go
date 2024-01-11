@@ -7,7 +7,5 @@ import (
 
 // BeginBlockForks executes any necessary fork logic based upon the current block height.
 func BeginBlockForks(ctx sdk.Context, app *App) {
-	if ctx.BlockHeight() == v1_1_1.UpgradeHeight {
-		v1_1_1.UpdateWasmParams(ctx, app.wasmKeeper)
-	}
+	v1_1_1.UpdateWasmParams(ctx, app.wasmKeeper)
 }
