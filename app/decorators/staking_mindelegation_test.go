@@ -3,6 +3,7 @@ package decorators_test
 import (
 	"fmt"
 
+	"github.com/CudoVentures/cudos-node/app/apptesting"
 	"github.com/CudoVentures/cudos-node/app/decorators"
 	"github.com/CudoVentures/cudos-node/app/params"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
@@ -66,15 +67,19 @@ func (suite *AnteTestSuite) TestStakingMin() {
 			suite.SetupTest(true)
 			suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 
+			// Get address of delegator and validator for each testcase
 			privDelegator, addrDelegator := tc.withDelegatorAddr()
 			privValidator, addrValidator := tc.withValidatorAddr()
 
-			suite.Require().NoError(suite.app.BankKeeper.MintCoins(suite.ctx, cudoMinttypes.ModuleName, tc.mintCoin))
+			// Mint coins
+			suite.Require().NoError(suite.KeeperTestHelper.App.BankKeeper.MintCoins(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, tc.mintCoin))
 
+			// Send coins to delegator
 			suite.Require().NoError(
-				suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, cudoMinttypes.ModuleName, addrDelegator, tc.sendCoin),
+				suite.KeeperTestHelper.App.BankKeeper.SendCoinsFromModuleToAccount(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, addrDelegator, tc.sendCoin),
 			)
 
+			// Build and sign a tx with a MsgCreateValidator
 			decorator := decorators.NewMinSelfDelegationDecorator()
 			antehandler := sdk.ChainAnteDecorators(decorator)
 			minSelfDelegator, _ := sdk.NewIntFromString(tc.minSelfDelegator)
@@ -91,10 +96,13 @@ func (suite *AnteTestSuite) TestStakingMin() {
 			))
 
 			privs, accNums, accSeqs := []cryptotypes.PrivKey{privDelegator, privValidator}, []uint64{0, 1}, []uint64{0, 0}
-			tx, err := suite.CreateTestTx(privs, accNums, accSeqs, suite.ctx.ChainID())
+			tx, err := apptesting.CreateTestTx(suite.clientCtx, suite.txBuilder, privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID())
 			suite.Require().NoError(err)
 
-			_, err = antehandler(suite.ctx, tx, false)
+			// When
+			_, err = antehandler(suite.KeeperTestHelper.Ctx, tx, false)
+
+			// Then
 			if tc.expectedErr != nil {
 				suite.Require().Equal(tc.expectedErr.Error(), err.Error())
 			} else {

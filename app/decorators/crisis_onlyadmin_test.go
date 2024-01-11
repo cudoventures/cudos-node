@@ -3,6 +3,7 @@ package decorators_test
 import (
 	"errors"
 
+	"github.com/CudoVentures/cudos-node/app/apptesting"
 	"github.com/CudoVentures/cudos-node/app/decorators"
 	"github.com/CudoVentures/cudos-node/app/params"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
@@ -13,7 +14,7 @@ import (
 )
 
 // TestCrisisOnlyAdmin tests that the decorator properly checks for admin tokens
-func (suite AnteTestSuite) TestCrisisOnlyAdmin() {
+func (suite *AnteTestSuite) TestCrisisOnlyAdmin() {
 	testCases := []struct {
 		name            string    // Name of the test case
 		denom           string    // Denom of the coin to burn
@@ -61,16 +62,17 @@ func (suite AnteTestSuite) TestCrisisOnlyAdmin() {
 			// setup
 			suite.SetupTest(true)
 			suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
-
+			// Get address of the account
 			priv, addr, sender := tc.withAccountAddr()
-
-			suite.Require().NoError(suite.app.BankKeeper.MintCoins(suite.ctx, cudoMinttypes.ModuleName, tc.mintCoin))
-
+			// Mint coins
+			suite.Require().NoError(suite.KeeperTestHelper.App.BankKeeper.MintCoins(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, tc.mintCoin))
+			// Send coins to the account
 			suite.Require().NoError(
-				suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, cudoMinttypes.ModuleName, addr, tc.sendCoin),
+				suite.KeeperTestHelper.App.BankKeeper.SendCoinsFromModuleToAccount(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, addr, tc.sendCoin),
 			)
 
-			decorator := decorators.NewOnlyAdminVerifyInvariantDecorator(suite.app.BankKeeper)
+			// build and sign the transaction
+			decorator := decorators.NewOnlyAdminVerifyInvariantDecorator(suite.KeeperTestHelper.App.BankKeeper)
 			antehandler := sdk.ChainAnteDecorators(decorator)
 			suite.Require().NoError(suite.txBuilder.SetMsgs(
 				&crisistypes.MsgVerifyInvariant{
@@ -81,10 +83,12 @@ func (suite AnteTestSuite) TestCrisisOnlyAdmin() {
 			))
 
 			privs, accNums, accSeqs := []cryptotypes.PrivKey{priv}, []uint64{0, 1}, []uint64{0, 0}
-			tx, err := suite.CreateTestTx(privs, accNums, accSeqs, suite.ctx.ChainID())
+			tx, err := apptesting.CreateTestTx(suite.clientCtx, suite.txBuilder, privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID())
 			suite.Require().NoError(err)
+			// When
+			_, err = antehandler(suite.KeeperTestHelper.Ctx, tx, false)
 
-			_, err = antehandler(suite.ctx, tx, false)
+			// Then
 			if tc.expectedErr != nil {
 				suite.Require().Equal(tc.expectedErr.Error(), err.Error())
 			} else {
