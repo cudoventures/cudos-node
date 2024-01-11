@@ -19,7 +19,7 @@ func TestMsgAdminSpendCommunityPoolRoute(t *testing.T) {
 	require.Equal(t, msg.Type(), "adminSpendCommunityPool")
 }
 
-func TestMsgSendValidation(t *testing.T) {
+func TestMsgSend_ValidateBasic(t *testing.T) {
 	addr1 := sdk.AccAddress([]byte("from________________"))
 	addr2 := sdk.AccAddress([]byte("to__________________"))
 	addrEmpty := sdk.AccAddress([]byte(""))
