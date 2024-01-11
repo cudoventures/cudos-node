@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/CudoVentures/cudos-node/app/custom_ante"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/spf13/cast"
@@ -321,6 +323,8 @@ func New(
 	if err != nil {
 		tmos.Exit(err.Error())
 	}
+
+	anteHandler = custom_ante.DenyMsgStoreCode(anteHandler)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
