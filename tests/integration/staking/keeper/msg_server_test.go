@@ -93,7 +93,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryp
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
-	tx, err := apptesting.CreateTestTx([]cryptotypes.PrivKey{priv}, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()}, suite.Ctx.ChainID(), suite.clientCtx, suite.txBuilder)
+	tx, err := apptesting.CreateTestTx(suite.clientCtx, suite.txBuilder, []cryptotypes.PrivKey{priv}, []uint64{account.GetAccountNumber()}, []uint64{account.GetSequence()}, suite.Ctx.ChainID())
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}

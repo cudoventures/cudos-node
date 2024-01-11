@@ -96,7 +96,7 @@ func (suite *AnteTestSuite) TestStakingMin() {
 			))
 
 			privs, accNums, accSeqs := []cryptotypes.PrivKey{privDelegator, privValidator}, []uint64{0, 1}, []uint64{0, 0}
-			tx, err := apptesting.CreateTestTx(privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID(), suite.clientCtx, suite.txBuilder)
+			tx, err := apptesting.CreateTestTx(suite.clientCtx, suite.txBuilder, privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID())
 			suite.Require().NoError(err)
 
 			// When
