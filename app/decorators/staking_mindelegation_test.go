@@ -67,15 +67,19 @@ func (suite *AnteTestSuite) TestStakingMin() {
 			suite.SetupTest(true)
 			suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 
+			// Get address of delegator and validator for each testcase
 			privDelegator, addrDelegator := tc.withDelegatorAddr()
 			privValidator, addrValidator := tc.withValidatorAddr()
 
+			// Mint coins
 			suite.Require().NoError(suite.KeeperTestHelper.App.BankKeeper.MintCoins(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, tc.mintCoin))
 
+			// Send coins to delegator
 			suite.Require().NoError(
 				suite.KeeperTestHelper.App.BankKeeper.SendCoinsFromModuleToAccount(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, addrDelegator, tc.sendCoin),
 			)
 
+			// Build and sign a tx with a MsgCreateValidator
 			decorator := decorators.NewMinSelfDelegationDecorator()
 			antehandler := sdk.ChainAnteDecorators(decorator)
 			minSelfDelegator, _ := sdk.NewIntFromString(tc.minSelfDelegator)
@@ -95,7 +99,10 @@ func (suite *AnteTestSuite) TestStakingMin() {
 			tx, err := apptesting.CreateTestTx(privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID(), suite.clientCtx, suite.txBuilder)
 			suite.Require().NoError(err)
 
+			// When
 			_, err = antehandler(suite.KeeperTestHelper.Ctx, tx, false)
+
+			// Then
 			if tc.expectedErr != nil {
 				suite.Require().Equal(tc.expectedErr.Error(), err.Error())
 			} else {

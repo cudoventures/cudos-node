@@ -62,15 +62,16 @@ func (suite *AnteTestSuite) TestCrisisOnlyAdmin() {
 			// setup
 			suite.SetupTest(true)
 			suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
-
+			// Get address of the account
 			priv, addr, sender := tc.withAccountAddr()
-
+			// Mint coins
 			suite.Require().NoError(suite.KeeperTestHelper.App.BankKeeper.MintCoins(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, tc.mintCoin))
-
+			// Send coins to the account
 			suite.Require().NoError(
 				suite.KeeperTestHelper.App.BankKeeper.SendCoinsFromModuleToAccount(suite.KeeperTestHelper.Ctx, cudoMinttypes.ModuleName, addr, tc.sendCoin),
 			)
 
+			// build and sign the transaction
 			decorator := decorators.NewOnlyAdminVerifyInvariantDecorator(suite.KeeperTestHelper.App.BankKeeper)
 			antehandler := sdk.ChainAnteDecorators(decorator)
 			suite.Require().NoError(suite.txBuilder.SetMsgs(
@@ -84,8 +85,10 @@ func (suite *AnteTestSuite) TestCrisisOnlyAdmin() {
 			privs, accNums, accSeqs := []cryptotypes.PrivKey{priv}, []uint64{0, 1}, []uint64{0, 0}
 			tx, err := apptesting.CreateTestTx(privs, accNums, accSeqs, suite.KeeperTestHelper.Ctx.ChainID(), suite.clientCtx, suite.txBuilder)
 			suite.Require().NoError(err)
-
+			// When
 			_, err = antehandler(suite.KeeperTestHelper.Ctx, tx, false)
+
+			// Then
 			if tc.expectedErr != nil {
 				suite.Require().Equal(tc.expectedErr.Error(), err.Error())
 			} else {
