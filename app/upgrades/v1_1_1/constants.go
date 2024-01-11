@@ -1,5 +1,5 @@
 package v1_1_1
 
 const (
-	UpgradeHeight = 8109500
+	UpgradeHeight = 8131000
 )
