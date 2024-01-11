@@ -22,6 +22,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
+	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -65,6 +66,7 @@ type KeeperTestHelper struct {
 	TestAccs    []sdk.AccAddress
 
 	CudoMintKeeper cudoMintKeeper.Keeper
+	AdminKeeper    adminkeeper.Keeper
 }
 
 func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
@@ -82,6 +84,11 @@ func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
 	keyCudoMint := sdk.NewKVStoreKey("someKey")
 	memstoreCudoMint := sdk.NewKVStoreKey("anotherKey")
 	s.CudoMintKeeper = *cudoMintKeeper.NewKeeper(s.App.AppCodec(), keyCudoMint, memstoreCudoMint, s.App.BankKeeper, s.App.AccountKeeper, s.App.ParamsKeeper.Subspace("cudomint2"), authtypes.FeeCollectorName)
+
+	// AdminKeeper is already initialized after SetupApp, but it is set as private field, so we need to set it again in the test helper for testing
+	keyAdmin := sdk.NewKVStoreKey("someKey1")
+	memstoreAdmin := sdk.NewKVStoreKey("anotherKey1")
+	s.AdminKeeper = *adminkeeper.NewKeeper(s.App.AppCodec(), keyAdmin, memstoreAdmin, s.App.DistrKeeper, s.App.BankKeeper)
 }
 
 // DefaultConsensusParams defines the default Tendermint consensus params used
