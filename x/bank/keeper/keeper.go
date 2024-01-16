@@ -11,7 +11,8 @@ import (
 )
 
 // Copied from https://github.com/CudoVentures/cosmos-sdk/blob/3816012a2d4ea5c9bbb3d8e6174d3b96ff91a039/x/bank/keeper/keeper.go#L19C1-L20C1
-var burnDenom = "acudos"
+var sendToCommunityDenom = "acudos"
+var ignoredDenom = "cudosAdmin"
 
 type Keeper struct {
 	bankkeeper.BaseKeeper
@@ -47,10 +48,14 @@ func (k *Keeper) SetDistrKeeper(dk distrkeeper.Keeper) {
 func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins) error {
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
-		if k.dkSet && amt.Denom == burnDenom {
+		// Send to community pool if denom is acudos, if cudosAdmin ignore, else burn
+		if k.dkSet && amt.Denom == sendToCommunityDenom {
 			if err := k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName)); err != nil {
 				return err
 			}
+
+		} else if amt.Denom == ignoredDenom {
+			continue
 		} else {
 			burnAmts = burnAmts.Add(amt)
 		}
