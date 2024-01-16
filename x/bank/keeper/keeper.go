@@ -46,6 +46,9 @@ func (k *Keeper) SetDistrKeeper(dk distrkeeper.Keeper) {
 
 // Migrate from https://github.com/CudoVentures/cosmos-sdk/blob/3816012a2d4ea5c9bbb3d8e6174d3b96ff91a039/x/bank/keeper/keeper.go#L439
 func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins) error {
+	if !k.dkSet {
+		panic("distr keeper not set for bank keeper")
+	}
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
 		// Send to community pool if denom is acudos, if cudosAdmin ignore, else burn
