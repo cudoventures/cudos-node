@@ -52,7 +52,7 @@ func (k Keeper) BurnCoins(ctx sdk.Context, moduleName string, amounts sdk.Coins)
 	burnAmts := sdk.Coins{}
 	for _, amt := range amounts {
 		// Send to community pool if denom is acudos, if cudosAdmin ignore, else burn
-		if k.dkSet && amt.Denom == sendToCommunityDenom {
+		if amt.Denom == sendToCommunityDenom {
 			if err := k.dk.FundCommunityPool(ctx, sdk.NewCoins(amt), k.ak.GetModuleAddress(moduleName)); err != nil {
 				return err
 			}
