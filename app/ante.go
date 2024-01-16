@@ -55,7 +55,6 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		decorators.NewMinSelfDelegationDecorator(),
-		decorators.NewOnlyAdminVerifyInvariantDecorator(options.BankViewKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil
