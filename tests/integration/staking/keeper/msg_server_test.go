@@ -128,7 +128,7 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryp
 func (suite *AnteTestSuite) Test_CreateValidator() {
 
 	// Construct transaction
-	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
+	MinSelfDelegation, _ := sdk.NewIntFromString("50000000000000000000000")
 	suite.SetupTest() // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 	suite.txBuilder.SetGasLimit(400_000_000)
@@ -150,7 +150,7 @@ func (suite *AnteTestSuite) Test_CreateValidator() {
 // and also err when trying to create validator with insufficient min self delegation
 
 func (suite *AnteTestSuite) TestAnte_CreateValidator_SeqNumber() {
-	MinSelfDelegation, _ := sdk.NewIntFromString("2000000000000000000000000")
+	MinSelfDelegation, _ := sdk.NewIntFromString("50000000000000000000000")
 
 	suite.SetupTest() // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()

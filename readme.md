@@ -127,7 +127,7 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
 
 ## Create validator
 
-    cudos-noded tx staking create-validator --amount=2000000000000000000000000acudos \
+    cudos-noded tx staking create-validator --amount=50000000000000000000000acudos \
     --from=val-2 \
     --pubkey=$(cudos-noded tendermint show-validator) \
     --moniker=cudos-node-02 \
@@ -135,7 +135,7 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
     --commission-rate="0.10" \
     --commission-max-rate="0.20" \
     --commission-max-change-rate="0.01" \
-    --min-self-delegation="2000000000000000000000000" \
+    --min-self-delegation="50000000000000000000000" \
     --gas="auto" \
     --gas-prices="5000000000000acudos" \
     --gas-adjustment="1.80" \
