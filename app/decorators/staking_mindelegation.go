@@ -9,7 +9,7 @@ import (
 )
 
 // Copied from https://github.com/CudoVentures/cosmos-sdk/blob/3816012a2d4ea5c9bbb3d8e6174d3b96ff91a039/x/staking/types/msg.go#L20
-const MinSelfDelegation = "2000000000000000000000000"
+const MinSelfDelegation = "50000000000000000000000"
 
 type MinSelfDelegationDecorator struct{}
 

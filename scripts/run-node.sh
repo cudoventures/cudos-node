@@ -18,7 +18,7 @@ DENOM=${2:-"acudos"}
 
 COMMISSION_RATE=0.01
 COMMISSION_MAX_RATE=0.02
-MIN_SELF_DELEGATION=2000000000000000000000000
+MIN_SELF_DELEGATION=50000000000000000000000
 SED_BINARY=sed
 # check if this is OS X
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -62,9 +62,9 @@ TEST1_ADDRESS=$($BINARY keys show $KEY1 -a --keyring-backend $KEYRING --home $HO
 TEST2_ADDRESS=$($BINARY keys show $KEY2 -a --keyring-backend $KEYRING --home $HOME_DIR)
 
 # Allocate genesis accounts (cosmos formatted addresses)
-$BINARY add-genesis-account $TEST0_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account $TEST1_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account $TEST2_ADDRESS "2000000000000000000000000000${DENOM}" --home $HOME_DIR 
+$BINARY add-genesis-account $TEST0_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST1_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST2_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR 
 
 update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
@@ -84,7 +84,7 @@ $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
 
 # Sign genesis transaction
 # TEST0 is the validator
-$BINARY gentx $KEY "20000000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
+$BINARY gentx $KEY "500000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 
 # Collect genesis tx
 $BINARY collect-gentxs --home $HOME_DIR

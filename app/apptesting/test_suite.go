@@ -45,7 +45,7 @@ const (
 
 var (
 	DefaultPowerReduction, _ = sdk.NewIntFromString("1000000000000000000")
-	MinSelfDelegation, _     = sdk.NewIntFromString("2000000000000000000000000")
+	MinSelfDelegation, _     = sdk.NewIntFromString("50000000000000000000000")
 )
 
 var (
