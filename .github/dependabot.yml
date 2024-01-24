@@ -1,0 +1,17 @@
+# `dependabot.yml` file with updates
+# disabled for Docker and limited for npm
+
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+
+
