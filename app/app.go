@@ -30,7 +30,7 @@ import (
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 
 	// vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	custombank "github.com/CudoVentures/cudos-node/x/bank"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -67,9 +67,6 @@ import (
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
 )
 
 const Name = "cudos-node"
@@ -133,7 +130,6 @@ func New(
 		wasm.StoreKey,
 		gravitytypes.StoreKey,
 		feegrant.StoreKey,
-		group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -174,7 +170,7 @@ func New(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
+		custombank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
@@ -192,7 +188,6 @@ func New(
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
-		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -220,7 +215,6 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		group.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -244,7 +238,6 @@ func New(
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
-		group.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -277,20 +270,22 @@ func New(
 		feegrant.ModuleName,
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
-		group.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(app.configurator)
 
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
-			FeegrantKeeper:  app.feegrantKeeper,
-			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.feegrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			BankViewKeeper: app.BankKeeper,
 		},
 	)
 	if err != nil {

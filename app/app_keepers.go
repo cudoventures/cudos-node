@@ -16,7 +16,7 @@ import (
 
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	custombankkeeper "github.com/CudoVentures/cudos-node/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -55,9 +55,6 @@ import (
 
 	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
 	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
-
-	"github.com/cosmos/cosmos-sdk/x/group"
-	groupkeeper "github.com/cosmos/cosmos-sdk/x/group/keeper"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
@@ -86,7 +83,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter())
 
-	bankKeeper := bankkeeper.NewBaseKeeper(
+	bankKeeper := custombankkeeper.NewCustomKeeper(
 		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
@@ -201,14 +198,5 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	app.GravityKeeper = gravitykeeper.NewKeeper(
 		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper, app.AccountKeeper,
-	)
-
-	groupConfig := group.DefaultConfig()
-	app.GroupKeeper = groupkeeper.NewKeeper(
-		app.keys[group.StoreKey],
-		app.appCodec,
-		app.MsgServiceRouter(),
-		app.AccountKeeper,
-		groupConfig,
 	)
 }
