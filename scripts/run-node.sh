@@ -62,9 +62,9 @@ TEST1_ADDRESS=$($BINARY keys show $KEY1 -a --keyring-backend $KEYRING --home $HO
 TEST2_ADDRESS=$($BINARY keys show $KEY2 -a --keyring-backend $KEYRING --home $HOME_DIR)
 
 # Allocate genesis accounts (cosmos formatted addresses)
-$BINARY add-genesis-account $TEST0_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account $TEST1_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY add-genesis-account $TEST2_ADDRESS "50000000000000000000000000${DENOM}" --home $HOME_DIR 
+$BINARY add-genesis-account $TEST0_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST1_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST2_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR 
 
 update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
