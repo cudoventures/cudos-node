@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/testutil/mock"
+
 	"github.com/CudoVentures/cudos-node/app"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
 	cudoMintKeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
@@ -91,26 +93,11 @@ func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
 
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in app testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
-		MaxBytes: 200000,
-		MaxGas:   2000000,
-	},
-	Evidence: &tmproto.EvidenceParams{
-		MaxAgeNumBlocks: 302400,
-		MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
-		MaxBytes:        10000,
-	},
-	Validator: &tmproto.ValidatorParams{
-		PubKeyTypes: []string{
-			tmtypes.ABCIPubKeyTypeEd25519,
-		},
-	},
-}
+var DefaultConsensusParams = sims.DefaultConsensusParams
 
 func SetupApp(t *testing.T) *app.App {
 	t.Helper()
-	privVal := NewPV()
+	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
 	// create validator set with single validator
@@ -231,6 +218,7 @@ func genesisStateWithValSet(t *testing.T,
 		defaultStParams.MaxEntries,
 		defaultStParams.HistoricalEntries,
 		appparams.BondDenom,
+		stakingtypes.DefaultMinCommissionRate,
 	)
 
 	// set validators and delegations
@@ -260,6 +248,7 @@ func genesisStateWithValSet(t *testing.T,
 		balances,
 		totalSupply,
 		[]banktypes.Metadata{},
+		[]banktypes.SendEnabled{},
 	)
 
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
