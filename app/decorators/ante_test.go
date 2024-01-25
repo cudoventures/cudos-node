@@ -6,6 +6,8 @@ import (
 	"github.com/CudoVentures/cudos-node/app"
 	"github.com/CudoVentures/cudos-node/app/apptesting"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
+	cometbftdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	sims "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -13,8 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/suite"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 )
 
 type AnteTestSuite struct {
@@ -25,7 +25,7 @@ type AnteTestSuite struct {
 
 // returns context and app with params set on account keeper
 func createTestApp(isCheckTx bool, tempDir string) (*app.App, sdk.Context) {
-	db := dbm.NewMemDB()
+	db := cometbftdb.NewMemDB()
 	encCdc := app.MakeEncodingConfig()
 
 	cudosApp := app.New(

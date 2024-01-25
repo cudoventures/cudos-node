@@ -21,6 +21,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
+	cometbftdb "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -28,9 +31,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 )
 
 // SimAppChainID hardcoded chainID for simulation
@@ -165,7 +165,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 }
 
 func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
-	db := dbm.NewMemDB()
+	db := cometbftdb.NewMemDB()
 	encCdc := app.MakeEncodingConfig()
 
 	cudosApp := app.New(
