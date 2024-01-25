@@ -43,7 +43,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
@@ -64,7 +64,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(app.appCodec, app.keys[capabilitytypes.StoreKey], app.memKeys[capabilitytypes.MemStoreKey])
 
 	// grant capabilities for the ibc and ibc-transfer modules
-	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 
@@ -114,7 +114,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
-		app.appCodec, app.keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
+		app.appCodec, app.keys[ibcexported.StoreKey], app.GetSubspace(ibcexported.ModuleName), app.StakingKeeper, app.UpgradeKeeper, scopedIBCKeeper,
 	)
 
 	wasmDir := filepath.Join(homePath, "wasm")

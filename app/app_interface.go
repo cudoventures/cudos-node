@@ -70,7 +70,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 
@@ -326,6 +326,11 @@ func (app *App) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(clientCtx, app.BaseApp.GRPCQueryRouter(), app.interfaceRegistry, app.Query)
 }
 
+// RegisterNodeService registers the node gRPC Query service.
+func (app *App) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
+}
+
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)
@@ -347,7 +352,7 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/spf13/cast"
@@ -59,7 +61,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
@@ -118,7 +119,7 @@ func New(
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
 		paramstypes.StoreKey,
-		ibchost.StoreKey,
+		ibcexported.StoreKey,
 		upgradetypes.StoreKey,
 		evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey,
@@ -207,7 +208,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		admintypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 	)
@@ -229,7 +230,7 @@ func New(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		admintypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasmtypes.ModuleName,
 	)
@@ -254,7 +255,7 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		wasm.ModuleName,
 		admintypes.ModuleName,
