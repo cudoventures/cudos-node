@@ -62,8 +62,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudominttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
@@ -128,7 +126,6 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		cudominttypes.StoreKey,
 		wasm.StoreKey,
-		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -185,7 +182,6 @@ func New(
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMint.NewAppModule(appCodec, app.cudoMintKeeper),
-		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -210,7 +206,6 @@ func New(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
-		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -233,7 +228,6 @@ func New(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
-		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -244,8 +238,6 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
-	// NOTE: Gravity module must occur before genutils so that the pool are propertly initiallized
-	// before gextxs
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -257,7 +249,6 @@ func New(
 		govtypes.ModuleName,
 		cudominttypes.ModuleName,
 		crisistypes.ModuleName,
-		gravitytypes.ModuleName, // MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,

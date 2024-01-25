@@ -80,10 +80,6 @@ import (
 	"github.com/CudoVentures/cudos-node/x/cudoMint"
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
-
-	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
-	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 )
 
 // We pull these out so we can set them with LDFLAGS in the Makefile
@@ -142,7 +138,6 @@ var (
 		wasm.AppModuleBasic{},
 		admin.AppModuleBasic{},
 		cudoMint.AppModuleBasic{},
-		gravity.AppModuleBasic{},
 		feegrantmod.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
@@ -155,7 +150,6 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		cudoMinttypes.ModuleName:       {authtypes.Minter},
-		gravitytypes.ModuleName:        {authtypes.Minter, authtypes.Burner},
 		wasmtypes.ModuleName:           {authtypes.Burner},
 	}
 
@@ -200,7 +194,6 @@ type App struct {
 	TransferKeeper       ibctransferkeeper.Keeper
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
-	GravityKeeper        gravitykeeper.Keeper
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
@@ -360,7 +353,6 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 	paramsKeeper.Subspace(cudoMinttypes.ModuleName)
-	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(authz.ModuleName)
 	paramsKeeper.Subspace(feegrant.ModuleName)
 

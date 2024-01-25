@@ -72,11 +72,6 @@ update_test_genesis '.app_state["gov"]["deposit_params"]["min_deposit"]=[{"denom
 update_test_genesis '.app_state["crisis"]["constant_fee"]={"denom":"'$DENOM'","amount":"1000"}'
 update_test_genesis '.app_state["staking"]["params"]["bond_denom"]="'$DENOM'"'
 
-# add test0 to the static validator set(custom Cudos logic)
-update_test_genesis '.app_state["gravity"]["static_val_cosmos_addrs"]=[ "'$TEST0_ADDRESS'" ]'
-# add a mapping demon to erc20 address [ "denom" : "erc20_address" ]
-ERC20_ADDR="0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
-update_test_genesis '.app_state["gravity"]["erc20_to_denoms"]=[{"erc20": "'$ERC20_ADDR'", "denom": "'$DENOM'" } ]'
 
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml

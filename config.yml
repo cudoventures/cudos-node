@@ -13,9 +13,6 @@ genesis:
       params:
         inflation_max: "0.000000000000000000"
         inflation_min: "0.000000000000000000"
-    gravity:
-      params:
-        gravity_id: "cudos-gravity-test"
     cudoMint:
       params:
         blocks_per_day: "14400"
