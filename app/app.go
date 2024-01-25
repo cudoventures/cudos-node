@@ -5,10 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/cosmos/cosmos-sdk/x/consensus"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/spf13/cast"
 
 	dbm "github.com/cometbft/cometbft-db"
@@ -119,6 +120,7 @@ func New(
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
 		paramstypes.StoreKey,
+		consensusparamtypes.StoreKey,
 		ibcexported.StoreKey,
 		upgradetypes.StoreKey,
 		evidencetypes.StoreKey,
@@ -179,6 +181,7 @@ func New(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
+		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		transferModule,
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
 		admin.NewAppModule(appCodec, app.adminKeeper),
@@ -207,6 +210,7 @@ func New(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		admintypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -228,6 +232,7 @@ func New(
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		upgradetypes.ModuleName,
 		admintypes.ModuleName,
 		ibcexported.ModuleName,
@@ -254,6 +259,7 @@ func New(
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		upgradetypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
