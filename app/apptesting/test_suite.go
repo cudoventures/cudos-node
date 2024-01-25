@@ -10,18 +10,19 @@ import (
 	cudoMintKeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -29,8 +30,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -178,7 +177,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
 		app.DefaultNodeHome,
 		invCheckPeriod,
 		encCdc,
-		simapp.EmptyAppOptions{},
+		sims.EmptyAppOptions{},
 	)
 	if withGenesis {
 		return cudosApp, app.NewDefaultGenesisState(encCdc.Codec)
