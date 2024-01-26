@@ -7,7 +7,10 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/server"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 
 	"github.com/CudoVentures/cudos-node/x/admin"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
@@ -27,6 +30,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
 
 	// Authz - Authorization for accounts to perform actions on behalf of other accounts.
 
@@ -120,11 +124,13 @@ var (
 		// mint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			paramsclient.ProposalHandler,
-			upgradeclient.ProposalHandler,
-			upgradeclient.CancelProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler,
+			[]govclient.ProposalHandler{
+				paramsclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler,
+				upgradeclient.LegacyCancelProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler,
+			},
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -171,28 +177,31 @@ type App struct {
 	invCheckPeriod uint
 
 	// keys to access the substores
-	keys    map[string]*sdk.KVStoreKey
-	tkeys   map[string]*sdk.TransientStoreKey
-	memKeys map[string]*sdk.MemoryStoreKey
+	keys    map[string]*storetypes.KVStoreKey
+	tkeys   map[string]*storetypes.TransientStoreKey
+	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
 	AccountKeeper         authkeeper.AccountKeeper
 	AuthzKeeper           authzkeeper.Keeper
 	BankKeeper            custombankkeeper.Keeper
 	CapabilityKeeper      *capabilitykeeper.Keeper
-	StakingKeeper         stakingkeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
 	SlashingKeeper        slashingkeeper.Keeper
 	DistrKeeper           distrkeeper.Keeper
 	GovKeeper             govkeeper.Keeper
-	CrisisKeeper          crisiskeeper.Keeper
-	UpgradeKeeper         upgradekeeper.Keeper
+	CrisisKeeper          *crisiskeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
-	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
-	ScopedIBCKeeper       capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper  capabilitykeeper.ScopedKeeper
+
+	IBCKeeper    *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	IBCFeeKeeper ibcfeekeeper.Keeper
+
+	EvidenceKeeper       evidencekeeper.Keeper
+	TransferKeeper       ibctransferkeeper.Keeper
+	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 
 	wasmKeeper     wasm.Keeper
 	adminKeeper    adminkeeper.Keeper
@@ -274,21 +283,21 @@ func (app *App) InterfaceRegistry() types.InterfaceRegistry {
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *App) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *App) GetKey(storeKey string) *storetypes.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *App) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *App) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *App) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
@@ -313,9 +322,12 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register node gRPC service for grpc-gateway.
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
+	// Register grpc-gateway routes for all modules.
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	// register swagger API from root so that other applications can override easily
+	if err := server.RegisterSwaggerAPI(apiSvr.ClientCtx, apiSvr.Router, apiConfig.Swagger); err != nil {
+		panic(err)
+	}
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.
@@ -343,7 +355,7 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
+func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
@@ -351,7 +363,7 @@ func InitParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
+	paramsKeeper.Subspace(govtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)

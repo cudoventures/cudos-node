@@ -6,28 +6,29 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	adminkeeper "github.com/CudoVentures/cudos-node/x/admin/keeper"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
+	custombankkeeper "github.com/CudoVentures/cudos-node/x/bank/keeper"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
-	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/cosmos/cosmos-sdk/x/upgrade"
-
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-
-	custombankkeeper "github.com/CudoVentures/cudos-node/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -53,7 +54,8 @@ import (
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
 )
 
-func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions) {
+func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions, enabledProposals []wasm.ProposalType,
+	wasmOpts []wasm.Option, baseAppOptions ...func(*baseapp.BaseApp)) {
 	app.ParamsKeeper = InitParamsKeeper(app.appCodec, app.cdc, app.keys[paramstypes.StoreKey], app.tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
@@ -76,21 +78,21 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
-		app.appCodec, app.keys[authtypes.StoreKey], app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+		app.appCodec, app.keys[authtypes.StoreKey], authtypes.ProtoBaseAccount, maccPerms, AccountAddressPrefix, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter())
+	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter(), app.AccountKeeper)
 
 	bankKeeper := custombankkeeper.NewCustomKeeper(
 		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
-		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, app.GetSubspace(stakingtypes.ModuleName),
+		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.DistrKeeper = distrkeeper.NewKeeper(
-		app.appCodec, app.keys[distrtypes.StoreKey], app.GetSubspace(distrtypes.ModuleName), app.AccountKeeper, bankKeeper,
-		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
+		app.appCodec, app.keys[distrtypes.StoreKey], app.AccountKeeper, bankKeeper,
+		stakingKeeper, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	bankKeeper.SetDistrKeeper(app.DistrKeeper)
@@ -98,16 +100,17 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	app.BankKeeper = bankKeeper
 
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
-		app.appCodec, app.keys[slashingtypes.StoreKey], &stakingKeeper, app.GetSubspace(slashingtypes.ModuleName),
+		app.appCodec, app.LegacyAmino(), app.keys[slashingtypes.StoreKey], stakingKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
-		app.GetSubspace(crisistypes.ModuleName), app.invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
+		app.appCodec, app.keys[crisistypes.StoreKey], app.invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp)
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, app.keys[upgradetypes.StoreKey], app.appCodec, homePath, app.BaseApp, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *stakingKeeper.SetHooks(
+	app.StakingKeeper = stakingKeeper
+	app.StakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
@@ -126,16 +129,63 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 
 	supportedFeatures := "iterator,staking,stargate"
 
+	app.adminKeeper = *adminkeeper.NewKeeper(
+		app.appCodec, app.keys[admintypes.StoreKey], app.keys[admintypes.MemStoreKey],
+		app.DistrKeeper, app.BankKeeper,
+	)
+	govRouter := govv1beta1.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)). // This should be removed. It is still in place to avoid failures of modules that have not yet been upgraded.
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+	govConfig := govtypes.DefaultConfig()
+
+	govKeeper := govkeeper.NewKeeper(
+		app.appCodec,
+		app.keys[govtypes.StoreKey],
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.StakingKeeper,
+		app.MsgServiceRouter(),
+		govConfig,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	app.GovKeeper = *govKeeper.SetHooks(
+		govtypes.NewMultiGovHooks(),
+	)
+
+	// Create Transfer Keepers
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+		app.appCodec, app.keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
+		app.IBCFeeKeeper, // ISC4 Wrapper: fee IBC middleware
+		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
+		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
+	)
+
+	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
+	// If evidence needs to be handled for the app, set routes in router here and seal
+	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
+		app.appCodec, app.keys[evidencetypes.StoreKey], app.StakingKeeper, app.SlashingKeeper,
+	)
+	// IBC Fee Module keeper
+	app.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		app.appCodec, app.keys[ibcfeetypes.StoreKey],
+		app.IBCKeeper.ChannelKeeper, // may be replaced with IBC middleware
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper, app.AccountKeeper, app.BankKeeper,
+	)
+
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	app.wasmKeeper = wasm.NewKeeper(
 		app.appCodec,
 		app.keys[wasm.StoreKey],
-		app.GetSubspace(wasm.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
-		app.DistrKeeper,
+		distrkeeper.NewQuerier(app.DistrKeeper),
+		app.IBCFeeKeeper, // ISC4 Wrapper: fee IBC middleware
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedWasmKeeper,
@@ -145,44 +195,14 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		wasmOpts...,
 	)
-
-	app.adminKeeper = *adminkeeper.NewKeeper(
-		app.appCodec, app.keys[admintypes.StoreKey], app.keys[admintypes.MemStoreKey],
-		app.DistrKeeper, app.BankKeeper,
-	)
-
-	govKeeper := govtypes.NewRouter()
-
 	// The gov proposal types can be individually enabled
-	if len(GetEnabledProposals()) != 0 {
-		govKeeper.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, GetEnabledProposals()))
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
 	}
-
-	// register the proposal types
-	govKeeper.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
-
-	app.GovKeeper = govkeeper.NewKeeper(
-		app.appCodec, app.keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govKeeper,
-	)
-
-	// Create Transfer Keepers
-	app.TransferKeeper = ibctransferkeeper.NewKeeper(
-		app.appCodec, app.keys[ibctransfertypes.StoreKey], app.GetSubspace(ibctransfertypes.ModuleName),
-		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
-		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
-	)
-
-	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
-	// If evidence needs to be handled for the app, set routes in router here and seal
-	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
-		app.appCodec, app.keys[evidencetypes.StoreKey], &app.StakingKeeper, app.SlashingKeeper,
-	)
+	app.GovKeeper.SetLegacyRouter(govRouter)
 
 	app.cudoMintKeeper = *cudoMintkeeper.NewKeeper(
 		app.appCodec,
