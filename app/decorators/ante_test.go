@@ -26,7 +26,6 @@ type AnteTestSuite struct {
 // returns context and app with params set on account keeper
 func createTestApp(isCheckTx bool, tempDir string) (*app.App, sdk.Context) {
 	db := cometbftdb.NewMemDB()
-	encCdc := app.MakeEncodingConfig()
 
 	cudosApp := app.New(
 		log.NewNopLogger(),
@@ -36,7 +35,6 @@ func createTestApp(isCheckTx bool, tempDir string) (*app.App, sdk.Context) {
 		map[int64]bool{},
 		tempDir,
 		5,
-		encCdc,
 		sims.EmptyAppOptions{},
 	)
 	ctx := cudosApp.BaseApp.NewContext(isCheckTx, tmproto.Header{})

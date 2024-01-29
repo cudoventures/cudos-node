@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/version"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
@@ -16,7 +18,6 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
 
-	appparams "github.com/CudoVentures/cudos-node/app/params"
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -99,9 +100,10 @@ func init() {
 // NewSimApp returns a reference to an initialized SimApp.
 func New(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
-	homePath string, invCheckPeriod uint, encodingConfig appparams.EncodingConfig,
+	homePath string, invCheckPeriod uint,
 	appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
+	encodingConfig := MakeEncodingConfig()
 
 	appCodec := encodingConfig.Codec
 	cdc := encodingConfig.Amino
@@ -109,7 +111,7 @@ func New(
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
-	// bApp.SetAppVersion(version.Version)
+	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	keys := sdk.NewKVStoreKeys(
@@ -117,6 +119,7 @@ func New(
 		authzkeeper.StoreKey,
 		banktypes.StoreKey,
 		stakingtypes.StoreKey,
+		crisistypes.StoreKey,
 		distrtypes.StoreKey,
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
@@ -150,8 +153,6 @@ func New(
 	app.MountKVStores(keys)
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
-
-	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 
 	// add keepers
 	app.AddKeepers(skipUpgradeHeights, homePath, appOpts, GetEnabledProposals(), []wasm.Option{})

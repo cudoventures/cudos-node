@@ -11,6 +11,9 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=cudos-node \
 	-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT)
 
 BUILD_FLAGS := -ldflags '$(ldflags)'
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.28.1
+HTTPS_GIT := https://github.com/CudoVentures/cudos-node.git
 
 all: install
 
@@ -28,6 +31,32 @@ build: go.sum
 go.sum: go.mod
 		@echo "--> Ensure dependencies have not been modified"
 		GO111MODULE=on go mod verify
-
+    
 test:
 	@go test -v -mod=readonly $(PACKAGES)
+
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+PROTO_BUILDER_IMAGE=ghcr.io/cosmos/proto-builder:0.14.0
+
+proto-all: proto-format proto-lint proto-gen
+
+proto-gen:
+	@echo "Generating Protobuf files"
+	$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(PROTO_BUILDER_IMAGE) sh ./scripts/protocgen.sh
+
+proto-format:
+	@echo "Formatting Protobuf files"
+	@$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
+		find ./proto -name "*.proto" -exec clang-format -i {} \;
+	
+proto-lint:
+	@$(DOCKER_BUF) lint --error-format=json
+
+proto-check-breaking:
+	@$(DOCKER_BUF) breaking --against '$(HTTPS_GIT)#branch=cudos-master'
+
+.PHONY: proto-all proto-gen proto-format proto-lint proto-check-breaking 
+

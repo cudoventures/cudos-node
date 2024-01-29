@@ -113,7 +113,7 @@ func (s *KeeperTestSuite) TestMsgAdminSpendCommunityPool() {
 				afterCPBalance := s.App.DistrKeeper.GetFeePool(s.KeeperTestHelper.Ctx).CommunityPool.AmountOf(bondDenom)
 
 				s.Suite.Equal(tc.withdrawAmount, s.App.BankKeeper.GetBalance(s.KeeperTestHelper.Ctx, communityPoolReceiver, bondDenom))
-				s.Suite.Equal(tc.cpAmount.Sub(tc.withdrawAmount).Amount, afterCPBalance)
+				s.Suite.Equal(sdk.NewDecFromInt(tc.cpAmount.Sub(tc.withdrawAmount).Amount), afterCPBalance)
 			}
 		})
 	}

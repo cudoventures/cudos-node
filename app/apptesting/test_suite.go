@@ -70,7 +70,7 @@ type KeeperTestHelper struct {
 }
 
 func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
-	s.App = SetupApp(s.T())
+	s.App = SetupApp(s.T(), chainID)
 	s.Ctx = s.App.BaseApp.NewContext(false, tmproto.Header{Height: 1, ChainID: chainID, Time: time.Now().UTC()})
 	s.CheckCtx = s.App.BaseApp.NewContext(true, tmproto.Header{Height: 1, ChainID: chainID, Time: time.Now().UTC()})
 	s.QueryHelper = &baseapp.QueryServiceTestHelper{
@@ -95,7 +95,7 @@ func (s *KeeperTestHelper) Setup(_ *testing.T, chainID string) {
 // in app testing.
 var DefaultConsensusParams = sims.DefaultConsensusParams
 
-func SetupApp(t *testing.T) *app.App {
+func SetupApp(t *testing.T, chainId string) *app.App {
 	t.Helper()
 	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
@@ -111,17 +111,17 @@ func SetupApp(t *testing.T) *app.App {
 		Address: acc.GetAddress().String(),
 		Coins:   sdk.NewCoins(sdk.NewCoin(appparams.BondDenom, MinSelfDelegation.Mul(sdk.NewIntFromUint64(10)))),
 	}
-	return SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
+	return SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, chainId, balance)
 }
 
 // SetupWithGenesisValSet initializes a new app with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit in the default token of the app from first genesis
 // account. A Nop logger is set in app.
-func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *app.App {
+func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, chainId string, balances ...banktypes.Balance) *app.App {
 	t.Helper()
 
-	cudosApp, genesisState := setup(true, 5)
+	cudosApp, genesisState := setup(true, 5, chainId)
 	genesisState = genesisStateWithValSet(t, cudosApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -151,7 +151,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	return cudosApp
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
+func setup(withGenesis bool, invCheckPeriod uint, chainId string) (*app.App, app.GenesisState) {
 	db := cometbftdb.NewMemDB()
 	encCdc := app.MakeEncodingConfig()
 
@@ -163,8 +163,8 @@ func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		invCheckPeriod,
-		encCdc,
 		sims.EmptyAppOptions{},
+		baseapp.SetChainID(chainId),
 	)
 	if withGenesis {
 		return cudosApp, app.NewDefaultGenesisState(encCdc.Codec)
