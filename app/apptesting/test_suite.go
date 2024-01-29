@@ -163,7 +163,6 @@ func setup(withGenesis bool, invCheckPeriod uint) (*app.App, app.GenesisState) {
 		map[int64]bool{},
 		app.DefaultNodeHome,
 		invCheckPeriod,
-		encCdc,
 		sims.EmptyAppOptions{},
 	)
 	if withGenesis {
