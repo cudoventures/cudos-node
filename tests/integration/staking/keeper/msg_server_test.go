@@ -7,9 +7,9 @@ import (
 	"github.com/CudoVentures/cudos-node/app"
 	"github.com/CudoVentures/cudos-node/app/apptesting"
 	appparams "github.com/CudoVentures/cudos-node/app/params"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -98,11 +98,11 @@ func (suite *AnteTestSuite) CreateValidator(tokens sdk.Int, accNum uint64) (cryp
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
 
-	_, _, err = suite.App.Check(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	_, _, err = suite.App.SimCheck(suite.clientCtx.TxConfig.TxEncoder(), tx)
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
 	}
-	_, _, err = suite.App.Deliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
+	_, _, err = suite.App.SimDeliver(suite.clientCtx.TxConfig.TxEncoder(), tx)
 
 	if err != nil {
 		return nil, nil, stakingtypes.Validator{}, nil, err
