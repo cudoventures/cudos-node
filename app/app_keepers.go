@@ -84,7 +84,7 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 	app.AuthzKeeper = authzkeeper.NewKeeper(app.keys[authzkeeper.StoreKey], app.appCodec, app.BaseApp.MsgServiceRouter(), app.AccountKeeper)
 
 	bankKeeper := custombankkeeper.NewCustomKeeper(
-		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.GetSubspace(banktypes.ModuleName), app.BlockedAddrs(),
+		app.appCodec, app.keys[banktypes.StoreKey], app.AccountKeeper, app.BlockedAddrs(), authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.appCodec, app.keys[stakingtypes.StoreKey], app.AccountKeeper, bankKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String(),
