@@ -119,6 +119,7 @@ func New(
 		authzkeeper.StoreKey,
 		banktypes.StoreKey,
 		stakingtypes.StoreKey,
+		crisistypes.StoreKey,
 		distrtypes.StoreKey,
 		slashingtypes.StoreKey,
 		govtypes.StoreKey,
