@@ -102,7 +102,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		panic(err)
 	}
 	minter.NormTimePassed = minter.NormTimePassed.Add(incr)
-	minter.MintRemainder = mintAmountDec.Sub(mintAmountInt.ToDec())
+	minter.MintRemainder = mintAmountDec.Sub(sdk.NewDecFromInt(mintAmountInt))
 	k.SetMinter(ctx, minter)
 
 	// send the minted coins to the fee collector account

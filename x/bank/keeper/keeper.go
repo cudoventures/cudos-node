@@ -7,7 +7,6 @@ import (
 	accountkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Copied from https://github.com/CudoVentures/cosmos-sdk/blob/3816012a2d4ea5c9bbb3d8e6174d3b96ff91a039/x/bank/keeper/keeper.go#L19C1-L20C1
@@ -29,11 +28,11 @@ func NewCustomKeeper(
 	cdc codec.BinaryCodec,
 	storeKey storetypes.StoreKey,
 	ak accountkeeper.AccountKeeper,
-	paramSpace paramtypes.Subspace,
 	blockedAddrs map[string]bool,
+	authority string,
 ) Keeper {
 	keeper := Keeper{
-		BaseKeeper: bankkeeper.NewBaseKeeper(cdc, storeKey, ak, paramSpace, blockedAddrs),
+		BaseKeeper: bankkeeper.NewBaseKeeper(cdc, storeKey, ak, blockedAddrs, authority),
 		ak:         ak,
 	}
 	return keeper

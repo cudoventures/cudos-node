@@ -42,7 +42,7 @@ func (s *KeeperTestSuite) TestBurnSingleCoin() {
 			coinsToBurn: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(200))),
 			expectedTotalSupply: func(supplyBeforeBurn sdk.Coins, burnCoin sdk.Coins) sdk.Coins {
 				// expected total supply is distributedBeforeBurn - burnCoin
-				return supplyBeforeBurn.Sub(burnCoin)
+				return supplyBeforeBurn.Sub(burnCoin...)
 			},
 			expectedTotalDistributed: func(distributedBeforeBurn, burnCoin sdk.Coin) sdk.Coin {
 				// expected total distributed is the same as before when burning non-acudos coins
@@ -135,7 +135,7 @@ func (s *KeeperTestSuite) TestBurnMultipleCoins() {
 			},
 			expectedTotalSupply: func(suppliesBeforeBurn sdk.Coins, burnCoins sdk.Coins) sdk.Coins {
 				// expected total supply is distributedBeforeBurn - burnCoin
-				return suppliesBeforeBurn.Sub(burnCoins)
+				return suppliesBeforeBurn.Sub(burnCoins...)
 			},
 			expectedTotalDistributed: func(distributedBeforeBurn sdk.Coins, distributedCoins sdk.Coins) sdk.Coins {
 				// expected total distributed is the same as before when burning non-acudos coins
@@ -180,7 +180,7 @@ func (s *KeeperTestSuite) TestBurnMultipleCoins() {
 				sdk.NewCoin(randomDenom, sdk.NewInt(100)),
 			},
 			expectedTotalSupply: func(suppliesBeforeBurn sdk.Coins, burnCoins sdk.Coins) sdk.Coins {
-				return suppliesBeforeBurn.Sub(burnCoins)
+				return suppliesBeforeBurn.Sub(burnCoins...)
 			},
 			expectedTotalDistributed: func(distributedBeforeBurn sdk.Coins, distributedCoins sdk.Coins) sdk.Coins {
 				return distributedBeforeBurn

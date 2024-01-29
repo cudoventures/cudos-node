@@ -6,17 +6,21 @@ import (
 	"os"
 	"path/filepath"
 
+	tmcfg "github.com/cometbft/cometbft/config"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
+	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
 
 	"github.com/CudoVentures/cudos-node/app/params"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 
+	dbm "github.com/cometbft/cometbft-db"
+	tmcli "github.com/cometbft/cometbft/libs/cli"
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/CudoVentures/cudos-node/app"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -42,15 +46,15 @@ var ChainID string
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := app.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithJSONCodec(encodingConfig.Codec).
+		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
-		WithBroadcastMode(flags.BroadcastBlock).
 		WithHomeDir(app.DefaultNodeHome)
-
+	customAppTemplate, customAppConfig := initAppConfig()
+	customTMConfig := initTendermintConfig()
 	rootCmd := &cobra.Command{
 		Use:   app.Name + "d",
 		Short: "Cudos Node App",
@@ -59,7 +63,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
 		},
 	}
 
@@ -80,7 +84,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		genutilcli.MigrateGenesisCmd(),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(app.DefaultNodeHome),
-		AddGenesisWasmMsgCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 	)
@@ -175,7 +178,7 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
+	snapshotDB, err := dbm.NewGoLevelDB("metadata", snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -198,16 +201,14 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
-		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshot(snapshotStore, snapshottypes.NewSnapshotOptions(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)), cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)))),
 	)
 }
 
 // appExport creates a new simapp (optionally at a given height)
 func (a appCreator) appExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
-	appOpts servertypes.AppOptions) (servertypes.ExportedApp, error) {
+	appOpts servertypes.AppOptions, modulesToExport []string) (servertypes.ExportedApp, error) {
 
 	var anApp *app.App
 
@@ -243,4 +244,29 @@ func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
 	for _, c := range c.Commands() {
 		overwriteFlagDefaults(c, defaults)
 	}
+}
+
+// overwrites default tendermint config
+func initAppConfig() (string, interface{}) {
+	type CustomAppConfig struct {
+		serverconfig.Config
+	}
+	srvCfg := serverconfig.DefaultConfig()
+	srvCfg.MinGasPrices = "0stake"
+
+	customAppConfig := CustomAppConfig{
+		Config: *srvCfg,
+	}
+
+	customAppTemplate := serverconfig.DefaultConfigTemplate
+
+	return customAppTemplate, customAppConfig
+
+}
+
+// initTendermintConfig is used to overwrite default tendermint config
+func initTendermintConfig() *tmcfg.Config {
+	cfg := tmcfg.DefaultConfig()
+	return cfg
+
 }
