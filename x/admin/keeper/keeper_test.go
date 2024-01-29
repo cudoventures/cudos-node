@@ -84,7 +84,7 @@ func (s *KeeperTestSuite) TestAdminDistributeFromFeePool() {
 				// Assert that the received amount and the remaining amount in the fee pool are correc
 				afterCPBalance := s.App.DistrKeeper.GetFeePool(s.Ctx).CommunityPool.AmountOf(bondDenom)
 				s.Require().Equal(tc.withdrawAmount.Amount, s.App.BankKeeper.GetBalance(s.Ctx, poolReceiver, bondDenom).Amount)
-				s.Require().Equal(tc.feeAmount.Amount.Sub(tc.withdrawAmount.Amount), afterCPBalance)
+				s.Require().Equal(sdk.NewDecFromInt(tc.feeAmount.Amount.Sub(tc.withdrawAmount.Amount)), afterCPBalance)
 			}
 		})
 
