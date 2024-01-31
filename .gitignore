@@ -5,3 +5,4 @@ node_modules
 init-root.sh
 build
 _build
+scripts/wasm/*.wasm
