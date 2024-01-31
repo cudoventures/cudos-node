@@ -79,7 +79,7 @@ $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
 
 # Sign genesis transaction
 # TEST0 is the validator
-$BINARY genesis gentx $KEY "500000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
+$BINARY genesis gentx $KEY "500000000000000000000000${DENOM}" --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 
 # Collect genesis tx
 $BINARY genesis collect-gentxs --home $HOME_DIR
