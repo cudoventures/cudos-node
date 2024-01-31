@@ -8,6 +8,7 @@ import (
 
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
 	tmcfg "github.com/cometbft/cometbft/config"
+	tmtypes "github.com/cometbft/cometbft/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	snapshottypes "github.com/cosmos/cosmos-sdk/snapshots/types"
@@ -21,7 +22,6 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/CudoVentures/cudos-node/app"
@@ -61,6 +61,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		Use:   app.Name + "d",
 		Short: "Cudos Node App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
+			cmd.SetOut(cmd.OutOrStdout())
+			cmd.SetErr(cmd.OutOrStderr())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -83,11 +85,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
-	overwriteFlagDefaults(rootCmd, map[string]string{
-		flags.FlagChainID:        ChainID,
-		flags.FlagKeyringBackend: "os",
-	})
-
 	return rootCmd, encodingConfig
 }
 
@@ -204,6 +201,18 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	if err != nil {
 		panic(err)
 	}
+	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
+
+	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
+	if chainID == "" {
+		// fallback to genesis chain-ida.
+		appGenesis, err := tmtypes.GenesisDocFromFile(filepath.Join(homeDir, "config", "genesis.json"))
+		if err != nil {
+			panic(err)
+		}
+
+		chainID = appGenesis.ChainID
+	}
 
 	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
 	snapshotDB, err := dbm.NewGoLevelDB("metadata", snapshotDir)
@@ -214,12 +223,8 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 	if err != nil {
 		panic(err)
 	}
-
-	return app.New(
-		logger, db, traceStore, true, skipUpgradeHeights,
-		cast.ToString(appOpts.Get(flags.FlagHome)),
-		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
-		appOpts,
+	baseappOptions := []func(*baseapp.BaseApp){
+		baseapp.SetChainID(chainID),
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
@@ -229,6 +234,13 @@ func (a appCreator) newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, a
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
 		baseapp.SetSnapshot(snapshotStore, snapshottypes.NewSnapshotOptions(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval)), cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent)))),
+	}
+	return app.New(
+		logger, db, traceStore, true, skipUpgradeHeights,
+		cast.ToString(appOpts.Get(flags.FlagHome)),
+		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
+		appOpts,
+		baseappOptions...,
 	)
 }
 
@@ -264,22 +276,6 @@ func (a appCreator) appExport(
 	}
 
 	return anApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
-}
-
-func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
-	set := func(s *pflag.FlagSet, key, val string) {
-		if f := s.Lookup(key); f != nil {
-			f.DefValue = val
-			f.Value.Set(val)
-		}
-	}
-	for key, val := range defaults {
-		set(c.Flags(), key, val)
-		set(c.PersistentFlags(), key, val)
-	}
-	for _, c := range c.Commands() {
-		overwriteFlagDefaults(c, defaults)
-	}
 }
 
 // overwrites default tendermint config
