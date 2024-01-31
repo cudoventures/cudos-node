@@ -5,7 +5,6 @@ BINARY=build/cudos-noded
 CHAIN_ID=cudos-node
 
 CONTRACT=cw20_base
-PROPOSAL=1
 HOME=cudos-data
 DENOM="acudos"
 KEY="test0"
