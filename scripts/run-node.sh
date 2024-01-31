@@ -82,10 +82,11 @@ $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
 $BINARY genesis gentx $KEY "500000000000000000000000${DENOM}" --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 
 # Collect genesis tx
+echo "Collecting genesis tx..."
 $BINARY genesis collect-gentxs --home $HOME_DIR
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
 # This raises an error since Cudos has an additional genesis Tx : MsgSetOrchestratorAddress
-# $BINARY validate-genesis --home $HOME_DIR
+$BINARY genesis validate-genesis --home $HOME_DIR
 
 $BINARY start --home $HOME_DIR
