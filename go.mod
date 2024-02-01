@@ -178,3 +178,5 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alp
 replace github.com/CosmWasm/wasmvm v1.2.4 => github.com/CosmWasm/wasmvm v1.2.6
 
 // replace github.com/cosmos/cosmos-sdk v0.47.3 => ../old/cosmos-sdk
+// Downgraded to avoid bugs in following commits which caused simulations to fail.
+replace github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

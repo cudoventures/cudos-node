@@ -66,12 +66,13 @@ $BINARY genesis add-genesis-account $TEST0_ADDRESS "500000000000000000000000000$
 $BINARY genesis add-genesis-account $TEST1_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
 $BINARY genesis add-genesis-account $TEST2_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR 
 
-update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
+update_test_genesis '.app_state["gov"]["params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
-update_test_genesis '.app_state["gov"]["deposit_params"]["min_deposit"]=[{"denom":"'$DENOM'","amount": "30000000000000000000000000"}]'
+update_test_genesis '.app_state["gov"]["params"]["min_deposit"]=[{"denom":"'$DENOM'","amount": "300"}]'
+update_test_genesis '.app_state["gov"]["params"]["min_initial_deposit_ratio"]="0.0"'
+
 update_test_genesis '.app_state["crisis"]["constant_fee"]={"denom":"'$DENOM'","amount":"1000"}'
 update_test_genesis '.app_state["staking"]["params"]["bond_denom"]="'$DENOM'"'
-
 
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
