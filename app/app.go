@@ -9,14 +9,15 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/althea-net/cosmos-gravity-bridge/module/x/gravity"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	"github.com/spf13/cast"
-
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
-	tmos "github.com/cometbft/cometbft/libs/os"
 
 	"github.com/CudoVentures/cudos-node/x/admin"
 	admintypes "github.com/CudoVentures/cudos-node/x/admin/types"
@@ -133,6 +134,7 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/storeKey
 		cudominttypes.StoreKey,
 		wasm.StoreKey,
+		gravitytypes.StoreKey,
 		feegrant.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -189,6 +191,7 @@ func New(
 		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		admin.NewAppModule(appCodec, app.adminKeeper),
 		cudoMint.NewAppModule(appCodec, app.cudoMintKeeper),
+		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
 		feegrantmod.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feegrantKeeper, app.interfaceRegistry),
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
@@ -213,6 +216,7 @@ func New(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		gravitytypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		admintypes.ModuleName,
 		ibcexported.ModuleName,
@@ -237,6 +241,7 @@ func New(
 		paramstypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		upgradetypes.ModuleName,
+		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
@@ -258,6 +263,7 @@ func New(
 		govtypes.ModuleName,
 		cudominttypes.ModuleName,
 		crisistypes.ModuleName,
+		gravitytypes.ModuleName, // MUST BE BEFORE GENUTIL!!!!
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,

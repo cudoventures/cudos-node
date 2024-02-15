@@ -52,6 +52,9 @@ import (
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	cudoMintkeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+
+	gravitykeeper "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/keeper"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 )
 
 func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, appOpts servertypes.AppOptions, enabledProposals []wasm.ProposalType,
@@ -212,6 +215,9 @@ func (app *App) AddKeepers(skipUpgradeHeights map[int64]bool, homePath string, a
 		app.AccountKeeper,
 		app.GetSubspace(cudoMinttypes.ModuleName),
 		authtypes.FeeCollectorName,
+	)
+	app.GravityKeeper = gravitykeeper.NewKeeper(
+		app.appCodec, app.keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper, app.AccountKeeper,
 	)
 
 }

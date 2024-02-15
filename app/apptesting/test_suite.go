@@ -11,6 +11,7 @@ import (
 	appparams "github.com/CudoVentures/cudos-node/app/params"
 	cudoMintKeeper "github.com/CudoVentures/cudos-node/x/cudoMint/keeper"
 	cudoMinttypes "github.com/CudoVentures/cudos-node/x/cudoMint/types"
+	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -253,6 +254,34 @@ func genesisStateWithValSet(t *testing.T,
 
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
+	pk, _ := cryptocodec.FromTmPubKeyInterface(valSet.Validators[0].PubKey)
+
+	accAddr := sdk.AccAddress(pk.Address())
+	// Custom Cudos logic for gravity module
+	// TODO: verify if true, maybe get the current snapshot of the gravity module genesis state
+
+	gravityGenesis := &gravitytypes.GenesisState{
+		Params: gravitytypes.DefaultParams(),
+		StaticValCosmosAddrs: []string{
+			accAddr.String(),
+		},
+		Erc20ToDenoms: []*gravitytypes.ERC20ToDenom{
+			{
+				Erc20: CudosMainnetEthAddr, // just for testing
+				Denom: "acudos",
+			},
+		},
+		DelegateKeys: []*gravitytypes.MsgSetOrchestratorAddress{
+			{
+				Validator:    sdk.ValAddress(valSet.Validators[0].Address).String(),
+				EthAddress:   DefaultEthAddress,
+				Orchestrator: genAccs[0].GetAddress().String(),
+			},
+		},
+	}
+	genesisState[gravitytypes.ModuleName] = app.AppCodec().MustMarshalJSON(gravityGenesis)
+
+	// Add gentxs, MsgCreateValidator and MsgSetOrchestratorAddress
 	return genesisState
 }
 

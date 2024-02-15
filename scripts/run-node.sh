@@ -66,13 +66,17 @@ $BINARY genesis add-genesis-account $TEST0_ADDRESS "500000000000000000000000000$
 $BINARY genesis add-genesis-account $TEST1_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
 $BINARY genesis add-genesis-account $TEST2_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR 
 
-update_test_genesis '.app_state["gov"]["params"]["voting_period"]="50s"'
+update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
-update_test_genesis '.app_state["gov"]["params"]["min_deposit"]=[{"denom":"'$DENOM'","amount": "300"}]'
-update_test_genesis '.app_state["gov"]["params"]["min_initial_deposit_ratio"]="0.0"'
-
+update_test_genesis '.app_state["gov"]["deposit_params"]["min_deposit"]=[{"denom":"'$DENOM'","amount": "30000000000000000000000000"}]'
 update_test_genesis '.app_state["crisis"]["constant_fee"]={"denom":"'$DENOM'","amount":"1000"}'
 update_test_genesis '.app_state["staking"]["params"]["bond_denom"]="'$DENOM'"'
+
+# add test0 to the static validator set(custom Cudos logic)
+update_test_genesis '.app_state["gravity"]["static_val_cosmos_addrs"]=[ "'$TEST0_ADDRESS'" ]'
+# add a mapping demon to erc20 address [ "denom" : "erc20_address" ]
+ERC20_ADDR="0x817bbDbC3e8A1204f3691d14bB44992841e3dB35"
+update_test_genesis '.app_state["gravity"]["erc20_to_denoms"]=[{"erc20": "'$ERC20_ADDR'", "denom": "'$DENOM'" } ]'
 
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
@@ -80,14 +84,13 @@ $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
 
 # Sign genesis transaction
 # TEST0 is the validator
-$BINARY genesis gentx $KEY "500000000000000000000000${DENOM}" --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
+$BINARY gentx $KEY "500000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 
 # Collect genesis tx
-echo "Collecting genesis tx..."
-$BINARY genesis collect-gentxs --home $HOME_DIR
+$BINARY collect-gentxs --home $HOME_DIR
 
 # Run this to ensure everything worked and that the genesis file is setup correctly
 # This raises an error since Cudos has an additional genesis Tx : MsgSetOrchestratorAddress
-$BINARY genesis validate-genesis --home $HOME_DIR
+# $BINARY validate-genesis --home $HOME_DIR
 
 $BINARY start --home $HOME_DIR
