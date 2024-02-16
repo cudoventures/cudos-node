@@ -1,9 +1,9 @@
 version: 1
 accounts:
   - name: user1
-    coins: [ "1000token", "1000000000stake" ]
+    coins: ["1000token", "1000000000stake"]
   - name: user2
-    coins: [ "500token" ]
+    coins: ["500token"]
 validator:
   name: user1
   staked: "100000000stake"
@@ -13,6 +13,9 @@ genesis:
       params:
         inflation_max: "0.000000000000000000"
         inflation_min: "0.000000000000000000"
+    gravity:
+      params:
+        gravity_id: "cudos-gravity-test"
     cudoMint:
       params:
         blocks_per_day: "14400"
