@@ -62,9 +62,9 @@ TEST1_ADDRESS=$($BINARY keys show $KEY1 -a --keyring-backend $KEYRING --home $HO
 TEST2_ADDRESS=$($BINARY keys show $KEY2 -a --keyring-backend $KEYRING --home $HOME_DIR)
 
 # Allocate genesis accounts (cosmos formatted addresses)
-$BINARY genesis add-genesis-account $TEST0_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY genesis add-genesis-account $TEST1_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
-$BINARY genesis add-genesis-account $TEST2_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR 
+$BINARY add-genesis-account $TEST0_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST1_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR
+$BINARY add-genesis-account $TEST2_ADDRESS "500000000000000000000000000${DENOM}" --home $HOME_DIR 
 
 update_test_genesis '.app_state["gov"]["voting_params"]["voting_period"]="50s"'
 update_test_genesis '.app_state["mint"]["params"]["mint_denom"]="'$DENOM'"'
@@ -81,8 +81,9 @@ update_test_genesis '.app_state["gravity"]["erc20_to_denoms"]=[{"erc20": "'$ERC2
 # enable rest server and swagger
 $SED_BINARY -i '0,/enable = false/s//enable = true/' $HOME_DIR/config/app.toml
 $SED_BINARY -i 's/swagger = false/swagger = true/' $HOME_DIR/config/app.toml
+$SED_BINARY -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0acudos"/' $HOME_DIR/config/app.toml
 
-# Sign genesis transaction
+# Sign genesis transaction  
 # TEST0 is the validator
 $BINARY gentx $KEY "500000000000000000000000${DENOM}" "0x4838B106FCe9647Bdf1E7877BF73cE8B0BAD5f97" $TEST0_ADDRESS --commission-rate=$COMMISSION_RATE --min-self-delegation=$MIN_SELF_DELEGATION --commission-max-rate=$COMMISSION_MAX_RATE --keyring-backend $KEYRING --chain-id $CHAIN_ID --home $HOME_DIR
 

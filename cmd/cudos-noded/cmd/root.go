@@ -99,6 +99,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		gravitycmd.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		gravitycmd.GenTxCmd(app.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
+		AddGenesisAccountCmd(app.DefaultNodeHome),
 		debug.Cmd(),
 		config.Cmd(),
 	)
