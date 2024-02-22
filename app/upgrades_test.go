@@ -63,5 +63,6 @@ func (s *UpgradeTestSuite) TestUpgrade_V12_To_V13() {
 	//// Ensure the balance of the gravity module account is unchanged
 	balanceAfter := s.App.BankKeeper.GetAllBalances(s.Ctx, gravityAddress)
 	s.Require().Equal(balanceBefore, balanceAfter)
-
+	s.Require().NotNil(s.App.GravityKeeper.GetBridgeContractAddress(s.Ctx))
+	s.Require().NotEmpty(s.App.GravityKeeper.GetStaticValCosmosAddrs(s.Ctx))
 }
