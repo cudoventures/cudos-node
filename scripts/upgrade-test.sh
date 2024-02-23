@@ -39,6 +39,7 @@ fi
 # install new binary
 if ! command -v _build/new/cudos-noded &> /dev/null
 then
+    echo "Installing new binary"
     mkdir -p ./_build/cudos-node-${NEW_VERSION:1} && cd ./_build/cudos-node-${NEW_VERSION:1}
     GOBIN="$ROOT/_build/new" go install -mod=readonly ../../...
     cd ../..
