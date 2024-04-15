@@ -1,0 +1,12 @@
+# An environment for testing Cosmos-to-Cosmos IBC interaction.
+
+name: cudos
+
+services:
+  node:
+    image: cudos-noded:test
+    restart: always
+    ports:
+      - 26657:26657
+      - 1317:1317
+      - 26656:26656

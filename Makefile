@@ -31,3 +31,9 @@ go.sum: go.mod
 
 test:
 	@go test -v -mod=readonly $(PACKAGES)
+
+docker-run:
+	docker compose -f ./tests/docker/docker-compose.yml up -d
+
+docker-stop:
+	docker compose -f ./tests/docker/docker-compose.yml down
