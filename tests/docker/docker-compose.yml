@@ -1,0 +1,9 @@
+name: cudos
+
+services:
+  node:
+    image: cudos-noded:test
+    ports:
+      - 26657:26657 # rpc
+      - 1317:1317   # lcd
+      - 26656:26656 # peer

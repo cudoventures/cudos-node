@@ -36,6 +36,19 @@ test:
 	@go test -v -mod=readonly $(PACKAGES)
 
 ###############################################################################
+###                                Docker                                   ###
+###############################################################################
+
+docker-build:
+	docker build -t cudos-noded:test --build-arg VERSION=$(VERSION) --build-arg COMMIT=$(COMMIT) .
+
+docker-run:
+	docker compose -f ./tests/docker/docker-compose.yml up -d
+
+docker-stop:
+	docker compose -f ./tests/docker/docker-compose.yml down
+
+###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
 
