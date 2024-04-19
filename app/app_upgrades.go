@@ -79,7 +79,7 @@ func setHandlerForVersion_1_1(app *App) {
 }
 
 func setHandlerForVersion_1_2(app *App) {
-	const upgradeVersion string = "v1.2"
+	const upgradeVersion string = "Plan of maximum success"
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
