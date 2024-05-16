@@ -49,7 +49,7 @@ func setHandlerForVersion_1_1(app *App) {
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		if len(fromVM) == 0 {
 			fromVM = app.mm.GetVersionMap()
-			delete(fromVM, authz.ModuleName)
+//			delete(fromVM, authz.ModuleName)
 			delete(fromVM, GroupModuleName)
 			delete(fromVM, AddressBookModuleName)
 			delete(fromVM, MarketplaceModuleName)
