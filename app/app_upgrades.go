@@ -7,7 +7,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/authz"
+//	"github.com/cosmos/cosmos-sdk/x/authz"
 
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
@@ -73,7 +73,8 @@ func setHandlerForVersion_1_1(app *App) {
 
 	if upgradeInfo.Name == upgradeVersion && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, GroupModuleName, AddressBookModuleName, MarketplaceModuleName},
+//			Added: []string{authz.ModuleName, GroupModuleName, AddressBookModuleName, MarketplaceModuleName},
+			Added: []string{GroupModuleName, AddressBookModuleName, MarketplaceModuleName},
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
