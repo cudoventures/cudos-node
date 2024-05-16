@@ -75,7 +75,6 @@ func setHandlerForVersion_1_1(app *App) {
 		storeUpgrades := storetypes.StoreUpgrades{
 //			Added: []string{authz.ModuleName, GroupModuleName, AddressBookModuleName, MarketplaceModuleName},
 			Added: []string{GroupModuleName, AddressBookModuleName, MarketplaceModuleName},
-
 		}
 
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
