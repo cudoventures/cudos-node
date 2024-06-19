@@ -76,6 +76,10 @@ import (
 	marketplace "github.com/CudoVentures/cudos-node/x/marketplace"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	groupmodule "github.com/cosmos/cosmos-sdk/x/group/module"
+
+	"github.com/CudoVentures/cudos-node/x/messaging"
+	messagingkeeper "github.com/CudoVentures/cudos-node/x/messaging/keeper"
+	messagingtypes "github.com/CudoVentures/cudos-node/x/messaging/types"
 )
 
 const Name = "cudos-node"
@@ -143,9 +147,10 @@ func New(
 		group.StoreKey,
 		addressbooktypes.StoreKey,
 		marketplacetypes.StoreKey,
+		messagingtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
-	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, messagingtypes.MemStoreKey)
 
 	app := &App{
 		BaseApp:           bApp,
@@ -157,6 +162,16 @@ func New(
 		tkeys:             tkeys,
 		memKeys:           memKeys,
 	}
+
+	msgKeeper := messagingkeeper.NewKeeper(
+		appCodec,
+		cdc,
+		keys[messagingtypes.StoreKey],
+		keys[messagingtypes.StoreKey],
+		app.GetSubspace(messagingtypes.ModuleName),
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
 
 	// initialize stores
 	app.MountKVStores(keys)
@@ -209,6 +224,7 @@ func New(
 		marketplaceModule,
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		addressbookModule,
+		messaging.NewAppModule(appCodec, *msgKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -303,11 +319,15 @@ func New(
 		group.ModuleName,
 		addressbooktypes.ModuleName,
 		marketplacetypes.ModuleName,
+		messagingtypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(app.configurator)
+
+	app.Router().AddRoute(sdk.NewRoute(messagingtypes.RouterKey, messaging.NewHandler(*msgKeeper)))
+	app.QueryRouter().AddRoute(messagingtypes.QuerierRoute, msgKeeper.NewQuerier())
 
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{

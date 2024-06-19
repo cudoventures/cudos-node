@@ -6,15 +6,17 @@ require (
 	github.com/CosmWasm/wasmd v0.25.0
 	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-00010101000000-000000000000
 	github.com/containerd/continuity v0.2.2 // indirect
-	github.com/cosmos/cosmos-sdk v0.45.3
+	github.com/cosmos/cosmos-proto v1.0.0-beta.3 // indirect
+	github.com/cosmos/cosmos-sdk v0.50.7
 	github.com/cosmos/ibc-go/v2 v2.2.0
-	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac // indirect
+	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/gogo/protobuf v1.3.3
-	github.com/golang/glog v1.0.0 // indirect
-	github.com/golang/protobuf v1.5.2
+	github.com/golang/protobuf v1.5.4
 	github.com/google/btree v1.0.1 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/onsi/gomega v1.15.0 // indirect
@@ -22,18 +24,20 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rs/zerolog v1.26.1 // indirect
-	github.com/spf13/afero v1.8.0 // indirect
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.3
 	github.com/tendermint/tendermint v0.34.19
 	github.com/tendermint/tm-db v0.6.7
 	github.com/tidwall/gjson v1.6.7
-	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
-	golang.org/x/net v0.2.0 // indirect
-	google.golang.org/genproto v0.0.0-20221114212237-e4508ebdbee1
-	google.golang.org/grpc v1.50.1
+	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/text v0.15.0 // indirect
+	google.golang.org/genproto v0.0.0-20231002182017-d307bd883b97 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8 // indirect
+	google.golang.org/grpc v1.64.0
+	google.golang.org/protobuf v1.34.1
 	gopkg.in/ini.v1 v1.66.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0
 

@@ -1,0 +1,13 @@
+syntax = "proto3";
+package CudoVentures.cudosnode.messaging;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/messaging/types";
+
+// Msg defines the Msg service.
+service Msg {
+    // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+// this line is used by starport scaffolding # proto/tx/message

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package CudoVentures.cudosnode.messaging;
+
+option go_package = "github.com/CudoVentures/cudos-node/x/messaging/types";
+
+message Message {
+    string from_address = 1;
+    string to_address = 2;
+    string subject = 3;
+    string body = 4;
+}

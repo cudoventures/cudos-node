@@ -1,0 +1,14 @@
+syntax = "proto3";
+package CudoVentures.cudosnode.messaging;
+
+import "gogoproto/gogo.proto";
+import "messaging/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/CudoVentures/cudos-node/x/messaging/types";
+
+// GenesisState defines the messaging module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

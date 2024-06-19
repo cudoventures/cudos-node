@@ -4,3 +4,4 @@ node_modules
 .vscode
 init-root.sh
 build
+.DS_Store
