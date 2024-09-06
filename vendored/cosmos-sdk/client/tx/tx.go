@@ -1,7 +1,6 @@
 package tx
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/input"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -87,66 +85,6 @@ func GenerateTx(clientCtx client.Context, txf Factory, msgs ...sdk.Msg) error {
 // It will return an error upon failure.
 func BroadcastTx(clientCtx client.Context, txf Factory, msgs ...sdk.Msg) error {
 	return sdkerrors.Wrap(sdkerrors.ErrNotSupported, "this network does not accept transactions")
-
-	txf, err := prepareFactory(clientCtx, txf)
-	if err != nil {
-		return err
-	}
-
-	if txf.SimulateAndExecute() || clientCtx.Simulate {
-		_, adjusted, err := CalculateGas(clientCtx, txf, msgs...)
-		if err != nil {
-			return err
-		}
-
-		txf = txf.WithGas(adjusted)
-		_, _ = fmt.Fprintf(os.Stderr, "%s\n", GasEstimateResponse{GasEstimate: txf.Gas()})
-	}
-
-	if clientCtx.Simulate {
-		return nil
-	}
-
-	tx, err := BuildUnsignedTx(txf, msgs...)
-	if err != nil {
-		return err
-	}
-
-	if !clientCtx.SkipConfirm {
-		out, err := clientCtx.TxConfig.TxJSONEncoder()(tx.GetTx())
-		if err != nil {
-			return err
-		}
-
-		_, _ = fmt.Fprintf(os.Stderr, "%s\n\n", out)
-
-		buf := bufio.NewReader(os.Stdin)
-		ok, err := input.GetConfirmation("confirm transaction before signing and broadcasting", buf, os.Stderr)
-
-		if err != nil || !ok {
-			_, _ = fmt.Fprintf(os.Stderr, "%s\n", "cancelled transaction")
-			return err
-		}
-	}
-
-	tx.SetFeeGranter(clientCtx.GetFeeGranterAddress())
-	err = Sign(txf, clientCtx.GetFromName(), tx, true)
-	if err != nil {
-		return err
-	}
-
-	txBytes, err := clientCtx.TxConfig.TxEncoder()(tx.GetTx())
-	if err != nil {
-		return err
-	}
-
-	// broadcast to a Tendermint node
-	res, err := clientCtx.BroadcastTx(txBytes)
-	if err != nil {
-		return err
-	}
-
-	return clientCtx.PrintProto(res)
 }
 
 // WriteGeneratedTxResponse writes a generated unsigned transaction to the

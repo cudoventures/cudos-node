@@ -10,7 +10,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/tx"
@@ -21,21 +20,7 @@ import (
 // an intermediate structure which is logged if the context has a logger
 // defined.
 func (ctx Context) BroadcastTx(txBytes []byte) (res *sdk.TxResponse, err error) {
-	switch ctx.BroadcastMode {
-	case flags.BroadcastSync:
-		res, err = ctx.BroadcastTxSync(txBytes)
-
-	case flags.BroadcastAsync:
-		res, err = ctx.BroadcastTxAsync(txBytes)
-
-	case flags.BroadcastBlock:
-		res, err = ctx.BroadcastTxCommit(txBytes)
-
-	default:
-		return nil, fmt.Errorf("unsupported return type %s; supported types: sync, async, block", ctx.BroadcastMode)
-	}
-
-	return res, err
+	return nil, sdkerrors.Wrap(sdkerrors.ErrNotSupported, "this network does not accept transactions")
 }
 
 // CheckTendermintError checks if the error returned from BroadcastTx is a
