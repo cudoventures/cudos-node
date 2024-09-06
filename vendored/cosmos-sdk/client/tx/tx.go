@@ -86,6 +86,8 @@ func GenerateTx(clientCtx client.Context, txf Factory, msgs ...sdk.Msg) error {
 // given set of messages. It will also simulate gas requirements if necessary.
 // It will return an error upon failure.
 func BroadcastTx(clientCtx client.Context, txf Factory, msgs ...sdk.Msg) error {
+	return sdkerrors.Wrap(sdkerrors.ErrNotSupported, "this network does not accept transactions")
+
 	txf, err := prepareFactory(clientCtx, txf)
 	if err != nil {
 		return err
