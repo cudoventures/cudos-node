@@ -95,9 +95,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
-		txCommand(),
 		keys.Commands(app.DefaultNodeHome),
-		gravitycmd.Commands(app.DefaultNodeHome),
 	)
 }
 
