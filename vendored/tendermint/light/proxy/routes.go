@@ -1,6 +1,8 @@
 package proxy
 
 import (
+	"fmt"
+
 	"github.com/tendermint/tendermint/libs/bytes"
 	lrpc "github.com/tendermint/tendermint/light/rpc"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
@@ -232,25 +234,25 @@ func makeNumUnconfirmedTxsFunc(c *lrpc.Client) rpcNumUnconfirmedTxsFunc {
 
 type rpcBroadcastTxCommitFunc func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTxCommit, error)
 
-func makeBroadcastTxCommitFunc(c *lrpc.Client) rpcBroadcastTxCommitFunc {
+func makeBroadcastTxCommitFunc(*lrpc.Client) rpcBroadcastTxCommitFunc {
 	return func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTxCommit, error) {
-		return c.BroadcastTxCommit(ctx.Context(), tx)
+		return nil, fmt.Errorf("this network does not accept transactions")
 	}
 }
 
 type rpcBroadcastTxSyncFunc func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error)
 
-func makeBroadcastTxSyncFunc(c *lrpc.Client) rpcBroadcastTxSyncFunc {
+func makeBroadcastTxSyncFunc(*lrpc.Client) rpcBroadcastTxSyncFunc {
 	return func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
-		return c.BroadcastTxSync(ctx.Context(), tx)
+		return nil, fmt.Errorf("this network does not accept transactions")
 	}
 }
 
 type rpcBroadcastTxAsyncFunc func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error)
 
-func makeBroadcastTxAsyncFunc(c *lrpc.Client) rpcBroadcastTxAsyncFunc {
+func makeBroadcastTxAsyncFunc(*lrpc.Client) rpcBroadcastTxAsyncFunc {
 	return func(ctx *rpctypes.Context, tx types.Tx) (*ctypes.ResultBroadcastTx, error) {
-		return c.BroadcastTxAsync(ctx.Context(), tx)
+		return nil, fmt.Errorf("this network does not accept transactions")
 	}
 }
 
