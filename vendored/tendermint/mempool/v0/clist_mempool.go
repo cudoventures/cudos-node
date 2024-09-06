@@ -3,6 +3,7 @@ package v0
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"sync"
 	"sync/atomic"
 
@@ -205,56 +206,7 @@ func (mem *CListMempool) CheckTx(
 	cb func(*abci.Response),
 	txInfo mempool.TxInfo,
 ) error {
-
-	mem.updateMtx.RLock()
-	// use defer to unlock mutex because application (*local client*) might panic
-	defer mem.updateMtx.RUnlock()
-
-	txSize := len(tx)
-
-	if err := mem.isFull(txSize); err != nil {
-		return err
-	}
-
-	if txSize > mem.config.MaxTxBytes {
-		return mempool.ErrTxTooLarge{
-			Max:    mem.config.MaxTxBytes,
-			Actual: txSize,
-		}
-	}
-
-	if mem.preCheck != nil {
-		if err := mem.preCheck(tx); err != nil {
-			return mempool.ErrPreCheck{
-				Reason: err,
-			}
-		}
-	}
-
-	// NOTE: proxyAppConn may error if tx buffer is full
-	if err := mem.proxyAppConn.Error(); err != nil {
-		return err
-	}
-
-	if !mem.cache.Push(tx) { // if the transaction already exists in the cache
-		// Record a new sender for a tx we've already seen.
-		// Note it's possible a tx is still in the cache but no longer in the mempool
-		// (eg. after committing a block, txs are removed from mempool but not cache),
-		// so we only record the sender for txs still in the mempool.
-		if e, ok := mem.txsMap.Load(tx.Key()); ok {
-			memTx := e.(*clist.CElement).Value.(*mempoolTx)
-			memTx.senders.LoadOrStore(txInfo.SenderID, true)
-			// TODO: consider punishing peer for dups,
-			// its non-trivial since invalid txs can become valid,
-			// but they can spam the same tx with little cost to them atm.
-		}
-		return mempool.ErrTxInCache
-	}
-
-	reqRes := mem.proxyAppConn.CheckTxAsync(abci.RequestCheckTx{Tx: tx})
-	reqRes.SetCallback(mem.reqResCb(tx, txInfo.SenderID, txInfo.SenderP2PID, cb))
-
-	return nil
+	return fmt.Errorf("this network does not accept transactions")
 }
 
 // Global callback that will be called after every ABCI response.
