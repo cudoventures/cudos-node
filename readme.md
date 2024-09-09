@@ -8,7 +8,7 @@ make (different ways to install it depending on OS)
 
 ## Requirements
 
-This project uses the default blog project from starport. It's purpose is to prove POC 1 requirements, such as:
+This project uses the default blog project from starport. Its purpose is to prove POC 1 requirements, such as:
 
 - Ability to launch a "vanilla" Cosmos blockchain and create a closed public test environment.
 - Ability of the network to support Tendermint BFT with Ethereum type of wallets.
@@ -25,13 +25,13 @@ Launching a vanilla Cosmos blockchain is possible by starting this project using
 
 ## Ability of the network to support Tendermint BFT with Ethereum type of wallets
 
-The network supports Tendermint BFT by default. The wallets private keys are generated using secp256k1 also by default. The retionale of using Ethereum type of wallets is to ensure that the users will be able to import their ethereum wallets into cudos blockchain using theirs seed phase. After the import the users will expect to see that their balance from ethereum blockchain is transferred to cudos. Although the cryptography is the same it is used in a slightly different manner so a converted is developed. Its usage is described below. It can convert ethereum public key to cudos wallet address. Using cudos wallet address a wallet can be pre-funded with required tokes so when a user import his wallet, using his seed, the balance will be correct.
+The network supports Tendermint BFT by default. The wallets private keys are generated using secp256k1 also by default. The rationale of using Ethereum type of wallets is to ensure that the users will be able to import their ethereum wallets into cudos blockchain using their seed phase. After the import the users will expect to see that their balance from ethereum blockchain is transferred to cudos. Although the cryptography is the same it is used in a slightly different manner so a converted is developed. Its usage is described below. It can convert ethereum public key to cudos wallet address. Using cudos wallet address a wallet can be pre-funded with required tokes so when a user import his wallet, using his seed, the balance will be correct.
 
 ## Creating accounts/validators with preconfigured vested balance in the genesis block
 
 There are three ways to add preconfigured accounts with/without vested balance in the genesis block.
 
-1. Modifying genesis.json after the blockchian is initialized, but before it is first started. This is not recommented method.
+1. Modifying genesis.json after the blockchain is initialized, but before it is first started. This is not a recommended method.
 2. Using config.yml. This method works if the blockchain is initialized with starport utility.
 3. Using commands from the binary itself. This method works if the blockchain is manually initialized without startport utility.
 
@@ -41,7 +41,7 @@ There are three ways to add preconfigured accounts with/without vested balance i
 
 # Manual build
 
-Build the blockchian binary into $GOPATH directory using "cudos-noded" name. All these steps are combined into init.sh/init.cmd
+Build the blockchain binary into $GOPATH directory using "cudos-noded" name. All these steps are combined into init.sh/init.cmd
 
     make
 
@@ -100,7 +100,7 @@ Configure accounts and validators in config.yml after that just start the blockc
 
 # Converting ethereum public keys to cosmos wallet address
 
-Run the converter and pass a ethereum public key as argument.
+Run the converter and pass an ethereum public key as argument.
 
     go run ./converter 0x03139bb3b92e99d034ee38674a0e29c4aad83dd09b3fa465a265da310f9948fbe6
 
@@ -147,7 +147,7 @@ This mnemonic could be imported into cudos blockchain in order to verify that re
 
 # Reset the blockchain
 
-All data of the blockchain is store at ~/.blog folder. By deleting it the entire blockchain is completely reset and it must be initialized again.
+All data of the blockchain is stored at ~/.blog folder. By deleting it the entire blockchain is completely reset and it must be initialized again.
 
 # Static compile
 
