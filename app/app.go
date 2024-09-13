@@ -5,6 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/spf13/cast"
@@ -185,6 +188,7 @@ func New(
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
+		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
@@ -231,6 +235,7 @@ func New(
 		genutiltypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		vestingtypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
 		nftmoduletypes.ModuleName,
@@ -257,6 +262,7 @@ func New(
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		vestingtypes.ModuleName,
 		upgradetypes.ModuleName,
 		gravitytypes.ModuleName,
 		admintypes.ModuleName,
@@ -291,6 +297,7 @@ func New(
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
+		vestingtypes.ModuleName,
 		upgradetypes.ModuleName,
 		ibchost.ModuleName,
 		ibctransfertypes.ModuleName,
