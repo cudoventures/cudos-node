@@ -21,7 +21,7 @@ const GroupModuleName = "group"
 func (app *App) SetUpgradeHandlers() {
 	setHandlerForVersion_1_0(app)
 	setHandlerForVersion_1_1(app)
-	setHandlerForVersion_1_9_9(app)
+	setHandlerForVersion_9_9_9(app)
 }
 
 func setHandlerForVersion_1_0(app *App) {
@@ -80,8 +80,8 @@ func setHandlerForVersion_1_1(app *App) {
 	}
 }
 
-func setHandlerForVersion_1_9_9(app *App) {
-	const upgradeVersion string = "v1.9.9"
+func setHandlerForVersion_9_9_9(app *App) {
+	const upgradeVersion string = "v9.9.9"
 
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeVersion, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
