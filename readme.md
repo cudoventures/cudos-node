@@ -1,3 +1,4 @@
+The CUDOS Network [merged into ASI](https://x.com/ASI_Alliance/status/1839716457267245400) on October 28, 2024 and as a result the CUDOS blockchain is not running anymore. For more information please visit [the merger section of the docs](https://docs.cudos.org/docs/asi-merge/asi-merge-intro).
 # Cudos Testnet
 
 ## Prerequirements
